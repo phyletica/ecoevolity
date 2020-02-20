@@ -27,10 +27,10 @@
 #include <memory>
 
 #include "basetree.hpp"
+#include "tree.hpp"
 #include "rng.hpp"
 #include "assert.hpp"
 #include "math_util.hpp"
-
 
 class BaseGeneralTreeOperatorTemplate {
     protected:
@@ -95,7 +95,7 @@ class BaseGeneralTreeOperatorTemplate {
         virtual std::string to_string() const = 0;
 };
 
-template<class NodeType>
+template<class TreeType>
 class GeneralTreeOperatorTemplate : public BaseGeneralTreeOperatorTemplate {
 
     public:
@@ -103,16 +103,16 @@ class GeneralTreeOperatorTemplate : public BaseGeneralTreeOperatorTemplate {
         GeneralTreeOperatorTemplate(double weight) : BaseGeneralTreeOperatorTemplate(weight) { }
 
         virtual void call_store_methods(
-                BaseTree<NodeType> * tree) const {
+                TreeType * tree) const {
             tree->store_state();
         }
         virtual void call_restore_methods(
-                BaseTree<NodeType> * tree) const {
+                TreeType * tree) const {
             tree->restore_state();
         }
 
         virtual void perform_move(RandomNumberGenerator& rng,
-                BaseTree<NodeType> * tree,
+                TreeType * tree,
                 unsigned int nthreads = 1) = 0;
 
         /**
@@ -121,17 +121,17 @@ class GeneralTreeOperatorTemplate : public BaseGeneralTreeOperatorTemplate {
          * @return  Log of Hastings Ratio.
          */
         virtual double propose(RandomNumberGenerator& rng,
-                BaseTree<NodeType> * tree,
+                TreeType * tree,
                 unsigned int nthreads = 1) = 0;
 
         virtual void operate(RandomNumberGenerator& rng,
-                BaseTree<NodeType> * tree,
+                TreeType * tree,
                 unsigned int nthreads = 1,
                 unsigned int number_of_moves = 1) = 0;
 
         virtual void operate_plus(RandomNumberGenerator& rng,
-                BaseTree<NodeType> * tree,
-                std::vector< std::shared_ptr< GeneralTreeOperatorTemplate<NodeType> > > other_operators,
+                TreeType * tree,
+                std::vector< std::shared_ptr< GeneralTreeOperatorTemplate<TreeType> > > other_operators,
                 unsigned int nthreads = 1,
                 unsigned int number_of_moves = 1,
                 unsigned int other_op_number_of_moves = 1) = 0;
@@ -139,18 +139,18 @@ class GeneralTreeOperatorTemplate : public BaseGeneralTreeOperatorTemplate {
 };
 
 
-template<class NodeType, class OperatorType>
-class GeneralTreeOperatorInterface : public GeneralTreeOperatorTemplate<NodeType> {
+template<class TreeType, class OperatorType>
+class GeneralTreeOperatorInterface : public GeneralTreeOperatorTemplate<TreeType> {
 
     public:
         OperatorType op_;
 
-        GeneralTreeOperatorInterface() : GeneralTreeOperatorTemplate<NodeType>() { }
-        GeneralTreeOperatorInterface(double weight) : GeneralTreeOperatorTemplate<NodeType>(weight) { }
+        GeneralTreeOperatorInterface() : GeneralTreeOperatorTemplate<TreeType>() { }
+        GeneralTreeOperatorInterface(double weight) : GeneralTreeOperatorTemplate<TreeType>(weight) { }
 
         void perform_move(
                 RandomNumberGenerator& rng,
-                BaseTree<NodeType> * tree,
+                TreeType * tree,
                 unsigned int nthreads = 1) {
             this->call_store_methods(tree);
         
@@ -188,7 +188,7 @@ class GeneralTreeOperatorInterface : public GeneralTreeOperatorTemplate<NodeType
         }
 
         void operate(RandomNumberGenerator& rng,
-                BaseTree<NodeType> * tree,
+                TreeType * tree,
                 unsigned int nthreads = 1,
                 unsigned int number_of_moves = 1) {
             for (unsigned int i = 0; i < number_of_moves; ++i) {
@@ -197,8 +197,8 @@ class GeneralTreeOperatorInterface : public GeneralTreeOperatorTemplate<NodeType
         }
 
         virtual void operate_plus(RandomNumberGenerator& rng,
-                BaseTree<NodeType> * tree,
-                std::vector< std::shared_ptr< GeneralTreeOperatorTemplate<NodeType> > > other_operators,
+                TreeType * tree,
+                std::vector< std::shared_ptr< GeneralTreeOperatorTemplate<TreeType> > > other_operators,
                 unsigned int nthreads = 1,
                 unsigned int number_of_moves = 1,
                 unsigned int other_op_number_of_moves = 1) {
@@ -540,12 +540,16 @@ class WindowOp : public BaseOptimizingOp {
 };
 
 
+//////////////////////////////////////////////////////////////////////////////
+// BaseTree operators 
+//////////////////////////////////////////////////////////////////////////////
+
 template<class NodeType>
-class TreeScaler : public GeneralTreeOperatorInterface<NodeType, ScaleOp> {
+class TreeScaler : public GeneralTreeOperatorInterface<BaseTree<NodeType>, ScaleOp> {
 
     public:
-        TreeScaler() : GeneralTreeOperatorInterface<NodeType, ScaleOp>() { }
-        TreeScaler(double weight) : GeneralTreeOperatorInterface<NodeType, ScaleOp>(weight) { }
+        TreeScaler() : GeneralTreeOperatorInterface<BaseTree<NodeType>, ScaleOp>() { }
+        TreeScaler(double weight) : GeneralTreeOperatorInterface<BaseTree<NodeType>, ScaleOp>(weight) { }
 
         std::string get_name() const {
             return "TreeScaler";
@@ -573,18 +577,16 @@ class TreeScaler : public GeneralTreeOperatorInterface<NodeType, ScaleOp> {
             unsigned int num_heights = tree->get_number_of_node_heights();
             double multiplier = this->op_.get_move_amount(rng);
             tree->scale_tree(multiplier);
-            // If all internal heights are relative, their values stay the same
-            // return std::log(multiplier) * num_heights;
-            return std::log(multiplier);
+            return std::log(multiplier) * num_heights;
         }
 };
 
 
 template<class NodeType>
-class NodeHeightScaler : public GeneralTreeOperatorInterface<NodeType, ScaleOp> {
+class NodeHeightScaler : public GeneralTreeOperatorInterface<BaseTree<NodeType>, ScaleOp> {
     public:
-        NodeHeightScaler() : GeneralTreeOperatorInterface<NodeType, ScaleOp>() { }
-        NodeHeightScaler(double weight) : GeneralTreeOperatorInterface<NodeType, ScaleOp>(weight) { }
+        NodeHeightScaler() : GeneralTreeOperatorInterface<BaseTree<NodeType>, ScaleOp>() { }
+        NodeHeightScaler(double weight) : GeneralTreeOperatorInterface<BaseTree<NodeType>, ScaleOp>(weight) { }
 
         std::string get_name() const {
             return "NodeHeightScaler";
@@ -633,10 +635,10 @@ class NodeHeightScaler : public GeneralTreeOperatorInterface<NodeType, ScaleOp> 
 
 
 template<class NodeType>
-class RootHeightScaler : public GeneralTreeOperatorInterface<NodeType, ScaleOp> {
+class RootHeightScaler : public GeneralTreeOperatorInterface<BaseTree<NodeType>, ScaleOp> {
     public:
-        RootHeightScaler() : GeneralTreeOperatorInterface<NodeType, ScaleOp>() { }
-        RootHeightScaler(double weight) : GeneralTreeOperatorInterface<NodeType, ScaleOp>(weight) { }
+        RootHeightScaler() : GeneralTreeOperatorInterface<BaseTree<NodeType>, ScaleOp>() { }
+        RootHeightScaler(double weight) : GeneralTreeOperatorInterface<BaseTree<NodeType>, ScaleOp>(weight) { }
 
         std::string get_name() const {
             return "RootHeightScaler";
@@ -687,10 +689,10 @@ class RootHeightScaler : public GeneralTreeOperatorInterface<NodeType, ScaleOp> 
 
 
 template<class NodeType>
-class NodeHeightPriorAlphaScaler : public GeneralTreeOperatorInterface<NodeType, ScaleOp> {
+class NodeHeightPriorAlphaScaler : public GeneralTreeOperatorInterface<BaseTree<NodeType>, ScaleOp> {
     public:
-        NodeHeightPriorAlphaScaler() : GeneralTreeOperatorInterface<NodeType, ScaleOp>() { }
-        NodeHeightPriorAlphaScaler(double weight) : GeneralTreeOperatorInterface<NodeType, ScaleOp>(weight) { }
+        NodeHeightPriorAlphaScaler() : GeneralTreeOperatorInterface<BaseTree<NodeType>, ScaleOp>() { }
+        NodeHeightPriorAlphaScaler(double weight) : GeneralTreeOperatorInterface<BaseTree<NodeType>, ScaleOp>(weight) { }
 
         std::string get_name() const {
             return "NodeHeightPriorAlphaScaler";
@@ -725,10 +727,10 @@ class NodeHeightPriorAlphaScaler : public GeneralTreeOperatorInterface<NodeType,
 
 
 template<class NodeType>
-class NodeHeightPriorAlphaMover : public GeneralTreeOperatorInterface<NodeType, WindowOp> {
+class NodeHeightPriorAlphaMover : public GeneralTreeOperatorInterface<BaseTree<NodeType>, WindowOp> {
     public:
-        NodeHeightPriorAlphaMover() : GeneralTreeOperatorInterface<NodeType, WindowOp>() { }
-        NodeHeightPriorAlphaMover(double weight) : GeneralTreeOperatorInterface<NodeType, WindowOp>(weight) { }
+        NodeHeightPriorAlphaMover() : GeneralTreeOperatorInterface<BaseTree<NodeType>, WindowOp>() { }
+        NodeHeightPriorAlphaMover(double weight) : GeneralTreeOperatorInterface<BaseTree<NodeType>, WindowOp>(weight) { }
 
         std::string get_name() const {
             return "NodeHeightPriorAlphaMover";
@@ -766,10 +768,10 @@ class NodeHeightPriorAlphaMover : public GeneralTreeOperatorInterface<NodeType, 
 
 
 template<class NodeType>
-class NodeHeightPriorBetaScaler : public GeneralTreeOperatorInterface<NodeType, ScaleOp> {
+class NodeHeightPriorBetaScaler : public GeneralTreeOperatorInterface<BaseTree<NodeType>, ScaleOp> {
     public:
-        NodeHeightPriorBetaScaler() : GeneralTreeOperatorInterface<NodeType, ScaleOp>() { }
-        NodeHeightPriorBetaScaler(double weight) : GeneralTreeOperatorInterface<NodeType, ScaleOp>(weight) { }
+        NodeHeightPriorBetaScaler() : GeneralTreeOperatorInterface<BaseTree<NodeType>, ScaleOp>() { }
+        NodeHeightPriorBetaScaler(double weight) : GeneralTreeOperatorInterface<BaseTree<NodeType>, ScaleOp>(weight) { }
 
         std::string get_name() const {
             return "NodeHeightPriorBetaScaler";
@@ -804,10 +806,10 @@ class NodeHeightPriorBetaScaler : public GeneralTreeOperatorInterface<NodeType, 
 
 
 template<class NodeType>
-class NodeHeightPriorBetaMover : public GeneralTreeOperatorInterface<NodeType, WindowOp> {
+class NodeHeightPriorBetaMover : public GeneralTreeOperatorInterface<BaseTree<NodeType>, WindowOp> {
     public:
-        NodeHeightPriorBetaMover() : GeneralTreeOperatorInterface<NodeType, WindowOp>() { }
-        NodeHeightPriorBetaMover(double weight) : GeneralTreeOperatorInterface<NodeType, WindowOp>(weight) { }
+        NodeHeightPriorBetaMover() : GeneralTreeOperatorInterface<BaseTree<NodeType>, WindowOp>() { }
+        NodeHeightPriorBetaMover(double weight) : GeneralTreeOperatorInterface<BaseTree<NodeType>, WindowOp>(weight) { }
 
         std::string get_name() const {
             return "NodeHeightPriorBetaMover";
@@ -845,7 +847,7 @@ class NodeHeightPriorBetaMover : public GeneralTreeOperatorInterface<NodeType, W
 
 
 template<class NodeType>
-class NodeHeightSlideBumpScaler : public GeneralTreeOperatorInterface<NodeType, ScaleOp> {
+class NodeHeightSlideBumpScaler : public GeneralTreeOperatorInterface<BaseTree<NodeType>, ScaleOp> {
     protected:
         virtual bool call_tree_method_(
                 BaseTree<NodeType> * tree,
@@ -860,8 +862,8 @@ class NodeHeightSlideBumpScaler : public GeneralTreeOperatorInterface<NodeType, 
         bool operate_on_root_ = false;
 
     public:
-        NodeHeightSlideBumpScaler() : GeneralTreeOperatorInterface<NodeType, ScaleOp>() { }
-        NodeHeightSlideBumpScaler(double weight) : GeneralTreeOperatorInterface<NodeType, ScaleOp>(weight) { }
+        NodeHeightSlideBumpScaler() : GeneralTreeOperatorInterface<BaseTree<NodeType>, ScaleOp>() { }
+        NodeHeightSlideBumpScaler(double weight) : GeneralTreeOperatorInterface<BaseTree<NodeType>, ScaleOp>(weight) { }
 
         std::string get_name() const {
             return "NodeHeightSlideBumpScaler";
@@ -974,10 +976,10 @@ class NodeHeightSlideBumpSwapScaler : public NodeHeightSlideBumpScaler<NodeType>
 
 
 template<class NodeType>
-class NodeHeightMover : public GeneralTreeOperatorInterface<NodeType, WindowOp> {
+class NodeHeightMover : public GeneralTreeOperatorInterface<BaseTree<NodeType>, WindowOp> {
     public:
-        NodeHeightMover() : GeneralTreeOperatorInterface<NodeType, WindowOp>() { }
-        NodeHeightMover(double weight) : GeneralTreeOperatorInterface<NodeType, WindowOp>(weight) { }
+        NodeHeightMover() : GeneralTreeOperatorInterface<BaseTree<NodeType>, WindowOp>() { }
+        NodeHeightMover(double weight) : GeneralTreeOperatorInterface<BaseTree<NodeType>, WindowOp>(weight) { }
 
         std::string get_name() const {
             return "NodeHeightMover";
@@ -1028,7 +1030,7 @@ class NodeHeightMover : public GeneralTreeOperatorInterface<NodeType, WindowOp> 
 
 
 template<class NodeType>
-class NodeHeightSlideBumpMover : public GeneralTreeOperatorInterface<NodeType, WindowOp> {
+class NodeHeightSlideBumpMover : public GeneralTreeOperatorInterface<BaseTree<NodeType>, WindowOp> {
     protected:
         virtual bool call_tree_method_(
                 BaseTree<NodeType> * tree,
@@ -1043,8 +1045,8 @@ class NodeHeightSlideBumpMover : public GeneralTreeOperatorInterface<NodeType, W
         bool operate_on_root_ = false;
 
     public:
-        NodeHeightSlideBumpMover() : GeneralTreeOperatorInterface<NodeType, WindowOp>() { }
-        NodeHeightSlideBumpMover(double weight) : GeneralTreeOperatorInterface<NodeType, WindowOp>(weight) { }
+        NodeHeightSlideBumpMover() : GeneralTreeOperatorInterface<BaseTree<NodeType>, WindowOp>() { }
+        NodeHeightSlideBumpMover(double weight) : GeneralTreeOperatorInterface<BaseTree<NodeType>, WindowOp>(weight) { }
 
         std::string get_name() const {
             return "NodeHeightSlideBumpMover";
@@ -1159,11 +1161,11 @@ class NodeHeightSlideBumpSwapMover : public NodeHeightSlideBumpMover<NodeType> {
 
 
 template<class NodeType>
-class NeighborHeightNodePermute : public GeneralTreeOperatorInterface<NodeType, Op> {
+class NeighborHeightNodePermute : public GeneralTreeOperatorInterface<BaseTree<NodeType>, Op> {
 
     public:
-        NeighborHeightNodePermute() : GeneralTreeOperatorInterface<NodeType, Op>() { }
-        NeighborHeightNodePermute(double weight) : GeneralTreeOperatorInterface<NodeType, Op>(weight) { }
+        NeighborHeightNodePermute() : GeneralTreeOperatorInterface<BaseTree<NodeType>, Op>() { }
+        NeighborHeightNodePermute(double weight) : GeneralTreeOperatorInterface<BaseTree<NodeType>, Op>(weight) { }
 
         std::string get_name() const {
             return "NeighborHeightNodePermute";
@@ -1201,11 +1203,11 @@ class NeighborHeightNodePermute : public GeneralTreeOperatorInterface<NodeType, 
 
 
 template<class NodeType>
-class NeighborHeightNodeSwap : public GeneralTreeOperatorInterface<NodeType, Op> {
+class NeighborHeightNodeSwap : public GeneralTreeOperatorInterface<BaseTree<NodeType>, Op> {
 
     public:
-        NeighborHeightNodeSwap() : GeneralTreeOperatorInterface<NodeType, Op>() { }
-        NeighborHeightNodeSwap(double weight) : GeneralTreeOperatorInterface<NodeType, Op>(weight) { }
+        NeighborHeightNodeSwap() : GeneralTreeOperatorInterface<BaseTree<NodeType>, Op>() { }
+        NeighborHeightNodeSwap(double weight) : GeneralTreeOperatorInterface<BaseTree<NodeType>, Op>(weight) { }
 
         std::string get_name() const {
             return "NeighborHeightNodeSwap";
@@ -1243,14 +1245,14 @@ class NeighborHeightNodeSwap : public GeneralTreeOperatorInterface<NodeType, Op>
 
 
 template<class NodeType>
-class SplitLumpNodesRevJumpSampler : public GeneralTreeOperatorInterface<NodeType, Op> {
+class SplitLumpNodesRevJumpSampler : public GeneralTreeOperatorInterface<BaseTree<NodeType>, Op> {
     protected:
         std::unordered_map<unsigned int, long double> stirling2_numbers;
         std::unordered_map<unsigned int, long double> bell_numbers;
 
     public:
-        SplitLumpNodesRevJumpSampler() : GeneralTreeOperatorInterface<NodeType, Op>() { }
-        SplitLumpNodesRevJumpSampler(double weight) : GeneralTreeOperatorInterface<NodeType, Op>(weight) { }
+        SplitLumpNodesRevJumpSampler() : GeneralTreeOperatorInterface<BaseTree<NodeType>, Op>() { }
+        SplitLumpNodesRevJumpSampler(double weight) : GeneralTreeOperatorInterface<BaseTree<NodeType>, Op>(weight) { }
 
         std::string get_name() const {
             return "SplitLumpNodesRevJumpSampler";
@@ -1280,7 +1282,7 @@ class SplitLumpNodesRevJumpSampler : public GeneralTreeOperatorInterface<NodeTyp
 
         void operate_plus(RandomNumberGenerator& rng,
                 BaseTree<NodeType> * tree,
-                std::vector< std::shared_ptr< GeneralTreeOperatorTemplate<NodeType> > > other_operators,
+                std::vector< std::shared_ptr< GeneralTreeOperatorTemplate< BaseTree<NodeType> > > > other_operators,
                 unsigned int nthreads = 1,
                 unsigned int number_of_moves = 1,
                 unsigned int other_op_number_of_moves = 1) {
@@ -1887,6 +1889,48 @@ class SplitLumpNodesRevJumpSampler : public GeneralTreeOperatorInterface<NodeTyp
                     tree,
                     in_general_state_before,
                     nthreads);
+        }
+};
+
+
+//////////////////////////////////////////////////////////////////////////////
+// BasePopulationTree operators 
+//////////////////////////////////////////////////////////////////////////////
+
+class GlobalPopSizeScaler : public GeneralTreeOperatorInterface<BasePopulationTree, ScaleOp> {
+
+    public:
+        GlobalPopSizeScaler() : GeneralTreeOperatorInterface<BasePopulationTree, ScaleOp>() { }
+        GlobalPopSizeScaler(double weight) : GeneralTreeOperatorInterface<BasePopulationTree, ScaleOp>(weight) { }
+
+        std::string get_name() const {
+            return "GlobalPopSizeScaler";
+        }
+
+        std::string target_parameter() const {
+            return "population sizes";
+        }
+
+        BaseGeneralTreeOperatorTemplate::OperatorTypeEnum get_type() const {
+            return BaseGeneralTreeOperatorTemplate::OperatorTypeEnum::population_size_operator;
+        }
+
+        /**
+         * @brief   Propose a new state.
+         *
+         * @return  Log of Hastings Ratio.
+         */
+        double propose(RandomNumberGenerator& rng,
+                BasePopulationTree * tree,
+                unsigned int nthreads = 1) {
+            if (tree->population_sizes_are_fixed()) {
+                return -std::numeric_limits<double>::infinity();
+            }
+            double multiplier = this->op_.get_move_amount(rng);
+            unsigned int n_parameters_scaled = 1;
+            /* unsigned int n_parameters_scaled; */
+            n_parameters_scaled = tree->scale_all_population_sizes(multiplier);
+            return std::log(multiplier) * n_parameters_scaled;
         }
 };
 
