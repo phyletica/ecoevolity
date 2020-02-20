@@ -697,7 +697,7 @@ class NodeHeightPriorAlphaScaler : public GeneralTreeOperatorInterface<NodeType,
         }
 
         std::string target_parameter() const {
-            return "node height beta distribution alpha";
+            return "alpha of node height beta distribution";
         }
 
         BaseGeneralTreeOperatorTemplate::OperatorTypeEnum get_type() const {
@@ -712,13 +712,13 @@ class NodeHeightPriorAlphaScaler : public GeneralTreeOperatorInterface<NodeType,
         double propose(RandomNumberGenerator& rng,
                 BaseTree<NodeType> * tree,
                 unsigned int nthreads = 1) {
-            if (tree->node_height_beta_prior_alpha_is_fixed()) {
+            if (tree->alpha_of_node_height_beta_prior_is_fixed()) {
                 return -std::numeric_limits<double>::infinity();
             }
-            double new_alpha = tree->get_node_height_beta_prior_alpha();
+            double new_alpha = tree->get_alpha_of_node_height_beta_prior();
             double ln_multiplier;
             this->update(rng, new_alpha, ln_multiplier);
-            tree->set_node_height_beta_prior_alpha(new_alpha);
+            tree->set_alpha_of_node_height_beta_prior(new_alpha);
             return ln_multiplier;
         }
 };
@@ -735,7 +735,7 @@ class NodeHeightPriorAlphaMover : public GeneralTreeOperatorInterface<NodeType, 
         }
 
         std::string target_parameter() const {
-            return "node height beta distribution alpha";
+            return "alpha of node height beta distribution";
         }
 
         BaseGeneralTreeOperatorTemplate::OperatorTypeEnum get_type() const {
@@ -750,17 +750,96 @@ class NodeHeightPriorAlphaMover : public GeneralTreeOperatorInterface<NodeType, 
         double propose(RandomNumberGenerator& rng,
                 BaseTree<NodeType> * tree,
                 unsigned int nthreads = 1) {
-            if (tree->node_height_beta_prior_alpha_is_fixed()) {
+            if (tree->alpha_of_node_height_beta_prior_is_fixed()) {
                 return -std::numeric_limits<double>::infinity();
             }
-            double new_alpha = tree->get_node_height_beta_prior_alpha();
+            double new_alpha = tree->get_alpha_of_node_height_beta_prior();
             double ln_hastings;
             this->update(rng, new_alpha, ln_hastings);
             if (new_alpha <= 0.0) {
                 return -std::numeric_limits<double>::infinity();
             }
-            tree->set_node_height_beta_prior_alpha(new_alpha);
+            tree->set_alpha_of_node_height_beta_prior(new_alpha);
+            return ln_hastings;
+        }
+};
+
+
+template<class NodeType>
+class NodeHeightPriorBetaScaler : public GeneralTreeOperatorInterface<NodeType, ScaleOp> {
+    public:
+        NodeHeightPriorBetaScaler() : GeneralTreeOperatorInterface<NodeType, ScaleOp>() { }
+        NodeHeightPriorBetaScaler(double weight) : GeneralTreeOperatorInterface<NodeType, ScaleOp>(weight) { }
+
+        std::string get_name() const {
+            return "NodeHeightPriorBetaScaler";
+        }
+
+        std::string target_parameter() const {
+            return "beta of node height beta distribution";
+        }
+
+        BaseGeneralTreeOperatorTemplate::OperatorTypeEnum get_type() const {
+            return BaseGeneralTreeOperatorTemplate::OperatorTypeEnum::node_height_prior_operator;
+        }
+
+        /**
+         * @brief   Propose a new state.
+         *
+         * @return  Log of Hastings Ratio.
+         */
+        double propose(RandomNumberGenerator& rng,
+                BaseTree<NodeType> * tree,
+                unsigned int nthreads = 1) {
+            if (tree->beta_of_node_height_beta_prior_is_fixed()) {
+                return -std::numeric_limits<double>::infinity();
+            }
+            double new_beta = tree->get_beta_of_node_height_beta_prior();
+            double ln_multiplier;
+            this->update(rng, new_beta, ln_multiplier);
+            tree->set_beta_of_node_height_beta_prior(new_beta);
             return ln_multiplier;
+        }
+};
+
+
+template<class NodeType>
+class NodeHeightPriorBetaMover : public GeneralTreeOperatorInterface<NodeType, WindowOp> {
+    public:
+        NodeHeightPriorBetaMover() : GeneralTreeOperatorInterface<NodeType, WindowOp>() { }
+        NodeHeightPriorBetaMover(double weight) : GeneralTreeOperatorInterface<NodeType, WindowOp>(weight) { }
+
+        std::string get_name() const {
+            return "NodeHeightPriorBetaMover";
+        }
+
+        std::string target_parameter() const {
+            return "beta of node height beta distribution";
+        }
+
+        BaseGeneralTreeOperatorTemplate::OperatorTypeEnum get_type() const {
+            return BaseGeneralTreeOperatorTemplate::OperatorTypeEnum::node_height_prior_operator;
+        }
+
+        /**
+         * @brief   Propose a new state.
+         *
+         * @return  Log of Hastings Ratio.
+         */
+        double propose(RandomNumberGenerator& rng,
+                BaseTree<NodeType> * tree,
+                unsigned int nthreads = 1) {
+            if (tree->beta_of_node_height_beta_prior_is_fixed()) {
+                return -std::numeric_limits<double>::infinity();
+            }
+            double new_beta = tree->get_beta_of_node_height_beta_prior();
+            double ln_hastings;
+            this->update(rng, new_beta, ln_hastings);
+            if (new_beta <= 0.0) {
+                return -std::numeric_limits<double>::infinity();
+            }
+            tree->set_beta_of_node_height_beta_prior(new_beta);
+            return ln_hastings;
         }
 };
 

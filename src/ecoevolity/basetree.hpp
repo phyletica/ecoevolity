@@ -39,11 +39,11 @@ class BaseTree {
 
         // Alpha and beta parameters of the beta-distributed prior on
         // (non-root) internal node heights
-        std::shared_ptr<PositiveRealParameter> node_height_beta_prior_alpha_ = std::make_shared<PositiveRealParameter>(
+        std::shared_ptr<PositiveRealParameter> alpha_of_node_height_beta_prior_ = std::make_shared<PositiveRealParameter>(
                 std::make_shared<GammaDistribution>(10.0, 0.1), // prior
                 1.0,   // value of parameter
                 true); // is fixed?
-        std::shared_ptr<PositiveRealParameter> node_height_beta_prior_beta_ = std::make_shared<PositiveRealParameter>(
+        std::shared_ptr<PositiveRealParameter> beta_of_node_height_beta_prior_ = std::make_shared<PositiveRealParameter>(
                 std::make_shared<GammaDistribution>(10.0, 0.1), // prior
                 1.0,   // value of parameter
                 true); // is fixed?
@@ -1360,9 +1360,19 @@ class BaseTree {
 
         virtual double compute_log_prior_density() {
             double d = 0.0;
+            d += this->compute_log_prior_density_of_parameters_of_beta_prior_on_node_heights();
             d += this->compute_log_prior_density_of_node_heights();
             d += this->compute_relative_log_prior_density_of_topology();
             this->log_prior_density_.set_value(d);
+            return d;
+        }
+
+        virtual double compute_log_prior_density_of_parameters_of_beta_prior_on_node_heights() {
+            double d = 0.0;
+            // prior_ln_pdf() method checks if parameter is fixed (and returns
+            // 0 if so)
+            d += this->alpha_of_node_height_beta_prior_->prior_ln_pdf();
+            d += this->beta_of_node_height_beta_prior_->prior_ln_pdf();
             return d;
         }
 
@@ -1404,8 +1414,8 @@ class BaseTree {
                 double youngest_parent_height = this->get_height_of_youngest_parent(i);
                 // d -= std::log(youngest_parent_height);
                 d += BetaDistribution::get_scaled_ln_pdf(this->get_height(i),
-                        this->node_height_beta_prior_alpha_->get_value(),
-                        this->node_height_beta_prior_beta_->get_value(),
+                        this->alpha_of_node_height_beta_prior_->get_value(),
+                        this->beta_of_node_height_beta_prior_->get_value(),
                         youngest_parent_height);
                 ///////////////////////////////////////////////////////////////
                 // Prior on the relative ages of non-root internal nodes
@@ -1441,8 +1451,8 @@ class BaseTree {
             this->store_all_heights();
             this->store_all_height_pointers();
             this->store_topology();
-            this->node_height_beta_prior_alpha_->store();
-            this->node_height_beta_prior_beta_->store();
+            this->alpha_of_node_height_beta_prior_->store();
+            this->beta_of_node_height_beta_prior_->store();
         }
         virtual void store_all_heights() {
             this->root_->store_all_heights();
@@ -1469,8 +1479,8 @@ class BaseTree {
             this->restore_all_height_pointers();
             this->restore_all_heights();
             this->update_node_heights();
-            this->node_height_beta_prior_alpha_->restore();
-            this->node_height_beta_prior_beta_->restore();
+            this->alpha_of_node_height_beta_prior_->restore();
+            this->beta_of_node_height_beta_prior_->restore();
         }
         virtual void restore_all_heights() {
             this->root_->restore_all_heights();
@@ -1600,37 +1610,50 @@ class BaseTree {
             return split_set;
         }
 
+        double get_alpha_of_node_height_beta_prior() const {
+            return this->alpha_of_node_height_beta_prior_->get_value();
+        }
+        void set_alpha_of_node_height_beta_prior(double value) {
+            this->alpha_of_node_height_beta_prior_->set_value(value);
+        }
+        bool alpha_of_node_height_beta_prior_is_fixed() const {
+            return this->alpha_of_node_height_beta_prior_->is_fixed();
+        }
+        void fix_alpha_of_node_height_beta_prior() {
+            this->alpha_of_node_height_beta_prior_->fix();
+        }
+        void estimate_alpha_of_node_height_beta_prior() {
+            this->alpha_of_node_height_beta_prior_->estimate();
+        }
+        void set_prior_on_alpha_of_node_height_beta_prior(
+                std::shared_ptr<ContinuousProbabilityDistribution> prior) {
+            this->alpha_of_node_height_beta_prior_->set_prior(prior);
+        }
+        std::shared_ptr<ContinuousProbabilityDistribution> get_prior_on_alpha_of_node_height_beta_prior() const {
+            return this->alpha_of_node_height_beta_prior_->get_prior();
+        }
 
-        double get_node_height_beta_prior_alpha() const {
-            return this->node_height_beta_prior_alpha_->get_value();
+        double get_beta_of_node_height_beta_prior() const {
+            return this->beta_of_node_height_beta_prior_->get_value();
         }
-        void set_node_height_beta_prior_alpha(double value) {
-            this->node_height_beta_prior_alpha_->set_value(value);
+        void set_beta_of_node_height_beta_prior(double value) {
+            this->beta_of_node_height_beta_prior_->set_value(value);
         }
-        bool node_height_beta_prior_alpha_is_fixed() const {
-            return this->node_height_beta_prior_alpha_->is_fixed();
+        bool beta_of_node_height_beta_prior_is_fixed() const {
+            return this->beta_of_node_height_beta_prior_->is_fixed();
         }
-        void fix_node_height_beta_prior_alpha() {
-            this->node_height_beta_prior_alpha_->fix();
+        void fix_beta_of_node_height_beta_prior() {
+            this->beta_of_node_height_beta_prior_->fix();
         }
-        void estimate_node_height_beta_prior_alpha() {
-            this->node_height_beta_prior_alpha_->estimate();
+        void estimate_beta_of_node_height_beta_prior() {
+            this->beta_of_node_height_beta_prior_->estimate();
         }
-
-        double get_node_height_beta_prior_beta() const {
-            return this->node_height_beta_prior_beta_->get_value();
+        void set_prior_on_beta_of_node_height_beta_prior(
+                std::shared_ptr<ContinuousProbabilityDistribution> prior) {
+            this->beta_of_node_height_beta_prior_->set_prior(prior);
         }
-        void set_node_height_beta_prior_beta(double value) {
-            this->node_height_beta_prior_beta_->set_value(value);
-        }
-        bool node_height_beta_prior_beta_is_fixed() const {
-            return this->node_height_beta_prior_beta_->is_fixed();
-        }
-        void fix_node_height_beta_prior_beta() {
-            this->node_height_beta_prior_beta_->fix();
-        }
-        void estimate_node_height_beta_prior_beta() {
-            this->node_height_beta_prior_beta_->estimate();
+        std::shared_ptr<ContinuousProbabilityDistribution> get_prior_on_beta_of_node_height_beta_prior() const {
+            return this->beta_of_node_height_beta_prior_->get_prior();
         }
 };
 

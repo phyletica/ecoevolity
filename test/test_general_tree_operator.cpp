@@ -362,6 +362,74 @@ TEST_CASE("Testing NodeHeightSlideBumpScaler with 3 leaves, gamma root, and opti
     }
 }
 
+TEST_CASE("Testing NodeHeightSlideBumpScaler with 3 leaves, beta(4, 2), fixed root, and optimizing",
+        "[NodeHeightSlideBumpScaler]") {
+
+    SECTION("Testing 3 leaves with fixed root and optimizing") {
+        RandomNumberGenerator rng = RandomNumberGenerator(1);
+
+        std::shared_ptr<Node> root = std::make_shared<Node>("root", 0.3);
+        std::shared_ptr<Node> internal0 = std::make_shared<Node>("internal0", 0.2);
+        std::shared_ptr<Node> leaf0 = std::make_shared<Node>("leaf0", 0.0);
+        std::shared_ptr<Node> leaf1 = std::make_shared<Node>("leaf1", 0.0);
+        std::shared_ptr<Node> leaf2 = std::make_shared<Node>("leaf2", 0.0);
+
+        internal0->add_child(leaf0);
+        internal0->add_child(leaf1);
+        root->add_child(internal0);
+        root->add_child(leaf2);
+
+        BaseTree<Node> tree(root);
+
+        tree.ignore_data();
+        tree.fix_root_height();
+        
+        tree.estimate_alpha_of_node_height_beta_prior();
+        tree.estimate_beta_of_node_height_beta_prior();
+        tree.set_alpha_of_node_height_beta_prior(4.0);
+        tree.set_beta_of_node_height_beta_prior(2.0);
+        tree.fix_alpha_of_node_height_beta_prior();
+        tree.fix_beta_of_node_height_beta_prior();
+
+        NodeHeightSlideBumpScaler<Node> op;
+        op.turn_on_auto_optimize();
+        op.set_auto_optimize_delay(100);
+
+        REQUIRE(op.auto_optimizing());
+        REQUIRE(op.get_auto_optimize_delay() == 100);
+
+        // Initialize prior probs
+        tree.compute_log_likelihood_and_prior(true);
+
+        SampleSummarizer<double> internal_height_summary;
+
+        unsigned int niterations = 200000;
+        unsigned int sample_freq = 5;
+        unsigned int nsamples = niterations / sample_freq;
+        for (unsigned int i = 0; i < niterations; ++i) {
+            op.operate(rng, &tree, 1);
+            if ((i + 1) % sample_freq == 0) {
+                internal_height_summary.add_sample(tree.get_height(0) / tree.get_height(1));
+                REQUIRE(tree.get_height(1) == tree.get_root_height());
+                REQUIRE(tree.get_height(1) == 0.3);
+            }
+        }
+        std::cout << op.header_string();
+        std::cout << op.to_string();
+
+        REQUIRE(op.get_number_of_attempts() == niterations);
+        REQUIRE(op.get_number_of_attempts_for_correction() == (niterations - 100));
+
+        REQUIRE(internal_height_summary.sample_size() == nsamples);
+        
+        BetaDistribution prior(4.0, 2.0);
+
+        double eps = 0.001;
+        REQUIRE(internal_height_summary.mean() == Approx(prior.get_mean()).epsilon(eps));
+        REQUIRE(internal_height_summary.variance() == Approx(prior.get_variance()).epsilon(eps));
+    }
+}
+
 TEST_CASE("Testing RootHeightScaler with 3 leaves, gamma root, and optimizing",
         "[RootHeightScaler]") {
 
@@ -6238,5 +6306,322 @@ TEST_CASE("Testing SplitLumpNodesRevJumpSampler with 7 leaves and fixed root",
         // REQUIRE(split_counts.size() == ???);
 
         /* REQUIRE(chi_sq_test_statistic < quantile_chi_sq_5627_10); */
+    }
+}
+
+TEST_CASE("Testing NodeHeightPriorAlphaScaler with optimizing",
+        "[NodeHeightPriorAlphaOperator]") {
+
+    SECTION("Testing NodeHeightPriorAlphaScaler with optimizing") {
+        RandomNumberGenerator rng = RandomNumberGenerator(274589347597);
+
+        std::shared_ptr<Node> root = std::make_shared<Node>("root", 0.4);
+        std::shared_ptr<Node> internal0 = std::make_shared<Node>("internal0", 0.2);
+        std::shared_ptr<Node> leaf0 = std::make_shared<Node>("leaf0", 0.0);
+        std::shared_ptr<Node> leaf1 = std::make_shared<Node>("leaf1", 0.0);
+        std::shared_ptr<Node> leaf2 = std::make_shared<Node>("leaf2", 0.0);
+
+        internal0->add_child(leaf0);
+        internal0->add_child(leaf1);
+        root->add_child(internal0);
+        root->add_child(leaf2);
+
+        BaseTree<Node> tree(root);
+
+        tree.ignore_data();
+        tree.fix_root_height();
+
+        tree.estimate_alpha_of_node_height_beta_prior();
+        std::shared_ptr<ContinuousProbabilityDistribution> alpha_prior = std::make_shared<GammaDistribution>(
+                20.0,
+                0.1);
+        tree.set_prior_on_alpha_of_node_height_beta_prior(alpha_prior);
+
+        NodeHeightPriorAlphaScaler<Node> op;
+        op.set_coercable_parameter_value(1.0);
+        op.turn_on_auto_optimize();
+        op.set_auto_optimize_delay(100);
+
+        NodeHeightSlideBumpScaler<Node> op2;
+        op2.set_coercable_parameter_value(1.0);
+        op2.turn_on_auto_optimize();
+        op2.set_auto_optimize_delay(100);
+
+        REQUIRE(op.auto_optimizing());
+        REQUIRE(op.get_auto_optimize_delay() == 100);
+        REQUIRE(op2.auto_optimizing());
+        REQUIRE(op2.get_auto_optimize_delay() == 100);
+
+        // Initialize prior probs
+        tree.compute_log_likelihood_and_prior(true);
+
+        SampleSummarizer<double> alpha_summary;
+        SampleSummarizer<double> internal_height_summary;
+
+        unsigned int niterations = 600000;
+        unsigned int sample_freq = 5;
+        unsigned int nsamples = niterations / sample_freq;
+        for (unsigned int i = 0; i < niterations; ++i) {
+            op.operate(rng, &tree, 1, 1);
+            op2.operate(rng, &tree, 1, 2);
+            if ((i + 1) % sample_freq == 0) {
+                alpha_summary.add_sample(tree.get_alpha_of_node_height_beta_prior());
+                internal_height_summary.add_sample(tree.get_height(0) / tree.get_height(1));
+            }
+        }
+        std::cout << op.header_string();
+        std::cout << op.to_string();
+        std::cout << op2.header_string();
+        std::cout << op2.to_string();
+
+        REQUIRE(op.get_number_of_attempts() == niterations);
+        REQUIRE(op.get_number_of_attempts_for_correction() == (niterations - 100));
+
+        REQUIRE(alpha_summary.sample_size() == nsamples);
+        REQUIRE(internal_height_summary.sample_size() == nsamples);
+        
+        double eps = 0.001;
+        REQUIRE(alpha_summary.mean() == Approx(alpha_prior->get_mean()).epsilon(eps));
+        REQUIRE(alpha_summary.variance() == Approx(alpha_prior->get_variance()).epsilon(eps * 2));
+        REQUIRE(internal_height_summary.mean() > 0.65);
+        REQUIRE(internal_height_summary.mean() < 0.68);
+    }
+}
+
+TEST_CASE("Testing NodeHeightPriorAlphaMover with optimizing",
+        "[NodeHeightPriorAlphaOperator]") {
+
+    SECTION("Testing NodeHeightPriorAlphaMover with optimizing") {
+        RandomNumberGenerator rng = RandomNumberGenerator(583648364);
+
+        std::shared_ptr<Node> root = std::make_shared<Node>("root", 0.4);
+        std::shared_ptr<Node> internal0 = std::make_shared<Node>("internal0", 0.2);
+        std::shared_ptr<Node> leaf0 = std::make_shared<Node>("leaf0", 0.0);
+        std::shared_ptr<Node> leaf1 = std::make_shared<Node>("leaf1", 0.0);
+        std::shared_ptr<Node> leaf2 = std::make_shared<Node>("leaf2", 0.0);
+
+        internal0->add_child(leaf0);
+        internal0->add_child(leaf1);
+        root->add_child(internal0);
+        root->add_child(leaf2);
+
+        BaseTree<Node> tree(root);
+
+        tree.ignore_data();
+        tree.fix_root_height();
+
+        tree.estimate_alpha_of_node_height_beta_prior();
+        std::shared_ptr<ContinuousProbabilityDistribution> alpha_prior = std::make_shared<GammaDistribution>(
+                20.0,
+                0.1);
+        tree.set_prior_on_alpha_of_node_height_beta_prior(alpha_prior);
+
+        NodeHeightPriorAlphaMover<Node> op;
+        op.set_coercable_parameter_value(1.0);
+        op.turn_on_auto_optimize();
+        op.set_auto_optimize_delay(100);
+
+        NodeHeightSlideBumpScaler<Node> op2;
+        op2.set_coercable_parameter_value(1.0);
+        op2.turn_on_auto_optimize();
+        op2.set_auto_optimize_delay(100);
+
+        REQUIRE(op.auto_optimizing());
+        REQUIRE(op.get_auto_optimize_delay() == 100);
+        REQUIRE(op2.auto_optimizing());
+        REQUIRE(op2.get_auto_optimize_delay() == 100);
+
+        // Initialize prior probs
+        tree.compute_log_likelihood_and_prior(true);
+
+        SampleSummarizer<double> alpha_summary;
+        SampleSummarizer<double> internal_height_summary;
+
+        unsigned int niterations = 600000;
+        unsigned int sample_freq = 5;
+        unsigned int nsamples = niterations / sample_freq;
+        for (unsigned int i = 0; i < niterations; ++i) {
+            op.operate(rng, &tree, 1, 1);
+            op2.operate(rng, &tree, 1, 2);
+            if ((i + 1) % sample_freq == 0) {
+                alpha_summary.add_sample(tree.get_alpha_of_node_height_beta_prior());
+                internal_height_summary.add_sample(tree.get_height(0) / tree.get_height(1));
+            }
+        }
+        std::cout << op.header_string();
+        std::cout << op.to_string();
+        std::cout << op2.header_string();
+        std::cout << op2.to_string();
+
+        REQUIRE(op.get_number_of_attempts() == niterations);
+        REQUIRE(op.get_number_of_attempts_for_correction() == (niterations - 100));
+
+        REQUIRE(alpha_summary.sample_size() == nsamples);
+        REQUIRE(internal_height_summary.sample_size() == nsamples);
+        
+        double eps = 0.001;
+        REQUIRE(alpha_summary.mean() == Approx(alpha_prior->get_mean()).epsilon(eps));
+        REQUIRE(alpha_summary.variance() == Approx(alpha_prior->get_variance()).epsilon(eps * 2));
+        REQUIRE(internal_height_summary.mean() > 0.65);
+        REQUIRE(internal_height_summary.mean() < 0.68);
+    }
+}
+
+
+TEST_CASE("Testing NodeHeightPriorBetaScaler with optimizing",
+        "[NodeHeightPriorBetaOperator]") {
+
+    SECTION("Testing NodeHeightPriorBetaScaler with optimizing") {
+        RandomNumberGenerator rng = RandomNumberGenerator(274589347597);
+
+        std::shared_ptr<Node> root = std::make_shared<Node>("root", 0.4);
+        std::shared_ptr<Node> internal0 = std::make_shared<Node>("internal0", 0.2);
+        std::shared_ptr<Node> leaf0 = std::make_shared<Node>("leaf0", 0.0);
+        std::shared_ptr<Node> leaf1 = std::make_shared<Node>("leaf1", 0.0);
+        std::shared_ptr<Node> leaf2 = std::make_shared<Node>("leaf2", 0.0);
+
+        internal0->add_child(leaf0);
+        internal0->add_child(leaf1);
+        root->add_child(internal0);
+        root->add_child(leaf2);
+
+        BaseTree<Node> tree(root);
+
+        tree.ignore_data();
+        tree.fix_root_height();
+
+        tree.estimate_beta_of_node_height_beta_prior();
+        std::shared_ptr<ContinuousProbabilityDistribution> beta_prior = std::make_shared<GammaDistribution>(
+                20.0,
+                0.1);
+        tree.set_prior_on_beta_of_node_height_beta_prior(beta_prior);
+
+        NodeHeightPriorBetaScaler<Node> op;
+        op.set_coercable_parameter_value(1.0);
+        op.turn_on_auto_optimize();
+        op.set_auto_optimize_delay(100);
+
+        NodeHeightSlideBumpScaler<Node> op2;
+        op2.set_coercable_parameter_value(1.0);
+        op2.turn_on_auto_optimize();
+        op2.set_auto_optimize_delay(100);
+
+        REQUIRE(op.auto_optimizing());
+        REQUIRE(op.get_auto_optimize_delay() == 100);
+        REQUIRE(op2.auto_optimizing());
+        REQUIRE(op2.get_auto_optimize_delay() == 100);
+
+        // Initialize prior probs
+        tree.compute_log_likelihood_and_prior(true);
+
+        SampleSummarizer<double> beta_summary;
+        SampleSummarizer<double> internal_height_summary;
+
+        unsigned int niterations = 600000;
+        unsigned int sample_freq = 5;
+        unsigned int nsamples = niterations / sample_freq;
+        for (unsigned int i = 0; i < niterations; ++i) {
+            op.operate(rng, &tree, 1, 1);
+            op2.operate(rng, &tree, 1, 2);
+            if ((i + 1) % sample_freq == 0) {
+                beta_summary.add_sample(tree.get_beta_of_node_height_beta_prior());
+                internal_height_summary.add_sample(tree.get_height(0) / tree.get_height(1));
+            }
+        }
+        std::cout << op.header_string();
+        std::cout << op.to_string();
+        std::cout << op2.header_string();
+        std::cout << op2.to_string();
+
+        REQUIRE(op.get_number_of_attempts() == niterations);
+        REQUIRE(op.get_number_of_attempts_for_correction() == (niterations - 100));
+
+        REQUIRE(beta_summary.sample_size() == nsamples);
+        REQUIRE(internal_height_summary.sample_size() == nsamples);
+        
+        double eps = 0.001;
+        REQUIRE(beta_summary.mean() == Approx(beta_prior->get_mean()).epsilon(eps));
+        REQUIRE(beta_summary.variance() == Approx(beta_prior->get_variance()).epsilon(eps * 2));
+        REQUIRE(internal_height_summary.mean() > 0.32);
+        REQUIRE(internal_height_summary.mean() < 0.35);
+    }
+}
+
+TEST_CASE("Testing NodeHeightPriorBetaMover with optimizing",
+        "[NodeHeightPriorBetaOperator]") {
+
+    SECTION("Testing NodeHeightPriorBetaMover with optimizing") {
+        RandomNumberGenerator rng = RandomNumberGenerator(583648364);
+
+        std::shared_ptr<Node> root = std::make_shared<Node>("root", 0.4);
+        std::shared_ptr<Node> internal0 = std::make_shared<Node>("internal0", 0.2);
+        std::shared_ptr<Node> leaf0 = std::make_shared<Node>("leaf0", 0.0);
+        std::shared_ptr<Node> leaf1 = std::make_shared<Node>("leaf1", 0.0);
+        std::shared_ptr<Node> leaf2 = std::make_shared<Node>("leaf2", 0.0);
+
+        internal0->add_child(leaf0);
+        internal0->add_child(leaf1);
+        root->add_child(internal0);
+        root->add_child(leaf2);
+
+        BaseTree<Node> tree(root);
+
+        tree.ignore_data();
+        tree.fix_root_height();
+
+        tree.estimate_beta_of_node_height_beta_prior();
+        std::shared_ptr<ContinuousProbabilityDistribution> beta_prior = std::make_shared<GammaDistribution>(
+                20.0,
+                0.1);
+        tree.set_prior_on_beta_of_node_height_beta_prior(beta_prior);
+
+        NodeHeightPriorBetaMover<Node> op;
+        op.set_coercable_parameter_value(1.0);
+        op.turn_on_auto_optimize();
+        op.set_auto_optimize_delay(100);
+
+        NodeHeightSlideBumpScaler<Node> op2;
+        op2.set_coercable_parameter_value(1.0);
+        op2.turn_on_auto_optimize();
+        op2.set_auto_optimize_delay(100);
+
+        REQUIRE(op.auto_optimizing());
+        REQUIRE(op.get_auto_optimize_delay() == 100);
+        REQUIRE(op2.auto_optimizing());
+        REQUIRE(op2.get_auto_optimize_delay() == 100);
+
+        // Initialize prior probs
+        tree.compute_log_likelihood_and_prior(true);
+
+        SampleSummarizer<double> beta_summary;
+        SampleSummarizer<double> internal_height_summary;
+
+        unsigned int niterations = 600000;
+        unsigned int sample_freq = 5;
+        unsigned int nsamples = niterations / sample_freq;
+        for (unsigned int i = 0; i < niterations; ++i) {
+            op.operate(rng, &tree, 1, 1);
+            op2.operate(rng, &tree, 1, 2);
+            if ((i + 1) % sample_freq == 0) {
+                beta_summary.add_sample(tree.get_beta_of_node_height_beta_prior());
+                internal_height_summary.add_sample(tree.get_height(0) / tree.get_height(1));
+            }
+        }
+        std::cout << op.header_string();
+        std::cout << op.to_string();
+        std::cout << op2.header_string();
+        std::cout << op2.to_string();
+
+        REQUIRE(op.get_number_of_attempts() == niterations);
+        REQUIRE(op.get_number_of_attempts_for_correction() == (niterations - 100));
+
+        REQUIRE(beta_summary.sample_size() == nsamples);
+        REQUIRE(internal_height_summary.sample_size() == nsamples);
+        
+        double eps = 0.001;
+        REQUIRE(beta_summary.mean() == Approx(beta_prior->get_mean()).epsilon(eps));
+        REQUIRE(beta_summary.variance() == Approx(beta_prior->get_variance()).epsilon(eps * 2));
+        REQUIRE(internal_height_summary.mean() > 0.32);
+        REQUIRE(internal_height_summary.mean() < 0.35);
     }
 }
