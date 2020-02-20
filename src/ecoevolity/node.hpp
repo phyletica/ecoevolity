@@ -214,6 +214,7 @@ class PopulationNode: public BaseNode<PopulationNode>{
         BiallelicPatternProbabilityMatrix bottom_pattern_probs_;
         BiallelicPatternProbabilityMatrix top_pattern_probs_;
         std::shared_ptr<PositiveRealParameter> population_size_ = std::make_shared<PositiveRealParameter>(0.001);
+        std::shared_ptr<PositiveRealParameter> stored_population_size_ = std::make_shared<PositiveRealParameter>(0.001);
 
         void add_ln_relative_population_size_prior_density(
                 double& density,
@@ -231,6 +232,24 @@ class PopulationNode: public BaseNode<PopulationNode>{
             }
             for (unsigned int i = 0; i < this->children_.size(); ++i) {
                 this->children_.at(i)->add_ln_relative_population_size_prior_density(density, parameters);
+            }
+        }
+
+        void get_all_population_size_parameters(
+                std::vector< std::shared_ptr<PositiveRealParameter> >& parameters) const {
+            bool parameter_found = false;
+            for (auto parameter_iter : parameters) {
+                if (parameter_iter == this->population_size_) {
+                    parameter_found = true;
+                    break;
+                }
+            }
+            if (! parameter_found) {
+                parameters.push_back(this->population_size_);
+            }
+            for (unsigned int i = 0; i < this->children_.size(); ++i) {
+                this->children_.at(i)->get_all_population_size_parameters(
+                        parameters);
             }
         }
 
@@ -332,6 +351,14 @@ class PopulationNode: public BaseNode<PopulationNode>{
         //     this->top_pattern_probs_ = node.top_pattern_probs_;
         //     return * this;
         // }
+        void copy_node_type_specific_members(std::shared_ptr<PopulationNode> copy) const {
+            copy->population_size_ = this->population_size_;
+            copy->stored_population_size_ = this->stored_population_size_;
+        }
+        void deep_copy_node_type_specific_members(std::shared_ptr<PopulationNode> copy) const {
+            copy->population_size_ = std::make_shared<PositiveRealParameter>(*this->population_size_);
+            copy->stored_population_size_ = std::make_shared<PositiveRealParameter>(*this->stored_population_size_);
+        }
 
         // methods for accessing/changing pattern probabilities
         unsigned int get_allele_count() const {
@@ -458,6 +485,14 @@ class PopulationNode: public BaseNode<PopulationNode>{
         std::shared_ptr<PositiveRealParameter> get_population_size_parameter() const {
             return this->population_size_;
         }
+        std::vector< std::shared_ptr<PositiveRealParameter> > get_all_population_size_parameters() const {
+            std::vector< std::shared_ptr<PositiveRealParameter> > parameters;
+            // parameters.reserve(this->get_node_count());
+            this->get_all_population_size_parameters(
+                    parameters);
+            return parameters;
+        }
+
         void set_population_size_parameter(std::shared_ptr<PositiveRealParameter> size) {
             this->population_size_ = size;
             this->make_all_dirty();
@@ -518,6 +553,28 @@ class PopulationNode: public BaseNode<PopulationNode>{
             this->make_dirty();
             for (auto child_iter: this->children_) {
                 child_iter->restore_all_population_sizes();
+            }
+        }
+
+        void store_population_size_pointer() {
+            this->stored_population_size_ = this->population_size_;
+        }
+        void store_all_population_size_pointers() {
+            this->stored_population_size_ = this->population_size_;
+            for (auto child_iter: this->children_) {
+                child_iter->store_all_population_size_pointers();
+            }
+        }
+
+        void restore_population_size_pointer() {
+            this->population_size_ = this->stored_population_size_;
+            this->make_all_dirty();
+        }
+        void restore_all_population_size_pointers() {
+            this->population_size_ = this->stored_population_size_;
+            this->make_dirty();
+            for (auto child_iter: this->children_) {
+                child_iter->restore_all_population_size_pointers();
             }
         }
 

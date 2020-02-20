@@ -144,6 +144,7 @@ class BaseNode : public std::enable_shared_from_this<DerivedNodeT> {
             c->height_ = this->height_;
             c->stored_height_ = this->stored_height_;
             c->is_dirty_ = this->is_dirty_;
+            this->copy_node_type_specific_members(c);
             // Copy from this node to leaves; do not copy parent
             // if (this->has_parent()) {
             //     c->add_parent(this->get_parent()->get_copy());
@@ -155,6 +156,7 @@ class BaseNode : public std::enable_shared_from_this<DerivedNodeT> {
             }
             return c;
         }
+        virtual void copy_node_type_specific_members(std::shared_ptr<DerivedNodeT> other) const { }
 
         std::shared_ptr<DerivedNodeT> get_deep_copy() const {
             std::shared_ptr<DerivedNodeT> c = std::make_shared<DerivedNodeT>();
@@ -164,6 +166,7 @@ class BaseNode : public std::enable_shared_from_this<DerivedNodeT> {
             c->height_ = std::make_shared<PositiveRealParameter>(*this->height_);
             c->stored_height_ = std::make_shared<PositiveRealParameter>(*this->stored_height_);
             c->is_dirty_ = this->is_dirty_;
+            this->deep_copy_node_type_specific_members(c);
             // Copy from this node to leaves; do not copy parent
             if (this->has_children()) {
                 for (auto child : this->children_) {
@@ -172,6 +175,7 @@ class BaseNode : public std::enable_shared_from_this<DerivedNodeT> {
             }
             return c;
         }
+        virtual void deep_copy_node_type_specific_members(std::shared_ptr<DerivedNodeT> other) const { }
 
         //Methods
         unsigned int degree() const {
