@@ -1453,6 +1453,8 @@ class BaseTree {
             this->store_topology();
             this->alpha_of_node_height_beta_prior_->store();
             this->beta_of_node_height_beta_prior_->store();
+            // Derived classes can override this
+            this->store_derived_class_parameters();
         }
         virtual void store_all_heights() {
             this->root_->store_all_heights();
@@ -1469,6 +1471,8 @@ class BaseTree {
         virtual void store_topology() {
             this->stored_root_ = this->root_->get_copy();
         }
+        // Derived classes can override this
+        virtual void store_derived_class_parameters() { }
         void restore_state() {
             this->restore_likelihood();
             this->restore_prior_density();
@@ -1487,6 +1491,8 @@ class BaseTree {
             this->update_node_heights();
             this->alpha_of_node_height_beta_prior_->restore();
             this->beta_of_node_height_beta_prior_->restore();
+            // Derived classes can override this
+            this->restore_derived_class_parameters();
         }
         virtual void restore_all_heights() {
             this->root_->restore_all_heights();
@@ -1504,6 +1510,8 @@ class BaseTree {
             this->root_ = this->stored_root_;
             this->refresh_ordered_nodes();
         }
+        // Derived classes can override this
+        virtual void restore_derived_class_parameters() { }
 
         std::string to_parentheses(bool include_comments = true,
                 unsigned int precision = 12) const {
