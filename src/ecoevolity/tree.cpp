@@ -522,6 +522,10 @@ std::vector<double> BasePopulationTree::get_population_sizes() const {
     return sizes;
 }
 
+std::vector< std::shared_ptr<PositiveRealParameter> > BasePopulationTree::get_pointers_to_population_sizes() const {
+    return this->root_->get_all_population_size_parameters();
+}
+
 void BasePopulationTree::set_population_sizes(
         const std::vector<double> & sizes) {
     ECOEVOLITY_ASSERT(sizes.size() == this->get_node_count());
@@ -593,22 +597,19 @@ void BasePopulationTree::set_mean_population_size(double size) {
 }
 
 
-void BasePopulationTree::store_parameters() {
-    BaseTree::store_parameters();
+void BasePopulationTree::store_derived_class_parameters() {
+    // Storing of pop sizes is taken care of by PopulationNode
     this->store_freq_1();
     this->store_mutation_rate();
-    this->store_all_population_sizes();
 }
 void BasePopulationTree::store_all_population_sizes() {
     this->root_->store_all_population_sizes();
 }
 
-void BasePopulationTree::restore_parameters() {
-    BaseTree::restore_parameters();
+void BasePopulationTree::restore_derived_class_parameters() {
+    // Restoring of pop sizes is taken care of by PopulationNode
     this->restore_freq_1();
     this->restore_mutation_rate();
-    this->restore_all_population_sizes();
-    this->restore_all_heights();
 }
 void BasePopulationTree::restore_all_population_sizes() {
     this->root_->restore_all_population_sizes();

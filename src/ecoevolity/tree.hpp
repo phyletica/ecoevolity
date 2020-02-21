@@ -205,6 +205,7 @@ class BasePopulationTree : public BaseTree<PopulationNode> {
         virtual std::shared_ptr<PositiveRealParameter> get_root_population_size_parameter() const;
 
         std::vector<double> get_population_sizes() const;
+        std::vector< std::shared_ptr<PositiveRealParameter> > get_pointers_to_population_sizes() const;
 
         double get_mean_population_size() const;
         virtual void set_mean_population_size(double size);
@@ -235,9 +236,9 @@ class BasePopulationTree : public BaseTree<PopulationNode> {
         double compute_log_prior_density_of_mutation_rate() const;
         virtual double compute_log_prior_density_of_population_sizes() const;
 
-        void store_parameters();
+        void store_derived_class_parameters();
         virtual void store_all_population_sizes();
-        void restore_parameters();
+        void restore_derived_class_parameters();
         virtual void restore_all_population_sizes();
 
         virtual void set_population_size_prior(std::shared_ptr<ContinuousProbabilityDistribution> prior);
