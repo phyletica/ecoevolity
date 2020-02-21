@@ -578,6 +578,23 @@ class PopulationNode: public BaseNode<PopulationNode>{
             }
         }
 
+        void store_all_parameter_values() {
+            this->store_all_heights();
+            this->store_all_population_sizes();
+        }
+        void restore_all_parameter_values() {
+            this->restore_all_heights();
+            this->restore_all_population_sizes();
+        }
+        void store_all_parameter_pointers() {
+            this->store_all_height_pointers();
+            this->store_all_population_size_pointers();
+        }
+        void restore_all_parameter_pointers() {
+            this->restore_all_height_pointers();
+            this->restore_all_population_size_pointers();
+        }
+
         void set_population_size_prior(std::shared_ptr<ContinuousProbabilityDistribution> prior) {
             this->population_size_->set_prior(prior);
             this->make_all_dirty();
