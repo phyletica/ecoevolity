@@ -1448,8 +1448,8 @@ class BaseTree {
             this->log_prior_density_.store();
         }
         virtual void store_parameters() {
-            this->store_all_heights();
-            this->store_all_height_pointers();
+            this->store_node_parameter_values();
+            this->store_node_parameter_pointers();
             this->store_topology();
             this->alpha_of_node_height_beta_prior_->store();
             this->beta_of_node_height_beta_prior_->store();
@@ -1459,6 +1459,12 @@ class BaseTree {
         }
         virtual void store_all_height_pointers() {
             this->root_->store_all_height_pointers();
+        }
+        virtual void store_node_parameter_values() {
+            this->root_->store_all_parameter_values();
+        }
+        virtual void store_node_parameter_pointers() {
+            this->root_->store_all_parameter_pointers();
         }
         virtual void store_topology() {
             this->stored_root_ = this->root_->get_copy();
@@ -1476,8 +1482,8 @@ class BaseTree {
         }
         virtual void restore_parameters() {
             this->restore_topology();
-            this->restore_all_height_pointers();
-            this->restore_all_heights();
+            this->restore_node_parameter_pointers();
+            this->restore_node_parameter_values();
             this->update_node_heights();
             this->alpha_of_node_height_beta_prior_->restore();
             this->beta_of_node_height_beta_prior_->restore();
@@ -1487,6 +1493,12 @@ class BaseTree {
         }
         virtual void restore_all_height_pointers() {
             this->root_->restore_all_height_pointers();
+        }
+        virtual void restore_node_parameter_values() {
+            this->root_->restore_all_parameter_values();
+        }
+        virtual void restore_node_parameter_pointers() {
+            this->root_->restore_all_parameter_pointers();
         }
         virtual void restore_topology() {
             this->root_ = this->stored_root_;
