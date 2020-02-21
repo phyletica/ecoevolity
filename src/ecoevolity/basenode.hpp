@@ -467,6 +467,9 @@ class BaseNode : public std::enable_shared_from_this<DerivedNodeT> {
                 child_iter->store_all_heights();
             }
         }
+        virtual void store_all_parameter_values() {
+            this->store_all_heights();
+        }
 
         void restore_height() {
             this->height_->restore();
@@ -479,6 +482,9 @@ class BaseNode : public std::enable_shared_from_this<DerivedNodeT> {
                 child_iter->restore_all_heights();
             }
         }
+        virtual void restore_all_parameter_values() {
+            this->restore_all_heights();
+        }
 
         void store_height_pointer() {
             this->stored_height_ = this->height_;
@@ -488,6 +494,9 @@ class BaseNode : public std::enable_shared_from_this<DerivedNodeT> {
             for (auto child_iter: this->children_) {
                 child_iter->store_all_height_pointers();
             }
+        }
+        virtual void store_all_parameter_pointers() {
+            this->store_all_height_pointers();
         }
 
         void restore_height_pointer() {
@@ -500,6 +509,9 @@ class BaseNode : public std::enable_shared_from_this<DerivedNodeT> {
             for (auto child_iter: this->children_) {
                 child_iter->restore_all_height_pointers();
             }
+        }
+        virtual void restore_all_parameter_pointers() {
+            this->restore_all_height_pointers();
         }
 
         double get_length() const {
