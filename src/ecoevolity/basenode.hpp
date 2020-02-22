@@ -282,7 +282,10 @@ class BaseNode : public std::enable_shared_from_this<DerivedNodeT> {
             else {
                 this->add_child(new_node);
             }
+            new_node->finish_initializing_inserted_internal_node();
         }
+
+        virtual void finish_initializing_inserted_internal_node() { }
 
         bool has_children() const { return !this->children_.empty(); }
         bool is_leaf() const { return this->children_.empty(); }

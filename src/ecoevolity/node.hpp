@@ -208,7 +208,7 @@ class GeneTreeSimNode : public BaseNode<GeneTreeSimNode> {
 };
 
 class PopulationNode: public BaseNode<PopulationNode>{
-    private:
+    protected:
         typedef BaseNode<PopulationNode> BaseClass;
         int population_index_ = -1;
         BiallelicPatternProbabilityMatrix bottom_pattern_probs_;
@@ -688,6 +688,24 @@ class PopulationNode: public BaseNode<PopulationNode>{
             s << "pop_size="
               << this->get_population_size();
             return s.str();
+        }
+
+        // Overriding this method from BaseNode to make sure newly inserted
+        // nodes are fully initialized
+        void finish_initializing_inserted_internal_node() {
+            ECOEVOLITY_ASSERT(this->has_parent() && this->has_children());
+            if (this->get_parent()->get_population_size_parameter() == this->children_.at(0)->population_size_) {
+                this->population_size_ = this->children_.at(0)->population_size_;
+                return;
+            }
+            this->population_size_->set_prior(this->children_.at(0)->population_size_->get_prior());
+            this->population_size_->set_value(this->children_.at(0)->population_size_->get_value());
+            if (this->children_.at(0)->population_size_->is_fixed()) {;
+                this->population_size_->fix();
+            }
+            else {
+                this->population_size_->estimate();
+            }
         }
 };
 
