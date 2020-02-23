@@ -7107,8 +7107,7 @@ TEST_CASE("Testing SplitLumpNodesRevJumpSampler with BasePopulationTree, 5 leave
         root->add_child(leaf3);
         root->add_child(leaf4);
 
-        BasePopulationTree tree;
-        tree.set_root(root);
+        BasePopulationTree tree(root);
 
         tree.set_population_size_prior(pop_size_prior);
         tree.ignore_data();
