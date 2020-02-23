@@ -87,7 +87,7 @@ BasePopulationTree::BasePopulationTree(
             length_of_loci,
             validate_data);
     this->data_ = bd;
-    this->root_ = root;
+    this->set_root(root);
     this->constant_sites_removed_ = false;
     this->root_->resize_all();
     std::shared_ptr<ContinuousProbabilityDistribution> root_height_prior = std::make_shared<ExponentialDistribution>(100.0);
@@ -268,7 +268,7 @@ void BasePopulationTree::process_and_vet_initialized_data(
 
 void BasePopulationTree::init_tree() {
     if (this->data_.get_number_of_populations() < 3) {
-        this->root_ = std::make_shared<PopulationNode>(this->data_.get_number_of_populations(), 0.0);
+        std::shared_ptr<PopulationNode> root = std::make_shared<PopulationNode>(this->data_.get_number_of_populations(), 0.0);
         for (unsigned int pop_idx = 0;
                 pop_idx < this->data_.get_number_of_populations();
                 ++pop_idx) {
@@ -278,8 +278,9 @@ void BasePopulationTree::init_tree() {
                     0.0,
                     this->data_.get_max_allele_count(pop_idx));
             tip->fix_node_height();
-            this->root_->add_child(tip);
+            root->add_child(tip);
         }
+        this->set_root(root);
         return;
     }
     unsigned int next_index = this->data_.get_number_of_populations();
@@ -312,7 +313,7 @@ void BasePopulationTree::init_tree() {
         next_ancestor->add_child(tip);
         ancestor = next_ancestor;
     }
-    this->root_ = ancestor;
+    this->set_root(ancestor);
 }
 
 void BasePopulationTree::set_data(const BiallelicData & data, bool constant_sites_removed) {
@@ -629,15 +630,14 @@ void BasePopulationTree::set_mutation_rate_prior(std::shared_ptr<ContinuousProba
     this->make_dirty();
 }
 
-double BasePopulationTree::compute_log_prior_density() {
+double BasePopulationTree::get_derived_class_component_of_log_prior_density() const {
     double d = 0.0;
     d += this->compute_log_prior_density_of_state_frequencies();
     d += this->compute_log_prior_density_of_mutation_rate();
-    d += this->compute_log_prior_density_of_node_heights();
     d += this->compute_log_prior_density_of_population_sizes();
-    this->log_prior_density_.set_value(d);
     return d;
 }
+
 double BasePopulationTree::compute_log_prior_density_of_state_frequencies() const {
     return this->freq_1_->relative_prior_ln_pdf();
 }
@@ -1351,7 +1351,7 @@ double BasePopulationTree::compute_log_likelihood(
     //     std::cerr << "compute_log_likelihood(): " << log_likelihood << std::endl;
     // )
     if (std::isnan(log_likelihood)) {
-        throw EcoevolityError("PopulationTree::compute_log_likelihood resulted in a NAN likelihood");
+        throw EcoevolityError("BasePopulationTree::compute_log_likelihood resulted in a NAN likelihood");
     }
 
     this->log_likelihood_.set_value(log_likelihood);
@@ -1415,6 +1415,16 @@ void PopulationTree::restore_parameters() {
     this->restore_mutation_rate();
     this->restore_all_population_sizes();
     this->restore_all_heights();
+}
+
+double PopulationTree::compute_log_prior_density() {
+    double d = 0.0;
+    d += this->compute_log_prior_density_of_state_frequencies();
+    d += this->compute_log_prior_density_of_mutation_rate();
+    d += this->compute_log_prior_density_of_node_heights();
+    d += this->compute_log_prior_density_of_population_sizes();
+    this->log_prior_density_.set_value(d);
+    return d;
 }
 
 double PopulationTree::compute_log_prior_density_of_node_heights() const {

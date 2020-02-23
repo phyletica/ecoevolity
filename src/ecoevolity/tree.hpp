@@ -104,8 +104,8 @@ class BasePopulationTree : public BaseTree<PopulationNode> {
 
         BasePopulationTree(
                 std::shared_ptr<PopulationNode> root,
-                unsigned int number_of_loci = 10000,
-                unsigned int length_of_loci = 1,
+                unsigned int number_of_loci,
+                unsigned int length_of_loci,
                 bool validate_data = false);
 
         void init(
@@ -231,7 +231,7 @@ class BasePopulationTree : public BaseTree<PopulationNode> {
 
         double compute_log_likelihood(unsigned int nthreads = 1);
 
-        double compute_log_prior_density();
+        double get_derived_class_component_of_log_prior_density() const;
         double compute_log_prior_density_of_state_frequencies() const;
         double compute_log_prior_density_of_mutation_rate() const;
         virtual double compute_log_prior_density_of_population_sizes() const;
@@ -539,6 +539,8 @@ class PopulationTree : public BasePopulationTree {
         void store_parameters();
         void restore_parameters();
 
+        // Override to old comparison prior behavior
+        double compute_log_prior_density();
         // Override this method to old node height prior behavior
         double compute_log_prior_density_of_node_heights() const;
 
