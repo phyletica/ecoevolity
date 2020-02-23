@@ -698,13 +698,16 @@ class PopulationNode: public BaseNode<PopulationNode>{
                 this->population_size_ = this->children_.at(0)->population_size_;
                 return;
             }
+            this->population_size_->estimate();
             this->population_size_->set_prior(this->children_.at(0)->population_size_->get_prior());
-            this->population_size_->set_value(this->children_.at(0)->population_size_->get_value());
+            double child_pop_size_sum = 0.0;
+            for (auto child : this->children_) {
+                child_pop_size_sum += child->get_population_size();
+            }
+            double new_pop_size = child_pop_size_sum / this->children_.size();
+            this->population_size_->set_value(new_pop_size);
             if (this->children_.at(0)->population_size_->is_fixed()) {;
                 this->population_size_->fix();
-            }
-            else {
-                this->population_size_->estimate();
             }
         }
 };
