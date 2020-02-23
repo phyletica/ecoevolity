@@ -584,7 +584,7 @@ class BaseTree {
                 throw EcoevolityError("Root has a parent");
             }
             if (! this->root_has_children()) {
-                throw EcoevolityError("Root has fewer than 2 children");
+                throw EcoevolityError("Root has no children");
             }
         }
         void vet_tree() const {
@@ -1334,6 +1334,9 @@ class BaseTree {
         virtual void make_clean() {
             this->root_->make_all_clean();
         }
+        virtual bool is_dirty() const {
+            return this->root_->clade_has_dirt();
+        }
 
         virtual void compute_log_likelihood_and_prior(unsigned int nthreads = 1) {
             this->compute_log_likelihood(nthreads);
@@ -1363,8 +1366,12 @@ class BaseTree {
             d += this->compute_log_prior_density_of_parameters_of_beta_prior_on_node_heights();
             d += this->compute_log_prior_density_of_node_heights();
             d += this->compute_relative_log_prior_density_of_topology();
+            d += this->get_derived_class_component_of_log_prior_density();
             this->log_prior_density_.set_value(d);
             return d;
+        }
+        virtual double get_derived_class_component_of_log_prior_density() const {
+            return 0.0;
         }
 
         virtual double compute_log_prior_density_of_parameters_of_beta_prior_on_node_heights() {
