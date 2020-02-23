@@ -33,7 +33,7 @@ BasePopulationTree::BasePopulationTree(
         bool strict_on_triallelic_sites,
         double ploidy,
         bool store_seq_loci_info
-        ) {
+        ) : BaseTree<PopulationNode>() {
     this->init(path,
                population_name_delimiter,
                population_name_is_prefix,
@@ -52,7 +52,7 @@ BasePopulationTree::BasePopulationTree(
         std::shared_ptr<PopulationNode> root,
         unsigned int number_of_loci,
         unsigned int length_of_loci,
-        bool validate_data) {
+        bool validate_data) : BaseTree<PopulationNode>() {
     const std::vector< std::shared_ptr<PopulationNode> >& leaves = root->get_leaves();
     std::vector<std::string> pop_labels;
     std::vector<unsigned int> haploid_sample_sizes;
@@ -102,6 +102,9 @@ BasePopulationTree::BasePopulationTree(
     }
     this->update_node_heights();
 }
+
+BasePopulationTree::BasePopulationTree(
+        std::shared_ptr<PopulationNode> root) : BaseTree<PopulationNode>(root) { }
 
 void BasePopulationTree::init(
         std::string path, 

@@ -108,6 +108,9 @@ class BasePopulationTree : public BaseTree<PopulationNode> {
                 unsigned int length_of_loci,
                 bool validate_data = false);
 
+        BasePopulationTree(
+                std::shared_ptr<PopulationNode> root);
+
         void init(
                 std::string path, 
                 char population_name_delimiter = ' ',
