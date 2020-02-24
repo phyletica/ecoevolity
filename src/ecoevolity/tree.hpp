@@ -49,7 +49,6 @@ class BasePopulationTree : public BaseTree<PopulationNode> {
         // bool use_removed_constant_site_counts_ = false;
         bool population_sizes_are_constrained_ = false;
         bool state_frequencies_are_constrained_ = false;
-        bool is_dirty_ = true;
 
         // Vectors for storing unique allele counts and associated weights.
         // These are used for calculating the likelihood correction term for
@@ -187,10 +186,6 @@ class BasePopulationTree : public BaseTree<PopulationNode> {
         void store_mutation_rate();
         void restore_mutation_rate();
 
-        bool is_dirty() const;
-        void make_dirty();
-        void make_clean();
-
         // void provide_number_of_constant_sites(
         //         unsigned int number_all_red,
         //         unsigned int number_all_green);
@@ -221,16 +216,6 @@ class BasePopulationTree : public BaseTree<PopulationNode> {
         virtual void set_population_sizes(const std::vector<double> & sizes);
 
         double get_likelihood_correction(bool force = false);
-
-        void compute_log_likelihood_and_prior(unsigned int nthreads = 1) {
-            if (this->is_dirty()) {
-                this->compute_log_likelihood(nthreads);
-                ++this->number_of_likelihood_calculations_;
-                this->compute_log_prior_density();
-                this->make_clean();
-            }
-            return;
-        }
 
         double compute_log_likelihood(unsigned int nthreads = 1);
 
@@ -546,6 +531,17 @@ class PopulationTree : public BasePopulationTree {
         double compute_log_prior_density();
         // Override this method to old node height prior behavior
         double compute_log_prior_density_of_node_heights() const;
+
+        // Override to old comparison behavior
+        void compute_log_likelihood_and_prior(unsigned int nthreads = 1) {
+            if (this->is_dirty()) {
+                this->compute_log_likelihood(nthreads);
+                ++this->number_of_likelihood_calculations_;
+                this->compute_log_prior_density();
+                this->make_clean();
+            }
+            return;
+        }
 
         // TODO: This PopulationTree hierarchy of classes is messy. The problem
         // is that each derived class has its own subset of methods in addition

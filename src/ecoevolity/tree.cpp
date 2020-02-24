@@ -651,21 +651,6 @@ double BasePopulationTree::compute_log_prior_density_of_population_sizes() const
     return this->root_->calculate_ln_relative_population_size_prior_density();
 }
 
-bool BasePopulationTree::is_dirty() const {
-    if (this->is_dirty_) {
-        return true;
-    }
-    return this->root_->clade_has_dirt();
-}
-
-void BasePopulationTree::make_dirty() {
-    this->is_dirty_ = true;
-}
-void BasePopulationTree::make_clean() {
-    this->is_dirty_ = false;
-    this->root_->make_all_clean();
-}
-
 // void BasePopulationTree::provide_number_of_constant_sites(
 //                 unsigned int number_all_red,
 //                 unsigned int number_all_green) {

@@ -36,6 +36,7 @@ class BaseTree {
         std::vector< std::shared_ptr<PositiveRealParameter> > node_heights_;
         LogProbabilityDensity log_likelihood_ = LogProbabilityDensity(0.0);
         LogProbabilityDensity log_prior_density_ = LogProbabilityDensity(0.0);
+        bool is_dirty_ = true;
 
         // Alpha and beta parameters of the beta-distributed prior on
         // (non-root) internal node heights
@@ -134,12 +135,14 @@ class BaseTree {
                     if (current_idx == (this->get_number_of_node_heights() - 1)) {
                         this->node_heights_.at(current_idx)->set_value(new_height);
                         this->sort_node_heights();
+                        this->make_dirty();
                         return true;
                     }
                     next_height_idx = this->get_index_of_youngest_parent(current_idx);
                     if (this->get_height(next_height_idx) > new_height) {
                         this->node_heights_.at(current_idx)->set_value(new_height);
                         this->sort_node_heights();
+                        this->make_dirty();
                         return true;
                     }
                     this->node_heights_.at(current_idx)->set_value(
@@ -159,12 +162,14 @@ class BaseTree {
                 if (current_idx == 0) {
                     this->node_heights_.at(current_idx)->set_value(new_height);
                     this->sort_node_heights();
+                    this->make_dirty();
                     return true;
                 }
                 std::shared_ptr<NodeType> oldest_child = this->get_oldest_child(current_idx);
                 if (oldest_child->is_leaf()) {
                     this->node_heights_.at(current_idx)->set_value(new_height);
                     this->sort_node_heights();
+                    this->make_dirty();
                     return true;
                 }
                 next_height_idx = this->get_node_height_index(
@@ -172,6 +177,7 @@ class BaseTree {
                 if (this->get_height(next_height_idx) < new_height) {
                     this->node_heights_.at(current_idx)->set_value(new_height);
                     this->sort_node_heights();
+                    this->make_dirty();
                     return true;
                 }
                 this->node_heights_.at(current_idx)->set_value(
@@ -510,6 +516,24 @@ class BaseTree {
                         << newick_tree_string << "\n";
                 throw;
             }
+        }
+
+        // Used to signify that the likelihood needs recalculating.
+        // Node methods are expected to make nodes dirty. However, whenever the
+        // node height parameter are updated, this needs to be called, because
+        // node are bypassed (and thus don't end up dirty)
+        void make_dirty() {
+            this->is_dirty_ = true;
+        }
+        bool is_dirty() const {
+            if (this->is_dirty_) {
+                return true;
+            }
+            return this->root_->clade_has_dirt();
+        }
+        void make_clean() {
+            this->is_dirty_ = false;
+            this->root_->make_all_clean();
         }
 
         void refresh_pre_ordered_nodes() {
@@ -1169,6 +1193,8 @@ class BaseTree {
             this->update_node_heights();
             this->refresh_ordered_nodes();
             this->root_->resize_splits(this->get_leaf_node_count());
+            this->root_->make_all_dirty();
+            this->make_dirty();
         }
 
         const NodeType& get_root() const {return *this->root_;}
@@ -1200,6 +1226,7 @@ class BaseTree {
             ECOEVOLITY_ASSERT(height < youngest_parent);
             ECOEVOLITY_ASSERT(height > oldest_child);
             this->node_heights_.at(height_index)->set_value(height);
+            this->make_dirty();
             this->sort_node_heights();
         }
 
@@ -1285,6 +1312,7 @@ class BaseTree {
                 this->node_heights_.at(i)->set_value(
                         multiplier * this->node_heights_.at(i)->get_value());
             }
+            this->make_dirty();
         }
 
         unsigned int get_degree_of_root() const {
@@ -1331,15 +1359,10 @@ class BaseTree {
             return this->number_of_likelihood_calculations_;
         }
 
-        virtual void make_clean() {
-            this->root_->make_all_clean();
-        }
-        virtual bool is_dirty() const {
-            return this->root_->clade_has_dirt();
-        }
-
         virtual void compute_log_likelihood_and_prior(unsigned int nthreads = 1) {
-            this->compute_log_likelihood(nthreads);
+            if (this->is_dirty()) {
+                this->compute_log_likelihood(nthreads);
+            }
             this->compute_log_prior_density();
             this->make_clean();
             return;
