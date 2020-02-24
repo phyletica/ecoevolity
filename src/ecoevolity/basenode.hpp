@@ -233,6 +233,7 @@ class BaseNode : public std::enable_shared_from_this<DerivedNodeT> {
             if (! node->is_child(this->shared_from_this())) {
                 node->add_child(this->shared_from_this());
             }
+            node->make_dirty();
         }
 
         std::shared_ptr<DerivedNodeT> remove_parent() {
@@ -240,6 +241,7 @@ class BaseNode : public std::enable_shared_from_this<DerivedNodeT> {
                 std::shared_ptr<DerivedNodeT> p = this->parent_.lock();
                 this->parent_.reset();
                 p->remove_child(this->shared_from_this());
+                p->make_dirty();
                 return p;
             }
             return nullptr;
@@ -256,6 +258,7 @@ class BaseNode : public std::enable_shared_from_this<DerivedNodeT> {
                 child->add_parent(grand_parent);
             }
             this->remove_parent();
+            grand_parent->make_dirty();
             return grand_parent->get_number_of_children();
         }
 
@@ -266,6 +269,8 @@ class BaseNode : public std::enable_shared_from_this<DerivedNodeT> {
             ECOEVOLITY_ASSERT(children_to_split.size() > 1);
             ECOEVOLITY_ASSERT(this->is_polytomy());
             std::shared_ptr<DerivedNodeT> new_node = std::make_shared<DerivedNodeT>(new_height_parameter);
+            new_node->make_dirty();
+            this->make_dirty();
             if (number_of_leaves_in_tree > 0) {
                 new_node->split_.resize(number_of_leaves_in_tree);
             }
@@ -378,6 +383,7 @@ class BaseNode : public std::enable_shared_from_this<DerivedNodeT> {
             if (! node->is_parent(this->shared_from_this())) {
                 node->add_parent(this->shared_from_this());
             }
+            this->make_dirty();
         }
 
         void remove_child(std::shared_ptr<DerivedNodeT> node) {
@@ -391,6 +397,7 @@ class BaseNode : public std::enable_shared_from_this<DerivedNodeT> {
                     node->remove_parent();
                 }
             }
+            this->make_dirty();
         }
 
         std::shared_ptr<DerivedNodeT> remove_child(unsigned int index) {
@@ -401,6 +408,7 @@ class BaseNode : public std::enable_shared_from_this<DerivedNodeT> {
             this->children_.at(index).reset();
             this->children_.erase(this->children_.begin() + index);
             c->remove_parent();
+            this->make_dirty();
             return c;
         }
 
