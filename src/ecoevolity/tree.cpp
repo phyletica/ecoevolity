@@ -103,9 +103,6 @@ BasePopulationTree::BasePopulationTree(
     this->update_node_heights();
 }
 
-BasePopulationTree::BasePopulationTree(
-        std::shared_ptr<PopulationNode> root) : BaseTree<PopulationNode>(root) { }
-
 void BasePopulationTree::init(
         std::string path, 
         char population_name_delimiter,

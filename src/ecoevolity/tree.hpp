@@ -108,7 +108,13 @@ class BasePopulationTree : public BaseTree<PopulationNode> {
                 bool validate_data = false);
 
         BasePopulationTree(
-                std::shared_ptr<PopulationNode> root);
+                std::shared_ptr<PopulationNode> root
+            ) : BaseTree<PopulationNode>(root) { }
+
+        BasePopulationTree(
+                std::istream & tree_stream,
+                const std::string & ncl_file_format
+            ) : BaseTree<PopulationNode>(tree_stream, ncl_file_format) { }
 
         void init(
                 std::string path, 
