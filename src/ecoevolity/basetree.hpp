@@ -411,7 +411,7 @@ class BaseTree {
                     leaf_label,
                     0.0);
             leaf->fix_node_height();
-            this->extract_node_data_from_comments_(leaf, comment_map);
+            leaf->extract_data_from_node_comments(comment_map);
             return leaf;
         }
 
@@ -452,7 +452,7 @@ class BaseTree {
                     indices_to_heights[height_index] = node->get_height_parameter();
                 }
             }
-            this->extract_node_data_from_comments_(node, comment_map);
+            node->extract_data_from_node_comments(comment_map);
             return node;
         }
         
@@ -470,13 +470,6 @@ class BaseTree {
             double l = node->GetEdgeToParent().GetDblEdgeLen();
             height += l;
         }
-
-        // Descendant classes can override this method to populate additional
-        // node data (in addition to height) needed for NodeType (e.g.,
-        // population size)
-        virtual void extract_node_data_from_comments_(
-                std::shared_ptr<NodeType> node,
-                std::map<std::string, std::string> comment_map) { }
 
 
     public:
