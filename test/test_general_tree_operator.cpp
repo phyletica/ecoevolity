@@ -7081,11 +7081,11 @@ TEST_CASE("Testing GlobalPopSizeScaler with 3 leaves, constrained sizes, and opt
 // GRAND TOTAL # OF TREE MODELS                                    = 336
 //
 // The asterisks in the topologies above indicated shared node heights.
-TEST_CASE("Testing SplitLumpNodesRevJumpSampler with BasePopulationTree, 5 leaves, and fixed root",
-        "[xxx]") {
+TEST_CASE("Testing SplitLumpNodesRevJumpSampler with BasePopulationTree, 5 leaves, fixed sizes, and fixed root",
+        "[BasePopulationTree]") {
 
-    SECTION("Testing 5 leaves with BasePopulationTree") {
-        RandomNumberGenerator rng = RandomNumberGenerator(2193647912);
+    SECTION("Testing 5 leaves with BasePopulationTree, fixed sizes") {
+        RandomNumberGenerator rng = RandomNumberGenerator(4157514221);
 
         double pop_size_shape = 10.0;
         double pop_size_scale = 0.05;
@@ -7127,7 +7127,7 @@ TEST_CASE("Testing SplitLumpNodesRevJumpSampler with BasePopulationTree, 5 leave
         unsigned int count_nheights_3 = 0;
         unsigned int count_nheights_4 = 0;
 
-        unsigned int niterations = 50000000;
+        unsigned int niterations = 10000000;
         unsigned int sample_freq = 50;
         unsigned int nsamples = niterations / sample_freq;
 
@@ -7177,7 +7177,7 @@ TEST_CASE("Testing SplitLumpNodesRevJumpSampler with BasePopulationTree, 5 leave
         double exp_count = nsamples/336.0;
         std::map< std::set< std::set<Split> >, double> bad_splits;
 
-        double prop_error_threshold = 0.1;
+        double prop_error_threshold = 0.2;
         unsigned int total_trees_sampled = 0;
         std::map< std::set< std::set<Split> >, double> split_freqs;
         double chi_sq_test_statistic = 0.0;
@@ -7228,7 +7228,7 @@ TEST_CASE("Testing SplitLumpNodesRevJumpSampler with BasePopulationTree, 5 leave
             std::cout << "  prop error: " << s_e.second << "\n";
         }
 
-        write_r_script(split_counts, "../5-leaf-general-tree-test.r");
+        write_r_script(split_counts, "../5-leaf-general-tree-test-fixed-pop-sizes.r");
 
         REQUIRE(total_trees_sampled == nsamples);
 
@@ -7236,6 +7236,192 @@ TEST_CASE("Testing SplitLumpNodesRevJumpSampler with BasePopulationTree, 5 leave
         REQUIRE(split_counts.size() == 336);
 
         double eps = 0.001;
+
+        for (auto s_f : split_freqs) {
+            REQUIRE(s_f.second == Approx(exp_freq).epsilon(eps));
+        }
+
+        REQUIRE(chi_sq_test_statistic < quantile_chi_sq_335_10);
+    }
+}
+
+TEST_CASE("Testing SplitLumpNodesRevJumpSampler with BasePopulationTree, 5 leaves, constrained sizes, and fixed root",
+        "[BasePopulationTree]") {
+
+    SECTION("Testing 5 leaves with BasePopulationTree, constrained sizes") {
+        RandomNumberGenerator rng = RandomNumberGenerator(4164626423);
+
+        double pop_size_shape = 10.0;
+        double pop_size_scale = 0.05;
+        std::shared_ptr<ContinuousProbabilityDistribution> pop_size_prior = std::make_shared<GammaDistribution>(
+                pop_size_shape,
+                pop_size_scale);
+
+        double root_ht = 0.5;
+        std::shared_ptr<PopulationNode> root = std::make_shared<PopulationNode>(5, "root", root_ht);
+        std::shared_ptr<PopulationNode> leaf0 = std::make_shared<PopulationNode>(0, "leaf0", 0.0);
+        std::shared_ptr<PopulationNode> leaf1 = std::make_shared<PopulationNode>(1, "leaf1", 0.0);
+        std::shared_ptr<PopulationNode> leaf2 = std::make_shared<PopulationNode>(2, "leaf2", 0.0);
+        std::shared_ptr<PopulationNode> leaf3 = std::make_shared<PopulationNode>(3, "leaf3", 0.0);
+        std::shared_ptr<PopulationNode> leaf4 = std::make_shared<PopulationNode>(4, "leaf4", 0.0);
+
+        root->add_child(leaf0);
+        root->add_child(leaf1);
+        root->add_child(leaf2);
+        root->add_child(leaf3);
+        root->add_child(leaf4);
+
+        BasePopulationTree tree(root);
+
+        tree.set_population_size_prior(pop_size_prior);
+        tree.ignore_data();
+        tree.fix_root_height();
+        tree.constrain_population_sizes();
+
+        SplitLumpNodesRevJumpSampler<PopulationNode> op;
+
+        GlobalPopSizeScaler op2;
+        op2.turn_on_auto_optimize();
+        op2.set_auto_optimize_delay(100);
+
+        // Initialize prior probs
+        tree.compute_log_likelihood_and_prior(true);
+
+        std::map< std::set< std::set<Split> >, unsigned int> split_counts;
+
+        unsigned int count_nheights_1 = 0;
+        unsigned int count_nheights_2 = 0;
+        unsigned int count_nheights_3 = 0;
+        unsigned int count_nheights_4 = 0;
+
+        unsigned int niterations = 10000000;
+        unsigned int sample_freq = 50;
+        unsigned int nsamples = niterations / sample_freq;
+
+        SampleSummarizer<double> pop_size_summary;
+
+        std::vector< std::shared_ptr<PositiveRealParameter> > pop_sizes;
+
+        unsigned int sample_count = 0;
+        unsigned int report_freq = 10000;
+        for (unsigned int i = 0; i < niterations; ++i) {
+            op.operate(rng, &tree, 1, 1);
+            op2.operate(rng, &tree, 1, 1);
+            if ((i + 1) % sample_freq == 0) {
+                pop_sizes = tree.get_pointers_to_population_sizes();
+                REQUIRE(pop_sizes.size() == 1);
+                pop_size_summary.add_sample(pop_sizes.at(0)->get_value());
+
+                if (tree.get_number_of_node_heights() == 1) {
+                    ++count_nheights_1;
+                }
+                else if (tree.get_number_of_node_heights() == 2) {
+                    ++count_nheights_2;
+                }
+                else if (tree.get_number_of_node_heights() == 3) {
+                    ++count_nheights_3;
+                }
+                else if (tree.get_number_of_node_heights() == 4) {
+                    ++count_nheights_4;
+                }
+                std::set< std::set<Split> > splits = tree.get_splits(false);
+                if (split_counts.count(splits) > 0) {
+                    ++split_counts[splits];
+                }
+                else {
+                    split_counts[splits] = 1;
+                }
+                ++sample_count;
+                if (sample_count % report_freq == 0) {
+                    std::cout << "Sampled " << sample_count << " of " << nsamples << std::endl;
+                }
+            }
+        }
+        std::cout << op.header_string();
+        std::cout << op.to_string();
+        std::cout << op2.header_string();
+        std::cout << op2.to_string();
+
+        REQUIRE(op.get_number_of_attempts() == niterations);
+
+        REQUIRE(op2.get_number_of_attempts() == niterations);
+        REQUIRE(op2.get_number_of_attempts_for_correction() == (niterations - 100));
+
+        REQUIRE(pop_size_summary.sample_size() == nsamples);
+
+        REQUIRE((count_nheights_1 + count_nheights_2 + count_nheights_3 + count_nheights_4) == nsamples);
+
+        double freq_nheights_1 = count_nheights_1 / (double)nsamples;
+        double freq_nheights_2 = count_nheights_2 / (double)nsamples;
+        double freq_nheights_3 = count_nheights_3 / (double)nsamples;
+        double freq_nheights_4 = count_nheights_4 / (double)nsamples;
+
+        double exp_freq = 1.0/336.0;
+        double exp_count = nsamples/336.0;
+        std::map< std::set< std::set<Split> >, double> bad_splits;
+
+        double prop_error_threshold = 0.2;
+        unsigned int total_trees_sampled = 0;
+        std::map< std::set< std::set<Split> >, double> split_freqs;
+        double chi_sq_test_statistic = 0.0;
+        std::cout << "Total tree topologies sampled: " << split_counts.size() << "\n";
+        for (auto s_c : split_counts) {
+            total_trees_sampled += s_c.second;
+            split_freqs[s_c.first] = s_c.second / (double)nsamples;
+            std::cout << "Tree:\n";
+            for (auto splitset : s_c.first) {
+                unsigned int s_count = 0;
+                for (auto split : splitset) {
+                    if (s_count > 0) {
+                        // Indent shared splits
+                        std::cout << "  ";
+                    }
+                    std::cout << "  " << split.as_string() << "\n";
+                    ++s_count;
+                }
+            }
+            double prop_error = ((double)s_c.second - exp_count) / exp_count;
+            std::cout << "  nsamples: " << s_c.second << "\n";
+            std::cout << "  prop error: " << prop_error << "\n";
+            if (fabs(prop_error) > prop_error_threshold) {
+                bad_splits[s_c.first] = prop_error;
+            }
+            double count_diff = s_c.second - exp_count;
+            chi_sq_test_statistic += (count_diff * count_diff) / exp_count;
+        }
+
+        double quantile_chi_sq_335_10 = 368.6;
+        std::cout << "Chi-square test statistic: " << chi_sq_test_statistic << "\n";
+        std::cout << "Chi-square(335) 0.9 quantile: " << quantile_chi_sq_335_10 << "\n";
+
+        std::cout << "BAD SPLITS (proportional error > " << prop_error_threshold << ")\n";
+        for (auto s_e : bad_splits) {
+            std::cout << "\nTree:\n";
+            for (auto splitset : s_e.first) {
+                unsigned int s_count = 0;
+                for (auto split : splitset) {
+                    if (s_count > 0) {
+                        // Indent shared splits
+                        std::cout << "  ";
+                    }
+                    std::cout << "  " << split.as_string() << "\n";
+                    ++s_count;
+                }
+            }
+            std::cout << "  prop error: " << s_e.second << "\n";
+        }
+
+        write_r_script(split_counts, "../5-leaf-general-tree-test-constrained-pop-sizes.r");
+
+        REQUIRE(total_trees_sampled == nsamples);
+
+        // We should sample every possible tree
+        REQUIRE(split_counts.size() == 336);
+
+        double eps = 0.001;
+        
+        REQUIRE(pop_size_summary.mean() == Approx(pop_size_prior->get_mean()).epsilon(eps));
+        REQUIRE(pop_size_summary.variance() == Approx(pop_size_prior->get_variance()).epsilon(eps));
 
         for (auto s_f : split_freqs) {
             REQUIRE(s_f.second == Approx(exp_freq).epsilon(eps));
