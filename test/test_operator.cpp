@@ -28079,7 +28079,7 @@ TEST_CASE("Testing TimeMeanSizeRateMixer with mix of pairs and singletons with f
         DirichletDistribution dir_prior2 = DirichletDistribution(alphas2);
 
         comparisons.set_operator_schedule(op_schedule);
-        unsigned int niterations = 1200000;
+        unsigned int niterations = 1500000;
         unsigned int sample_freq = 3;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
