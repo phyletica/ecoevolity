@@ -1927,10 +1927,57 @@ class GlobalPopSizeScaler : public GeneralTreeOperatorInterface<BasePopulationTr
                 return -std::numeric_limits<double>::infinity();
             }
             double multiplier = this->op_.get_move_amount(rng);
-            unsigned int n_parameters_scaled = 1;
-            /* unsigned int n_parameters_scaled; */
+            unsigned int n_parameters_scaled;
             n_parameters_scaled = tree->scale_all_population_sizes(multiplier);
             return std::log(multiplier) * n_parameters_scaled;
+        }
+};
+
+class PopSizeScaler : public GeneralTreeOperatorInterface<BasePopulationTree, ScaleOp> {
+
+    public:
+        PopSizeScaler() : GeneralTreeOperatorInterface<BasePopulationTree, ScaleOp>() { }
+        PopSizeScaler(double weight) : GeneralTreeOperatorInterface<BasePopulationTree, ScaleOp>(weight) { }
+
+        std::string get_name() const {
+            return "PopSizeScaler";
+        }
+
+        std::string target_parameter() const {
+            return "population sizes";
+        }
+
+        BaseGeneralTreeOperatorTemplate::OperatorTypeEnum get_type() const {
+            return BaseGeneralTreeOperatorTemplate::OperatorTypeEnum::population_size_operator;
+        }
+
+        /**
+         * @brief   Propose a new state.
+         *
+         * @return  Log of Hastings Ratio.
+         */
+        double propose(RandomNumberGenerator& rng,
+                BasePopulationTree * tree,
+                unsigned int nthreads = 1) {
+            if (tree->population_sizes_are_fixed()) {
+                return -std::numeric_limits<double>::infinity();
+            }
+            unsigned int random_node_index = rng.uniform_positive_int(
+                    tree->pre_ordered_nodes_.size() - 1);
+            double pop_size = tree->pre_ordered_nodes_.at(
+                    random_node_index)->get_population_size();
+
+            double ln_multiplier;
+            this->update(rng, pop_size, ln_multiplier);
+
+            if (pop_size <= 0.0) {
+                return -std::numeric_limits<double>::infinity();
+            }
+
+            tree->pre_ordered_nodes_.at(random_node_index)->set_population_size(
+                    pop_size);
+
+            return ln_multiplier;
         }
 };
 

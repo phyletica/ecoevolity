@@ -28,8 +28,12 @@
 #include "error.hpp"
 #include "assert.hpp"
 
+class PopSizeScaler;
+
 template<class NodeType>
 class BaseTree {
+        friend class PopSizeScaler;
+
     protected:
         std::shared_ptr<NodeType> root_;
         std::shared_ptr<NodeType> stored_root_;
