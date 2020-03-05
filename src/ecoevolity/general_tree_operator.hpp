@@ -38,12 +38,13 @@ class BaseGeneralTreeOperatorTemplate {
 
     public:
 		enum OperatorTypeEnum {
-            node_height_operator = 1,
-            root_height_operator = 2,
-            topology_operator = 3,
-            population_size_operator = 4,
-            rj_operator = 5,
-            node_height_prior_operator = 6,
+            topology_operator                   = 1,
+            topology_model_operator             = 2,
+            node_height_operator                = 3,
+            root_height_operator                = 4,
+            global_height_operator              = 5,
+            node_height_prior_operator          = 6,
+            derived_operator                    = 7,
         };
 
         BaseGeneralTreeOperatorTemplate() { }
@@ -560,7 +561,7 @@ class TreeScaler : public GeneralTreeOperatorInterface<BaseTree<NodeType>, Scale
         }
 
         BaseGeneralTreeOperatorTemplate::OperatorTypeEnum get_type() const {
-            return BaseGeneralTreeOperatorTemplate::OperatorTypeEnum::node_height_operator;
+            return BaseGeneralTreeOperatorTemplate::OperatorTypeEnum::global_height_operator;
         }
 
         /**
@@ -1263,7 +1264,7 @@ class SplitLumpNodesRevJumpSampler : public GeneralTreeOperatorInterface<BaseTre
         }
 
         BaseGeneralTreeOperatorTemplate::OperatorTypeEnum get_type() const {
-            return BaseGeneralTreeOperatorTemplate::OperatorTypeEnum::rj_operator;
+            return BaseGeneralTreeOperatorTemplate::OperatorTypeEnum::topology_model_operator;
         }
 
         double get_stirling2(unsigned int n) {
@@ -1912,7 +1913,7 @@ class GlobalPopSizeScaler : public GeneralTreeOperatorInterface<BasePopulationTr
         }
 
         BaseGeneralTreeOperatorTemplate::OperatorTypeEnum get_type() const {
-            return BaseGeneralTreeOperatorTemplate::OperatorTypeEnum::population_size_operator;
+            return BaseGeneralTreeOperatorTemplate::OperatorTypeEnum::derived_operator;
         }
 
         /**
@@ -1948,7 +1949,7 @@ class PopSizeScaler : public GeneralTreeOperatorInterface<BasePopulationTree, Sc
         }
 
         BaseGeneralTreeOperatorTemplate::OperatorTypeEnum get_type() const {
-            return BaseGeneralTreeOperatorTemplate::OperatorTypeEnum::population_size_operator;
+            return BaseGeneralTreeOperatorTemplate::OperatorTypeEnum::derived_operator;
         }
 
         /**
@@ -1978,6 +1979,533 @@ class PopSizeScaler : public GeneralTreeOperatorInterface<BasePopulationTree, Sc
                     pop_size);
 
             return ln_multiplier;
+        }
+};
+
+class MutationRateScaler : public GeneralTreeOperatorInterface<BasePopulationTree, ScaleOp> {
+
+    public:
+        MutationRateScaler() : GeneralTreeOperatorInterface<BasePopulationTree, ScaleOp>() { }
+        MutationRateScaler(double weight) : GeneralTreeOperatorInterface<BasePopulationTree, ScaleOp>(weight) { }
+
+        std::string get_name() const {
+            return "MutationRateScaler";
+        }
+
+        std::string target_parameter() const {
+            return "mutation rate";
+        }
+
+        BaseGeneralTreeOperatorTemplate::OperatorTypeEnum get_type() const {
+            return BaseGeneralTreeOperatorTemplate::OperatorTypeEnum::derived_operator;
+        }
+
+        /**
+         * @brief   Propose a new state.
+         *
+         * @return  Log of Hastings Ratio.
+         */
+        double propose(RandomNumberGenerator& rng,
+                BasePopulationTree * tree,
+                unsigned int nthreads = 1) {
+            if (tree->mutation_rate_is_fixed()) {
+                return -std::numeric_limits<double>::infinity();
+            }
+            double mutation_rate = tree->get_mutation_rate();
+            double ln_multiplier;
+            this->update(rng, mutation_rate, ln_multiplier);
+            if (mutation_rate <= 0.0) {
+                return -std::numeric_limits<double>::infinity();
+            }
+            tree->set_mutation_rate(mutation_rate);
+            return ln_multiplier;
+        }
+};
+
+class GlobalHeightSizeMixer : public GeneralTreeOperatorInterface<BasePopulationTree, ScaleOp> {
+
+    public:
+        GlobalHeightInternalSizeMixer() : GeneralTreeOperatorInterface<BasePopulationTree, ScaleOp>() { }
+        GlobalHeightInternalSizeMixer(double weight) : GeneralTreeOperatorInterface<BasePopulationTree, ScaleOp>(weight) { }
+
+        std::string get_name() const {
+            return "GlobalHeightSizeMixer";
+        }
+
+        std::string target_parameter() const {
+            return "node heights and population sizes";
+        }
+
+        BaseGeneralTreeOperatorTemplate::OperatorTypeEnum get_type() const {
+            return BaseGeneralTreeOperatorTemplate::OperatorTypeEnum::global_height_operator;
+        }
+
+        /**
+         * @brief   Propose a new state.
+         *
+         * @return  Log of Hastings Ratio.
+         *
+         * The expected height of a gene tree node given the height of the
+         * species tree node (t) is:
+         *
+         *   t*mu + ploidy*N*mu
+         *
+         * where mu is the mutation rate, and N is the effective size of the
+         * ancestral population.
+         *
+         * In this proposal we want to mainatin this relationship:
+         *
+         *   t'*mu + ploidy*N'*mu = t*mu + ploidy*N*mu
+         *
+         * where (') represents the proposed (new) values. The mutation rates
+         * cancel, giving us:
+         *
+         *   t' + ploidy*N' = t + ploidy*N
+         *
+         * Re-writing this in terms of the amount of change in t and N (denoted
+         * as dt and dN, respectively), we have:
+         *
+         *   t + dt + ploidy(N + dN) = t + ploidy*N
+         *
+         * multiply out N and dN on the left:
+         *
+         *   t + dt + ploidy*N + ploidy*dN = t + ploidy*N
+         *
+         * subtract ploidy*N from both sides:
+         *
+         *   t + dt + ploidy*dN = t
+         *
+         * subtract t from both sides:
+         *
+         *   dt + ploidy*dN = 0
+         *
+         *   ploidy*dN = -dt
+         *
+         *   dN = -dt / ploidy
+         *
+         * So, we will scale all node heights, and then add (dt / ploidy) to
+         * all ancestral pop sizes
+         * 
+         */
+        double propose(RandomNumberGenerator& rng,
+                BasePopulationTree * tree,
+                unsigned int nthreads = 1) {
+            if (tree->root_height_is_fixed()) {
+                return -std::numeric_limits<double>::infinity();
+            }
+            std::vector<double> old_heights = tree->get_node_heights()
+            unsigned int num_heights = old_heights.size();
+            double multiplier = this->op_.get_move_amount(rng);
+            tree->scale_tree(multiplier);
+            if (tree->population_sizes_are_fixed()) {
+                return std::log(multiplier) * num_heights;
+            }
+            std::vector<double> new_heights = tree->get_node_heights();
+            // If pop sizes are constrained we will change the overall pop size
+            // according to the mean change in heights
+            if (tree->population_sizes_are_constrained()) {
+                double height_diff_sum = 0.0;
+                for (unsigned int i = 0; i < new_heights.size(); ++i) {
+                    double height_diff_sum += (new_heights.at(i) - old_heights.at(i));
+                }
+                double mean_diff = height_diff_sum / new_heights.size();
+                double pop_size_change = -mean_diff / tree->get_ploidy();
+                tree->set_root_population_size(
+                        tree->get_root_population_size() + pop_size_change);
+                return std::log(multiplier) * num_heights;
+            }
+            // Change internal node pop sizes according to time changes
+            for (unsigned int i = 0; i < new_heights.size(); ++i) {
+                double height_diff = new_heights.at(i) - old_heights.at(i);
+                double pop_size_change = -height_diff / tree->get_ploidy();
+                std::vector< std::shared_ptr<PopulationNode> > mapped_nodes = tree->get_mapped_nodes(i);
+                for (auto node : mapped_nodes) {
+                    double pop_size = node->get_population_size();
+                    node->set_population_size(pop_size + pop_size_change);
+                }
+            }
+            return std::log(multiplier) * num_heights;
+        }
+};
+
+class HeightSizeMixer : public GeneralTreeOperatorInterface<BasePopulationTree, ScaleOp> {
+    public:
+        HeightSizeMixer() : GeneralTreeOperatorInterface<BaseTree<BasePopulationTree, ScaleOp>() { }
+        HeightSizeMixer(double weight) : GeneralTreeOperatorInterface<BasePopulationTree, ScaleOp>(weight) { }
+
+        std::string get_name() const {
+            return "HeightSizeMixer";
+        }
+
+        std::string target_parameter() const {
+            return "node heights";
+        }
+
+        BaseGeneralTreeOperatorTemplate::OperatorTypeEnum get_type() const {
+            return BaseGeneralTreeOperatorTemplate::OperatorTypeEnum::node_height_operator;
+        }
+
+        /**
+         * @brief   Propose a new state.
+         *
+         * @return  Log of Hastings Ratio.
+         *
+         * The expected height of a gene tree node given the height of the
+         * species tree node (t) is:
+         *
+         *   t*mu + ploidy*N*mu
+         *
+         * where mu is the mutation rate, and N is the effective size of the
+         * ancestral population.
+         *
+         * In this proposal we want to mainatin this relationship:
+         *
+         *   t'*mu + ploidy*N'*mu = t*mu + ploidy*N*mu
+         *
+         * where (') represents the proposed (new) values. The mutation rates
+         * cancel, giving us:
+         *
+         *   t' + ploidy*N' = t + ploidy*N
+         *
+         * Re-writing this in terms of the amount of change in t and N (denoted
+         * as dt and dN, respectively), we have:
+         *
+         *   t + dt + ploidy(N + dN) = t + ploidy*N
+         *
+         * multiply out N and dN on the left:
+         *
+         *   t + dt + ploidy*N + ploidy*dN = t + ploidy*N
+         *
+         * subtract ploidy*N from both sides:
+         *
+         *   t + dt + ploidy*dN = t
+         *
+         * subtract t from both sides:
+         *
+         *   dt + ploidy*dN = 0
+         *
+         *   ploidy*dN = -dt
+         *
+         *   dN = -dt / ploidy
+         *
+         * So, we will scale one node heights, and then add (-dt / ploidy) to
+         * the pop sizes of all nodes that map to it.
+         */
+        double propose(RandomNumberGenerator& rng,
+                BasePopulationTree * tree,
+                unsigned int nthreads = 1) {
+            unsigned int num_heights = tree->get_number_of_node_heights();
+            if (num_heights < 2) {
+                // No non-root heights to operate on
+                return -std::numeric_limits<double>::infinity();
+            }
+            unsigned int max_height_index = num_heights - 2;
+            unsigned int height_index = rng.uniform_positive_int(
+                    max_height_index);
+            double old_height = tree->get_height(height_index);
+            double new_height = old_height;
+            double ln_hastings;
+            this->update(rng, new_height, ln_hastings);
+            if (new_height < tree->get_height_of_oldest_child(height_index)) {
+                return -std::numeric_limits<double>::infinity();
+            }
+            if (new_height > tree->get_height_of_youngest_parent(height_index)) {
+                return -std::numeric_limits<double>::infinity();
+            }
+            tree->set_height(height_index, new_height);
+            double height_diff = new_height - old_height;
+            double pop_size_change = -height_diff / tree->get_ploidy();
+            std::vector< std::shared_ptr<PopulationNode> > mapped_nodes = tree->get_mapped_nodes(
+                    height_index);
+            for (auto node : mapped_nodes) {
+                double pop_size = node->get_population_size();
+                node->set_population_size(pop_size + pop_size_change);
+            }
+            return ln_hastings;
+        }
+};
+
+class RootHeightSizeMixer : public GeneralTreeOperatorInterface<BasePopulationTree, ScaleOp> {
+    public:
+        RootHeightSizeMixer() : GeneralTreeOperatorInterface<BaseTree<BasePopulationTree, ScaleOp>() { }
+        RootHeightSizeMixer(double weight) : GeneralTreeOperatorInterface<BasePopulationTree, ScaleOp>(weight) { }
+
+        std::string get_name() const {
+            return "RootHeightSizeMixer";
+        }
+
+        std::string target_parameter() const {
+            return "root height";
+        }
+
+        BaseGeneralTreeOperatorTemplate::OperatorTypeEnum get_type() const {
+            return BaseGeneralTreeOperatorTemplate::OperatorTypeEnum::root_height_operator;
+        }
+
+        /**
+         * @brief   Propose a new state.
+         *
+         * @return  Log of Hastings Ratio.
+         *
+         * The expected height of a gene tree node given the height of the
+         * species tree node (t) is:
+         *
+         *   t*mu + ploidy*N*mu
+         *
+         * where mu is the mutation rate, and N is the effective size of the
+         * ancestral population.
+         *
+         * In this proposal we want to mainatin this relationship:
+         *
+         *   t'*mu + ploidy*N'*mu = t*mu + ploidy*N*mu
+         *
+         * where (') represents the proposed (new) values. The mutation rates
+         * cancel, giving us:
+         *
+         *   t' + ploidy*N' = t + ploidy*N
+         *
+         * Re-writing this in terms of the amount of change in t and N (denoted
+         * as dt and dN, respectively), we have:
+         *
+         *   t + dt + ploidy(N + dN) = t + ploidy*N
+         *
+         * multiply out N and dN on the left:
+         *
+         *   t + dt + ploidy*N + ploidy*dN = t + ploidy*N
+         *
+         * subtract ploidy*N from both sides:
+         *
+         *   t + dt + ploidy*dN = t
+         *
+         * subtract t from both sides:
+         *
+         *   dt + ploidy*dN = 0
+         *
+         *   ploidy*dN = -dt
+         *
+         *   dN = -dt / ploidy
+         *
+         * So, we will scale one node heights, and then add (-dt / ploidy) to
+         * the pop sizes of all nodes that map to it.
+         */
+        double propose(RandomNumberGenerator& rng,
+                BasePopulationTree * tree,
+                unsigned int nthreads = 1) {
+            if (tree->root_height_is_fixed()) {
+                return -std::numeric_limits<double>::infinity();
+            }
+            unsigned int num_heights = tree->get_number_of_node_heights();
+            unsigned int height_index = num_heights - 1;
+            double old_height = tree->get_height(height_index);
+            double new_height = old_height;
+            double ln_multiplier;
+            this->update(rng, new_height, ln_multiplier);
+            if (new_height < tree->get_height_of_oldest_child(height_index)) {
+                return -std::numeric_limits<double>::infinity();
+            }
+            tree->set_height(height_index, new_height);
+            double height_diff = new_height - old_height;
+            double pop_size_change = -height_diff / tree->get_ploidy();
+            double pop_size = tree->get_root_population_size();
+            tree->set_root_population_size(pop_size + pop_size_change);
+            return ln_multiplier;
+        }
+};
+
+
+class HeightSizeSlideBumpMixer : public GeneralTreeOperatorInterface<BasePopulationTree, ScaleOp> {
+    protected:
+        virtual bool call_tree_method_(
+                BasePopulationTree * tree,
+                RandomNumberGenerator& rng,
+                unsigned int height_index,
+                double height) {
+            return tree->slide_bump_height(rng,
+                    height_index,
+                    height);
+        }
+
+        bool operate_on_root_ = false;
+
+    public:
+        HeightSizeSlideBumpMixer() : GeneralTreeOperatorInterface<BasePopulationTree, ScaleOp>() { }
+        HeightSizeSlideBumpMixer(double weight) : GeneralTreeOperatorInterface<BasePopulationTree, ScaleOp>(weight) { }
+
+        std::string get_name() const {
+            return "HeightSizeSlideBumpMixer";
+        }
+
+        std::string target_parameter() const {
+            return "node heights and population sizes";
+        }
+
+        BaseGeneralTreeOperatorTemplate::OperatorTypeEnum get_type() const {
+            return BaseGeneralTreeOperatorTemplate::OperatorTypeEnum::node_height_operator;
+        }
+
+        virtual void set_operate_on_root(bool operate_on_root) {
+            this->operate_on_root_ = operate_on_root;
+        }
+
+        /**
+         * @brief   Propose a new state.
+         *
+         * @return  Log of Hastings Ratio.
+         */
+        double propose(RandomNumberGenerator& rng,
+                BasePopulationTree * tree,
+                unsigned int nthreads = 1) {
+            unsigned int num_heights = tree->get_number_of_node_heights();
+            if ((! this->operate_on_root_) && (num_heights < 2)) {
+                // No non-root heights to operate on
+                return -std::numeric_limits<double>::infinity();
+            }
+            unsigned int max_height_index = num_heights - 2;
+            if (this->operate_on_root_) {
+                max_height_index = num_heights - 1;
+            }
+            std::vector<double> old_heights = tree->get_node_heights()
+            unsigned int height_index = rng.uniform_int(0,
+                    max_height_index);
+            double new_height = tree->get_height(height_index);
+            double ln_multiplier;
+            this->update(rng, new_height, ln_multiplier);
+            if (new_height < 0) {
+                return -std::numeric_limits<double>::infinity();
+            }
+            if (new_height > tree->get_root_height()) {
+                if (tree->root_height_is_fixed() || (! this->operate_on_root_)) {
+                    return -std::numeric_limits<double>::infinity();
+                }
+            }
+            bool move_happened = this->call_tree_method_(
+                    tree,
+                    rng,
+                    height_index,
+                    new_height);
+            if (! move_happened) {
+                return -std::numeric_limits<double>::infinity();
+            }
+            if (tree->population_sizes_are_fixed()) {
+                return ln_multiplier;
+            }
+            // If pop sizes are constrained it doesn't make sense to change pop
+            // size of whole tree if only some of the node heights changed
+            if (tree->population_sizes_are_constrained()) {
+                return ln_multiplier;
+            }
+            std::vector<double> new_heights = tree->get_node_heights()
+            // Change internal node pop sizes according to time changes
+            for (unsigned int i = 0; i < new_heights.size(); ++i) {
+                double height_diff = new_heights.at(i) - old_heights.at(i);
+                if (! almost_equal_abs(height_diff, 0.0, 1e-10)) {
+                    double pop_size_change = -height_diff / tree->get_ploidy();
+                    std::vector< std::shared_ptr<PopulationNode> > mapped_nodes = tree->get_mapped_nodes(i);
+                    for (auto node : mapped_nodes) {
+                        double pop_size = node->get_population_size();
+                        node->set_population_size(pop_size + pop_size_change);
+                    }
+                }
+            }
+            return ln_multiplier;
+        }
+};
+
+
+class GlobalHeightSizeRateScaler : public GeneralTreeOperatorInterface<BasePopulationTree, ScaleOp> {
+
+    protected:
+        scale_sizes_ = true;
+        scale_rate_ = true;
+
+    public:
+        GlobalHeightSizeRateScaler() : GeneralTreeOperatorInterface<BasePopulationTree, ScaleOp>() { }
+        GlobalHeightSizeRateScaler(double weight) : GeneralTreeOperatorInterface<BasePopulationTree, ScaleOp>(weight) { }
+
+        std::string get_name() const {
+            return "GlobalHeightSizeRateScaler";
+        }
+
+        std::string target_parameter() const {
+            return "node heights, population sizes, and mutation rate";
+        }
+
+        BaseGeneralTreeOperatorTemplate::OperatorTypeEnum get_type() const {
+            return BaseGeneralTreeOperatorTemplate::OperatorTypeEnum::global_height_operator;
+        }
+
+        /**
+         * @brief   Propose a new state.
+         *
+         * @return  Log of Hastings Ratio.
+         */
+        double propose(RandomNumberGenerator& rng,
+                BasePopulationTree * tree,
+                unsigned int nthreads = 1) {
+            if (tree->root_height_is_fixed()) {
+                return -std::numeric_limits<double>::infinity();
+            }
+            unsigned int num_params_scaled = tree->get_number_of_node_heights();
+            double multiplier = this->op_.get_move_amount(rng);
+            tree->scale_tree(multiplier);
+            unsigned int num_params_inv_scaled = 0;
+            if (this->scale_sizes_) {
+                num_params_inv_scaled = tree->scale_all_population_sizes(1.0/multiplier);
+            }
+            if (this->scale_rate_ and (! tree->mutation_rate_is_fixed())) {
+                tree->set_mutation_rate(
+                        tree->get_mutation_rate() * (1.0/multiplier));
+                ++num_params_inv_scaled;
+            }
+            return std::log(multiplier) * (num_params_scaled - num_params_inv_scaled);
+        }
+};
+
+
+class GlobalHeightRateScaler : public GlobalHeightSizeRateScaler {
+
+    public:
+        GlobalHeightRateScaler() : GlobalHeightSizeRateScaler() {
+            this->scale_sizes_ = false;
+        }
+        GlobalHeightRateScaler(double weight) : GlobalHeightSizeRateScaler(weight) {
+            this->scale_sizes_ = false;
+        }
+
+        std::string get_name() const {
+            return "GlobalHeightRateScaler";
+        }
+
+        std::string target_parameter() const {
+            return "node heights and mutation rate";
+        }
+
+        BaseGeneralTreeOperatorTemplate::OperatorTypeEnum get_type() const {
+            return BaseGeneralTreeOperatorTemplate::OperatorTypeEnum::global_height_operator;
+        }
+};
+
+
+class GlobalHeightSizeScaler : public GlobalHeightSizeRateScaler {
+
+    public:
+        GlobalHeightSizeScaler() : GlobalHeightSizeRateScaler() {
+            this->scale_rate_ = false;
+        }
+        GlobalHeightSizeScaler(double weight) : GlobalHeightSizeRateScaler(weight) {
+            this->scale_rate_ = false;
+        }
+
+        std::string get_name() const {
+            return "GlobalHeightSizeScaler";
+        }
+
+        std::string target_parameter() const {
+            return "node heights and population sizes";
+        }
+
+        BaseGeneralTreeOperatorTemplate::OperatorTypeEnum get_type() const {
+            return BaseGeneralTreeOperatorTemplate::OperatorTypeEnum::global_height_operator;
         }
 };
 

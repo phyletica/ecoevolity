@@ -76,6 +76,12 @@ class GeneralTreeOperatorSchedule {
                 if (op->get_type() == GeneralTreeOperatorInterface::OperatorTypeEnum::node_height_operator) {
                     ops.push_back(op);
                 }
+                else if (op->get_type() == GeneralTreeOperatorInterface::OperatorTypeEnum::root_height_operator) {
+                    ops.push_back(op);
+                }
+                else if (op->get_type() == GeneralTreeOperatorInterface::OperatorTypeEnum::global_height_operator) {
+                    ops.push_back(op);
+                }
             }
             return ops;
         }
