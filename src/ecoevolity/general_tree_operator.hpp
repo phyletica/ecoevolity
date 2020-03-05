@@ -282,7 +282,7 @@ class GeneralTreeOperatorInterface : public GeneralTreeOperatorTemplate<TreeType
 
         virtual std::string to_string() const {
             std::ostringstream ss;
-            ss << this->get_name() << "\t" 
+            ss << this->get_name() << "\t"
                << this->op_.get_number_accepted() << "\t"
                << this->op_.get_number_rejected() << "\t"
                << this->get_weight() << "\t";
@@ -1982,14 +1982,14 @@ class PopSizeScaler : public GeneralTreeOperatorInterface<BasePopulationTree, Sc
         }
 };
 
-class MutationRateScaler : public GeneralTreeOperatorInterface<BasePopulationTree, ScaleOp> {
+class MuRateScaler : public GeneralTreeOperatorInterface<BasePopulationTree, ScaleOp> {
 
     public:
-        MutationRateScaler() : GeneralTreeOperatorInterface<BasePopulationTree, ScaleOp>() { }
-        MutationRateScaler(double weight) : GeneralTreeOperatorInterface<BasePopulationTree, ScaleOp>(weight) { }
+        MuRateScaler() : GeneralTreeOperatorInterface<BasePopulationTree, ScaleOp>() { }
+        MuRateScaler(double weight) : GeneralTreeOperatorInterface<BasePopulationTree, ScaleOp>(weight) { }
 
         std::string get_name() const {
-            return "MutationRateScaler";
+            return "MuRateScaler";
         }
 
         std::string target_parameter() const {
@@ -2025,8 +2025,8 @@ class MutationRateScaler : public GeneralTreeOperatorInterface<BasePopulationTre
 class GlobalHeightSizeMixer : public GeneralTreeOperatorInterface<BasePopulationTree, ScaleOp> {
 
     public:
-        GlobalHeightInternalSizeMixer() : GeneralTreeOperatorInterface<BasePopulationTree, ScaleOp>() { }
-        GlobalHeightInternalSizeMixer(double weight) : GeneralTreeOperatorInterface<BasePopulationTree, ScaleOp>(weight) { }
+        GlobalHeightSizeMixer() : GeneralTreeOperatorInterface<BasePopulationTree, ScaleOp>() { }
+        GlobalHeightSizeMixer(double weight) : GeneralTreeOperatorInterface<BasePopulationTree, ScaleOp>(weight) { }
 
         std::string get_name() const {
             return "GlobalHeightSizeMixer";
@@ -2093,7 +2093,7 @@ class GlobalHeightSizeMixer : public GeneralTreeOperatorInterface<BasePopulation
             if (tree->root_height_is_fixed()) {
                 return -std::numeric_limits<double>::infinity();
             }
-            std::vector<double> old_heights = tree->get_node_heights()
+            std::vector<double> old_heights = tree->get_node_heights();
             unsigned int num_heights = old_heights.size();
             double multiplier = this->op_.get_move_amount(rng);
             tree->scale_tree(multiplier);
@@ -2106,7 +2106,7 @@ class GlobalHeightSizeMixer : public GeneralTreeOperatorInterface<BasePopulation
             if (tree->population_sizes_are_constrained()) {
                 double height_diff_sum = 0.0;
                 for (unsigned int i = 0; i < new_heights.size(); ++i) {
-                    double height_diff_sum += (new_heights.at(i) - old_heights.at(i));
+                    height_diff_sum += (new_heights.at(i) - old_heights.at(i));
                 }
                 double mean_diff = height_diff_sum / new_heights.size();
                 double pop_size_change = -mean_diff / tree->get_ploidy();
@@ -2130,7 +2130,7 @@ class GlobalHeightSizeMixer : public GeneralTreeOperatorInterface<BasePopulation
 
 class HeightSizeMixer : public GeneralTreeOperatorInterface<BasePopulationTree, ScaleOp> {
     public:
-        HeightSizeMixer() : GeneralTreeOperatorInterface<BaseTree<BasePopulationTree, ScaleOp>() { }
+        HeightSizeMixer() : GeneralTreeOperatorInterface<BasePopulationTree, ScaleOp>() { }
         HeightSizeMixer(double weight) : GeneralTreeOperatorInterface<BasePopulationTree, ScaleOp>(weight) { }
 
         std::string get_name() const {
@@ -2227,7 +2227,7 @@ class HeightSizeMixer : public GeneralTreeOperatorInterface<BasePopulationTree, 
 
 class RootHeightSizeMixer : public GeneralTreeOperatorInterface<BasePopulationTree, ScaleOp> {
     public:
-        RootHeightSizeMixer() : GeneralTreeOperatorInterface<BaseTree<BasePopulationTree, ScaleOp>() { }
+        RootHeightSizeMixer() : GeneralTreeOperatorInterface<BasePopulationTree, ScaleOp>() { }
         RootHeightSizeMixer(double weight) : GeneralTreeOperatorInterface<BasePopulationTree, ScaleOp>(weight) { }
 
         std::string get_name() const {
@@ -2364,7 +2364,7 @@ class HeightSizeSlideBumpMixer : public GeneralTreeOperatorInterface<BasePopulat
             if (this->operate_on_root_) {
                 max_height_index = num_heights - 1;
             }
-            std::vector<double> old_heights = tree->get_node_heights()
+            std::vector<double> old_heights = tree->get_node_heights();
             unsigned int height_index = rng.uniform_int(0,
                     max_height_index);
             double new_height = tree->get_height(height_index);
@@ -2394,7 +2394,7 @@ class HeightSizeSlideBumpMixer : public GeneralTreeOperatorInterface<BasePopulat
             if (tree->population_sizes_are_constrained()) {
                 return ln_multiplier;
             }
-            std::vector<double> new_heights = tree->get_node_heights()
+            std::vector<double> new_heights = tree->get_node_heights();
             // Change internal node pop sizes according to time changes
             for (unsigned int i = 0; i < new_heights.size(); ++i) {
                 double height_diff = new_heights.at(i) - old_heights.at(i);
@@ -2415,8 +2415,8 @@ class HeightSizeSlideBumpMixer : public GeneralTreeOperatorInterface<BasePopulat
 class GlobalHeightSizeRateScaler : public GeneralTreeOperatorInterface<BasePopulationTree, ScaleOp> {
 
     protected:
-        scale_sizes_ = true;
-        scale_rate_ = true;
+        bool scale_sizes_ = true;
+        bool scale_rate_ = true;
 
     public:
         GlobalHeightSizeRateScaler() : GeneralTreeOperatorInterface<BasePopulationTree, ScaleOp>() { }

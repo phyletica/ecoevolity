@@ -7658,3 +7658,72 @@ TEST_CASE("Testing SplitLumpNodesRevJumpSampler with BasePopulationTree, 5 leave
         REQUIRE(chi_sq_test_statistic < quantile_chi_sq_335_10);
     }
 }
+
+
+
+TEST_CASE("Testing MuRateScaler with 3 leaves, constrained sizes, and optimizing",
+        "[MuRateScaler]") {
+
+    SECTION("Testing 3 leaves, constrained sizes, and optimizing") {
+        RandomNumberGenerator rng = RandomNumberGenerator(4);
+
+        double rate_shape = 10.0;
+        double rate_scale = 0.05;
+        std::shared_ptr<ContinuousProbabilityDistribution> rate_prior = std::make_shared<GammaDistribution>(
+                rate_shape,
+                rate_scale);
+
+        std::shared_ptr<PopulationNode> root = std::make_shared<PopulationNode>(4, "root", 0.5);
+        std::shared_ptr<PopulationNode> internal0 = std::make_shared<PopulationNode>(3, "internal0", 0.25);
+        std::shared_ptr<PopulationNode> leaf0 = std::make_shared<PopulationNode>(0, "leaf0", 0.0);
+        std::shared_ptr<PopulationNode> leaf1 = std::make_shared<PopulationNode>(1, "leaf1", 0.0);
+        std::shared_ptr<PopulationNode> leaf2 = std::make_shared<PopulationNode>(2, "leaf2", 0.0);
+
+        internal0->add_child(leaf0);
+        internal0->add_child(leaf1);
+        root->add_child(internal0);
+        root->add_child(leaf2);
+
+        BasePopulationTree tree(root);
+
+        tree.ignore_data();
+        tree.fix_root_height();
+        tree.fix_population_sizes();
+
+        tree.set_mutation_rate_prior(rate_prior);
+        tree.estimate_mutation_rate();
+
+        MuRateScaler op;
+        op.turn_on_auto_optimize();
+        op.set_auto_optimize_delay(100);
+
+        REQUIRE(op.auto_optimizing());
+        REQUIRE(op.get_auto_optimize_delay() == 100);
+
+        // Initialize prior probs
+        tree.compute_log_likelihood_and_prior(true);
+
+        SampleSummarizer<double> rate_summary;
+
+        unsigned int niterations = 400000;
+        unsigned int sample_freq = 5;
+        unsigned int nsamples = niterations / sample_freq;
+        for (unsigned int i = 0; i < niterations; ++i) {
+            op.operate(rng, &tree, 1);
+            if ((i + 1) % sample_freq == 0) {
+                rate_summary.add_sample(tree.get_mutation_rate());
+            }
+        }
+        std::cout << op.header_string();
+        std::cout << op.to_string();
+
+        REQUIRE(op.get_number_of_attempts() == niterations);
+        REQUIRE(op.get_number_of_attempts_for_correction() == (niterations - 100));
+
+        REQUIRE(rate_summary.sample_size() == nsamples);
+        
+        double eps = 0.001;
+        REQUIRE(rate_summary.mean() == Approx(rate_prior->get_mean()).epsilon(eps));
+        REQUIRE(rate_summary.variance() == Approx(rate_prior->get_variance()).epsilon(eps));
+    }
+}
