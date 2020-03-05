@@ -49,8 +49,21 @@ inline double weighted_mean(
 inline bool almost_equal(const double x, const double y,
         const double proportional_tolerance = 1e-6) {
     double abs_tol = std::max(fabs(x), fabs(y)) * proportional_tolerance;
+    if ((abs_tol == 0.0) && (proportional_tolerance > 0.0)) {
+        // Both values are zero
+        return True;
+    }
     double diff = fabs(x - y);
     if (diff > abs_tol) {
+        return false;
+    }
+    return true;
+}
+
+inline bool almost_equal_abs(const double x, const double y,
+        const double absolute_tolerance = 1e-6) {
+    double diff = fabs(x - y);
+    if (diff > absolute_tolerance) {
         return false;
     }
     return true;
