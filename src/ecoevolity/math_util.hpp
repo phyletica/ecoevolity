@@ -51,7 +51,7 @@ inline bool almost_equal(const double x, const double y,
     double abs_tol = std::max(fabs(x), fabs(y)) * proportional_tolerance;
     if ((abs_tol == 0.0) && (proportional_tolerance > 0.0)) {
         // Both values are zero
-        return True;
+        return true;
     }
     double diff = fabs(x - y);
     if (diff > abs_tol) {
