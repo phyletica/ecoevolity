@@ -156,6 +156,20 @@ class GeneralTreeOperatorInterface : public GeneralTreeOperatorTemplate<TreeType
             this->call_store_methods(tree);
         
             double hastings_ratio = this->propose(rng, tree, nthreads);
+
+            // If the Hasting's ratio is zero (i.e., the log is -inf), we can
+            // reject before going any further and wasting computation on the
+            // likelihood
+            if (hastings_ratio == -std::numeric_limits<double>::infinity()) {
+                this->reject();
+                this->call_restore_methods(tree);
+                tree->make_clean();
+                if (this->auto_optimizing()) {
+                    this->optimize(hastings_ratio);
+                }
+                return;
+            }
+
             tree->compute_log_likelihood_and_prior(true);
         
             double likelihood_ratio = 
@@ -2093,38 +2107,101 @@ class GlobalHeightSizeMixer : public GeneralTreeOperatorInterface<BasePopulation
             if (tree->root_height_is_fixed()) {
                 return -std::numeric_limits<double>::infinity();
             }
-            std::vector<double> old_heights = tree->get_node_heights();
-            unsigned int num_heights = old_heights.size();
-            double multiplier = this->op_.get_move_amount(rng);
-            tree->scale_tree(multiplier);
             if (tree->population_sizes_are_fixed()) {
-                return std::log(multiplier) * num_heights;
+                return -std::numeric_limits<double>::infinity();
             }
-            std::vector<double> new_heights = tree->get_node_heights();
-            // If pop sizes are constrained we will change the overall pop size
-            // according to the mean change in heights
             if (tree->population_sizes_are_constrained()) {
-                double height_diff_sum = 0.0;
-                for (unsigned int i = 0; i < new_heights.size(); ++i) {
-                    height_diff_sum += (new_heights.at(i) - old_heights.at(i));
+                // When pop sizes are constrained to be equal, it makes sense
+                // to scale the shared pop size, and then change all the node
+                // heights accordingly. We are (probably) less likely to
+                // propose a negative node height value this way then we are to
+                // get a negative pop sizes if we scaled the node heights.
+                double old_size = tree->get_root_population_size();
+                double multiplier = this->op_.get_move_amount(rng);
+                double new_size = old_size * multiplier;
+                tree->set_root_population_size(new_size);
+                double size_diff = new_size - old_size;
+                double height_change = -size_diff * tree->get_ploidy();
+                for (auto ht_ptr : tree->get_node_height_pointers()) {
+                    double new_height = ht_ptr->get_value() + height_change;
+                    if (new_height < 0.0) {
+                        return -std::numeric_limits<double>::infinity();
+                    }
+                    ht_ptr->set_value(new_height);
                 }
-                double mean_diff = height_diff_sum / new_heights.size();
-                double pop_size_change = -mean_diff / tree->get_ploidy();
-                tree->set_root_population_size(
-                        tree->get_root_population_size() + pop_size_change);
-                return std::log(multiplier) * num_heights;
+                return std::log(multiplier);
             }
-            // Change internal node pop sizes according to time changes
-            for (unsigned int i = 0; i < new_heights.size(); ++i) {
-                double height_diff = new_heights.at(i) - old_heights.at(i);
-                double pop_size_change = -height_diff / tree->get_ploidy();
-                std::vector< std::shared_ptr<PopulationNode> > mapped_nodes = tree->get_mapped_nodes(i);
-                for (auto node : mapped_nodes) {
-                    double pop_size = node->get_population_size();
-                    node->set_population_size(pop_size + pop_size_change);
+            // If we reach this point, the pop sizes are unconstrained.  In
+            // this case, we will scale the smallest pop size in the tree
+            // (ignoring leaf sizes), and then change all node heights and
+            // other sizes according to expectations under the coalescent.
+            // It's a bit convoluted, but by doing this, we are least likely
+            // to propose negative values for any parameters (though it is
+            // still possible for node heights). An alternative would be to
+            // simply scale all the node heights and then adjust their mapped
+            // nodes according to coalescent expectations, but this route seems
+            // much more likely to propose negative pop size values (which
+            // could be remedied by auto-tuning the magnitude of the proposals,
+            // but scaling the smallest pop size should limit how much of this
+            // is needed). The old code that scaled node heights is commented
+            // out below
+            double smallest_size = std::numeric_limits<double>::max();
+            for (auto node : tree->pre_ordered_nodes_) {
+                if (! node->is_leaf()) {
+                    if (node->get_population_size() < smallest_size) {
+                        smallest_size = node->get_population_size();
+                    }
                 }
             }
-            return std::log(multiplier) * num_heights;
+            double old_size = smallest_size;
+            double multiplier = this->op_.get_move_amount(rng);
+            double new_size = old_size * multiplier;
+            double size_change = new_size - old_size;
+            double height_change = -size_change * tree->get_ploidy();
+            for (unsigned int i = 0;
+                    i < tree->get_number_of_node_heights();
+                    ++i) {
+                double new_height = tree->get_height(i) + height_change;
+                if (new_height < 0.0) {
+                    return -std::numeric_limits<double>::infinity();
+                }
+                tree->node_heights_.at(i)->set_value(new_height);
+            }
+            for (auto node : tree->pre_ordered_nodes_) {
+                if (! node->is_leaf()) {
+                    double new_node_size = node->get_population_size() + size_change;
+                    if (new_node_size <= 0.0) {
+                        return -std::numeric_limits<double>::infinity();
+                    }
+                    node->set_population_size(new_node_size);
+                }
+            }
+            return std::log(multiplier);
+
+            // Old code that scaled all the node heights and then adjusted all
+            // the mapped nodes according to coalescent expectations.  Scaling
+            // the smallest pop size instead (as above), likely proposes less
+            // negative values, and thus requires less autotuning to work well.
+            // std::vector<double> old_heights = tree->get_node_heights();
+            // unsigned int num_heights = old_heights.size();
+            // double multiplier = this->op_.get_move_amount(rng);
+            // tree->scale_tree(multiplier);
+            // std::vector<double> new_heights = tree->get_node_heights();
+            // // Change internal node pop sizes according to time changes
+            // for (unsigned int i = 0; i < new_heights.size(); ++i) {
+            //     double height_diff = new_heights.at(i) - old_heights.at(i);
+            //     double pop_size_change = -height_diff / tree->get_ploidy();
+            //     std::vector< std::shared_ptr<PopulationNode> > mapped_nodes = tree->get_mapped_nodes(i);
+            //     for (auto node : mapped_nodes) {
+            //         double pop_size = node->get_population_size();
+            //         double new_size = pop_size + pop_size_change;
+            //         if (new_size <= 0.0) {
+            //             return -std::numeric_limits<double>::infinity();
+            //         }
+            //         node->set_population_size(pop_size + pop_size_change);
+            //     }
+            // }
+            // return std::log(multiplier) * num_heights;
         }
 };
 
@@ -2194,6 +2271,11 @@ class HeightSizeMixer : public GeneralTreeOperatorInterface<BasePopulationTree, 
         double propose(RandomNumberGenerator& rng,
                 BasePopulationTree * tree,
                 unsigned int nthreads = 1) {
+            if (tree->population_sizes_are_fixed() || tree->population_sizes_are_constrained()) {
+                // It doesn't make sense to use this move if the pop sizes are
+                // constrained or fixed
+                return -std::numeric_limits<double>::infinity();
+            }
             unsigned int num_heights = tree->get_number_of_node_heights();
             if (num_heights < 2) {
                 // No non-root heights to operate on
@@ -2202,10 +2284,32 @@ class HeightSizeMixer : public GeneralTreeOperatorInterface<BasePopulationTree, 
             unsigned int max_height_index = num_heights - 2;
             unsigned int height_index = rng.uniform_positive_int(
                     max_height_index);
-            double old_height = tree->get_height(height_index);
-            double new_height = old_height;
-            double ln_hastings;
-            this->update(rng, new_height, ln_hastings);
+
+            // Pop sizes are unconstrained, so will pick a node height, find
+            // the smallest pop size mapped to it and scale it. Then we will
+            // update the node height and the pop sizes of all other nodes
+            // mapped to it according to coalescent expectations.
+            std::vector< std::shared_ptr<PopulationNode> > mapped_nodes = tree->get_mapped_nodes(
+                    height_index);
+            double smallest_size = std::numeric_limits<double>::max();
+            for (auto node : mapped_nodes) {
+                if (node->get_population_size() < smallest_size) {
+                    smallest_size = node->get_population_size();
+                }
+            }
+            double old_size = smallest_size;
+            double multiplier = this->op_.get_move_amount(rng);
+            double new_size = old_size * multiplier;
+            double size_change = new_size - old_size;
+            double height_change = -size_change * tree->get_ploidy();
+            for (auto node : mapped_nodes) {
+                double new_node_size = node->get_population_size() + size_change;
+                if (new_node_size <= 0.0) {
+                    return -std::numeric_limits<double>::infinity();
+                }
+                node->set_population_size(new_node_size);
+            }
+            double new_height = tree->get_height(height_index) + height_change;
             if (new_height < tree->get_height_of_oldest_child(height_index)) {
                 return -std::numeric_limits<double>::infinity();
             }
@@ -2213,15 +2317,8 @@ class HeightSizeMixer : public GeneralTreeOperatorInterface<BasePopulationTree, 
                 return -std::numeric_limits<double>::infinity();
             }
             tree->set_height(height_index, new_height);
-            double height_diff = new_height - old_height;
-            double pop_size_change = -height_diff / tree->get_ploidy();
-            std::vector< std::shared_ptr<PopulationNode> > mapped_nodes = tree->get_mapped_nodes(
-                    height_index);
-            for (auto node : mapped_nodes) {
-                double pop_size = node->get_population_size();
-                node->set_population_size(pop_size + pop_size_change);
-            }
-            return ln_hastings;
+
+            return std::log(multiplier);
         }
 };
 
@@ -2294,6 +2391,11 @@ class RootHeightSizeMixer : public GeneralTreeOperatorInterface<BasePopulationTr
             if (tree->root_height_is_fixed()) {
                 return -std::numeric_limits<double>::infinity();
             }
+            if (tree->population_sizes_are_fixed() || tree->population_sizes_are_constrained()) {
+                // It doesn't make sense to use this move if the pop sizes are
+                // constrained or fixed
+                return -std::numeric_limits<double>::infinity();
+            }
             unsigned int num_heights = tree->get_number_of_node_heights();
             unsigned int height_index = num_heights - 1;
             double old_height = tree->get_height(height_index);
@@ -2355,6 +2457,11 @@ class HeightSizeSlideBumpMixer : public GeneralTreeOperatorInterface<BasePopulat
         double propose(RandomNumberGenerator& rng,
                 BasePopulationTree * tree,
                 unsigned int nthreads = 1) {
+            if (tree->population_sizes_are_fixed() || tree->population_sizes_are_constrained()) {
+                // It doesn't make sense to use the move if the pop sizes are
+                // constrained or fixed
+                return -std::numeric_limits<double>::infinity();
+            }
             unsigned int num_heights = tree->get_number_of_node_heights();
             if ((! this->operate_on_root_) && (num_heights < 2)) {
                 // No non-root heights to operate on
@@ -2370,7 +2477,7 @@ class HeightSizeSlideBumpMixer : public GeneralTreeOperatorInterface<BasePopulat
             double new_height = tree->get_height(height_index);
             double ln_multiplier;
             this->update(rng, new_height, ln_multiplier);
-            if (new_height < 0) {
+            if (new_height < 0.0) {
                 return -std::numeric_limits<double>::infinity();
             }
             if (new_height > tree->get_root_height()) {
@@ -2386,14 +2493,6 @@ class HeightSizeSlideBumpMixer : public GeneralTreeOperatorInterface<BasePopulat
             if (! move_happened) {
                 return -std::numeric_limits<double>::infinity();
             }
-            if (tree->population_sizes_are_fixed()) {
-                return ln_multiplier;
-            }
-            // If pop sizes are constrained it doesn't make sense to change pop
-            // size of whole tree if only some of the node heights changed
-            if (tree->population_sizes_are_constrained()) {
-                return ln_multiplier;
-            }
             std::vector<double> new_heights = tree->get_node_heights();
             // Change internal node pop sizes according to time changes
             for (unsigned int i = 0; i < new_heights.size(); ++i) {
@@ -2402,8 +2501,11 @@ class HeightSizeSlideBumpMixer : public GeneralTreeOperatorInterface<BasePopulat
                     double pop_size_change = -height_diff / tree->get_ploidy();
                     std::vector< std::shared_ptr<PopulationNode> > mapped_nodes = tree->get_mapped_nodes(i);
                     for (auto node : mapped_nodes) {
-                        double pop_size = node->get_population_size();
-                        node->set_population_size(pop_size + pop_size_change);
+                        double new_pop_size = node->get_population_size() + pop_size_change;
+                        if (new_pop_size <= 0.0) {
+                            return -std::numeric_limits<double>::infinity();
+                        }
+                        node->set_population_size(new_pop_size);
                     }
                 }
             }

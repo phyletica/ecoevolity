@@ -29,10 +29,12 @@
 #include "assert.hpp"
 
 class PopSizeScaler;
+class GlobalHeightSizeMixer;
 
 template<class NodeType>
 class BaseTree {
         friend class PopSizeScaler;
+        friend class GlobalHeightSizeMixer;
 
     protected:
         std::shared_ptr<NodeType> root_;
