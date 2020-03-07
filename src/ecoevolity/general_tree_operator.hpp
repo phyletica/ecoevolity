@@ -125,6 +125,7 @@ class GeneralTreeOperatorTemplate : public BaseGeneralTreeOperatorTemplate {
                 TreeType * tree,
                 unsigned int nthreads = 1) = 0;
 
+        virtual bool is_operable(TreeType * tree) const { return true; }
         virtual void operate(RandomNumberGenerator& rng,
                 TreeType * tree,
                 unsigned int nthreads = 1,
@@ -578,6 +579,12 @@ class TreeScaler : public GeneralTreeOperatorInterface<BaseTree<NodeType>, Scale
             return BaseGeneralTreeOperatorTemplate::OperatorTypeEnum::global_height_operator;
         }
 
+        bool is_operable(BaseTree<NodeType> * tree) const {
+            if (tree->root_height_is_fixed()) {
+                return false;
+            }
+            return true;
+        }
         /**
          * @brief   Propose a new state.
          *
@@ -586,7 +593,7 @@ class TreeScaler : public GeneralTreeOperatorInterface<BaseTree<NodeType>, Scale
         double propose(RandomNumberGenerator& rng,
                 BaseTree<NodeType> * tree,
                 unsigned int nthreads = 1) {
-            if (tree->root_height_is_fixed()) {
+            if (! this->is_operable(tree)) {
                 return -std::numeric_limits<double>::infinity();
             }
             unsigned int num_heights = tree->get_number_of_node_heights();
@@ -615,6 +622,15 @@ class NodeHeightScaler : public GeneralTreeOperatorInterface<BaseTree<NodeType>,
             return BaseGeneralTreeOperatorTemplate::OperatorTypeEnum::node_height_operator;
         }
 
+        bool is_operable(BaseTree<NodeType> * tree) const {
+            unsigned int num_heights = tree->get_number_of_node_heights();
+            if (num_heights < 2) {
+                // No non-root heights to operate on
+                return false;
+            }
+            return true;
+        }
+
         /**
          * @brief   Propose a new state.
          *
@@ -623,11 +639,10 @@ class NodeHeightScaler : public GeneralTreeOperatorInterface<BaseTree<NodeType>,
         double propose(RandomNumberGenerator& rng,
                 BaseTree<NodeType> * tree,
                 unsigned int nthreads = 1) {
-            unsigned int num_heights = tree->get_number_of_node_heights();
-            if (num_heights < 2) {
-                // No non-root heights to operate on
+            if (! this->is_operable(tree)) {
                 return -std::numeric_limits<double>::infinity();
             }
+            unsigned int num_heights = tree->get_number_of_node_heights();
             unsigned int max_height_index = num_heights - 2;
             unsigned int height_index = rng.uniform_int(0,
                     max_height_index);
@@ -667,6 +682,13 @@ class RootHeightScaler : public GeneralTreeOperatorInterface<BaseTree<NodeType>,
             return BaseGeneralTreeOperatorTemplate::OperatorTypeEnum::root_height_operator;
         }
 
+        bool is_operable(BaseTree<NodeType> * tree) const {
+            if (tree->root_height_is_fixed()) {
+                return false;
+            }
+            return true;
+        }
+
         /**
          * @brief   Propose a new state.
          *
@@ -675,7 +697,7 @@ class RootHeightScaler : public GeneralTreeOperatorInterface<BaseTree<NodeType>,
         double propose(RandomNumberGenerator& rng,
                 BaseTree<NodeType> * tree,
                 unsigned int nthreads = 1) {
-            if (tree->root_height_is_fixed()) {
+            if (! this->is_operable(tree)) {
                 return -std::numeric_limits<double>::infinity();
             }
             unsigned int num_heights = tree->get_number_of_node_heights();
@@ -721,6 +743,13 @@ class NodeHeightPriorAlphaScaler : public GeneralTreeOperatorInterface<BaseTree<
             return BaseGeneralTreeOperatorTemplate::OperatorTypeEnum::node_height_prior_operator;
         }
 
+        bool is_operable(BaseTree<NodeType> * tree) const {
+            if (tree->alpha_of_node_height_beta_prior_is_fixed()) {
+                return false;
+            }
+            return true;
+        }
+
         /**
          * @brief   Propose a new state.
          *
@@ -729,7 +758,7 @@ class NodeHeightPriorAlphaScaler : public GeneralTreeOperatorInterface<BaseTree<
         double propose(RandomNumberGenerator& rng,
                 BaseTree<NodeType> * tree,
                 unsigned int nthreads = 1) {
-            if (tree->alpha_of_node_height_beta_prior_is_fixed()) {
+            if (! this->is_operable(tree)) {
                 return -std::numeric_limits<double>::infinity();
             }
             double new_alpha = tree->get_alpha_of_node_height_beta_prior();
@@ -759,6 +788,13 @@ class NodeHeightPriorAlphaMover : public GeneralTreeOperatorInterface<BaseTree<N
             return BaseGeneralTreeOperatorTemplate::OperatorTypeEnum::node_height_prior_operator;
         }
 
+        bool is_operable(BaseTree<NodeType> * tree) const {
+            if (tree->alpha_of_node_height_beta_prior_is_fixed()) {
+                return false;
+            }
+            return true;
+        }
+
         /**
          * @brief   Propose a new state.
          *
@@ -767,7 +803,7 @@ class NodeHeightPriorAlphaMover : public GeneralTreeOperatorInterface<BaseTree<N
         double propose(RandomNumberGenerator& rng,
                 BaseTree<NodeType> * tree,
                 unsigned int nthreads = 1) {
-            if (tree->alpha_of_node_height_beta_prior_is_fixed()) {
+            if (! this->is_operable(tree)) {
                 return -std::numeric_limits<double>::infinity();
             }
             double new_alpha = tree->get_alpha_of_node_height_beta_prior();
@@ -800,6 +836,13 @@ class NodeHeightPriorBetaScaler : public GeneralTreeOperatorInterface<BaseTree<N
             return BaseGeneralTreeOperatorTemplate::OperatorTypeEnum::node_height_prior_operator;
         }
 
+        bool is_operable(BaseTree<NodeType> * tree) const {
+            if (tree->beta_of_node_height_beta_prior_is_fixed()) {
+                return false;
+            }
+            return true;
+        }
+
         /**
          * @brief   Propose a new state.
          *
@@ -808,7 +851,7 @@ class NodeHeightPriorBetaScaler : public GeneralTreeOperatorInterface<BaseTree<N
         double propose(RandomNumberGenerator& rng,
                 BaseTree<NodeType> * tree,
                 unsigned int nthreads = 1) {
-            if (tree->beta_of_node_height_beta_prior_is_fixed()) {
+            if (! this->is_operable(tree)) {
                 return -std::numeric_limits<double>::infinity();
             }
             double new_beta = tree->get_beta_of_node_height_beta_prior();
@@ -838,6 +881,13 @@ class NodeHeightPriorBetaMover : public GeneralTreeOperatorInterface<BaseTree<No
             return BaseGeneralTreeOperatorTemplate::OperatorTypeEnum::node_height_prior_operator;
         }
 
+        bool is_operable(BaseTree<NodeType> * tree) const {
+            if (tree->beta_of_node_height_beta_prior_is_fixed()) {
+                return false;
+            }
+            return true;
+        }
+
         /**
          * @brief   Propose a new state.
          *
@@ -846,7 +896,7 @@ class NodeHeightPriorBetaMover : public GeneralTreeOperatorInterface<BaseTree<No
         double propose(RandomNumberGenerator& rng,
                 BaseTree<NodeType> * tree,
                 unsigned int nthreads = 1) {
-            if (tree->beta_of_node_height_beta_prior_is_fixed()) {
+            if (! this->is_operable(tree)) {
                 return -std::numeric_limits<double>::infinity();
             }
             double new_beta = tree->get_beta_of_node_height_beta_prior();
@@ -896,6 +946,15 @@ class NodeHeightSlideBumpScaler : public GeneralTreeOperatorInterface<BaseTree<N
             this->operate_on_root_ = operate_on_root;
         }
 
+        bool is_operable(BaseTree<NodeType> * tree) const {
+            unsigned int num_heights = tree->get_number_of_node_heights();
+            if ((! this->operate_on_root_) && (num_heights < 2)) {
+                // No non-root heights to operate on
+                return false;
+            }
+            return true;
+        }
+
         /**
          * @brief   Propose a new state.
          *
@@ -904,11 +963,10 @@ class NodeHeightSlideBumpScaler : public GeneralTreeOperatorInterface<BaseTree<N
         double propose(RandomNumberGenerator& rng,
                 BaseTree<NodeType> * tree,
                 unsigned int nthreads = 1) {
-            unsigned int num_heights = tree->get_number_of_node_heights();
-            if ((! this->operate_on_root_) && (num_heights < 2)) {
-                // No non-root heights to operate on
+            if (! this->is_operable(tree)) {
                 return -std::numeric_limits<double>::infinity();
             }
+            unsigned int num_heights = tree->get_number_of_node_heights();
             unsigned int max_height_index = num_heights - 2;
             if (this->operate_on_root_) {
                 max_height_index = num_heights - 1;
@@ -1008,6 +1066,15 @@ class NodeHeightMover : public GeneralTreeOperatorInterface<BaseTree<NodeType>, 
             return BaseGeneralTreeOperatorTemplate::OperatorTypeEnum::node_height_operator;
         }
 
+        bool is_operable(BaseTree<NodeType> * tree) const {
+            unsigned int num_heights = tree->get_number_of_node_heights();
+            if (num_heights < 2) {
+                // No non-root heights to operate on
+                return false;
+            }
+            return true;
+        }
+
         /**
          * @brief   Propose a new state.
          *
@@ -1016,11 +1083,10 @@ class NodeHeightMover : public GeneralTreeOperatorInterface<BaseTree<NodeType>, 
         double propose(RandomNumberGenerator& rng,
                 BaseTree<NodeType> * tree,
                 unsigned int nthreads = 1) {
-            unsigned int num_heights = tree->get_number_of_node_heights();
-            if (num_heights < 2) {
-                // No non-root heights to operate on
+            if (! this->is_operable(tree)) {
                 return -std::numeric_limits<double>::infinity();
             }
+            unsigned int num_heights = tree->get_number_of_node_heights();
             unsigned int max_height_index = num_heights - 2;
             unsigned int height_index = rng.uniform_int(0,
                     max_height_index);
@@ -1079,6 +1145,15 @@ class NodeHeightSlideBumpMover : public GeneralTreeOperatorInterface<BaseTree<No
             this->operate_on_root_ = operate_on_root;
         }
 
+        bool is_operable(BaseTree<NodeType> * tree) const {
+            unsigned int num_heights = tree->get_number_of_node_heights();
+            if ((! this->operate_on_root_) && (num_heights < 2)) {
+                // No non-root heights to operate on
+                return false;
+            }
+            return true;
+        }
+
         /**
          * @brief   Propose a new state.
          *
@@ -1087,11 +1162,10 @@ class NodeHeightSlideBumpMover : public GeneralTreeOperatorInterface<BaseTree<No
         double propose(RandomNumberGenerator& rng,
                 BaseTree<NodeType> * tree,
                 unsigned int nthreads = 1) {
-            unsigned int num_heights = tree->get_number_of_node_heights();
-            if ((! this->operate_on_root_) && (num_heights < 2)) {
-                // No non-root heights to operate on
+            if (! this->is_operable(tree)) {
                 return -std::numeric_limits<double>::infinity();
             }
+            unsigned int num_heights = tree->get_number_of_node_heights();
             unsigned int max_height_index = num_heights - 2;
             if (this->operate_on_root_) {
                 max_height_index = num_heights - 1;
@@ -1194,6 +1268,15 @@ class NeighborHeightNodePermute : public GeneralTreeOperatorInterface<BaseTree<N
             return BaseGeneralTreeOperatorTemplate::OperatorTypeEnum::topology_operator;
         }
 
+        bool is_operable(BaseTree<NodeType> * tree) const {
+            unsigned int num_node_heights = tree->get_number_of_node_heights();
+            if (num_node_heights == 1) {
+                // In comb state, so nothing to do; force rejection
+                return false;
+            }
+            return true;
+        }
+
         /**
          * @brief   Propose a new state.
          *
@@ -1202,11 +1285,10 @@ class NeighborHeightNodePermute : public GeneralTreeOperatorInterface<BaseTree<N
         double propose(RandomNumberGenerator& rng,
                 BaseTree<NodeType> * tree,
                 unsigned int nthreads = 1) {
-            unsigned int num_node_heights = tree->get_number_of_node_heights();
-            if (num_node_heights == 1) {
-                // In comb state, so nothing to do; force rejection
+            if (! this->is_operable(tree)) {
                 return -std::numeric_limits<double>::infinity();
             }
+            unsigned int num_node_heights = tree->get_number_of_node_heights();
             unsigned int height_index = rng.uniform_int(0,
                     num_node_heights - 2);
             tree->collision_node_permute(rng,
@@ -1236,6 +1318,15 @@ class NeighborHeightNodeSwap : public GeneralTreeOperatorInterface<BaseTree<Node
             return BaseGeneralTreeOperatorTemplate::OperatorTypeEnum::topology_operator;
         }
 
+        bool is_operable(BaseTree<NodeType> * tree) const {
+            unsigned int num_node_heights = tree->get_number_of_node_heights();
+            if (num_node_heights == 1) {
+                // In comb state, so nothing to do; force rejection
+                return false;
+            }
+            return true;
+        }
+
         /**
          * @brief   Propose a new state.
          *
@@ -1244,11 +1335,10 @@ class NeighborHeightNodeSwap : public GeneralTreeOperatorInterface<BaseTree<Node
         double propose(RandomNumberGenerator& rng,
                 BaseTree<NodeType> * tree,
                 unsigned int nthreads = 1) {
-            unsigned int num_node_heights = tree->get_number_of_node_heights();
-            if (num_node_heights == 1) {
-                // In comb state, so nothing to do; force rejection
+            if (! this->is_operable(tree)) {
                 return -std::numeric_limits<double>::infinity();
             }
+            unsigned int num_node_heights = tree->get_number_of_node_heights();
             unsigned int height_index = rng.uniform_int(0,
                     num_node_heights - 2);
             tree->collision_node_swap(rng,
@@ -1293,6 +1383,10 @@ class SplitLumpNodesRevJumpSampler : public GeneralTreeOperatorInterface<BaseTre
                 this->bell_numbers[n] = bell_float(n);
             }
             return this->bell_numbers[n];
+        }
+
+        bool is_operable(BaseTree<NodeType> * tree) const {
+            return true;
         }
 
         void operate_plus(RandomNumberGenerator& rng,
@@ -1930,6 +2024,13 @@ class GlobalPopSizeScaler : public GeneralTreeOperatorInterface<BasePopulationTr
             return BaseGeneralTreeOperatorTemplate::OperatorTypeEnum::derived_operator;
         }
 
+        bool is_operable(BasePopulationTree * tree) const {
+            if (tree->population_sizes_are_fixed()) {
+                return false;
+            }
+            return true;
+        }
+
         /**
          * @brief   Propose a new state.
          *
@@ -1938,7 +2039,7 @@ class GlobalPopSizeScaler : public GeneralTreeOperatorInterface<BasePopulationTr
         double propose(RandomNumberGenerator& rng,
                 BasePopulationTree * tree,
                 unsigned int nthreads = 1) {
-            if (tree->population_sizes_are_fixed()) {
+            if (! this->is_operable(tree)) {
                 return -std::numeric_limits<double>::infinity();
             }
             double multiplier = this->op_.get_move_amount(rng);
@@ -1966,6 +2067,13 @@ class PopSizeScaler : public GeneralTreeOperatorInterface<BasePopulationTree, Sc
             return BaseGeneralTreeOperatorTemplate::OperatorTypeEnum::derived_operator;
         }
 
+        bool is_operable(BasePopulationTree * tree) const {
+            if (tree->population_sizes_are_fixed()) {
+                return false;
+            }
+            return true;
+        }
+
         /**
          * @brief   Propose a new state.
          *
@@ -1974,7 +2082,7 @@ class PopSizeScaler : public GeneralTreeOperatorInterface<BasePopulationTree, Sc
         double propose(RandomNumberGenerator& rng,
                 BasePopulationTree * tree,
                 unsigned int nthreads = 1) {
-            if (tree->population_sizes_are_fixed()) {
+            if (! this->is_operable(tree)) {
                 return -std::numeric_limits<double>::infinity();
             }
             unsigned int random_node_index = rng.uniform_positive_int(
@@ -2014,6 +2122,13 @@ class MuRateScaler : public GeneralTreeOperatorInterface<BasePopulationTree, Sca
             return BaseGeneralTreeOperatorTemplate::OperatorTypeEnum::derived_operator;
         }
 
+        bool is_operable(BasePopulationTree * tree) const {
+            if (tree->mutation_rate_is_fixed()) {
+                return false;
+            }
+            return true;
+        }
+
         /**
          * @brief   Propose a new state.
          *
@@ -2022,7 +2137,7 @@ class MuRateScaler : public GeneralTreeOperatorInterface<BasePopulationTree, Sca
         double propose(RandomNumberGenerator& rng,
                 BasePopulationTree * tree,
                 unsigned int nthreads = 1) {
-            if (tree->mutation_rate_is_fixed()) {
+            if (! this->is_operable(tree)) {
                 return -std::numeric_limits<double>::infinity();
             }
             double mutation_rate = tree->get_mutation_rate();
@@ -2052,6 +2167,16 @@ class GlobalHeightSizeMixer : public GeneralTreeOperatorInterface<BasePopulation
 
         BaseGeneralTreeOperatorTemplate::OperatorTypeEnum get_type() const {
             return BaseGeneralTreeOperatorTemplate::OperatorTypeEnum::global_height_operator;
+        }
+
+        bool is_operable(BasePopulationTree * tree) const {
+            if (tree->root_height_is_fixed()) {
+                return false;
+            }
+            if (tree->population_sizes_are_fixed()) {
+                return false;
+            }
+            return true;
         }
 
         /**
@@ -2104,10 +2229,7 @@ class GlobalHeightSizeMixer : public GeneralTreeOperatorInterface<BasePopulation
         double propose(RandomNumberGenerator& rng,
                 BasePopulationTree * tree,
                 unsigned int nthreads = 1) {
-            if (tree->root_height_is_fixed()) {
-                return -std::numeric_limits<double>::infinity();
-            }
-            if (tree->population_sizes_are_fixed()) {
+            if (! this->is_operable(tree)) {
                 return -std::numeric_limits<double>::infinity();
             }
             if (tree->population_sizes_are_constrained()) {
@@ -2222,6 +2344,20 @@ class HeightSizeMixer : public GeneralTreeOperatorInterface<BasePopulationTree, 
             return BaseGeneralTreeOperatorTemplate::OperatorTypeEnum::node_height_operator;
         }
 
+        bool is_operable(BasePopulationTree * tree) const {
+            if (tree->population_sizes_are_fixed() || tree->population_sizes_are_constrained()) {
+                // It doesn't make sense to use this move if the pop sizes are
+                // constrained or fixed
+                return false;
+            }
+            unsigned int num_heights = tree->get_number_of_node_heights();
+            if (num_heights < 2) {
+                // No non-root heights to operate on
+                return false;
+            }
+            return true;
+        }
+
         /**
          * @brief   Propose a new state.
          *
@@ -2271,16 +2407,10 @@ class HeightSizeMixer : public GeneralTreeOperatorInterface<BasePopulationTree, 
         double propose(RandomNumberGenerator& rng,
                 BasePopulationTree * tree,
                 unsigned int nthreads = 1) {
-            if (tree->population_sizes_are_fixed() || tree->population_sizes_are_constrained()) {
-                // It doesn't make sense to use this move if the pop sizes are
-                // constrained or fixed
+            if (! this->is_operable(tree)) {
                 return -std::numeric_limits<double>::infinity();
             }
             unsigned int num_heights = tree->get_number_of_node_heights();
-            if (num_heights < 2) {
-                // No non-root heights to operate on
-                return -std::numeric_limits<double>::infinity();
-            }
             unsigned int max_height_index = num_heights - 2;
             unsigned int height_index = rng.uniform_positive_int(
                     max_height_index);
@@ -2339,6 +2469,18 @@ class RootHeightSizeMixer : public GeneralTreeOperatorInterface<BasePopulationTr
             return BaseGeneralTreeOperatorTemplate::OperatorTypeEnum::root_height_operator;
         }
 
+        bool is_operable(BasePopulationTree * tree) const {
+            if (tree->root_height_is_fixed()) {
+                return false;
+            }
+            if (tree->population_sizes_are_fixed() || tree->population_sizes_are_constrained()) {
+                // It doesn't make sense to use this move if the pop sizes are
+                // constrained or fixed
+                return false;
+            }
+            return true;
+        }
+
         /**
          * @brief   Propose a new state.
          *
@@ -2388,29 +2530,24 @@ class RootHeightSizeMixer : public GeneralTreeOperatorInterface<BasePopulationTr
         double propose(RandomNumberGenerator& rng,
                 BasePopulationTree * tree,
                 unsigned int nthreads = 1) {
-            if (tree->root_height_is_fixed()) {
+            if (! this->is_operable(tree)) {
                 return -std::numeric_limits<double>::infinity();
             }
-            if (tree->population_sizes_are_fixed() || tree->population_sizes_are_constrained()) {
-                // It doesn't make sense to use this move if the pop sizes are
-                // constrained or fixed
+            double old_size = tree->get_root_population_size();
+            double multiplier = this->op_.get_move_amount(rng);
+            double new_size = old_size * multiplier;
+            if (new_size <= 0.0) {
                 return -std::numeric_limits<double>::infinity();
             }
-            unsigned int num_heights = tree->get_number_of_node_heights();
-            unsigned int height_index = num_heights - 1;
-            double old_height = tree->get_height(height_index);
-            double new_height = old_height;
-            double ln_multiplier;
-            this->update(rng, new_height, ln_multiplier);
-            if (new_height < tree->get_height_of_oldest_child(height_index)) {
+            double size_change = new_size - old_size;
+            double height_change = -size_change * tree->get_ploidy();
+            double new_height = tree->get_root_height() + height_change;
+            if (new_height < 0.0) {
                 return -std::numeric_limits<double>::infinity();
             }
-            tree->set_height(height_index, new_height);
-            double height_diff = new_height - old_height;
-            double pop_size_change = -height_diff / tree->get_ploidy();
-            double pop_size = tree->get_root_population_size();
-            tree->set_root_population_size(pop_size + pop_size_change);
-            return ln_multiplier;
+            tree->set_root_population_size(new_size);
+            tree->set_root_height(new_height);
+            return std::log(multiplier);
         }
 };
 
@@ -2449,6 +2586,20 @@ class HeightSizeSlideBumpMixer : public GeneralTreeOperatorInterface<BasePopulat
             this->operate_on_root_ = operate_on_root;
         }
 
+        bool is_operable(BasePopulationTree * tree) const {
+            if (tree->population_sizes_are_fixed() || tree->population_sizes_are_constrained()) {
+                // It doesn't make sense to use the move if the pop sizes are
+                // constrained or fixed
+                return false;
+            }
+            unsigned int num_heights = tree->get_number_of_node_heights();
+            if ((! this->operate_on_root_) && (num_heights < 2)) {
+                // No non-root heights to operate on
+                return false;
+            }
+            return true;
+        }
+
         /**
          * @brief   Propose a new state.
          *
@@ -2457,16 +2608,10 @@ class HeightSizeSlideBumpMixer : public GeneralTreeOperatorInterface<BasePopulat
         double propose(RandomNumberGenerator& rng,
                 BasePopulationTree * tree,
                 unsigned int nthreads = 1) {
-            if (tree->population_sizes_are_fixed() || tree->population_sizes_are_constrained()) {
-                // It doesn't make sense to use the move if the pop sizes are
-                // constrained or fixed
+            if (! this->is_operable(tree)) {
                 return -std::numeric_limits<double>::infinity();
             }
             unsigned int num_heights = tree->get_number_of_node_heights();
-            if ((! this->operate_on_root_) && (num_heights < 2)) {
-                // No non-root heights to operate on
-                return -std::numeric_limits<double>::infinity();
-            }
             unsigned int max_height_index = num_heights - 2;
             if (this->operate_on_root_) {
                 max_height_index = num_heights - 1;
@@ -2536,6 +2681,13 @@ class GlobalHeightSizeRateScaler : public GeneralTreeOperatorInterface<BasePopul
             return BaseGeneralTreeOperatorTemplate::OperatorTypeEnum::global_height_operator;
         }
 
+        bool is_operable(BasePopulationTree * tree) const {
+            if (tree->root_height_is_fixed()) {
+                return false;
+            }
+            return true;
+        }
+
         /**
          * @brief   Propose a new state.
          *
@@ -2544,7 +2696,7 @@ class GlobalHeightSizeRateScaler : public GeneralTreeOperatorInterface<BasePopul
         double propose(RandomNumberGenerator& rng,
                 BasePopulationTree * tree,
                 unsigned int nthreads = 1) {
-            if (tree->root_height_is_fixed()) {
+            if (! this->is_operable(tree)) {
                 return -std::numeric_limits<double>::infinity();
             }
             unsigned int num_params_scaled = tree->get_number_of_node_heights();

@@ -6699,7 +6699,7 @@ TEST_CASE("Testing TreeScaler with 3 leaves, gamma root, internal free, and opti
         "[TreeScaler]") {
 
     SECTION("Testing 3 leaves with variable root, internal free, and optimizing") {
-        RandomNumberGenerator rng = RandomNumberGenerator(4);
+        RandomNumberGenerator rng = RandomNumberGenerator(1422315338);
 
         double root_height_shape = 10.0;
         double root_height_scale = 0.05;
@@ -7939,5 +7939,1134 @@ TEST_CASE("Testing GlobalHeightSizeMixer with 3 leaves, constrained sizes, and o
         REQUIRE(root_height_summary.variance() == Approx(root_height_prior->get_variance()).epsilon(eps));
         REQUIRE(internal_height_summary.mean() == Approx(prior.get_mean()).epsilon(eps));
         REQUIRE(internal_height_summary.variance() == Approx(prior.get_variance()).epsilon(eps));
+    }
+}
+
+TEST_CASE("Testing HeightSizeMixer with 3 leaves, unconstrained sizes, and optimizing",
+        "[HeightSizeMixer]") {
+
+    SECTION("Testing 3 leaves, unconstrained sizes, and optimizing") {
+        RandomNumberGenerator rng = RandomNumberGenerator(6416461);
+
+        double root_height_shape = 20.0;
+        double root_height_scale = 0.025;
+        std::shared_ptr<ContinuousProbabilityDistribution> root_height_prior = std::make_shared<GammaDistribution>(
+                root_height_shape,
+                root_height_scale);
+
+        double pop_size_shape = 10.0;
+        double pop_size_scale = 0.02;
+        std::shared_ptr<ContinuousProbabilityDistribution> pop_size_prior = std::make_shared<GammaDistribution>(
+                pop_size_shape,
+                pop_size_scale);
+
+        std::shared_ptr<PopulationNode> root = std::make_shared<PopulationNode>(4, "root", 0.5);
+        std::shared_ptr<PopulationNode> internal0 = std::make_shared<PopulationNode>(3, "internal0", 0.25);
+        std::shared_ptr<PopulationNode> leaf0 = std::make_shared<PopulationNode>(0, "leaf0", 0.0);
+        std::shared_ptr<PopulationNode> leaf1 = std::make_shared<PopulationNode>(1, "leaf1", 0.0);
+        std::shared_ptr<PopulationNode> leaf2 = std::make_shared<PopulationNode>(2, "leaf2", 0.0);
+
+        internal0->add_child(leaf0);
+        internal0->add_child(leaf1);
+        root->add_child(internal0);
+        root->add_child(leaf2);
+
+        BasePopulationTree tree(root);
+
+        tree.ignore_data();
+        tree.estimate_root_height();
+
+        tree.set_population_size_prior(pop_size_prior);
+        tree.set_root_node_height_prior(root_height_prior);
+
+        HeightSizeMixer op;
+        op.turn_on_auto_optimize();
+        op.set_auto_optimize_delay(100);
+        RootHeightSizeMixer rop;
+        rop.turn_on_auto_optimize();
+        rop.set_auto_optimize_delay(100);
+
+        PopSizeScaler op2;
+        op2.turn_on_auto_optimize();
+        op2.set_auto_optimize_delay(100);
+        NodeHeightScaler<PopulationNode> op3;
+        op3.turn_on_auto_optimize();
+        op3.set_auto_optimize_delay(100);
+
+        REQUIRE(op.auto_optimizing());
+        REQUIRE(op.get_auto_optimize_delay() == 100);
+        REQUIRE(rop.auto_optimizing());
+        REQUIRE(rop.get_auto_optimize_delay() == 100);
+
+        // Initialize prior probs
+        tree.compute_log_likelihood_and_prior(true);
+
+        std::vector< std::shared_ptr<PositiveRealParameter> > pop_sizes = tree.get_pointers_to_population_sizes();
+        REQUIRE(pop_sizes.size() == 5);
+        std::vector<SampleSummarizer<double> > pop_size_summaries(pop_sizes.size());
+
+        SampleSummarizer<double> root_height_summary;
+        SampleSummarizer<double> internal_height_summary;
+
+        unsigned int nmoves_per_op = 2;
+        unsigned int niterations = 200000;
+        unsigned int sample_freq = 5;
+        unsigned int nsamples = niterations / sample_freq;
+        for (unsigned int i = 0; i < niterations; ++i) {
+            op.operate(rng, &tree, 1);
+            rop.operate(rng, &tree, 1);
+            op2.operate(rng, &tree, 1, nmoves_per_op);
+            op3.operate(rng, &tree, 1, nmoves_per_op);
+            if ((i + 1) % sample_freq == 0) {
+                pop_sizes = tree.get_pointers_to_population_sizes();
+                REQUIRE(pop_sizes.size() == 5);
+                for (unsigned int i = 0; i < pop_sizes.size(); ++i) {
+                    pop_size_summaries.at(i).add_sample(pop_sizes.at(i)->get_value());
+                }
+                root_height_summary.add_sample(tree.get_root_height());
+                internal_height_summary.add_sample(tree.get_height(0) / tree.get_height(1));
+            }
+        }
+        std::cout << op.header_string();
+        std::cout << op.to_string();
+        std::cout << rop.header_string();
+        std::cout << rop.to_string();
+        std::cout << op2.header_string();
+        std::cout << op2.to_string();
+        std::cout << op3.header_string();
+        std::cout << op3.to_string();
+
+        REQUIRE(op.get_number_of_attempts() == niterations);
+        REQUIRE(op.get_number_of_attempts_for_correction() == (niterations - 100));
+        REQUIRE(rop.get_number_of_attempts() == niterations);
+        REQUIRE(rop.get_number_of_attempts_for_correction() == (niterations - 100));
+        REQUIRE(op2.get_number_of_attempts() == (niterations * nmoves_per_op));
+        REQUIRE(op2.get_number_of_attempts_for_correction() == ((nmoves_per_op * niterations) - 100));
+        REQUIRE(op3.get_number_of_attempts() == (niterations * nmoves_per_op));
+        REQUIRE(op3.get_number_of_attempts_for_correction() == ((nmoves_per_op * niterations) - 100));
+
+        double eps = 0.001;
+        for (unsigned int i = 0; i < pop_size_summaries.size(); ++i) {
+            REQUIRE(pop_size_summaries.at(i).sample_size() == nsamples);
+            REQUIRE(pop_size_summaries.at(i).mean() == Approx(pop_size_prior->get_mean()).epsilon(eps));
+            REQUIRE(pop_size_summaries.at(i).variance() == Approx(pop_size_prior->get_variance()).epsilon(eps));
+        }
+
+        BetaDistribution prior(1.0, 1.0);
+
+        REQUIRE(root_height_summary.mean() == Approx(root_height_prior->get_mean()).epsilon(eps));
+        REQUIRE(root_height_summary.variance() == Approx(root_height_prior->get_variance()).epsilon(eps));
+        REQUIRE(internal_height_summary.mean() == Approx(prior.get_mean()).epsilon(eps));
+        REQUIRE(internal_height_summary.variance() == Approx(prior.get_variance()).epsilon(eps));
+    }
+}
+
+TEST_CASE("Testing HeightSizeSlideBumpMixer with 3 leaves, unconstrained sizes, and optimizing",
+        "[HeightSizeSlideBumpMixer]") {
+
+    SECTION("Testing 3 leaves, unconstrained sizes, and optimizing") {
+        RandomNumberGenerator rng = RandomNumberGenerator(51464654);
+
+        double root_height_shape = 20.0;
+        double root_height_scale = 0.025;
+        std::shared_ptr<ContinuousProbabilityDistribution> root_height_prior = std::make_shared<GammaDistribution>(
+                root_height_shape,
+                root_height_scale);
+
+        double pop_size_shape = 10.0;
+        double pop_size_scale = 0.02;
+        std::shared_ptr<ContinuousProbabilityDistribution> pop_size_prior = std::make_shared<GammaDistribution>(
+                pop_size_shape,
+                pop_size_scale);
+
+        std::shared_ptr<PopulationNode> root = std::make_shared<PopulationNode>(4, "root", 0.5);
+        std::shared_ptr<PopulationNode> internal0 = std::make_shared<PopulationNode>(3, "internal0", 0.25);
+        std::shared_ptr<PopulationNode> leaf0 = std::make_shared<PopulationNode>(0, "leaf0", 0.0);
+        std::shared_ptr<PopulationNode> leaf1 = std::make_shared<PopulationNode>(1, "leaf1", 0.0);
+        std::shared_ptr<PopulationNode> leaf2 = std::make_shared<PopulationNode>(2, "leaf2", 0.0);
+
+        internal0->add_child(leaf0);
+        internal0->add_child(leaf1);
+        root->add_child(internal0);
+        root->add_child(leaf2);
+
+        BasePopulationTree tree(root);
+
+        tree.ignore_data();
+        tree.estimate_root_height();
+
+        tree.set_population_size_prior(pop_size_prior);
+        tree.set_root_node_height_prior(root_height_prior);
+
+        HeightSizeSlideBumpMixer op;
+        op.turn_on_auto_optimize();
+        op.set_auto_optimize_delay(100);
+        RootHeightSizeMixer rop;
+        rop.turn_on_auto_optimize();
+        rop.set_auto_optimize_delay(100);
+
+        PopSizeScaler op2;
+        op2.turn_on_auto_optimize();
+        op2.set_auto_optimize_delay(100);
+        NodeHeightScaler<PopulationNode> op3;
+        op3.turn_on_auto_optimize();
+        op3.set_auto_optimize_delay(100);
+
+        REQUIRE(op.auto_optimizing());
+        REQUIRE(op.get_auto_optimize_delay() == 100);
+        REQUIRE(rop.auto_optimizing());
+        REQUIRE(rop.get_auto_optimize_delay() == 100);
+
+        // Initialize prior probs
+        tree.compute_log_likelihood_and_prior(true);
+
+        std::vector< std::shared_ptr<PositiveRealParameter> > pop_sizes = tree.get_pointers_to_population_sizes();
+        REQUIRE(pop_sizes.size() == 5);
+        std::vector<SampleSummarizer<double> > pop_size_summaries(pop_sizes.size());
+
+        SampleSummarizer<double> root_height_summary;
+        SampleSummarizer<double> internal_height_summary;
+
+        unsigned int nmoves_per_op = 1;
+        unsigned int niterations = 300000;
+        unsigned int sample_freq = 5;
+        unsigned int nsamples = niterations / sample_freq;
+        for (unsigned int i = 0; i < niterations; ++i) {
+            op.operate(rng, &tree, 1);
+            rop.operate(rng, &tree, 1);
+            op2.operate(rng, &tree, 1, nmoves_per_op);
+            op3.operate(rng, &tree, 1, nmoves_per_op);
+            if ((i + 1) % sample_freq == 0) {
+                pop_sizes = tree.get_pointers_to_population_sizes();
+                REQUIRE(pop_sizes.size() == 5);
+                for (unsigned int i = 0; i < pop_sizes.size(); ++i) {
+                    pop_size_summaries.at(i).add_sample(pop_sizes.at(i)->get_value());
+                }
+                root_height_summary.add_sample(tree.get_root_height());
+                internal_height_summary.add_sample(tree.get_height(0) / tree.get_height(1));
+            }
+        }
+        std::cout << op.header_string();
+        std::cout << op.to_string();
+        std::cout << rop.header_string();
+        std::cout << rop.to_string();
+        std::cout << op2.header_string();
+        std::cout << op2.to_string();
+        std::cout << op3.header_string();
+        std::cout << op3.to_string();
+
+        REQUIRE(op.get_number_of_attempts() == niterations);
+        REQUIRE(op.get_number_of_attempts_for_correction() == (niterations - 100));
+        REQUIRE(rop.get_number_of_attempts() == niterations);
+        REQUIRE(rop.get_number_of_attempts_for_correction() == (niterations - 100));
+        REQUIRE(op2.get_number_of_attempts() == (niterations * nmoves_per_op));
+        REQUIRE(op2.get_number_of_attempts_for_correction() == ((nmoves_per_op * niterations) - 100));
+        REQUIRE(op3.get_number_of_attempts() == (niterations * nmoves_per_op));
+        REQUIRE(op3.get_number_of_attempts_for_correction() == ((nmoves_per_op * niterations) - 100));
+
+        double eps = 0.001;
+        for (unsigned int i = 0; i < pop_size_summaries.size(); ++i) {
+            REQUIRE(pop_size_summaries.at(i).sample_size() == nsamples);
+            REQUIRE(pop_size_summaries.at(i).mean() == Approx(pop_size_prior->get_mean()).epsilon(eps));
+            REQUIRE(pop_size_summaries.at(i).variance() == Approx(pop_size_prior->get_variance()).epsilon(eps));
+        }
+
+        BetaDistribution prior(1.0, 1.0);
+
+        REQUIRE(root_height_summary.mean() == Approx(root_height_prior->get_mean()).epsilon(eps));
+        REQUIRE(root_height_summary.variance() == Approx(root_height_prior->get_variance()).epsilon(eps));
+        REQUIRE(internal_height_summary.mean() == Approx(prior.get_mean()).epsilon(eps));
+        REQUIRE(internal_height_summary.variance() == Approx(prior.get_variance()).epsilon(eps));
+    }
+}
+
+TEST_CASE("Testing GlobalHeightSizeRateScaler with 3 leaves, unconstrained sizes, and optimizing",
+        "[GlobalHeightSizeRateScaler]") {
+
+    SECTION("Testing 3 leaves, unconstrained sizes, and optimizing") {
+        RandomNumberGenerator rng = RandomNumberGenerator(51464654);
+
+        double mu_rate_shape = 10.0;
+        double mu_rate_scale = 0.5;
+        std::shared_ptr<ContinuousProbabilityDistribution> mu_rate_prior = std::make_shared<GammaDistribution>(
+                mu_rate_shape,
+                mu_rate_scale);
+
+        double root_height_shape = 20.0;
+        double root_height_scale = 0.025;
+        std::shared_ptr<ContinuousProbabilityDistribution> root_height_prior = std::make_shared<GammaDistribution>(
+                root_height_shape,
+                root_height_scale);
+
+        double pop_size_shape = 10.0;
+        double pop_size_scale = 0.02;
+        std::shared_ptr<ContinuousProbabilityDistribution> pop_size_prior = std::make_shared<GammaDistribution>(
+                pop_size_shape,
+                pop_size_scale);
+
+        std::shared_ptr<PopulationNode> root = std::make_shared<PopulationNode>(4, "root", 0.5);
+        std::shared_ptr<PopulationNode> internal0 = std::make_shared<PopulationNode>(3, "internal0", 0.25);
+        std::shared_ptr<PopulationNode> leaf0 = std::make_shared<PopulationNode>(0, "leaf0", 0.0);
+        std::shared_ptr<PopulationNode> leaf1 = std::make_shared<PopulationNode>(1, "leaf1", 0.0);
+        std::shared_ptr<PopulationNode> leaf2 = std::make_shared<PopulationNode>(2, "leaf2", 0.0);
+
+        internal0->add_child(leaf0);
+        internal0->add_child(leaf1);
+        root->add_child(internal0);
+        root->add_child(leaf2);
+
+        BasePopulationTree tree(root);
+
+        tree.ignore_data();
+        tree.estimate_root_height();
+        tree.estimate_mutation_rate();
+
+        tree.set_population_size_prior(pop_size_prior);
+        tree.set_root_node_height_prior(root_height_prior);
+        tree.set_mutation_rate_prior(mu_rate_prior);
+
+        GlobalHeightSizeRateScaler op;
+        op.turn_on_auto_optimize();
+        op.set_auto_optimize_delay(100);
+        RootHeightScaler<PopulationNode> rop;
+        rop.turn_on_auto_optimize();
+        rop.set_auto_optimize_delay(100);
+
+        PopSizeScaler op2;
+        op2.turn_on_auto_optimize();
+        op2.set_auto_optimize_delay(100);
+        NodeHeightScaler<PopulationNode> op3;
+        op3.turn_on_auto_optimize();
+        op3.set_auto_optimize_delay(100);
+        MuRateScaler op4;
+        op4.turn_on_auto_optimize();
+        op4.set_auto_optimize_delay(100);
+
+        REQUIRE(op.auto_optimizing());
+        REQUIRE(op.get_auto_optimize_delay() == 100);
+        REQUIRE(rop.auto_optimizing());
+        REQUIRE(rop.get_auto_optimize_delay() == 100);
+
+        // Initialize prior probs
+        tree.compute_log_likelihood_and_prior(true);
+
+        std::vector< std::shared_ptr<PositiveRealParameter> > pop_sizes = tree.get_pointers_to_population_sizes();
+        REQUIRE(pop_sizes.size() == 5);
+        std::vector<SampleSummarizer<double> > pop_size_summaries(pop_sizes.size());
+
+        SampleSummarizer<double> root_height_summary;
+        SampleSummarizer<double> internal_height_summary;
+        SampleSummarizer<double> mu_rate_summary;
+
+        unsigned int nmoves_per_op = 2;
+        unsigned int niterations = 400000;
+        unsigned int sample_freq = 5;
+        unsigned int nsamples = niterations / sample_freq;
+        for (unsigned int i = 0; i < niterations; ++i) {
+            op.operate(rng, &tree, 1, 1);
+            rop.operate(rng, &tree, 1, 1);
+            op2.operate(rng, &tree, 1, nmoves_per_op);
+            op3.operate(rng, &tree, 1, nmoves_per_op);
+            op4.operate(rng, &tree, 1, 1);
+            if ((i + 1) % sample_freq == 0) {
+                pop_sizes = tree.get_pointers_to_population_sizes();
+                REQUIRE(pop_sizes.size() == 5);
+                for (unsigned int i = 0; i < pop_sizes.size(); ++i) {
+                    pop_size_summaries.at(i).add_sample(pop_sizes.at(i)->get_value());
+                }
+                root_height_summary.add_sample(tree.get_root_height());
+                internal_height_summary.add_sample(tree.get_height(0) / tree.get_height(1));
+                mu_rate_summary.add_sample(tree.get_mutation_rate());
+            }
+        }
+        std::cout << op.header_string();
+        std::cout << op.to_string();
+        std::cout << rop.header_string();
+        std::cout << rop.to_string();
+        std::cout << op2.header_string();
+        std::cout << op2.to_string();
+        std::cout << op3.header_string();
+        std::cout << op3.to_string();
+        std::cout << op4.header_string();
+        std::cout << op4.to_string();
+
+        REQUIRE(op.get_number_of_attempts() == niterations);
+        REQUIRE(op.get_number_of_attempts_for_correction() == (niterations - 100));
+        REQUIRE(rop.get_number_of_attempts() == niterations);
+        REQUIRE(rop.get_number_of_attempts_for_correction() == (niterations - 100));
+        REQUIRE(op2.get_number_of_attempts() == (niterations * nmoves_per_op));
+        REQUIRE(op2.get_number_of_attempts_for_correction() == ((nmoves_per_op * niterations) - 100));
+        REQUIRE(op3.get_number_of_attempts() == (niterations * nmoves_per_op));
+        REQUIRE(op3.get_number_of_attempts_for_correction() == ((nmoves_per_op * niterations) - 100));
+        REQUIRE(op4.get_number_of_attempts() == niterations);
+        REQUIRE(op4.get_number_of_attempts_for_correction() == (niterations - 100));
+
+        double eps = 0.001;
+        for (unsigned int i = 0; i < pop_size_summaries.size(); ++i) {
+            REQUIRE(pop_size_summaries.at(i).sample_size() == nsamples);
+            REQUIRE(pop_size_summaries.at(i).mean() == Approx(pop_size_prior->get_mean()).epsilon(eps));
+            REQUIRE(pop_size_summaries.at(i).variance() == Approx(pop_size_prior->get_variance()).epsilon(eps));
+        }
+
+        REQUIRE(root_height_summary.sample_size() == nsamples);
+        REQUIRE(internal_height_summary.sample_size() == nsamples);
+        REQUIRE(mu_rate_summary.sample_size() == nsamples);
+
+        BetaDistribution prior(1.0, 1.0);
+
+        REQUIRE(root_height_summary.mean() == Approx(root_height_prior->get_mean()).epsilon(eps));
+        REQUIRE(root_height_summary.variance() == Approx(root_height_prior->get_variance()).epsilon(eps));
+        REQUIRE(internal_height_summary.mean() == Approx(prior.get_mean()).epsilon(eps));
+        REQUIRE(internal_height_summary.variance() == Approx(prior.get_variance()).epsilon(eps));
+        REQUIRE(mu_rate_summary.mean() == Approx(mu_rate_prior->get_mean()).epsilon(eps));
+        REQUIRE(mu_rate_summary.variance() == Approx(mu_rate_prior->get_variance()).epsilon(eps));
+    }
+}
+
+TEST_CASE("Testing GlobalHeightSizeRateScaler with 3 leaves, constrained sizes, and optimizing",
+        "[GlobalHeightSizeRateScaler]") {
+
+    SECTION("Testing 3 leaves, unconstrained sizes, and optimizing") {
+        RandomNumberGenerator rng = RandomNumberGenerator(51464654);
+
+        double mu_rate_shape = 10.0;
+        double mu_rate_scale = 0.5;
+        std::shared_ptr<ContinuousProbabilityDistribution> mu_rate_prior = std::make_shared<GammaDistribution>(
+                mu_rate_shape,
+                mu_rate_scale);
+
+        double root_height_shape = 20.0;
+        double root_height_scale = 0.025;
+        std::shared_ptr<ContinuousProbabilityDistribution> root_height_prior = std::make_shared<GammaDistribution>(
+                root_height_shape,
+                root_height_scale);
+
+        double pop_size_shape = 10.0;
+        double pop_size_scale = 0.02;
+        std::shared_ptr<ContinuousProbabilityDistribution> pop_size_prior = std::make_shared<GammaDistribution>(
+                pop_size_shape,
+                pop_size_scale);
+
+        std::shared_ptr<PopulationNode> root = std::make_shared<PopulationNode>(4, "root", 0.5);
+        std::shared_ptr<PopulationNode> internal0 = std::make_shared<PopulationNode>(3, "internal0", 0.25);
+        std::shared_ptr<PopulationNode> leaf0 = std::make_shared<PopulationNode>(0, "leaf0", 0.0);
+        std::shared_ptr<PopulationNode> leaf1 = std::make_shared<PopulationNode>(1, "leaf1", 0.0);
+        std::shared_ptr<PopulationNode> leaf2 = std::make_shared<PopulationNode>(2, "leaf2", 0.0);
+
+        internal0->add_child(leaf0);
+        internal0->add_child(leaf1);
+        root->add_child(internal0);
+        root->add_child(leaf2);
+
+        BasePopulationTree tree(root);
+
+        tree.ignore_data();
+        tree.estimate_root_height();
+        tree.estimate_mutation_rate();
+
+        tree.set_population_size_prior(pop_size_prior);
+        tree.set_root_node_height_prior(root_height_prior);
+        tree.set_mutation_rate_prior(mu_rate_prior);
+        tree.constrain_population_sizes();
+
+        GlobalHeightSizeRateScaler op;
+        op.turn_on_auto_optimize();
+        op.set_auto_optimize_delay(100);
+        RootHeightScaler<PopulationNode> rop;
+        rop.turn_on_auto_optimize();
+        rop.set_auto_optimize_delay(100);
+
+        PopSizeScaler op2;
+        op2.turn_on_auto_optimize();
+        op2.set_auto_optimize_delay(100);
+        NodeHeightScaler<PopulationNode> op3;
+        op3.turn_on_auto_optimize();
+        op3.set_auto_optimize_delay(100);
+        MuRateScaler op4;
+        op4.turn_on_auto_optimize();
+        op4.set_auto_optimize_delay(100);
+
+        REQUIRE(op.auto_optimizing());
+        REQUIRE(op.get_auto_optimize_delay() == 100);
+        REQUIRE(rop.auto_optimizing());
+        REQUIRE(rop.get_auto_optimize_delay() == 100);
+
+        // Initialize prior probs
+        tree.compute_log_likelihood_and_prior(true);
+
+        std::vector< std::shared_ptr<PositiveRealParameter> > pop_sizes = tree.get_pointers_to_population_sizes();
+        REQUIRE(pop_sizes.size() == 1);
+        std::vector<SampleSummarizer<double> > pop_size_summaries(pop_sizes.size());
+
+        SampleSummarizer<double> root_height_summary;
+        SampleSummarizer<double> internal_height_summary;
+        SampleSummarizer<double> mu_rate_summary;
+
+        unsigned int nmoves_per_op = 2;
+        unsigned int niterations = 400000;
+        unsigned int sample_freq = 5;
+        unsigned int nsamples = niterations / sample_freq;
+        for (unsigned int i = 0; i < niterations; ++i) {
+            op.operate(rng, &tree, 1, 1);
+            rop.operate(rng, &tree, 1, 1);
+            op2.operate(rng, &tree, 1, nmoves_per_op);
+            op3.operate(rng, &tree, 1, nmoves_per_op);
+            op4.operate(rng, &tree, 1, 1);
+            if ((i + 1) % sample_freq == 0) {
+                pop_sizes = tree.get_pointers_to_population_sizes();
+                REQUIRE(pop_sizes.size() == 1);
+                for (unsigned int i = 0; i < pop_sizes.size(); ++i) {
+                    pop_size_summaries.at(i).add_sample(pop_sizes.at(i)->get_value());
+                }
+                root_height_summary.add_sample(tree.get_root_height());
+                internal_height_summary.add_sample(tree.get_height(0) / tree.get_height(1));
+                mu_rate_summary.add_sample(tree.get_mutation_rate());
+            }
+        }
+        std::cout << op.header_string();
+        std::cout << op.to_string();
+        std::cout << rop.header_string();
+        std::cout << rop.to_string();
+        std::cout << op2.header_string();
+        std::cout << op2.to_string();
+        std::cout << op3.header_string();
+        std::cout << op3.to_string();
+        std::cout << op4.header_string();
+        std::cout << op4.to_string();
+
+        REQUIRE(op.get_number_of_attempts() == niterations);
+        REQUIRE(op.get_number_of_attempts_for_correction() == (niterations - 100));
+        REQUIRE(rop.get_number_of_attempts() == niterations);
+        REQUIRE(rop.get_number_of_attempts_for_correction() == (niterations - 100));
+        REQUIRE(op2.get_number_of_attempts() == (niterations * nmoves_per_op));
+        REQUIRE(op2.get_number_of_attempts_for_correction() == ((nmoves_per_op * niterations) - 100));
+        REQUIRE(op3.get_number_of_attempts() == (niterations * nmoves_per_op));
+        REQUIRE(op3.get_number_of_attempts_for_correction() == ((nmoves_per_op * niterations) - 100));
+        REQUIRE(op4.get_number_of_attempts() == niterations);
+        REQUIRE(op4.get_number_of_attempts_for_correction() == (niterations - 100));
+
+        double eps = 0.001;
+        for (unsigned int i = 0; i < pop_size_summaries.size(); ++i) {
+            REQUIRE(pop_size_summaries.at(i).sample_size() == nsamples);
+            REQUIRE(pop_size_summaries.at(i).mean() == Approx(pop_size_prior->get_mean()).epsilon(eps));
+            REQUIRE(pop_size_summaries.at(i).variance() == Approx(pop_size_prior->get_variance()).epsilon(eps));
+        }
+
+        REQUIRE(root_height_summary.sample_size() == nsamples);
+        REQUIRE(internal_height_summary.sample_size() == nsamples);
+        REQUIRE(mu_rate_summary.sample_size() == nsamples);
+
+        BetaDistribution prior(1.0, 1.0);
+
+        REQUIRE(root_height_summary.mean() == Approx(root_height_prior->get_mean()).epsilon(eps));
+        REQUIRE(root_height_summary.variance() == Approx(root_height_prior->get_variance()).epsilon(eps));
+        REQUIRE(internal_height_summary.mean() == Approx(prior.get_mean()).epsilon(eps));
+        REQUIRE(internal_height_summary.variance() == Approx(prior.get_variance()).epsilon(eps));
+        REQUIRE(mu_rate_summary.mean() == Approx(mu_rate_prior->get_mean()).epsilon(eps));
+        REQUIRE(mu_rate_summary.variance() == Approx(mu_rate_prior->get_variance()).epsilon(eps));
+    }
+}
+
+TEST_CASE("Testing GlobalHeightSizeScaler with 3 leaves, unconstrained sizes, and optimizing",
+        "[GlobalHeightSizeScaler]") {
+
+    SECTION("Testing 3 leaves, unconstrained sizes, and optimizing") {
+        RandomNumberGenerator rng = RandomNumberGenerator(98464610);
+
+        double mu_rate_shape = 10.0;
+        double mu_rate_scale = 0.5;
+        std::shared_ptr<ContinuousProbabilityDistribution> mu_rate_prior = std::make_shared<GammaDistribution>(
+                mu_rate_shape,
+                mu_rate_scale);
+
+        double root_height_shape = 20.0;
+        double root_height_scale = 0.025;
+        std::shared_ptr<ContinuousProbabilityDistribution> root_height_prior = std::make_shared<GammaDistribution>(
+                root_height_shape,
+                root_height_scale);
+
+        double pop_size_shape = 10.0;
+        double pop_size_scale = 0.02;
+        std::shared_ptr<ContinuousProbabilityDistribution> pop_size_prior = std::make_shared<GammaDistribution>(
+                pop_size_shape,
+                pop_size_scale);
+
+        std::shared_ptr<PopulationNode> root = std::make_shared<PopulationNode>(4, "root", 0.5);
+        std::shared_ptr<PopulationNode> internal0 = std::make_shared<PopulationNode>(3, "internal0", 0.25);
+        std::shared_ptr<PopulationNode> leaf0 = std::make_shared<PopulationNode>(0, "leaf0", 0.0);
+        std::shared_ptr<PopulationNode> leaf1 = std::make_shared<PopulationNode>(1, "leaf1", 0.0);
+        std::shared_ptr<PopulationNode> leaf2 = std::make_shared<PopulationNode>(2, "leaf2", 0.0);
+
+        internal0->add_child(leaf0);
+        internal0->add_child(leaf1);
+        root->add_child(internal0);
+        root->add_child(leaf2);
+
+        BasePopulationTree tree(root);
+
+        tree.ignore_data();
+        tree.estimate_root_height();
+        tree.estimate_mutation_rate();
+
+        tree.set_population_size_prior(pop_size_prior);
+        tree.set_root_node_height_prior(root_height_prior);
+        tree.set_mutation_rate_prior(mu_rate_prior);
+
+        GlobalHeightSizeScaler op;
+        op.turn_on_auto_optimize();
+        op.set_auto_optimize_delay(100);
+        RootHeightScaler<PopulationNode> rop;
+        rop.turn_on_auto_optimize();
+        rop.set_auto_optimize_delay(100);
+
+        PopSizeScaler op2;
+        op2.turn_on_auto_optimize();
+        op2.set_auto_optimize_delay(100);
+        NodeHeightScaler<PopulationNode> op3;
+        op3.turn_on_auto_optimize();
+        op3.set_auto_optimize_delay(100);
+        /* MuRateScaler op4; */
+        /* op4.turn_on_auto_optimize(); */
+        /* op4.set_auto_optimize_delay(100); */
+
+        REQUIRE(op.auto_optimizing());
+        REQUIRE(op.get_auto_optimize_delay() == 100);
+        REQUIRE(rop.auto_optimizing());
+        REQUIRE(rop.get_auto_optimize_delay() == 100);
+
+        // Initialize prior probs
+        tree.compute_log_likelihood_and_prior(true);
+
+        std::vector< std::shared_ptr<PositiveRealParameter> > pop_sizes = tree.get_pointers_to_population_sizes();
+        REQUIRE(pop_sizes.size() == 5);
+        std::vector<SampleSummarizer<double> > pop_size_summaries(pop_sizes.size());
+
+        SampleSummarizer<double> root_height_summary;
+        SampleSummarizer<double> internal_height_summary;
+        SampleSummarizer<double> mu_rate_summary;
+
+        unsigned int nmoves_per_op = 2;
+        unsigned int niterations = 200000;
+        unsigned int sample_freq = 5;
+        unsigned int nsamples = niterations / sample_freq;
+        for (unsigned int i = 0; i < niterations; ++i) {
+            op.operate(rng, &tree, 1, 1);
+            rop.operate(rng, &tree, 1, 1);
+            op2.operate(rng, &tree, 1, nmoves_per_op);
+            op3.operate(rng, &tree, 1, nmoves_per_op);
+            /* op4.operate(rng, &tree, 1, 1); */
+            if ((i + 1) % sample_freq == 0) {
+                pop_sizes = tree.get_pointers_to_population_sizes();
+                REQUIRE(pop_sizes.size() == 5);
+                for (unsigned int i = 0; i < pop_sizes.size(); ++i) {
+                    pop_size_summaries.at(i).add_sample(pop_sizes.at(i)->get_value());
+                }
+                root_height_summary.add_sample(tree.get_root_height());
+                internal_height_summary.add_sample(tree.get_height(0) / tree.get_height(1));
+                mu_rate_summary.add_sample(tree.get_mutation_rate());
+            }
+        }
+        std::cout << op.header_string();
+        std::cout << op.to_string();
+        std::cout << rop.header_string();
+        std::cout << rop.to_string();
+        std::cout << op2.header_string();
+        std::cout << op2.to_string();
+        std::cout << op3.header_string();
+        std::cout << op3.to_string();
+        /* std::cout << op4.header_string(); */
+        /* std::cout << op4.to_string(); */
+
+        REQUIRE(op.get_number_of_attempts() == niterations);
+        REQUIRE(op.get_number_of_attempts_for_correction() == (niterations - 100));
+        REQUIRE(rop.get_number_of_attempts() == niterations);
+        REQUIRE(rop.get_number_of_attempts_for_correction() == (niterations - 100));
+        REQUIRE(op2.get_number_of_attempts() == (niterations * nmoves_per_op));
+        REQUIRE(op2.get_number_of_attempts_for_correction() == ((nmoves_per_op * niterations) - 100));
+        REQUIRE(op3.get_number_of_attempts() == (niterations * nmoves_per_op));
+        REQUIRE(op3.get_number_of_attempts_for_correction() == ((nmoves_per_op * niterations) - 100));
+        /* REQUIRE(op4.get_number_of_attempts() == niterations); */
+        /* REQUIRE(op4.get_number_of_attempts_for_correction() == (niterations - 100)); */
+
+        for (unsigned int i = 0; i < pop_size_summaries.size(); ++i) {
+            std::cout << "pop size mean: " <<  pop_size_summaries.at(i).mean() << "\n";
+            std::cout << "pop size var:  " <<  pop_size_summaries.at(i).variance() << "\n";
+        }
+
+        double eps = 0.001;
+        for (unsigned int i = 0; i < pop_size_summaries.size(); ++i) {
+            REQUIRE(pop_size_summaries.at(i).sample_size() == nsamples);
+            REQUIRE(pop_size_summaries.at(i).mean() == Approx(pop_size_prior->get_mean()).epsilon(eps));
+            REQUIRE(pop_size_summaries.at(i).variance() == Approx(pop_size_prior->get_variance()).epsilon(eps));
+        }
+
+        REQUIRE(root_height_summary.sample_size() == nsamples);
+        REQUIRE(internal_height_summary.sample_size() == nsamples);
+        REQUIRE(mu_rate_summary.sample_size() == nsamples);
+
+        BetaDistribution prior(1.0, 1.0);
+
+        REQUIRE(root_height_summary.mean() == Approx(root_height_prior->get_mean()).epsilon(eps));
+        REQUIRE(root_height_summary.variance() == Approx(root_height_prior->get_variance()).epsilon(eps));
+        REQUIRE(internal_height_summary.mean() == Approx(prior.get_mean()).epsilon(eps));
+        REQUIRE(internal_height_summary.variance() == Approx(prior.get_variance()).epsilon(eps));
+        /* REQUIRE(mu_rate_summary.mean() == Approx(mu_rate_prior->get_mean()).epsilon(eps)); */
+        REQUIRE(mu_rate_summary.variance() == Approx(0.0).epsilon(eps));
+    }
+}
+
+TEST_CASE("Testing GlobalHeightSizeScaler with 3 leaves, constrained sizes, and optimizing",
+        "[GlobalHeightSizeScaler]") {
+
+    SECTION("Testing 3 leaves, unconstrained sizes, and optimizing") {
+        RandomNumberGenerator rng = RandomNumberGenerator(98464610);
+
+        double mu_rate_shape = 10.0;
+        double mu_rate_scale = 0.5;
+        std::shared_ptr<ContinuousProbabilityDistribution> mu_rate_prior = std::make_shared<GammaDistribution>(
+                mu_rate_shape,
+                mu_rate_scale);
+
+        double root_height_shape = 20.0;
+        double root_height_scale = 0.025;
+        std::shared_ptr<ContinuousProbabilityDistribution> root_height_prior = std::make_shared<GammaDistribution>(
+                root_height_shape,
+                root_height_scale);
+
+        double pop_size_shape = 10.0;
+        double pop_size_scale = 0.02;
+        std::shared_ptr<ContinuousProbabilityDistribution> pop_size_prior = std::make_shared<GammaDistribution>(
+                pop_size_shape,
+                pop_size_scale);
+
+        std::shared_ptr<PopulationNode> root = std::make_shared<PopulationNode>(4, "root", 0.5);
+        std::shared_ptr<PopulationNode> internal0 = std::make_shared<PopulationNode>(3, "internal0", 0.25);
+        std::shared_ptr<PopulationNode> leaf0 = std::make_shared<PopulationNode>(0, "leaf0", 0.0);
+        std::shared_ptr<PopulationNode> leaf1 = std::make_shared<PopulationNode>(1, "leaf1", 0.0);
+        std::shared_ptr<PopulationNode> leaf2 = std::make_shared<PopulationNode>(2, "leaf2", 0.0);
+
+        internal0->add_child(leaf0);
+        internal0->add_child(leaf1);
+        root->add_child(internal0);
+        root->add_child(leaf2);
+
+        BasePopulationTree tree(root);
+
+        tree.ignore_data();
+        tree.estimate_root_height();
+        tree.estimate_mutation_rate();
+        tree.constrain_population_sizes();
+
+        tree.set_population_size_prior(pop_size_prior);
+        tree.set_root_node_height_prior(root_height_prior);
+        tree.set_mutation_rate_prior(mu_rate_prior);
+
+        GlobalHeightSizeScaler op;
+        op.turn_on_auto_optimize();
+        op.set_auto_optimize_delay(100);
+        RootHeightScaler<PopulationNode> rop;
+        rop.turn_on_auto_optimize();
+        rop.set_auto_optimize_delay(100);
+
+        PopSizeScaler op2;
+        op2.turn_on_auto_optimize();
+        op2.set_auto_optimize_delay(100);
+        NodeHeightScaler<PopulationNode> op3;
+        op3.turn_on_auto_optimize();
+        op3.set_auto_optimize_delay(100);
+        /* MuRateScaler op4; */
+        /* op4.turn_on_auto_optimize(); */
+        /* op4.set_auto_optimize_delay(100); */
+
+        REQUIRE(op.auto_optimizing());
+        REQUIRE(op.get_auto_optimize_delay() == 100);
+        REQUIRE(rop.auto_optimizing());
+        REQUIRE(rop.get_auto_optimize_delay() == 100);
+
+        // Initialize prior probs
+        tree.compute_log_likelihood_and_prior(true);
+
+        std::vector< std::shared_ptr<PositiveRealParameter> > pop_sizes = tree.get_pointers_to_population_sizes();
+        REQUIRE(pop_sizes.size() == 1);
+        std::vector<SampleSummarizer<double> > pop_size_summaries(pop_sizes.size());
+
+        SampleSummarizer<double> root_height_summary;
+        SampleSummarizer<double> internal_height_summary;
+        SampleSummarizer<double> mu_rate_summary;
+
+        unsigned int nmoves_per_op = 1;
+        unsigned int niterations = 200000;
+        unsigned int sample_freq = 5;
+        unsigned int nsamples = niterations / sample_freq;
+        for (unsigned int i = 0; i < niterations; ++i) {
+            op.operate(rng, &tree, 1, 1);
+            rop.operate(rng, &tree, 1, 1);
+            op2.operate(rng, &tree, 1, nmoves_per_op);
+            op3.operate(rng, &tree, 1, nmoves_per_op);
+            /* op4.operate(rng, &tree, 1, 1); */
+            if ((i + 1) % sample_freq == 0) {
+                pop_sizes = tree.get_pointers_to_population_sizes();
+                REQUIRE(pop_sizes.size() == 1);
+                for (unsigned int i = 0; i < pop_sizes.size(); ++i) {
+                    pop_size_summaries.at(i).add_sample(pop_sizes.at(i)->get_value());
+                }
+                root_height_summary.add_sample(tree.get_root_height());
+                internal_height_summary.add_sample(tree.get_height(0) / tree.get_height(1));
+                mu_rate_summary.add_sample(tree.get_mutation_rate());
+            }
+        }
+        std::cout << op.header_string();
+        std::cout << op.to_string();
+        std::cout << rop.header_string();
+        std::cout << rop.to_string();
+        std::cout << op2.header_string();
+        std::cout << op2.to_string();
+        std::cout << op3.header_string();
+        std::cout << op3.to_string();
+        /* std::cout << op4.header_string(); */
+        /* std::cout << op4.to_string(); */
+
+        REQUIRE(op.get_number_of_attempts() == niterations);
+        REQUIRE(op.get_number_of_attempts_for_correction() == (niterations - 100));
+        REQUIRE(rop.get_number_of_attempts() == niterations);
+        REQUIRE(rop.get_number_of_attempts_for_correction() == (niterations - 100));
+        REQUIRE(op2.get_number_of_attempts() == (niterations * nmoves_per_op));
+        REQUIRE(op2.get_number_of_attempts_for_correction() == ((nmoves_per_op * niterations) - 100));
+        REQUIRE(op3.get_number_of_attempts() == (niterations * nmoves_per_op));
+        REQUIRE(op3.get_number_of_attempts_for_correction() == ((nmoves_per_op * niterations) - 100));
+        /* REQUIRE(op4.get_number_of_attempts() == niterations); */
+        /* REQUIRE(op4.get_number_of_attempts_for_correction() == (niterations - 100)); */
+
+        for (unsigned int i = 0; i < pop_size_summaries.size(); ++i) {
+            std::cout << "pop size mean: " <<  pop_size_summaries.at(i).mean() << "\n";
+            std::cout << "pop size var:  " <<  pop_size_summaries.at(i).variance() << "\n";
+        }
+
+        double eps = 0.001;
+        for (unsigned int i = 0; i < pop_size_summaries.size(); ++i) {
+            REQUIRE(pop_size_summaries.at(i).sample_size() == nsamples);
+            REQUIRE(pop_size_summaries.at(i).mean() == Approx(pop_size_prior->get_mean()).epsilon(eps));
+            REQUIRE(pop_size_summaries.at(i).variance() == Approx(pop_size_prior->get_variance()).epsilon(eps));
+        }
+
+        REQUIRE(root_height_summary.sample_size() == nsamples);
+        REQUIRE(internal_height_summary.sample_size() == nsamples);
+        REQUIRE(mu_rate_summary.sample_size() == nsamples);
+
+        BetaDistribution prior(1.0, 1.0);
+
+        REQUIRE(root_height_summary.mean() == Approx(root_height_prior->get_mean()).epsilon(eps));
+        REQUIRE(root_height_summary.variance() == Approx(root_height_prior->get_variance()).epsilon(eps));
+        REQUIRE(internal_height_summary.mean() == Approx(prior.get_mean()).epsilon(eps));
+        REQUIRE(internal_height_summary.variance() == Approx(prior.get_variance()).epsilon(eps));
+        /* REQUIRE(mu_rate_summary.mean() == Approx(mu_rate_prior->get_mean()).epsilon(eps)); */
+        REQUIRE(mu_rate_summary.variance() == Approx(0.0).epsilon(eps));
+    }
+}
+
+TEST_CASE("Testing GlobalHeightRateScaler with 3 leaves, unconstrained sizes, and optimizing",
+        "[GlobalHeightRateScaler]") {
+
+    SECTION("Testing 3 leaves, unconstrained sizes, and optimizing") {
+        RandomNumberGenerator rng = RandomNumberGenerator(24652345);
+
+        double mu_rate_shape = 10.0;
+        double mu_rate_scale = 0.5;
+        std::shared_ptr<ContinuousProbabilityDistribution> mu_rate_prior = std::make_shared<GammaDistribution>(
+                mu_rate_shape,
+                mu_rate_scale);
+
+        double root_height_shape = 20.0;
+        double root_height_scale = 0.025;
+        std::shared_ptr<ContinuousProbabilityDistribution> root_height_prior = std::make_shared<GammaDistribution>(
+                root_height_shape,
+                root_height_scale);
+
+        double pop_size_shape = 10.0;
+        double pop_size_scale = 0.02;
+        std::shared_ptr<ContinuousProbabilityDistribution> pop_size_prior = std::make_shared<GammaDistribution>(
+                pop_size_shape,
+                pop_size_scale);
+
+        std::shared_ptr<PopulationNode> root = std::make_shared<PopulationNode>(4, "root", 0.5);
+        std::shared_ptr<PopulationNode> internal0 = std::make_shared<PopulationNode>(3, "internal0", 0.25);
+        std::shared_ptr<PopulationNode> leaf0 = std::make_shared<PopulationNode>(0, "leaf0", 0.0);
+        std::shared_ptr<PopulationNode> leaf1 = std::make_shared<PopulationNode>(1, "leaf1", 0.0);
+        std::shared_ptr<PopulationNode> leaf2 = std::make_shared<PopulationNode>(2, "leaf2", 0.0);
+
+        internal0->add_child(leaf0);
+        internal0->add_child(leaf1);
+        root->add_child(internal0);
+        root->add_child(leaf2);
+
+        BasePopulationTree tree(root);
+
+        tree.ignore_data();
+        tree.estimate_root_height();
+        tree.estimate_mutation_rate();
+
+        tree.set_population_size_prior(pop_size_prior);
+        tree.set_root_node_height_prior(root_height_prior);
+        tree.set_mutation_rate_prior(mu_rate_prior);
+
+        GlobalHeightRateScaler op;
+        op.turn_on_auto_optimize();
+        op.set_auto_optimize_delay(100);
+        RootHeightScaler<PopulationNode> rop;
+        rop.turn_on_auto_optimize();
+        rop.set_auto_optimize_delay(100);
+
+        /* PopSizeScaler op2; */
+        /* op2.turn_on_auto_optimize(); */
+        /* op2.set_auto_optimize_delay(100); */
+        NodeHeightScaler<PopulationNode> op3;
+        op3.turn_on_auto_optimize();
+        op3.set_auto_optimize_delay(100);
+        MuRateScaler op4;
+        op4.turn_on_auto_optimize();
+        op4.set_auto_optimize_delay(100);
+
+        REQUIRE(op.auto_optimizing());
+        REQUIRE(op.get_auto_optimize_delay() == 100);
+        REQUIRE(rop.auto_optimizing());
+        REQUIRE(rop.get_auto_optimize_delay() == 100);
+
+        // Initialize prior probs
+        tree.compute_log_likelihood_and_prior(true);
+
+        std::vector< std::shared_ptr<PositiveRealParameter> > pop_sizes = tree.get_pointers_to_population_sizes();
+        REQUIRE(pop_sizes.size() == 5);
+        std::vector<SampleSummarizer<double> > pop_size_summaries(pop_sizes.size());
+
+        SampleSummarizer<double> root_height_summary;
+        SampleSummarizer<double> internal_height_summary;
+        SampleSummarizer<double> mu_rate_summary;
+
+        // burnin
+        unsigned int burnin = 1000;
+        for (unsigned int i = 0; i < burnin; ++i) {
+            op.operate(rng, &tree, 1, 1);
+            rop.operate(rng, &tree, 1, 1);
+            /* op2.operate(rng, &tree, 1, nmoves_per_op); */
+            op3.operate(rng, &tree, 1, 1);
+            op4.operate(rng, &tree, 1, 1);
+        }
+
+        unsigned int nmoves_per_op = 1;
+        unsigned int niterations = 400000;
+        unsigned int sample_freq = 5;
+        unsigned int nsamples = niterations / sample_freq;
+        for (unsigned int i = 0; i < niterations; ++i) {
+            op.operate(rng, &tree, 1, 1);
+            rop.operate(rng, &tree, 1, 1);
+            /* op2.operate(rng, &tree, 1, nmoves_per_op); */
+            op3.operate(rng, &tree, 1, 1);
+            op4.operate(rng, &tree, 1, 1);
+            if ((i + 1) % sample_freq == 0) {
+                pop_sizes = tree.get_pointers_to_population_sizes();
+                REQUIRE(pop_sizes.size() == 5);
+                for (unsigned int i = 0; i < pop_sizes.size(); ++i) {
+                    pop_size_summaries.at(i).add_sample(pop_sizes.at(i)->get_value());
+                }
+                root_height_summary.add_sample(tree.get_root_height());
+                internal_height_summary.add_sample(tree.get_height(0) / tree.get_height(1));
+                mu_rate_summary.add_sample(tree.get_mutation_rate());
+            }
+        }
+        std::cout << op.header_string();
+        std::cout << op.to_string();
+        std::cout << rop.header_string();
+        std::cout << rop.to_string();
+        /* std::cout << op2.header_string(); */
+        /* std::cout << op2.to_string(); */
+        std::cout << op3.header_string();
+        std::cout << op3.to_string();
+        std::cout << op4.header_string();
+        std::cout << op4.to_string();
+
+        REQUIRE(op.get_number_of_attempts() == niterations + burnin);
+        REQUIRE(op.get_number_of_attempts_for_correction() == (niterations + burnin - 100));
+        REQUIRE(rop.get_number_of_attempts() == niterations + burnin);
+        REQUIRE(rop.get_number_of_attempts_for_correction() == (niterations + burnin - 100));
+        /* REQUIRE(op2.get_number_of_attempts() == ((niterations + burnin) * nmoves_per_op)); */
+        /* REQUIRE(op2.get_number_of_attempts_for_correction() == ((nmoves_per_op * (burnin + niterations)) - 100)); */
+        REQUIRE(op3.get_number_of_attempts() == niterations + burnin);
+        REQUIRE(op3.get_number_of_attempts_for_correction() == (niterations + burnin - 100));
+        REQUIRE(op4.get_number_of_attempts() == niterations + burnin);
+        REQUIRE(op4.get_number_of_attempts_for_correction() == (niterations + burnin - 100));
+
+        double eps = 0.001;
+        for (unsigned int i = 0; i < pop_size_summaries.size(); ++i) {
+            REQUIRE(pop_size_summaries.at(i).sample_size() == nsamples);
+            /* REQUIRE(pop_size_summaries.at(i).mean() == Approx(pop_size_prior->get_mean()).epsilon(eps)); */
+            REQUIRE(pop_size_summaries.at(i).variance() == Approx(0.0).epsilon(eps));
+        }
+
+        REQUIRE(root_height_summary.sample_size() == nsamples);
+        REQUIRE(internal_height_summary.sample_size() == nsamples);
+        REQUIRE(mu_rate_summary.sample_size() == nsamples);
+
+        BetaDistribution prior(1.0, 1.0);
+
+        REQUIRE(root_height_summary.mean() == Approx(root_height_prior->get_mean()).epsilon(eps));
+        REQUIRE(root_height_summary.variance() == Approx(root_height_prior->get_variance()).epsilon(eps));
+        REQUIRE(internal_height_summary.mean() == Approx(prior.get_mean()).epsilon(eps));
+        REQUIRE(internal_height_summary.variance() == Approx(prior.get_variance()).epsilon(eps));
+        REQUIRE(mu_rate_summary.mean() == Approx(mu_rate_prior->get_mean()).epsilon(eps));
+        REQUIRE(mu_rate_summary.variance() == Approx(mu_rate_prior->get_variance()).epsilon(eps));
+    }
+}
+
+TEST_CASE("Testing GlobalHeightRateScaler with 3 leaves, constrained sizes, and optimizing",
+        "[GlobalHeightRateScaler]") {
+
+    SECTION("Testing 3 leaves, unconstrained sizes, and optimizing") {
+        RandomNumberGenerator rng = RandomNumberGenerator(24652345);
+
+        double mu_rate_shape = 10.0;
+        double mu_rate_scale = 0.5;
+        std::shared_ptr<ContinuousProbabilityDistribution> mu_rate_prior = std::make_shared<GammaDistribution>(
+                mu_rate_shape,
+                mu_rate_scale);
+
+        double root_height_shape = 20.0;
+        double root_height_scale = 0.025;
+        std::shared_ptr<ContinuousProbabilityDistribution> root_height_prior = std::make_shared<GammaDistribution>(
+                root_height_shape,
+                root_height_scale);
+
+        double pop_size_shape = 10.0;
+        double pop_size_scale = 0.02;
+        std::shared_ptr<ContinuousProbabilityDistribution> pop_size_prior = std::make_shared<GammaDistribution>(
+                pop_size_shape,
+                pop_size_scale);
+
+        std::shared_ptr<PopulationNode> root = std::make_shared<PopulationNode>(4, "root", 0.5);
+        std::shared_ptr<PopulationNode> internal0 = std::make_shared<PopulationNode>(3, "internal0", 0.25);
+        std::shared_ptr<PopulationNode> leaf0 = std::make_shared<PopulationNode>(0, "leaf0", 0.0);
+        std::shared_ptr<PopulationNode> leaf1 = std::make_shared<PopulationNode>(1, "leaf1", 0.0);
+        std::shared_ptr<PopulationNode> leaf2 = std::make_shared<PopulationNode>(2, "leaf2", 0.0);
+
+        internal0->add_child(leaf0);
+        internal0->add_child(leaf1);
+        root->add_child(internal0);
+        root->add_child(leaf2);
+
+        BasePopulationTree tree(root);
+
+        tree.ignore_data();
+        tree.estimate_root_height();
+        tree.estimate_mutation_rate();
+        tree.constrain_population_sizes();
+
+        tree.set_population_size_prior(pop_size_prior);
+        tree.set_root_node_height_prior(root_height_prior);
+        tree.set_mutation_rate_prior(mu_rate_prior);
+
+        GlobalHeightRateScaler op;
+        op.turn_on_auto_optimize();
+        op.set_auto_optimize_delay(100);
+        RootHeightScaler<PopulationNode> rop;
+        rop.turn_on_auto_optimize();
+        rop.set_auto_optimize_delay(100);
+
+        /* PopSizeScaler op2; */
+        /* op2.turn_on_auto_optimize(); */
+        /* op2.set_auto_optimize_delay(100); */
+        NodeHeightScaler<PopulationNode> op3;
+        op3.turn_on_auto_optimize();
+        op3.set_auto_optimize_delay(100);
+        MuRateScaler op4;
+        op4.turn_on_auto_optimize();
+        op4.set_auto_optimize_delay(100);
+
+        REQUIRE(op.auto_optimizing());
+        REQUIRE(op.get_auto_optimize_delay() == 100);
+        REQUIRE(rop.auto_optimizing());
+        REQUIRE(rop.get_auto_optimize_delay() == 100);
+
+        // Initialize prior probs
+        tree.compute_log_likelihood_and_prior(true);
+
+        std::vector< std::shared_ptr<PositiveRealParameter> > pop_sizes = tree.get_pointers_to_population_sizes();
+        REQUIRE(pop_sizes.size() == 1);
+        std::vector<SampleSummarizer<double> > pop_size_summaries(pop_sizes.size());
+
+        SampleSummarizer<double> root_height_summary;
+        SampleSummarizer<double> internal_height_summary;
+        SampleSummarizer<double> mu_rate_summary;
+
+        // burnin
+        unsigned int burnin = 1000;
+        for (unsigned int i = 0; i < burnin; ++i) {
+            op.operate(rng, &tree, 1, 1);
+            rop.operate(rng, &tree, 1, 1);
+            /* op2.operate(rng, &tree, 1, nmoves_per_op); */
+            op3.operate(rng, &tree, 1, 1);
+            op4.operate(rng, &tree, 1, 1);
+        }
+
+        unsigned int nmoves_per_op = 1;
+        unsigned int niterations = 400000;
+        unsigned int sample_freq = 5;
+        unsigned int nsamples = niterations / sample_freq;
+        for (unsigned int i = 0; i < niterations; ++i) {
+            op.operate(rng, &tree, 1, 1);
+            rop.operate(rng, &tree, 1, 1);
+            /* op2.operate(rng, &tree, 1, nmoves_per_op); */
+            op3.operate(rng, &tree, 1, 1);
+            op4.operate(rng, &tree, 1, 1);
+            if ((i + 1) % sample_freq == 0) {
+                pop_sizes = tree.get_pointers_to_population_sizes();
+                REQUIRE(pop_sizes.size() == 1);
+                for (unsigned int i = 0; i < pop_sizes.size(); ++i) {
+                    pop_size_summaries.at(i).add_sample(pop_sizes.at(i)->get_value());
+                }
+                root_height_summary.add_sample(tree.get_root_height());
+                internal_height_summary.add_sample(tree.get_height(0) / tree.get_height(1));
+                mu_rate_summary.add_sample(tree.get_mutation_rate());
+            }
+        }
+        std::cout << op.header_string();
+        std::cout << op.to_string();
+        std::cout << rop.header_string();
+        std::cout << rop.to_string();
+        /* std::cout << op2.header_string(); */
+        /* std::cout << op2.to_string(); */
+        std::cout << op3.header_string();
+        std::cout << op3.to_string();
+        std::cout << op4.header_string();
+        std::cout << op4.to_string();
+
+        REQUIRE(op.get_number_of_attempts() == niterations + burnin);
+        REQUIRE(op.get_number_of_attempts_for_correction() == (niterations + burnin - 100));
+        REQUIRE(rop.get_number_of_attempts() == niterations + burnin);
+        REQUIRE(rop.get_number_of_attempts_for_correction() == (niterations + burnin - 100));
+        /* REQUIRE(op2.get_number_of_attempts() == ((niterations + burnin) * nmoves_per_op)); */
+        /* REQUIRE(op2.get_number_of_attempts_for_correction() == ((nmoves_per_op * (burnin + niterations)) - 100)); */
+        REQUIRE(op3.get_number_of_attempts() == niterations + burnin);
+        REQUIRE(op3.get_number_of_attempts_for_correction() == (niterations + burnin - 100));
+        REQUIRE(op4.get_number_of_attempts() == niterations + burnin);
+        REQUIRE(op4.get_number_of_attempts_for_correction() == (niterations + burnin - 100));
+
+        double eps = 0.001;
+        for (unsigned int i = 0; i < pop_size_summaries.size(); ++i) {
+            REQUIRE(pop_size_summaries.at(i).sample_size() == nsamples);
+            /* REQUIRE(pop_size_summaries.at(i).mean() == Approx(pop_size_prior->get_mean()).epsilon(eps)); */
+            REQUIRE(pop_size_summaries.at(i).variance() == Approx(0.0).epsilon(eps));
+        }
+
+        REQUIRE(root_height_summary.sample_size() == nsamples);
+        REQUIRE(internal_height_summary.sample_size() == nsamples);
+        REQUIRE(mu_rate_summary.sample_size() == nsamples);
+
+        BetaDistribution prior(1.0, 1.0);
+
+        REQUIRE(root_height_summary.mean() == Approx(root_height_prior->get_mean()).epsilon(eps));
+        REQUIRE(root_height_summary.variance() == Approx(root_height_prior->get_variance()).epsilon(eps));
+        REQUIRE(internal_height_summary.mean() == Approx(prior.get_mean()).epsilon(eps));
+        REQUIRE(internal_height_summary.variance() == Approx(prior.get_variance()).epsilon(eps));
+        REQUIRE(mu_rate_summary.mean() == Approx(mu_rate_prior->get_mean()).epsilon(eps));
+        REQUIRE(mu_rate_summary.variance() == Approx(mu_rate_prior->get_variance()).epsilon(eps));
     }
 }
