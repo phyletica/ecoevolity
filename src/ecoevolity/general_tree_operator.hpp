@@ -678,15 +678,6 @@ class BetaOp : public BaseOptimizingOp {
                 RandomNumberGenerator& rng,
                 double& parameter_value,
                 double& hastings_ratio) const {
-            double multiplier = this->get_move_amount(rng);
-            parameter_value *= multiplier;
-            hastings_ratio = std::log(multiplier);
-        }
-
-        virtual void update(
-                RandomNumberGenerator& rng,
-                double& parameter_value,
-                double& hastings_ratio) const {
             ECOEVOLITY_ASSERT(parameter_value <= 1.0);
 
             // We are going to propose a random value from a beta distribution
@@ -3207,7 +3198,7 @@ class StateFreqMover : public GeneralTreeOperatorInterface<BasePopulationTree, W
             return BaseGeneralTreeOperatorTemplate::OperatorTypeEnum::derived_operator;
         }
 
-        bool is_operable(BaseTree<NodeType> * tree) const {
+        bool is_operable(BasePopulationTree * tree) const {
             if (tree->state_frequencies_are_fixed()) {
                 return false;
             }
@@ -3223,7 +3214,7 @@ class StateFreqMover : public GeneralTreeOperatorInterface<BasePopulationTree, W
          * @return  Log of Hastings Ratio.
          */
         double propose(RandomNumberGenerator& rng,
-                BaseTree<NodeType> * tree,
+                BasePopulationTree * tree,
                 unsigned int nthreads = 1) {
             if (! this->is_operable(tree)) {
                 return -std::numeric_limits<double>::infinity();
@@ -3257,7 +3248,7 @@ class StateFreqDirichletOperator : public GeneralTreeOperatorInterface<BasePopul
             return BaseGeneralTreeOperatorTemplate::OperatorTypeEnum::derived_operator;
         }
 
-        bool is_operable(BaseTree<NodeType> * tree) const {
+        bool is_operable(BasePopulationTree * tree) const {
             if (tree->state_frequencies_are_fixed()) {
                 return false;
             }
@@ -3273,7 +3264,7 @@ class StateFreqDirichletOperator : public GeneralTreeOperatorInterface<BasePopul
          * @return  Log of Hastings Ratio.
          */
         double propose(RandomNumberGenerator& rng,
-                BaseTree<NodeType> * tree,
+                BasePopulationTree * tree,
                 unsigned int nthreads = 1) {
             if (! this->is_operable(tree)) {
                 return -std::numeric_limits<double>::infinity();
@@ -3307,7 +3298,7 @@ class StateFreqBetaOperator : public GeneralTreeOperatorInterface<BasePopulation
             return BaseGeneralTreeOperatorTemplate::OperatorTypeEnum::derived_operator;
         }
 
-        bool is_operable(BaseTree<NodeType> * tree) const {
+        bool is_operable(BasePopulationTree * tree) const {
             if (tree->state_frequencies_are_fixed()) {
                 return false;
             }
@@ -3323,7 +3314,7 @@ class StateFreqBetaOperator : public GeneralTreeOperatorInterface<BasePopulation
          * @return  Log of Hastings Ratio.
          */
         double propose(RandomNumberGenerator& rng,
-                BaseTree<NodeType> * tree,
+                BasePopulationTree * tree,
                 unsigned int nthreads = 1) {
             if (! this->is_operable(tree)) {
                 return -std::numeric_limits<double>::infinity();

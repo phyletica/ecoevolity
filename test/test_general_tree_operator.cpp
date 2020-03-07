@@ -3113,7 +3113,6 @@ TEST_CASE("Testing TreeScaler with 3 leaves, gamma root, internal free, and opti
         op.set_auto_optimize_delay(100);
 
         NodeHeightScaler<Node> op2;
-        op2.set_operate_on_root(false);
         op2.turn_on_auto_optimize();
         op2.set_auto_optimize_delay(100);
 
@@ -3292,7 +3291,6 @@ TEST_CASE("Testing TreeScaler with 4 leaves, gamma root, internals free, and opt
         op.set_auto_optimize_delay(100);
 
         NodeHeightScaler<Node> op2;
-        op2.set_operate_on_root(false);
         op2.turn_on_auto_optimize();
         op2.set_auto_optimize_delay(100);
 
@@ -4934,5 +4932,80 @@ TEST_CASE("Testing GlobalHeightRateScaler with 3 leaves, constrained sizes, and 
         REQUIRE(internal_height_summary.variance() == Approx(prior.get_variance()).epsilon(eps));
         REQUIRE(mu_rate_summary.mean() == Approx(mu_rate_prior->get_mean()).epsilon(eps));
         REQUIRE(mu_rate_summary.variance() == Approx(mu_rate_prior->get_variance()).epsilon(eps));
+    }
+}
+
+TEST_CASE("Testing StateFreqMover with 3 leaves and optimizing",
+        "[StateFreqMover]") {
+
+    SECTION("Testing 3 leaves and optimizing") {
+        RandomNumberGenerator rng = RandomNumberGenerator(286431321);
+
+        double freq_a = 3.0;
+        double freq_b = 2.0;
+        std::shared_ptr<ContinuousProbabilityDistribution> freq_prior = std::make_shared<BetaDistribution>(
+                freq_a,
+                freq_b);
+
+        std::shared_ptr<PopulationNode> root = std::make_shared<PopulationNode>(4, "root", 0.5);
+        std::shared_ptr<PopulationNode> internal0 = std::make_shared<PopulationNode>(3, "internal0", 0.25);
+        std::shared_ptr<PopulationNode> leaf0 = std::make_shared<PopulationNode>(0, "leaf0", 0.0);
+        std::shared_ptr<PopulationNode> leaf1 = std::make_shared<PopulationNode>(1, "leaf1", 0.0);
+        std::shared_ptr<PopulationNode> leaf2 = std::make_shared<PopulationNode>(2, "leaf2", 0.0);
+
+        internal0->add_child(leaf0);
+        internal0->add_child(leaf1);
+        root->add_child(internal0);
+        root->add_child(leaf2);
+
+        BasePopulationTree tree(root);
+
+        tree.ignore_data();
+        tree.fix_root_height();
+        tree.fix_mutation_rate();
+        tree.fix_population_sizes();
+        tree.estimate_state_frequencies();
+
+        tree.set_freq_1_prior(freq_prior);
+
+        StateFreqMover op;
+        op.turn_on_auto_optimize();
+        op.set_auto_optimize_delay(100);
+
+        REQUIRE(op.auto_optimizing());
+        REQUIRE(op.get_auto_optimize_delay() == 100);
+
+        // Initialize prior probs
+        tree.compute_log_likelihood_and_prior(true);
+
+        SampleSummarizer<double> freq_summary;
+
+        // burnin
+        unsigned int burnin = 1000;
+        for (unsigned int i = 0; i < burnin; ++i) {
+            op.operate(rng, &tree, 1, 1);
+        }
+
+        unsigned int niterations = 100000;
+        unsigned int sample_freq = 5;
+        unsigned int nsamples = niterations / sample_freq;
+        for (unsigned int i = 0; i < niterations; ++i) {
+            op.operate(rng, &tree, 1, 1);
+            if ((i + 1) % sample_freq == 0) {
+                freq_summary.add_sample(tree.get_freq_1());
+            }
+        }
+        std::cout << op.header_string();
+        std::cout << op.to_string();
+
+        REQUIRE(op.get_number_of_attempts() == niterations + burnin);
+        REQUIRE(op.get_number_of_attempts_for_correction() == (niterations + burnin - 100));
+
+        REQUIRE(freq_summary.sample_size() == nsamples);
+
+        double eps = 0.001;
+
+        REQUIRE(freq_summary.mean() == Approx(freq_prior->get_mean()).epsilon(eps));
+        REQUIRE(freq_summary.variance() == Approx(freq_prior->get_variance()).epsilon(eps));
     }
 }
