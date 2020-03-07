@@ -30,11 +30,13 @@
 
 class PopSizeScaler;
 class GlobalHeightSizeMixer;
+template<class NodeType> class GlobalNodeHeightDirichletOperator;
 
 template<class NodeType>
 class BaseTree {
         friend class PopSizeScaler;
         friend class GlobalHeightSizeMixer;
+        friend class GlobalNodeHeightDirichletOperator<NodeType>;
 
     protected:
         std::shared_ptr<NodeType> root_;

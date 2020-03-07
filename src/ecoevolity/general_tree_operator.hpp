@@ -1182,7 +1182,7 @@ class GlobalNodeHeightDirichletOperator : public GeneralTreeOperatorInterface<Ba
                 double rel_ht = rel_height_gaps.at(i) + last_rel_height;
                 double abs_value = rel_ht * root_height;
                 unsigned int ht_idx = indices_to_move.at(i);
-                tree->set_height(ht_idx, abs_value);
+                tree->node_heights_.at(ht_idx)->set_value(abs_value);
                 last_rel_height = rel_ht;
             }
             return ln_hastings;
