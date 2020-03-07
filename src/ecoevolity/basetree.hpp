@@ -1232,6 +1232,10 @@ class BaseTree {
         double get_relative_height(const unsigned int height_index) const {
             return this->get_height(height_index) / this->get_root_height();
         }
+        double get_height_relative_to_youngest_parent(
+                const unsigned int height_index) const {
+            return this->get_height(height_index) / this->get_height_of_youngest_parent(height_index);
+        }
 
         std::shared_ptr<PositiveRealParameter> get_height_parameter(const unsigned int height_index) const {
             return this->node_heights_.at(height_index);
@@ -1440,12 +1444,16 @@ class BaseTree {
             for (unsigned int i = 0; i < this->get_number_of_node_heights() - 1; ++i) {
                 ///////////////////////////////////////////////////////////////
                 // Prior on the absolute ages of non-root internal nodes
-                double youngest_parent_height = this->get_height_of_youngest_parent(i);
+                // double youngest_parent_height = this->get_height_of_youngest_parent(i);
                 // d -= std::log(youngest_parent_height);
-                d += BetaDistribution::get_scaled_ln_pdf(this->get_height(i),
+                // d += BetaDistribution::get_scaled_ln_pdf(this->get_height(i),
+                //         this->alpha_of_node_height_beta_prior_->get_value(),
+                //         this->beta_of_node_height_beta_prior_->get_value(),
+                //         youngest_parent_height);
+                d += BetaDistribution::get_ln_pdf(
+                        this->get_height_relative_to_youngest_parent(i),
                         this->alpha_of_node_height_beta_prior_->get_value(),
-                        this->beta_of_node_height_beta_prior_->get_value(),
-                        youngest_parent_height);
+                        this->beta_of_node_height_beta_prior_->get_value());
                 ///////////////////////////////////////////////////////////////
                 // Prior on the relative ages of non-root internal nodes
                 // double youngest_parent_rel_height = this->get_relative_height_of_youngest_parent(i);
