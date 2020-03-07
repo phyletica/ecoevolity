@@ -22,6 +22,8 @@
 
 #include <vector>
 #include <limits>
+#include <cmath>
+#include <numeric>
 
 #include "assert.hpp"
 #include "error.hpp"
@@ -133,5 +135,74 @@ class SampleSummarizer {
         }
 
 };
+
+/**
+ * Calculate Monte Carlo standard error.
+ * 
+ * Adapted from 'mcse' function of the 'mcmcse' R package (Gnu GPL version 2).
+ * See:
+ * 
+ * Flegal, J. M. and Jones, G. L. (2010) Batch means and spectral variance
+ * estimators in Markov chain Monte Carlo. The Annals of Statistics,
+ * 38:1034--1070.
+ */
+template <typename T>
+inline std::pair<double, double> monte_carlo_standard_error(
+        const std::vector<T> & samples) {
+    unsigned int n = samples.size(); 
+    unsigned int b = (unsigned int)std::floor(std::sqrt(n));
+    unsigned int a = (unsigned int)std::floor((double)n / b);
+    std::vector<double> y;
+    for (unsigned int k = 1; k < a + 1; ++k) {
+        unsigned int count = 0;
+        double z_sum = 0.0;
+        for (unsigned int i = ((k - 1) * b); i < (k * b); ++i) {
+            z_sum += (double)samples.at(i);
+            ++count;
+        }
+        y.push_back(z_sum / (double)count);
+    }
+    double s_sum = std::accumulate(samples.begin(), samples.end(), 0.0);
+    double mu_hat = s_sum / (double)n;
+    std::vector<double> sq_diffs(y.size());
+    for (unsigned int i = 0; i < y.size(); ++i) {
+        sq_diffs.at(i) = std::pow(y.at(i) - mu_hat, 2);
+    }
+    double sum_sq_diffs = std::accumulate(sq_diffs.begin(), sq_diffs.end(), 0.0);
+    double var_hat = (double)b * sum_sq_diffs / ((double)a - 1.0);
+    double se = std::sqrt(var_hat / (double)n);
+    return std::make_pair(mu_hat, se);
+}
+
+/**
+ * Estimate effective sample size of MCMC sample.
+ * 
+ * Adapted from 'ess' function of the 'mcmcse' R package (Gnu GPL version 2).
+ * See:
+ * 
+ * Gong, Lei, and James M. Flegal. A practical sequential stopping rule for
+ * high-dimensional MCMC and its application to spatial-temporal Bayesian
+ * models. arXiv:1403.5536v1 [stat.CO].
+ */
+template <typename T>
+inline double effective_sample_size(
+        const std::vector<T> samples,
+        const bool limit_to_number_of_samples = true) {
+    SampleSummarizer<T> ss;
+    for (auto x : samples) {
+        ss.add_sample(x);
+    }
+    std::pair<double, double> mu_sigma = monte_carlo_standard_error(samples);
+    double sigma = mu_sigma.second;
+    if ((ss.sample_size() == 0) or (sigma == 0.0)) {
+        return 0.0;
+    }
+    double n = (double)ss.sample_size();
+    double ess = ((n * ss.variance()) / (std::pow(sigma, 2) * n));
+    if ((ess > n) and (limit_to_number_of_samples)) {
+        return n;
+    }
+    return ess;
+}
 
 #endif
