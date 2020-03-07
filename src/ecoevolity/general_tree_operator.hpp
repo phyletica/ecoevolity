@@ -1126,7 +1126,7 @@ class GlobalNodeHeightDirichletOperator : public GeneralTreeOperatorInterface<Ba
 
         bool is_operable(BaseTree<NodeType> * tree) const {
             unsigned int num_heights = tree->get_number_of_node_heights();
-            if ((! this->operate_on_root_) && (num_heights < 2)) {
+            if (num_heights < 2) {
                 // No non-root heights to operate on
                 return false;
             }
@@ -1156,6 +1156,7 @@ class GlobalNodeHeightDirichletOperator : public GeneralTreeOperatorInterface<Ba
                 unsigned int next_index = tree->get_index_of_youngest_parent(current_index);
                 if (next_index == num_heights - 1) {
                     // We have hit the root
+                    indices_to_move.push_back(next_index);
                     break;
                 }
                 indices_to_move.push_back(next_index);
@@ -1164,18 +1165,25 @@ class GlobalNodeHeightDirichletOperator : public GeneralTreeOperatorInterface<Ba
             std::sort(indices_to_move.begin(), indices_to_move.end());
             unsigned int nheights = indices_to_move.size();
             double root_height = tree->get_root_height();
-            std::vector<double> rel_heights(nheights);
+            std::vector<double> rel_height_gaps(nheights);
+            double last_rel_height = 0.0;
             for (unsigned int i = 0; i < nheights; ++i) {
-                rel_heights.at(i) = tree->get_height(indices_to_move.at(i)) / root_height;
+                double rel_ht = tree->get_height(indices_to_move.at(i)) / root_height;
+                rel_height_gaps.at(i) = rel_ht - last_rel_height;
+                last_rel_height = rel_ht;
             }
 
             double ln_hastings;
-            this->op_.update_vector(rng, rel_heights, ln_hastings);
+            this->op_.update_vector(rng, rel_height_gaps, ln_hastings);
 
-            for (unsigned int i = 0; i < nheights; ++i) {
+            last_rel_height = 0.0;
+            // Update all heights except the root
+            for (unsigned int i = 0; i < nheights - 1; ++i) {
+                double rel_ht = rel_height_gaps.at(i) + last_rel_height;
+                double abs_value = rel_ht * root_height;
                 unsigned int ht_idx = indices_to_move.at(i);
-                double abs_value = rel_heights.at(i) * root_height;
                 tree->set_height(ht_idx, abs_value);
+                last_rel_height = rel_ht;
             }
             return ln_hastings;
         }
@@ -1203,7 +1211,7 @@ class NodeHeightDirichletOperator : public GeneralTreeOperatorInterface<BaseTree
 
         bool is_operable(BaseTree<NodeType> * tree) const {
             unsigned int num_heights = tree->get_number_of_node_heights();
-            if ((! this->operate_on_root_) && (num_heights < 2)) {
+            if (num_heights < 2) {
                 // No non-root heights to operate on
                 return false;
             }
@@ -1264,7 +1272,7 @@ class NodeHeightBetaOperator : public GeneralTreeOperatorInterface<BaseTree<Node
 
         bool is_operable(BaseTree<NodeType> * tree) const {
             unsigned int num_heights = tree->get_number_of_node_heights();
-            if ((! this->operate_on_root_) && (num_heights < 2)) {
+            if (num_heights < 2) {
                 // No non-root heights to operate on
                 return false;
             }
