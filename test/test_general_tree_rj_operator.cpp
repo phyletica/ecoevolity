@@ -394,7 +394,7 @@ TEST_CASE("Testing SplitLumpNodesRevJumpSampler with 3 leaves, fixed root and op
 }
 
 TEST_CASE("Testing SplitLumpNodesRevJumpSampler with 4 leaves and fixed root",
-        "[xSplitLumpNodesRevJumpSampler]") {
+        "[xxSplitLumpNodesRevJumpSampler]") {
 
     SECTION("Testing 4 leaves with fixed root") {
         RandomNumberGenerator rng = RandomNumberGenerator(20);

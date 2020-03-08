@@ -1452,8 +1452,13 @@ class BaseTree {
                 //         this->alpha_of_node_height_beta_prior_->get_value(),
                 //         this->beta_of_node_height_beta_prior_->get_value(),
                 //         youngest_parent_height);
+                double height = this->get_height(i);
+                double upper_height = this->get_height_of_youngest_parent(i);
+                double lower_height = this->get_height_of_oldest_child(i);
+                double rel_height = (height - lower_height) / (upper_height - lower_height);
                 d += BetaDistribution::get_ln_pdf(
-                        this->get_height_relative_to_youngest_parent(i),
+                        /* this->get_height_relative_to_youngest_parent(i), */
+                        rel_height,
                         this->alpha_of_node_height_beta_prior_->get_value(),
                         this->beta_of_node_height_beta_prior_->get_value());
                 ///////////////////////////////////////////////////////////////

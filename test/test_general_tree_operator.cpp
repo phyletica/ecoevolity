@@ -5286,7 +5286,9 @@ TEST_CASE("Testing GlobalNodeHeightDirichletOperator with 5 leaf ladder and opti
         tree.ignore_data();
         tree.estimate_root_height();
 
-        GlobalNodeHeightDirichletOperator<Node> op;
+        /* GlobalNodeHeightDirichletOperator<Node> op; */
+        /* NodeHeightScaler<Node> op; */
+        NodeHeightBetaOperator<Node> op;
         op.turn_on_auto_optimize();
         op.set_auto_optimize_delay(100);
 
@@ -5309,11 +5311,11 @@ TEST_CASE("Testing GlobalNodeHeightDirichletOperator with 5 leaf ladder and opti
             op.operate(rng, &tree, 1, 1);
         }
 
-        unsigned int niterations = 400000;
+        unsigned int niterations = 800000;
         unsigned int sample_freq = 5;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
-            op.operate(rng, &tree, 1);
+            op.operate(rng, &tree, 1, 2);
             if ((i + 1) % sample_freq == 0) {
                 internal_0_height_summary.add_sample(tree.get_height(0) / tree.get_height(1));
                 internal_1_height_summary.add_sample(tree.get_height(1) / tree.get_height(2));
@@ -5332,15 +5334,24 @@ TEST_CASE("Testing GlobalNodeHeightDirichletOperator with 5 leaf ladder and opti
         std::cout << "ESS 0: " << ess_0 << "\n";
         std::cout << "ESS 1: " << ess_1 << "\n";
         std::cout << "ESS 2: " << ess_2 << "\n";
+        
+        BetaDistribution prior(1.0, 1.0);
 
-        REQUIRE(op.get_number_of_attempts() == niterations + burnin);
-        REQUIRE(op.get_number_of_attempts_for_correction() == (niterations + burnin - 100));
+        std::cout << "Expected mean: " << prior.get_mean() << "\n";
+        std::cout << "Expected var: " << prior.get_variance() << "\n";
+        std::cout << "Internal 0 mean: " << internal_0_height_summary.mean() << "\n";
+        std::cout << "Internal 0 var: "  << internal_0_height_summary.variance() << "\n";
+        std::cout << "Internal 1 mean: " << internal_1_height_summary.mean() << "\n";
+        std::cout << "Internal 1 var: "  << internal_1_height_summary.variance() << "\n";
+        std::cout << "Internal 2 mean: " << internal_2_height_summary.mean() << "\n";
+        std::cout << "Internal 2 var: "  << internal_2_height_summary.variance() << "\n";
+
+        /* REQUIRE(op.get_number_of_attempts() == niterations + burnin); */
+        /* REQUIRE(op.get_number_of_attempts_for_correction() == (niterations + burnin - 100)); */
 
         REQUIRE(internal_0_height_summary.sample_size() == nsamples);
         REQUIRE(internal_1_height_summary.sample_size() == nsamples);
         REQUIRE(internal_2_height_summary.sample_size() == nsamples);
-        
-        BetaDistribution prior(1.0, 1.0);
 
         double eps = 0.001;
         REQUIRE(internal_0_height_summary.mean() == Approx(prior.get_mean()).epsilon(eps));
