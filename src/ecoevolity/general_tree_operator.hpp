@@ -962,12 +962,7 @@ class TreeScaler : public GeneralTreeOperatorInterface<BaseTree<NodeType>, Scale
             unsigned int num_heights = tree->get_number_of_node_heights();
             double multiplier = this->op_.get_move_amount(rng);
             tree->scale_tree(multiplier);
-            // When we scale all the node heights, because all the non-root
-            // internal node heights are parameterized as relative to their
-            // youngest parent (at least for the prior, and thus the Hasting's
-            // ratio), These values do not change (only the value of the root
-            // node changes from the scaling.
-            return std::log(multiplier);
+            return std::log(multiplier) * num_heights;
         }
 };
 
@@ -1022,24 +1017,7 @@ class NodeHeightScaler : public GeneralTreeOperatorInterface<BaseTree<NodeType>,
                 return -std::numeric_limits<double>::infinity();
             }
             tree->set_height(height_index, new_height);
-            ///////////////////////////////////////////////////////////////////
-            // Because the non-root internal ages are relative to their
-            // youngest parent's age, If any of the nodes mapped to this node
-            // height is the parent of a node mapped to a younger node height,
-            // then we are effectively scaling this younger node height by 1/x
-            // when we scale this node by x. So, we have to check to see if
-            // this node is the parent of a younger node
-            if (height_index == 0) {
-                // This height is not a parent to a younger height,
-                // so we only scaled this height
-                return ln_multiplier;
-            }
-            if (tree->get_oldest_child(height_index)->is_leaf()) {
-                // This height is not a parent to a younger height,
-                // so we only scaled this height
-                return ln_multiplier;
-            }
-            return 0.0;
+            return ln_multiplier;
         }
 };
 
@@ -1089,17 +1067,6 @@ class RootHeightScaler : public GeneralTreeOperatorInterface<BaseTree<NodeType>,
                 return -std::numeric_limits<double>::infinity();
             }
             tree->set_height(height_index, height);
-            ///////////////////////////////////////////////////////////////////
-            // Because the non-root internal ages are relative to their
-            // youngest parent's age, If this any of the nodes mapped to this
-            // node height is the parent of a node mapped to a younger node
-            // height, then we are effectively scaling this younger node height
-            // by 1/x when we scale this node by x.  Because the root has to be
-            // the parent of any younger nodes, this will always be the case
-            // whenever the root is not the only height.
-            if (num_heights > 1) {
-                return 0.0;
-            }
             return ln_multiplier;
         }
 };
@@ -1355,315 +1322,282 @@ class NodeHeightMover : public GeneralTreeOperatorInterface<BaseTree<NodeType>, 
             unsigned int height_index = rng.uniform_int(0,
                     max_height_index);
             double height = tree->get_height(height_index);
-            double parent_height = tree->get_height_of_youngest_parent(height_index);
-            // We need to perform move on relative height, because the prior is
-            // on relative (non-root) internal node heights
-            double relative_height = height / parent_height;
             double ln_hastings;
-            this->update(rng, relative_height, ln_hastings);
-            double new_height = relative_height * parent_height;
-            if (new_height > parent_height) {
+            this->update(rng, height, ln_hastings);
+            if (height > tree->get_height_of_youngest_parent(height_index)) {
                 return -std::numeric_limits<double>::infinity();
             }
-            if (new_height < tree->get_height_of_oldest_child(height_index)) {
+            if (height < tree->get_height_of_oldest_child(height_index)) {
                 return -std::numeric_limits<double>::infinity();
             }
-            tree->set_height(height_index, new_height);
+            tree->set_height(height_index, height);
             return ln_hastings;
         }
 };
 
 
-///////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////
-// These classes of moves do not work when the prior on (non-root) internal
-// node heights is on their heights *relative* to their youngest parent.  These
-// worked when the prior was on the absolute heights of all internal nodes
-///////////////////////////////////////////////////////////////////////////////
-// template<class NodeType>
-// class NodeHeightSlideBumpScaler : public GeneralTreeOperatorInterface<BaseTree<NodeType>, ScaleOp> {
-//     protected:
-//         virtual bool call_tree_method_(
-//                 BaseTree<NodeType> * tree,
-//                 RandomNumberGenerator& rng,
-//                 unsigned int height_index,
-//                 double height) {
-//             return tree->slide_bump_height(rng,
-//                     height_index,
-//                     height);
-//         }
-// 
-//         bool operate_on_root_ = false;
-// 
-//     public:
-//         NodeHeightSlideBumpScaler() : GeneralTreeOperatorInterface<BaseTree<NodeType>, ScaleOp>() { }
-//         NodeHeightSlideBumpScaler(double weight) : GeneralTreeOperatorInterface<BaseTree<NodeType>, ScaleOp>(weight) { }
-// 
-//         std::string get_name() const {
-//             return "NodeHeightSlideBumpScaler";
-//         }
-// 
-//         std::string target_parameter() const {
-//             return "node heights";
-//         }
-// 
-//         BaseGeneralTreeOperatorTemplate::OperatorTypeEnum get_type() const {
-//             return BaseGeneralTreeOperatorTemplate::OperatorTypeEnum::node_height_operator;
-//         }
-// 
-//         virtual void set_operate_on_root(bool operate_on_root) {
-//             this->operate_on_root_ = operate_on_root;
-//         }
-// 
-//         bool is_operable(BaseTree<NodeType> * tree) const {
-//             unsigned int num_heights = tree->get_number_of_node_heights();
-//             if ((! this->operate_on_root_) && (num_heights < 2)) {
-//                 // No non-root heights to operate on
-//                 return false;
-//             }
-//             return true;
-//         }
-// 
-//         /**
-//          * @brief   Propose a new state.
-//          *
-//          * @return  Log of Hastings Ratio.
-//          */
-//         double propose(RandomNumberGenerator& rng,
-//                 BaseTree<NodeType> * tree,
-//                 unsigned int nthreads = 1) {
-//             if (! this->is_operable(tree)) {
-//                 return -std::numeric_limits<double>::infinity();
-//             }
-//             unsigned int num_heights = tree->get_number_of_node_heights();
-//             unsigned int max_height_index = num_heights - 2;
-//             if (this->operate_on_root_) {
-//                 max_height_index = num_heights - 1;
-//             }
-//             unsigned int height_index = rng.uniform_int(0,
-//                     max_height_index);
-//             double new_height = tree->get_height(height_index);
-//             // double height = tree->get_height(height_index);
-//             // double root_height = tree->get_root_height();
-//             // double relative_height = height / root_height;
-//             double ln_multiplier;
-//             this->update(rng, new_height, ln_multiplier);
-//             // this->update(rng, relative_height, ln_multiplier);
-//             // double new_height = relative_height * root_height;
-//             if (new_height < 0) {
-//                 return -std::numeric_limits<double>::infinity();
-//             }
-//             if (new_height > tree->get_root_height()) {
-//                 if (tree->root_height_is_fixed() || (! this->operate_on_root_)) {
-//                     return -std::numeric_limits<double>::infinity();
-//                 }
-//             }
-//             bool move_happened = this->call_tree_method_(
-//                     tree,
-//                     rng,
-//                     height_index,
-//                     new_height);
-//             if (! move_happened) {
-//                 return -std::numeric_limits<double>::infinity();
-//             }
-//             return ln_multiplier;
-//         }
-// };
-// 
-// 
-// template<class NodeType>
-// class NodeHeightSlideBumpPermuteScaler : public NodeHeightSlideBumpScaler<NodeType> {
-//     protected:
-//         bool call_tree_method_(
-//                 BaseTree<NodeType> * tree,
-//                 RandomNumberGenerator& rng,
-//                 unsigned int height_index,
-//                 double height) {
-//             return tree->slide_bump_permute_height(rng,
-//                     height_index,
-//                     height);
-//         }
-// 
-//     public:
-//         NodeHeightSlideBumpPermuteScaler() : NodeHeightSlideBumpScaler<NodeType>() { }
-//         NodeHeightSlideBumpPermuteScaler(double weight) : NodeHeightSlideBumpScaler<NodeType>(weight) { }
-// 
-//         std::string get_name() const {
-//             return "NodeHeightSlideBumpPermuteScaler";
-//         }
-// };
-// 
-// 
-// template<class NodeType>
-// class NodeHeightSlideBumpSwapScaler : public NodeHeightSlideBumpScaler<NodeType> {
-//     protected:
-//         bool call_tree_method_(
-//                 BaseTree<NodeType> * tree,
-//                 RandomNumberGenerator& rng,
-//                 unsigned int height_index,
-//                 double height) {
-//             return tree->slide_bump_swap_height(rng,
-//                     height_index,
-//                     height);
-//         }
-// 
-//     public:
-//         NodeHeightSlideBumpSwapScaler() : NodeHeightSlideBumpScaler<NodeType>() { }
-//         NodeHeightSlideBumpSwapScaler(double weight) : NodeHeightSlideBumpScaler<NodeType>(weight) { }
-// 
-//         std::string get_name() const {
-//             return "NodeHeightSlideBumpSwapScaler";
-//         }
-// };
-///////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////
+template<class NodeType>
+class NodeHeightSlideBumpScaler : public GeneralTreeOperatorInterface<BaseTree<NodeType>, ScaleOp> {
+    protected:
+        virtual bool call_tree_method_(
+                BaseTree<NodeType> * tree,
+                RandomNumberGenerator& rng,
+                unsigned int height_index,
+                double height) {
+            return tree->slide_bump_height(rng,
+                    height_index,
+                    height);
+        }
+
+        bool operate_on_root_ = false;
+
+    public:
+        NodeHeightSlideBumpScaler() : GeneralTreeOperatorInterface<BaseTree<NodeType>, ScaleOp>() { }
+        NodeHeightSlideBumpScaler(double weight) : GeneralTreeOperatorInterface<BaseTree<NodeType>, ScaleOp>(weight) { }
+
+        std::string get_name() const {
+            return "NodeHeightSlideBumpScaler";
+        }
+
+        std::string target_parameter() const {
+            return "node heights";
+        }
+
+        BaseGeneralTreeOperatorTemplate::OperatorTypeEnum get_type() const {
+            return BaseGeneralTreeOperatorTemplate::OperatorTypeEnum::node_height_operator;
+        }
+
+        virtual void set_operate_on_root(bool operate_on_root) {
+            this->operate_on_root_ = operate_on_root;
+        }
+
+        bool is_operable(BaseTree<NodeType> * tree) const {
+            unsigned int num_heights = tree->get_number_of_node_heights();
+            if ((! this->operate_on_root_) && (num_heights < 2)) {
+                // No non-root heights to operate on
+                return false;
+            }
+            return true;
+        }
+
+        /**
+         * @brief   Propose a new state.
+         *
+         * @return  Log of Hastings Ratio.
+         */
+        double propose(RandomNumberGenerator& rng,
+                BaseTree<NodeType> * tree,
+                unsigned int nthreads = 1) {
+            if (! this->is_operable(tree)) {
+                return -std::numeric_limits<double>::infinity();
+            }
+            unsigned int num_heights = tree->get_number_of_node_heights();
+            unsigned int max_height_index = num_heights - 2;
+            if (this->operate_on_root_) {
+                max_height_index = num_heights - 1;
+            }
+            unsigned int height_index = rng.uniform_int(0,
+                    max_height_index);
+            double new_height = tree->get_height(height_index);
+            double ln_multiplier;
+            this->update(rng, new_height, ln_multiplier);
+            if (new_height < 0) {
+                return -std::numeric_limits<double>::infinity();
+            }
+            if (new_height > tree->get_root_height()) {
+                if (tree->root_height_is_fixed() || (! this->operate_on_root_)) {
+                    return -std::numeric_limits<double>::infinity();
+                }
+            }
+            bool move_happened = this->call_tree_method_(
+                    tree,
+                    rng,
+                    height_index,
+                    new_height);
+            if (! move_happened) {
+                return -std::numeric_limits<double>::infinity();
+            }
+            return ln_multiplier;
+        }
+};
 
 
-///////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////
-// These classes of moves do not work when the prior on (non-root) internal
-// node heights is on their heights *relative* to their youngest parent.  These
-// worked when the prior was on the absolute heights of all internal nodes
-///////////////////////////////////////////////////////////////////////////////
-// template<class NodeType>
-// class NodeHeightSlideBumpMover : public GeneralTreeOperatorInterface<BaseTree<NodeType>, WindowOp> {
-//     protected:
-//         virtual bool call_tree_method_(
-//                 BaseTree<NodeType> * tree,
-//                 RandomNumberGenerator& rng,
-//                 unsigned int height_index,
-//                 double height) {
-//             return tree->slide_bump_height(rng,
-//                     height_index,
-//                     height);
-//         }
-// 
-//         bool operate_on_root_ = false;
-// 
-//     public:
-//         NodeHeightSlideBumpMover() : GeneralTreeOperatorInterface<BaseTree<NodeType>, WindowOp>() { }
-//         NodeHeightSlideBumpMover(double weight) : GeneralTreeOperatorInterface<BaseTree<NodeType>, WindowOp>(weight) { }
-// 
-//         std::string get_name() const {
-//             return "NodeHeightSlideBumpMover";
-//         }
-// 
-//         std::string target_parameter() const {
-//             return "node heights";
-//         }
-// 
-//         BaseGeneralTreeOperatorTemplate::OperatorTypeEnum get_type() const {
-//             return BaseGeneralTreeOperatorTemplate::OperatorTypeEnum::node_height_operator;
-//         }
-// 
-//         virtual void set_operate_on_root(bool operate_on_root) {
-//             this->operate_on_root_ = operate_on_root;
-//         }
-// 
-//         bool is_operable(BaseTree<NodeType> * tree) const {
-//             unsigned int num_heights = tree->get_number_of_node_heights();
-//             if ((! this->operate_on_root_) && (num_heights < 2)) {
-//                 // No non-root heights to operate on
-//                 return false;
-//             }
-//             return true;
-//         }
-// 
-//         /**
-//          * @brief   Propose a new state.
-//          *
-//          * @return  Log of Hastings Ratio.
-//          */
-//         double propose(RandomNumberGenerator& rng,
-//                 BaseTree<NodeType> * tree,
-//                 unsigned int nthreads = 1) {
-//             if (! this->is_operable(tree)) {
-//                 return -std::numeric_limits<double>::infinity();
-//             }
-//             unsigned int num_heights = tree->get_number_of_node_heights();
-//             unsigned int max_height_index = num_heights - 2;
-//             if (this->operate_on_root_) {
-//                 max_height_index = num_heights - 1;
-//             }
-//             unsigned int height_index = rng.uniform_int(0,
-//                     max_height_index);
-//             double new_height = tree->get_height(height_index);
-//             // double height = tree->get_height(height_index);
-//             // double root_height = tree->get_root_height();
-//             // double relative_height = height / root_height;
-//             double ln_hastings;
-//             this->update(rng, new_height, ln_hastings);
-//             // this->update(rng, relative_height, ln_hastings);
-//             // double new_height = relative_height * root_height;
-//             if (new_height < 0) {
-//                 return -std::numeric_limits<double>::infinity();
-//             }
-//             if (new_height > tree->get_root_height()) {
-//                 if (tree->root_height_is_fixed() || (! this->operate_on_root_)) {
-//                     return -std::numeric_limits<double>::infinity();
-//                 }
-//             }
-//             bool move_happened = this->call_tree_method_(
-//                     tree,
-//                     rng,
-//                     height_index,
-//                     new_height);
-//             if (! move_happened) {
-//                 return -std::numeric_limits<double>::infinity();
-//             }
-//             return ln_hastings;
-//         }
-// };
-// 
-// 
-// template<class NodeType>
-// class NodeHeightSlideBumpPermuteMover : public NodeHeightSlideBumpMover<NodeType> {
-//     protected:
-//         bool call_tree_method_(
-//                 BaseTree<NodeType> * tree,
-//                 RandomNumberGenerator& rng,
-//                 unsigned int height_index,
-//                 double height) {
-//             return tree->slide_bump_permute_height(rng,
-//                     height_index,
-//                     height);
-//         }
-// 
-//     public:
-//         NodeHeightSlideBumpPermuteMover() : NodeHeightSlideBumpMover<NodeType>() { }
-//         NodeHeightSlideBumpPermuteMover(double weight) : NodeHeightSlideBumpMover<NodeType>(weight) { }
-// 
-//         std::string get_name() const {
-//             return "NodeHeightSlideBumpPermuteMover";
-//         }
-// };
-// 
-// 
-// template<class NodeType>
-// class NodeHeightSlideBumpSwapMover : public NodeHeightSlideBumpMover<NodeType> {
-//     protected:
-//         bool call_tree_method_(
-//                 BaseTree<NodeType> * tree,
-//                 RandomNumberGenerator& rng,
-//                 unsigned int height_index,
-//                 double height) {
-//             return tree->slide_bump_swap_height(rng,
-//                     height_index,
-//                     height);
-//         }
-// 
-//     public:
-//         NodeHeightSlideBumpSwapMover() : NodeHeightSlideBumpMover<NodeType>() { }
-//         NodeHeightSlideBumpSwapMover(double weight) : NodeHeightSlideBumpMover<NodeType>(weight) { }
-// 
-//         std::string get_name() const {
-//             return "NodeHeightSlideBumpSwapMover";
-//         }
-// };
-///////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////
+template<class NodeType>
+class NodeHeightSlideBumpPermuteScaler : public NodeHeightSlideBumpScaler<NodeType> {
+    protected:
+        bool call_tree_method_(
+                BaseTree<NodeType> * tree,
+                RandomNumberGenerator& rng,
+                unsigned int height_index,
+                double height) {
+            return tree->slide_bump_permute_height(rng,
+                    height_index,
+                    height);
+        }
+
+    public:
+        NodeHeightSlideBumpPermuteScaler() : NodeHeightSlideBumpScaler<NodeType>() { }
+        NodeHeightSlideBumpPermuteScaler(double weight) : NodeHeightSlideBumpScaler<NodeType>(weight) { }
+
+        std::string get_name() const {
+            return "NodeHeightSlideBumpPermuteScaler";
+        }
+};
 
 
+template<class NodeType>
+class NodeHeightSlideBumpSwapScaler : public NodeHeightSlideBumpScaler<NodeType> {
+    protected:
+        bool call_tree_method_(
+                BaseTree<NodeType> * tree,
+                RandomNumberGenerator& rng,
+                unsigned int height_index,
+                double height) {
+            return tree->slide_bump_swap_height(rng,
+                    height_index,
+                    height);
+        }
+
+    public:
+        NodeHeightSlideBumpSwapScaler() : NodeHeightSlideBumpScaler<NodeType>() { }
+        NodeHeightSlideBumpSwapScaler(double weight) : NodeHeightSlideBumpScaler<NodeType>(weight) { }
+
+        std::string get_name() const {
+            return "NodeHeightSlideBumpSwapScaler";
+        }
+};
+
+
+template<class NodeType>
+class NodeHeightSlideBumpMover : public GeneralTreeOperatorInterface<BaseTree<NodeType>, WindowOp> {
+    protected:
+        virtual bool call_tree_method_(
+                BaseTree<NodeType> * tree,
+                RandomNumberGenerator& rng,
+                unsigned int height_index,
+                double height) {
+            return tree->slide_bump_height(rng,
+                    height_index,
+                    height);
+        }
+
+        bool operate_on_root_ = false;
+
+    public:
+        NodeHeightSlideBumpMover() : GeneralTreeOperatorInterface<BaseTree<NodeType>, WindowOp>() { }
+        NodeHeightSlideBumpMover(double weight) : GeneralTreeOperatorInterface<BaseTree<NodeType>, WindowOp>(weight) { }
+
+        std::string get_name() const {
+            return "NodeHeightSlideBumpMover";
+        }
+
+        std::string target_parameter() const {
+            return "node heights";
+        }
+
+        BaseGeneralTreeOperatorTemplate::OperatorTypeEnum get_type() const {
+            return BaseGeneralTreeOperatorTemplate::OperatorTypeEnum::node_height_operator;
+        }
+
+        virtual void set_operate_on_root(bool operate_on_root) {
+            this->operate_on_root_ = operate_on_root;
+        }
+
+        bool is_operable(BaseTree<NodeType> * tree) const {
+            unsigned int num_heights = tree->get_number_of_node_heights();
+            if ((! this->operate_on_root_) && (num_heights < 2)) {
+                // No non-root heights to operate on
+                return false;
+            }
+            return true;
+        }
+
+        /**
+         * @brief   Propose a new state.
+         *
+         * @return  Log of Hastings Ratio.
+         */
+        double propose(RandomNumberGenerator& rng,
+                BaseTree<NodeType> * tree,
+                unsigned int nthreads = 1) {
+            if (! this->is_operable(tree)) {
+                return -std::numeric_limits<double>::infinity();
+            }
+            unsigned int num_heights = tree->get_number_of_node_heights();
+            unsigned int max_height_index = num_heights - 2;
+            if (this->operate_on_root_) {
+                max_height_index = num_heights - 1;
+            }
+            unsigned int height_index = rng.uniform_int(0,
+                    max_height_index);
+            double new_height = tree->get_height(height_index);
+            double ln_hastings;
+            this->update(rng, new_height, ln_hastings);
+            if (new_height < 0) {
+                return -std::numeric_limits<double>::infinity();
+            }
+            if (new_height > tree->get_root_height()) {
+                if (tree->root_height_is_fixed() || (! this->operate_on_root_)) {
+                    return -std::numeric_limits<double>::infinity();
+                }
+            }
+            bool move_happened = this->call_tree_method_(
+                    tree,
+                    rng,
+                    height_index,
+                    new_height);
+            if (! move_happened) {
+                return -std::numeric_limits<double>::infinity();
+            }
+            return ln_hastings;
+        }
+};
+
+
+template<class NodeType>
+class NodeHeightSlideBumpPermuteMover : public NodeHeightSlideBumpMover<NodeType> {
+    protected:
+        bool call_tree_method_(
+                BaseTree<NodeType> * tree,
+                RandomNumberGenerator& rng,
+                unsigned int height_index,
+                double height) {
+            return tree->slide_bump_permute_height(rng,
+                    height_index,
+                    height);
+        }
+
+    public:
+        NodeHeightSlideBumpPermuteMover() : NodeHeightSlideBumpMover<NodeType>() { }
+        NodeHeightSlideBumpPermuteMover(double weight) : NodeHeightSlideBumpMover<NodeType>(weight) { }
+
+        std::string get_name() const {
+            return "NodeHeightSlideBumpPermuteMover";
+        }
+};
+
+
+template<class NodeType>
+class NodeHeightSlideBumpSwapMover : public NodeHeightSlideBumpMover<NodeType> {
+    protected:
+        bool call_tree_method_(
+                BaseTree<NodeType> * tree,
+                RandomNumberGenerator& rng,
+                unsigned int height_index,
+                double height) {
+            return tree->slide_bump_swap_height(rng,
+                    height_index,
+                    height);
+        }
+
+    public:
+        NodeHeightSlideBumpSwapMover() : NodeHeightSlideBumpMover<NodeType>() { }
+        NodeHeightSlideBumpSwapMover(double weight) : NodeHeightSlideBumpMover<NodeType>(weight) { }
+
+        std::string get_name() const {
+            return "NodeHeightSlideBumpSwapMover";
+        }
+};
 
 
 template<class NodeType>
@@ -2969,119 +2903,111 @@ class RootHeightSizeMixer : public GeneralTreeOperatorInterface<BasePopulationTr
 };
 
 
-///////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////
-// These classes of moves do not work when the prior on (non-root) internal
-// node heights is on their heights *relative* to their youngest parent.  These
-// worked when the prior was on the absolute heights of all internal nodes
-///////////////////////////////////////////////////////////////////////////////
-// class HeightSizeSlideBumpMixer : public GeneralTreeOperatorInterface<BasePopulationTree, ScaleOp> {
-//     protected:
-//         virtual bool call_tree_method_(
-//                 BasePopulationTree * tree,
-//                 RandomNumberGenerator& rng,
-//                 unsigned int height_index,
-//                 double height) {
-//             return tree->slide_bump_height(rng,
-//                     height_index,
-//                     height);
-//         }
-// 
-//         bool operate_on_root_ = false;
-// 
-//     public:
-//         HeightSizeSlideBumpMixer() : GeneralTreeOperatorInterface<BasePopulationTree, ScaleOp>() { }
-//         HeightSizeSlideBumpMixer(double weight) : GeneralTreeOperatorInterface<BasePopulationTree, ScaleOp>(weight) { }
-// 
-//         std::string get_name() const {
-//             return "HeightSizeSlideBumpMixer";
-//         }
-// 
-//         std::string target_parameter() const {
-//             return "node heights and population sizes";
-//         }
-// 
-//         BaseGeneralTreeOperatorTemplate::OperatorTypeEnum get_type() const {
-//             return BaseGeneralTreeOperatorTemplate::OperatorTypeEnum::node_height_operator;
-//         }
-// 
-//         virtual void set_operate_on_root(bool operate_on_root) {
-//             this->operate_on_root_ = operate_on_root;
-//         }
-// 
-//         bool is_operable(BasePopulationTree * tree) const {
-//             if (tree->population_sizes_are_fixed() || tree->population_sizes_are_constrained()) {
-//                 // It doesn't make sense to use the move if the pop sizes are
-//                 // constrained or fixed
-//                 return false;
-//             }
-//             unsigned int num_heights = tree->get_number_of_node_heights();
-//             if ((! this->operate_on_root_) && (num_heights < 2)) {
-//                 // No non-root heights to operate on
-//                 return false;
-//             }
-//             return true;
-//         }
-// 
-//         /**
-//          * @brief   Propose a new state.
-//          *
-//          * @return  Log of Hastings Ratio.
-//          */
-//         double propose(RandomNumberGenerator& rng,
-//                 BasePopulationTree * tree,
-//                 unsigned int nthreads = 1) {
-//             if (! this->is_operable(tree)) {
-//                 return -std::numeric_limits<double>::infinity();
-//             }
-//             unsigned int num_heights = tree->get_number_of_node_heights();
-//             unsigned int max_height_index = num_heights - 2;
-//             if (this->operate_on_root_) {
-//                 max_height_index = num_heights - 1;
-//             }
-//             std::vector<double> old_heights = tree->get_node_heights();
-//             unsigned int height_index = rng.uniform_int(0,
-//                     max_height_index);
-//             double new_height = tree->get_height(height_index);
-//             double ln_multiplier;
-//             this->update(rng, new_height, ln_multiplier);
-//             if (new_height < 0.0) {
-//                 return -std::numeric_limits<double>::infinity();
-//             }
-//             if (new_height > tree->get_root_height()) {
-//                 if (tree->root_height_is_fixed() || (! this->operate_on_root_)) {
-//                     return -std::numeric_limits<double>::infinity();
-//                 }
-//             }
-//             bool move_happened = this->call_tree_method_(
-//                     tree,
-//                     rng,
-//                     height_index,
-//                     new_height);
-//             if (! move_happened) {
-//                 return -std::numeric_limits<double>::infinity();
-//             }
-//             std::vector<double> new_heights = tree->get_node_heights();
-//             // Change internal node pop sizes according to time changes
-//             for (unsigned int i = 0; i < new_heights.size(); ++i) {
-//                 double height_diff = new_heights.at(i) - old_heights.at(i);
-//                 if (! almost_equal_abs(height_diff, 0.0, 1e-10)) {
-//                     double pop_size_change = -height_diff / tree->get_ploidy();
-//                     std::vector< std::shared_ptr<PopulationNode> > mapped_nodes = tree->get_mapped_nodes(i);
-//                     for (auto node : mapped_nodes) {
-//                         double new_pop_size = node->get_population_size() + pop_size_change;
-//                         if (new_pop_size <= 0.0) {
-//                             return -std::numeric_limits<double>::infinity();
-//                         }
-//                         node->set_population_size(new_pop_size);
-//                     }
-//                 }
-//             }
-//             return ln_multiplier;
-//         }
-// };
-///////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////
+class HeightSizeSlideBumpMixer : public GeneralTreeOperatorInterface<BasePopulationTree, ScaleOp> {
+    protected:
+        virtual bool call_tree_method_(
+                BasePopulationTree * tree,
+                RandomNumberGenerator& rng,
+                unsigned int height_index,
+                double height) {
+            return tree->slide_bump_height(rng,
+                    height_index,
+                    height);
+        }
+
+        bool operate_on_root_ = false;
+
+    public:
+        HeightSizeSlideBumpMixer() : GeneralTreeOperatorInterface<BasePopulationTree, ScaleOp>() { }
+        HeightSizeSlideBumpMixer(double weight) : GeneralTreeOperatorInterface<BasePopulationTree, ScaleOp>(weight) { }
+
+        std::string get_name() const {
+            return "HeightSizeSlideBumpMixer";
+        }
+
+        std::string target_parameter() const {
+            return "node heights and population sizes";
+        }
+
+        BaseGeneralTreeOperatorTemplate::OperatorTypeEnum get_type() const {
+            return BaseGeneralTreeOperatorTemplate::OperatorTypeEnum::node_height_operator;
+        }
+
+        virtual void set_operate_on_root(bool operate_on_root) {
+            this->operate_on_root_ = operate_on_root;
+        }
+
+        bool is_operable(BasePopulationTree * tree) const {
+            if (tree->population_sizes_are_fixed() || tree->population_sizes_are_constrained()) {
+                // It doesn't make sense to use the move if the pop sizes are
+                // constrained or fixed
+                return false;
+            }
+            unsigned int num_heights = tree->get_number_of_node_heights();
+            if ((! this->operate_on_root_) && (num_heights < 2)) {
+                // No non-root heights to operate on
+                return false;
+            }
+            return true;
+        }
+
+        /**
+         * @brief   Propose a new state.
+         *
+         * @return  Log of Hastings Ratio.
+         */
+        double propose(RandomNumberGenerator& rng,
+                BasePopulationTree * tree,
+                unsigned int nthreads = 1) {
+            if (! this->is_operable(tree)) {
+                return -std::numeric_limits<double>::infinity();
+            }
+            unsigned int num_heights = tree->get_number_of_node_heights();
+            unsigned int max_height_index = num_heights - 2;
+            if (this->operate_on_root_) {
+                max_height_index = num_heights - 1;
+            }
+            std::vector<double> old_heights = tree->get_node_heights();
+            unsigned int height_index = rng.uniform_int(0,
+                    max_height_index);
+            double new_height = tree->get_height(height_index);
+            double ln_multiplier;
+            this->update(rng, new_height, ln_multiplier);
+            if (new_height < 0.0) {
+                return -std::numeric_limits<double>::infinity();
+            }
+            if (new_height > tree->get_root_height()) {
+                if (tree->root_height_is_fixed() || (! this->operate_on_root_)) {
+                    return -std::numeric_limits<double>::infinity();
+                }
+            }
+            bool move_happened = this->call_tree_method_(
+                    tree,
+                    rng,
+                    height_index,
+                    new_height);
+            if (! move_happened) {
+                return -std::numeric_limits<double>::infinity();
+            }
+            std::vector<double> new_heights = tree->get_node_heights();
+            // Change internal node pop sizes according to time changes
+            for (unsigned int i = 0; i < new_heights.size(); ++i) {
+                double height_diff = new_heights.at(i) - old_heights.at(i);
+                if (! almost_equal_abs(height_diff, 0.0, 1e-10)) {
+                    double pop_size_change = -height_diff / tree->get_ploidy();
+                    std::vector< std::shared_ptr<PopulationNode> > mapped_nodes = tree->get_mapped_nodes(i);
+                    for (auto node : mapped_nodes) {
+                        double new_pop_size = node->get_population_size() + pop_size_change;
+                        if (new_pop_size <= 0.0) {
+                            return -std::numeric_limits<double>::infinity();
+                        }
+                        node->set_population_size(new_pop_size);
+                    }
+                }
+            }
+            return ln_multiplier;
+        }
+};
 
 
 class GlobalHeightSizeRateScaler : public GeneralTreeOperatorInterface<BasePopulationTree, ScaleOp> {

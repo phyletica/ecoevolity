@@ -1446,21 +1446,12 @@ class BaseTree {
             for (unsigned int i = 0; i < this->get_number_of_node_heights() - 1; ++i) {
                 ///////////////////////////////////////////////////////////////
                 // Prior on the absolute ages of non-root internal nodes
-                // double youngest_parent_height = this->get_height_of_youngest_parent(i);
+                double youngest_parent_height = this->get_height_of_youngest_parent(i);
                 // d -= std::log(youngest_parent_height);
-                // d += BetaDistribution::get_scaled_ln_pdf(this->get_height(i),
-                //         this->alpha_of_node_height_beta_prior_->get_value(),
-                //         this->beta_of_node_height_beta_prior_->get_value(),
-                //         youngest_parent_height);
-                double height = this->get_height(i);
-                double upper_height = this->get_height_of_youngest_parent(i);
-                double lower_height = this->get_height_of_oldest_child(i);
-                double rel_height = (height - lower_height) / (upper_height - lower_height);
-                d += BetaDistribution::get_ln_pdf(
-                        /* this->get_height_relative_to_youngest_parent(i), */
-                        rel_height,
+                d += BetaDistribution::get_scaled_ln_pdf(this->get_height(i),
                         this->alpha_of_node_height_beta_prior_->get_value(),
-                        this->beta_of_node_height_beta_prior_->get_value());
+                        this->beta_of_node_height_beta_prior_->get_value(),
+                        youngest_parent_height);
                 ///////////////////////////////////////////////////////////////
                 // Prior on the relative ages of non-root internal nodes
                 // double youngest_parent_rel_height = this->get_relative_height_of_youngest_parent(i);
