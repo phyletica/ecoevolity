@@ -1218,65 +1218,71 @@ class NodeHeightDirichletOperator : public GeneralTreeOperatorInterface<BaseTree
 };
 
 
-template<class NodeType>
-class NodeHeightBetaOperator : public GeneralTreeOperatorInterface<BaseTree<NodeType>, BetaOp> {
-
-    public:
-        NodeHeightBetaOperator() : GeneralTreeOperatorInterface<BaseTree<NodeType>, BetaOp>() { }
-        NodeHeightBetaOperator(double weight) : GeneralTreeOperatorInterface<BaseTree<NodeType>, BetaOp>(weight) { }
-
-        std::string get_name() const {
-            return "NodeHeightBetaOperator";
-        }
-
-        std::string target_parameter() const {
-            return "node heights";
-        }
-
-        BaseGeneralTreeOperatorTemplate::OperatorTypeEnum get_type() const {
-            return BaseGeneralTreeOperatorTemplate::OperatorTypeEnum::node_height_operator;
-        }
-
-        bool is_operable(BaseTree<NodeType> * tree) const {
-            unsigned int num_heights = tree->get_number_of_node_heights();
-            if (num_heights < 2) {
-                // No non-root heights to operate on
-                return false;
-            }
-            return true;
-        }
-
-        /**
-         * @brief   Propose a new state.
-         *
-         * @return  Log of Hastings Ratio.
-         */
-        double propose(RandomNumberGenerator& rng,
-                BaseTree<NodeType> * tree,
-                unsigned int nthreads = 1) {
-            if (! this->is_operable(tree)) {
-                return -std::numeric_limits<double>::infinity();
-            }
-            unsigned int num_heights = tree->get_number_of_node_heights();
-            unsigned int max_height_index = num_heights - 2;
-            unsigned int height_index = rng.uniform_positive_int(
-                    max_height_index);
-            double height = tree->get_height(height_index);
-            double upper_height = tree->get_height_of_youngest_parent(height_index);
-            double lower_height = tree->get_height_of_oldest_child(height_index);
-            double shifted_upper_height = upper_height - lower_height;
-            double shifted_height = height - lower_height;
-            double rel_shifted_height = shifted_height / shifted_upper_height;
-
-            double ln_hastings;
-            this->op_.update(rng, rel_shifted_height, ln_hastings);
-
-            double new_height = (rel_shifted_height * shifted_upper_height) + lower_height;
-
-            tree->set_height(height_index, new_height);
-            return ln_hastings;
-        }
-};
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+// This operator is note working correctly
+///////////////////////////////////////////////////////////////////////////////
+// template<class NodeType>
+// class NodeHeightBetaOperator : public GeneralTreeOperatorInterface<BaseTree<NodeType>, BetaOp> {
+// 
+//     public:
+//         NodeHeightBetaOperator() : GeneralTreeOperatorInterface<BaseTree<NodeType>, BetaOp>() { }
+//         NodeHeightBetaOperator(double weight) : GeneralTreeOperatorInterface<BaseTree<NodeType>, BetaOp>(weight) { }
+// 
+//         std::string get_name() const {
+//             return "NodeHeightBetaOperator";
+//         }
+// 
+//         std::string target_parameter() const {
+//             return "node heights";
+//         }
+// 
+//         BaseGeneralTreeOperatorTemplate::OperatorTypeEnum get_type() const {
+//             return BaseGeneralTreeOperatorTemplate::OperatorTypeEnum::node_height_operator;
+//         }
+// 
+//         bool is_operable(BaseTree<NodeType> * tree) const {
+//             unsigned int num_heights = tree->get_number_of_node_heights();
+//             if (num_heights < 2) {
+//                 // No non-root heights to operate on
+//                 return false;
+//             }
+//             return true;
+//         }
+// 
+//         /**
+//          * @brief   Propose a new state.
+//          *
+//          * @return  Log of Hastings Ratio.
+//          */
+//         double propose(RandomNumberGenerator& rng,
+//                 BaseTree<NodeType> * tree,
+//                 unsigned int nthreads = 1) {
+//             if (! this->is_operable(tree)) {
+//                 return -std::numeric_limits<double>::infinity();
+//             }
+//             unsigned int num_heights = tree->get_number_of_node_heights();
+//             unsigned int max_height_index = num_heights - 2;
+//             unsigned int height_index = rng.uniform_positive_int(
+//                     max_height_index);
+//             double height = tree->get_height(height_index);
+//             double upper_height = tree->get_height_of_youngest_parent(height_index);
+//             double lower_height = tree->get_height_of_oldest_child(height_index);
+//             double shifted_upper_height = upper_height - lower_height;
+//             double shifted_height = height - lower_height;
+//             double rel_shifted_height = shifted_height / shifted_upper_height;
+// 
+//             double ln_hastings;
+//             this->op_.update(rng, rel_shifted_height, ln_hastings);
+// 
+//             double new_height = (rel_shifted_height * shifted_upper_height) + lower_height;
+// 
+//             tree->set_height(height_index, new_height);
+//             return ln_hastings;
+//         }
+// };
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 
 
 template<class NodeType>
