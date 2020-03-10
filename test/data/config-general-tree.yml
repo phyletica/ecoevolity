@@ -1,0 +1,58 @@
+---
+# comments should be ok
+parameters:
+    alpha_of_node_age_beta_prior:
+        value: 1.0
+        estimate: true
+        prior:
+            exponential_distribution:
+                rate: 1.0
+    root_age:
+        value: 0.2
+        estimate: true
+        prior:
+            gamma_distribution:
+                shape: 2.0
+                scale: 0.1
+                offset: 0.0
+    population_size:
+        value: 0.005
+        estimate: true
+        equal_population_sizes: false
+        prior:
+            gamma_distribution:
+                shape: 10.0
+                scale: 0.0001
+                offset: 0.0
+    freq_1:
+        value: 0.5
+        estimate: true
+        prior:
+            beta_distribution:
+                alpha: 2.5 
+                beta: 5.3
+    mutation_rate:
+        value: 1.0
+        estimate: false
+
+mcmc_settings:
+    chain_length: 200000
+    sample_frequency: 100
+
+operators:
+    SplitLumpNodesRevJumpSampler:
+        weight: 5.0
+    MuRateScaler:
+        scale: 0.2
+        weight: 3.0
+        auto_optimize: true
+        auto_optimize_delay: 1000
+
+data:
+    ploidy: 2
+    genotypes_are_diploid: true     # ignored if YAML data file
+    markers_are_dominant: false     # ignored if YAML data file
+    population_name_delimiter: " "  # ignored if YAML data file
+    population_name_is_prefix: true # ignored if YAML data file
+    # constant_sites_removed: true # Make this CLI argument?
+    path: "data3.nex"
