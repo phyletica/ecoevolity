@@ -34,7 +34,7 @@ TEST_CASE("Testing NodeHeightSlideBumpScaler with 3 leaves, fixed root, and opti
         tree.ignore_data();
         tree.fix_root_height();
 
-        NodeHeightSlideBumpScaler<Node> op;
+        NodeHeightSlideBumpScaler< BaseTree<Node> > op;
         op.turn_on_auto_optimize();
         op.set_auto_optimize_delay(100);
 
@@ -95,7 +95,7 @@ TEST_CASE("Testing NodeHeightSlideBumpScaler with 3 leaves, fixed root, and no o
         tree.ignore_data();
         tree.fix_root_height();
 
-        NodeHeightSlideBumpScaler<Node> op;
+        NodeHeightSlideBumpScaler< BaseTree<Node> > op;
         op.turn_off_auto_optimize();
         op.set_coercable_parameter_value(1.8);
 
@@ -164,11 +164,11 @@ TEST_CASE("Testing NodeHeightSlideBumpScaler with 3 leaves, variable root, and o
         tree.ignore_data();
         tree.estimate_root_height();
 
-        NodeHeightSlideBumpScaler<Node> op;
+        NodeHeightSlideBumpScaler< BaseTree<Node> > op;
         op.turn_on_auto_optimize();
         op.set_auto_optimize_delay(100);
 
-        RootHeightScaler<Node> rop;
+        RootHeightScaler< BaseTree<Node> > rop;
         rop.turn_on_auto_optimize();
         rop.set_auto_optimize_delay(100);
 
@@ -252,11 +252,11 @@ TEST_CASE("Testing NodeHeightSlideBumpScaler with 3 leaves, gamma root, and opti
         tree.ignore_data();
         tree.estimate_root_height();
 
-        NodeHeightSlideBumpScaler<Node> op;
+        NodeHeightSlideBumpScaler< BaseTree<Node> > op;
         op.turn_on_auto_optimize();
         op.set_auto_optimize_delay(100);
 
-        RootHeightScaler<Node> rop;
+        RootHeightScaler< BaseTree<Node> > rop;
         rop.turn_on_auto_optimize();
         rop.set_auto_optimize_delay(100);
 
@@ -335,7 +335,7 @@ TEST_CASE("Testing NodeHeightSlideBumpScaler with 3 leaves, beta(4, 2), fixed ro
         tree.fix_alpha_of_node_height_beta_prior();
         tree.fix_beta_of_node_height_beta_prior();
 
-        NodeHeightSlideBumpScaler<Node> op;
+        NodeHeightSlideBumpScaler< BaseTree<Node> > op;
         op.turn_on_auto_optimize();
         op.set_auto_optimize_delay(100);
 
@@ -400,7 +400,7 @@ TEST_CASE("Testing NodeHeightSlideBumpScaler with 4 leaves, fixed root, and opti
         tree.ignore_data();
         tree.fix_root_height();
 
-        NodeHeightSlideBumpScaler<Node> op;
+        NodeHeightSlideBumpScaler< BaseTree<Node> > op;
         op.turn_on_auto_optimize();
         op.set_auto_optimize_delay(100);
 
@@ -472,7 +472,7 @@ TEST_CASE("Testing NodeHeightSlideBumpScaler with 4 leaves, balanced, fixed root
         tree.ignore_data();
         tree.fix_root_height();
 
-        NodeHeightSlideBumpScaler<Node> op;
+        NodeHeightSlideBumpScaler< BaseTree<Node> > op;
         op.turn_on_auto_optimize();
         op.set_auto_optimize_delay(100);
 
@@ -557,11 +557,11 @@ TEST_CASE("Testing NodeHeightSlideBumpScaler with 4 leaves, gamma root, and opti
         tree.ignore_data();
         tree.estimate_root_height();
 
-        RootHeightScaler<Node> rop;
+        RootHeightScaler< BaseTree<Node> > rop;
         rop.turn_on_auto_optimize();
         rop.set_auto_optimize_delay(100);
 
-        NodeHeightSlideBumpScaler<Node> op;
+        NodeHeightSlideBumpScaler< BaseTree<Node> > op;
         op.turn_on_auto_optimize();
         op.set_auto_optimize_delay(100);
 
@@ -651,11 +651,11 @@ TEST_CASE("Testing NodeHeightSlideBumpScaler with 4 leaves, balanced, gamma root
         tree.ignore_data();
         tree.estimate_root_height();
 
-        RootHeightScaler<Node> rop;
+        RootHeightScaler< BaseTree<Node> > rop;
         rop.turn_on_auto_optimize();
         rop.set_auto_optimize_delay(100);
 
-        NodeHeightSlideBumpScaler<Node> op;
+        NodeHeightSlideBumpScaler< BaseTree<Node> > op;
         op.turn_on_auto_optimize();
         op.set_auto_optimize_delay(100);
 
@@ -738,7 +738,7 @@ TEST_CASE("Testing NodeHeightSlideBumpMover with 3 leaves, fixed root, and optim
         tree.ignore_data();
         tree.fix_root_height();
 
-        NodeHeightSlideBumpMover<Node> op;
+        NodeHeightSlideBumpMover< BaseTree<Node> > op;
         op.turn_on_auto_optimize();
         op.set_auto_optimize_delay(100);
 
@@ -799,7 +799,7 @@ TEST_CASE("Testing NodeHeightSlideBumpMover with 3 leaves, fixed root, and no op
         tree.ignore_data();
         tree.fix_root_height();
 
-        NodeHeightSlideBumpMover<Node> op;
+        NodeHeightSlideBumpMover< BaseTree<Node> > op;
         op.turn_off_auto_optimize();
         op.set_coercable_parameter_value(1.8);
 
@@ -868,11 +868,11 @@ TEST_CASE("Testing NodeHeightSlideBumpMover with 3 leaves, variable root, and op
         tree.ignore_data();
         tree.estimate_root_height();
 
-        NodeHeightSlideBumpMover<Node> op;
+        NodeHeightSlideBumpMover< BaseTree<Node> > op;
         op.turn_on_auto_optimize();
         op.set_auto_optimize_delay(100);
 
-        RootHeightScaler<Node> rop;
+        RootHeightScaler< BaseTree<Node> > rop;
         rop.turn_on_auto_optimize();
         rop.set_auto_optimize_delay(100);
 
@@ -957,11 +957,11 @@ TEST_CASE("Testing NodeHeightSlideBumpMover with 3 leaves, gamma root, and optim
         tree.ignore_data();
         tree.estimate_root_height();
 
-        NodeHeightSlideBumpMover<Node> op;
+        NodeHeightSlideBumpMover< BaseTree<Node> > op;
         op.turn_on_auto_optimize();
         op.set_auto_optimize_delay(100);
 
-        RootHeightScaler<Node> rop;
+        RootHeightScaler< BaseTree<Node> > rop;
         rop.turn_on_auto_optimize();
         rop.set_auto_optimize_delay(100);
 
@@ -1042,12 +1042,12 @@ TEST_CASE("Testing NodeHeightSlideBumpSwapScaler with 3 leaves, gamma root, opti
         tree.ignore_data();
         tree.estimate_root_height();
 
-        NodeHeightSlideBumpSwapScaler<Node> op;
+        NodeHeightSlideBumpSwapScaler< BaseTree<Node> > op;
         op.turn_on_auto_optimize();
         op.set_auto_optimize_delay(100);
         op.set_operate_on_root(false);
 
-        RootHeightScaler<Node> rop;
+        RootHeightScaler< BaseTree<Node> > rop;
         rop.turn_on_auto_optimize();
         rop.set_auto_optimize_delay(100);
 
@@ -1149,12 +1149,12 @@ TEST_CASE("Testing NodeHeightSlideBumpSwapScaler with 3 leaves, gamma root, opti
         tree.ignore_data();
         tree.estimate_root_height();
 
-        NodeHeightSlideBumpSwapScaler<Node> op;
+        NodeHeightSlideBumpSwapScaler< BaseTree<Node> > op;
         op.turn_on_auto_optimize();
         op.set_auto_optimize_delay(100);
         op.set_operate_on_root(true);
 
-        /* RootHeightScaler<Node> rop; */
+        /* RootHeightScaler< BaseTree<Node> > rop; */
         /* rop.turn_on_auto_optimize(); */
         /* rop.set_auto_optimize_delay(100); */
 
@@ -1256,12 +1256,12 @@ TEST_CASE("Testing NodeHeightSlideBumpSwapMover with 3 leaves, gamma root, optim
         tree.ignore_data();
         tree.estimate_root_height();
 
-        NodeHeightSlideBumpSwapMover<Node> op;
+        NodeHeightSlideBumpSwapMover< BaseTree<Node> > op;
         op.turn_on_auto_optimize();
         op.set_auto_optimize_delay(100);
         op.set_operate_on_root(false);
 
-        RootHeightScaler<Node> rop;
+        RootHeightScaler< BaseTree<Node> > rop;
         rop.turn_on_auto_optimize();
         rop.set_auto_optimize_delay(100);
 
@@ -1362,12 +1362,12 @@ TEST_CASE("Testing NodeHeightSlideBumpSwapMover with 3 leaves, gamma root, optim
         tree.ignore_data();
         tree.estimate_root_height();
 
-        NodeHeightSlideBumpSwapMover<Node> op;
+        NodeHeightSlideBumpSwapMover< BaseTree<Node> > op;
         op.turn_on_auto_optimize();
         op.set_auto_optimize_delay(100);
         op.set_operate_on_root(true);
 
-        /* RootHeightScaler<Node> rop; */
+        /* RootHeightScaler< BaseTree<Node> > rop; */
         /* rop.turn_on_auto_optimize(); */
         /* rop.set_auto_optimize_delay(100); */
 
@@ -1468,12 +1468,12 @@ TEST_CASE("Testing NodeHeightSlideBumpPermuteScaler with 3 leaves, gamma root, o
         tree.ignore_data();
         tree.estimate_root_height();
 
-        NodeHeightSlideBumpPermuteScaler<Node> op;
+        NodeHeightSlideBumpPermuteScaler< BaseTree<Node> > op;
         op.turn_on_auto_optimize();
         op.set_auto_optimize_delay(100);
         op.set_operate_on_root(false);
 
-        RootHeightScaler<Node> rop;
+        RootHeightScaler< BaseTree<Node> > rop;
         rop.turn_on_auto_optimize();
         rop.set_auto_optimize_delay(100);
 
@@ -1575,12 +1575,12 @@ TEST_CASE("Testing NodeHeightSlideBumpPermuteScaler with 3 leaves, gamma root, o
         tree.ignore_data();
         tree.estimate_root_height();
 
-        NodeHeightSlideBumpPermuteScaler<Node> op;
+        NodeHeightSlideBumpPermuteScaler< BaseTree<Node> > op;
         op.turn_on_auto_optimize();
         op.set_auto_optimize_delay(100);
         op.set_operate_on_root(true);
 
-        /* RootHeightScaler<Node> rop; */
+        /* RootHeightScaler< BaseTree<Node> > rop; */
         /* rop.turn_on_auto_optimize(); */
         /* rop.set_auto_optimize_delay(100); */
 
@@ -1682,12 +1682,12 @@ TEST_CASE("Testing NodeHeightSlideBumpPermuteMover with 3 leaves, gamma root, op
         tree.ignore_data();
         tree.estimate_root_height();
 
-        NodeHeightSlideBumpPermuteMover<Node> op;
+        NodeHeightSlideBumpPermuteMover< BaseTree<Node> > op;
         op.turn_on_auto_optimize();
         op.set_auto_optimize_delay(100);
         op.set_operate_on_root(false);
 
-        RootHeightScaler<Node> rop;
+        RootHeightScaler< BaseTree<Node> > rop;
         rop.turn_on_auto_optimize();
         rop.set_auto_optimize_delay(100);
 
@@ -1788,12 +1788,12 @@ TEST_CASE("Testing NodeHeightSlideBumpPermuteMover with 3 leaves, gamma root, op
         tree.ignore_data();
         tree.estimate_root_height();
 
-        NodeHeightSlideBumpPermuteMover<Node> op;
+        NodeHeightSlideBumpPermuteMover< BaseTree<Node> > op;
         op.turn_on_auto_optimize();
         op.set_auto_optimize_delay(100);
         op.set_operate_on_root(true);
 
-        /* RootHeightScaler<Node> rop; */
+        /* RootHeightScaler< BaseTree<Node> > rop; */
         /* rop.turn_on_auto_optimize(); */
         /* rop.set_auto_optimize_delay(100); */
 
@@ -1892,7 +1892,7 @@ TEST_CASE("Testing NodeHeightSlideBumpMover with 2 nested internals, fixed root,
         tree.ignore_data();
         tree.fix_root_height();
 
-        NodeHeightSlideBumpMover<Node> op;
+        NodeHeightSlideBumpMover< BaseTree<Node> > op;
         op.turn_on_auto_optimize();
         op.set_auto_optimize_delay(100);
 
@@ -1991,7 +1991,7 @@ TEST_CASE("Testing HeightSizeSlideBumpMixer with 3 leaves, unconstrained sizes, 
         PopSizeScaler op2;
         op2.turn_on_auto_optimize();
         op2.set_auto_optimize_delay(100);
-        NodeHeightScaler<PopulationNode> op3;
+        NodeHeightScaler< BasePopulationTree > op3;
         op3.turn_on_auto_optimize();
         op3.set_auto_optimize_delay(100);
 
@@ -2115,7 +2115,7 @@ TEST_CASE("Testing NodeHeightScaler with 4 leaves, fixed root, and optimizing",
         tree.ignore_data();
         tree.fix_root_height();
 
-        NodeHeightScaler<Node> op;
+        NodeHeightScaler< BaseTree<Node> > op;
         op.turn_on_auto_optimize();
         op.set_auto_optimize_delay(100);
 
@@ -2188,7 +2188,7 @@ TEST_CASE("Testing RootHeightScaler with 2 leaves, gamma root, and optimizing",
         tree.ignore_data();
         tree.estimate_root_height();
 
-        RootHeightScaler<Node> rop;
+        RootHeightScaler< BaseTree<Node> > rop;
         rop.turn_on_auto_optimize();
         rop.set_auto_optimize_delay(100);
 
@@ -2254,11 +2254,11 @@ TEST_CASE("Testing RootHeightScaler with 3 leaves, gamma root, and optimizing",
         tree.ignore_data();
         tree.estimate_root_height();
 
-        RootHeightScaler<Node> rop;
+        RootHeightScaler< BaseTree<Node> > rop;
         rop.turn_on_auto_optimize();
         rop.set_auto_optimize_delay(100);
 
-        NodeHeightScaler<Node> op;
+        NodeHeightScaler< BaseTree<Node> > op;
         op.turn_on_auto_optimize();
         op.set_auto_optimize_delay(100);
 
@@ -2343,11 +2343,11 @@ TEST_CASE("Testing RootHeightScaler with 4 leaves, gamma root, and optimizing",
         tree.ignore_data();
         tree.estimate_root_height();
 
-        RootHeightScaler<Node> rop;
+        RootHeightScaler< BaseTree<Node> > rop;
         rop.turn_on_auto_optimize();
         rop.set_auto_optimize_delay(100);
 
-        NodeHeightScaler<Node> op;
+        NodeHeightScaler< BaseTree<Node> > op;
         op.turn_on_auto_optimize();
         op.set_auto_optimize_delay(100);
 
@@ -2434,7 +2434,7 @@ TEST_CASE("Testing NeighborHeightNodeSwap with 3 leaves, gamma root",
         tree.ignore_data();
         tree.estimate_root_height();
 
-        NeighborHeightNodeSwap<Node> op;
+        NeighborHeightNodeSwap< BaseTree<Node> > op;
 
         // Initialize prior probs
         tree.compute_log_likelihood_and_prior(true);
@@ -2504,7 +2504,7 @@ TEST_CASE("Testing NeighborHeightNodeSwap with 3 leaves, fixed root",
         tree.ignore_data();
         tree.fix_root_height();
 
-        NeighborHeightNodeSwap<Node> op;
+        NeighborHeightNodeSwap< BaseTree<Node> > op;
 
         // Initialize prior probs
         tree.compute_log_likelihood_and_prior(true);
@@ -2582,7 +2582,7 @@ TEST_CASE("Testing NeighborHeightNodePermute with 3 leaves, gamma root",
         tree.ignore_data();
         tree.estimate_root_height();
 
-        NeighborHeightNodePermute<Node> op;
+        NeighborHeightNodePermute< BaseTree<Node> > op;
 
         // Initialize prior probs
         tree.compute_log_likelihood_and_prior(true);
@@ -2652,7 +2652,7 @@ TEST_CASE("Testing NeighborHeightNodePermute with 3 leaves, fixed root",
         tree.ignore_data();
         tree.fix_root_height();
 
-        NeighborHeightNodePermute<Node> op;
+        NeighborHeightNodePermute< BaseTree<Node> > op;
 
         // Initialize prior probs
         tree.compute_log_likelihood_and_prior(true);
@@ -2730,12 +2730,12 @@ TEST_CASE("Testing NodeHeightPriorAlphaScaler with optimizing",
                 0.1);
         tree.set_prior_on_alpha_of_node_height_beta_prior(alpha_prior);
 
-        NodeHeightPriorAlphaScaler<Node> op;
+        NodeHeightPriorAlphaScaler< BaseTree<Node> > op;
         op.set_coercable_parameter_value(1.0);
         op.turn_on_auto_optimize();
         op.set_auto_optimize_delay(100);
 
-        NodeHeightScaler<Node> op2;
+        NodeHeightScaler< BaseTree<Node> > op2;
         op2.set_coercable_parameter_value(1.0);
         op2.turn_on_auto_optimize();
         op2.set_auto_optimize_delay(100);
@@ -2809,12 +2809,12 @@ TEST_CASE("Testing NodeHeightPriorAlphaMover with optimizing",
                 0.1);
         tree.set_prior_on_alpha_of_node_height_beta_prior(alpha_prior);
 
-        NodeHeightPriorAlphaMover<Node> op;
+        NodeHeightPriorAlphaMover< BaseTree<Node> > op;
         op.set_coercable_parameter_value(1.0);
         op.turn_on_auto_optimize();
         op.set_auto_optimize_delay(100);
 
-        NodeHeightScaler<Node> op2;
+        NodeHeightScaler< BaseTree<Node> > op2;
         op2.set_coercable_parameter_value(1.0);
         op2.turn_on_auto_optimize();
         op2.set_auto_optimize_delay(100);
@@ -2889,12 +2889,12 @@ TEST_CASE("Testing NodeHeightPriorBetaScaler with optimizing",
                 0.1);
         tree.set_prior_on_beta_of_node_height_beta_prior(beta_prior);
 
-        NodeHeightPriorBetaScaler<Node> op;
+        NodeHeightPriorBetaScaler< BaseTree<Node> > op;
         op.set_coercable_parameter_value(1.0);
         op.turn_on_auto_optimize();
         op.set_auto_optimize_delay(100);
 
-        NodeHeightScaler<Node> op2;
+        NodeHeightScaler< BaseTree<Node> > op2;
         op2.set_coercable_parameter_value(1.0);
         op2.turn_on_auto_optimize();
         op2.set_auto_optimize_delay(100);
@@ -2968,12 +2968,12 @@ TEST_CASE("Testing NodeHeightPriorBetaMover with optimizing",
                 0.1);
         tree.set_prior_on_beta_of_node_height_beta_prior(beta_prior);
 
-        NodeHeightPriorBetaMover<Node> op;
+        NodeHeightPriorBetaMover< BaseTree<Node> > op;
         op.set_coercable_parameter_value(1.0);
         op.turn_on_auto_optimize();
         op.set_auto_optimize_delay(100);
 
-        NodeHeightScaler<Node> op2;
+        NodeHeightScaler< BaseTree<Node> > op2;
         op2.set_coercable_parameter_value(1.0);
         op2.turn_on_auto_optimize();
         op2.set_auto_optimize_delay(100);
@@ -3048,7 +3048,7 @@ TEST_CASE("Testing TreeScaler with 3 leaves, gamma root, and optimizing",
         tree.ignore_data();
         tree.estimate_root_height();
 
-        TreeScaler<Node> op;
+        TreeScaler< BaseTree<Node> > op;
         op.turn_on_auto_optimize();
         op.set_auto_optimize_delay(100);
 
@@ -3124,11 +3124,11 @@ TEST_CASE("Testing TreeScaler with 3 leaves, gamma root, internal free, and opti
         tree.ignore_data();
         tree.estimate_root_height();
 
-        TreeScaler<Node> op;
+        TreeScaler< BaseTree<Node> > op;
         op.turn_on_auto_optimize();
         op.set_auto_optimize_delay(100);
 
-        NodeHeightScaler<Node> op2;
+        NodeHeightScaler< BaseTree<Node> > op2;
         op2.turn_on_auto_optimize();
         op2.set_auto_optimize_delay(100);
 
@@ -3219,7 +3219,7 @@ TEST_CASE("Testing TreeScaler with 4 leaves, gamma root, internals fixed, and op
         tree.ignore_data();
         tree.estimate_root_height();
 
-        TreeScaler<Node> op;
+        TreeScaler< BaseTree<Node> > op;
         op.turn_on_auto_optimize();
         op.set_auto_optimize_delay(100);
 
@@ -3302,11 +3302,11 @@ TEST_CASE("Testing TreeScaler with 4 leaves, gamma root, internals free, and opt
         tree.ignore_data();
         tree.estimate_root_height();
 
-        TreeScaler<Node> op;
+        TreeScaler< BaseTree<Node> > op;
         op.turn_on_auto_optimize();
         op.set_auto_optimize_delay(100);
 
-        NodeHeightScaler<Node> op2;
+        NodeHeightScaler< BaseTree<Node> > op2;
         op2.turn_on_auto_optimize();
         op2.set_auto_optimize_delay(100);
 
@@ -3770,7 +3770,7 @@ TEST_CASE("Testing GlobalHeightSizeMixer with 3 leaves, unconstrained sizes, and
         PopSizeScaler op2;
         op2.turn_on_auto_optimize();
         op2.set_auto_optimize_delay(100);
-        NodeHeightScaler<PopulationNode> op3;
+        NodeHeightScaler< BasePopulationTree > op3;
         op3.turn_on_auto_optimize();
         op3.set_auto_optimize_delay(100);
 
@@ -3880,7 +3880,7 @@ TEST_CASE("Testing GlobalHeightSizeMixer with 3 leaves, constrained sizes, and o
         PopSizeScaler op2;
         op2.turn_on_auto_optimize();
         op2.set_auto_optimize_delay(100);
-        NodeHeightScaler<PopulationNode> op3;
+        NodeHeightScaler< BasePopulationTree > op3;
         op3.turn_on_auto_optimize();
         op3.set_auto_optimize_delay(100);
 
@@ -3988,7 +3988,7 @@ TEST_CASE("Testing HeightSizeMixer with 3 leaves, unconstrained sizes, and optim
         PopSizeScaler op2;
         op2.turn_on_auto_optimize();
         op2.set_auto_optimize_delay(100);
-        NodeHeightScaler<PopulationNode> op3;
+        NodeHeightScaler< BasePopulationTree > op3;
         op3.turn_on_auto_optimize();
         op3.set_auto_optimize_delay(100);
 
@@ -4108,14 +4108,14 @@ TEST_CASE("Testing GlobalHeightSizeRateScaler with 3 leaves, unconstrained sizes
         GlobalHeightSizeRateScaler op;
         op.turn_on_auto_optimize();
         op.set_auto_optimize_delay(100);
-        RootHeightScaler<PopulationNode> rop;
+        RootHeightScaler< BaseTree<PopulationNode> > rop;
         rop.turn_on_auto_optimize();
         rop.set_auto_optimize_delay(100);
 
         PopSizeScaler op2;
         op2.turn_on_auto_optimize();
         op2.set_auto_optimize_delay(100);
-        NodeHeightScaler<PopulationNode> op3;
+        NodeHeightScaler< BasePopulationTree > op3;
         op3.turn_on_auto_optimize();
         op3.set_auto_optimize_delay(100);
         MuRateScaler op4;
@@ -4275,14 +4275,14 @@ TEST_CASE("Testing GlobalHeightSizeRateScaler with 3 leaves, constrained sizes, 
         GlobalHeightSizeRateScaler op;
         op.turn_on_auto_optimize();
         op.set_auto_optimize_delay(100);
-        RootHeightScaler<PopulationNode> rop;
+        RootHeightScaler< BaseTree<PopulationNode> > rop;
         rop.turn_on_auto_optimize();
         rop.set_auto_optimize_delay(100);
 
         PopSizeScaler op2;
         op2.turn_on_auto_optimize();
         op2.set_auto_optimize_delay(100);
-        NodeHeightScaler<PopulationNode> op3;
+        NodeHeightScaler< BasePopulationTree > op3;
         op3.turn_on_auto_optimize();
         op3.set_auto_optimize_delay(100);
         MuRateScaler op4;
@@ -4427,14 +4427,14 @@ TEST_CASE("Testing GlobalHeightSizeScaler with 3 leaves, unconstrained sizes, an
         GlobalHeightSizeScaler op;
         op.turn_on_auto_optimize();
         op.set_auto_optimize_delay(100);
-        RootHeightScaler<PopulationNode> rop;
+        RootHeightScaler< BaseTree<PopulationNode> > rop;
         rop.turn_on_auto_optimize();
         rop.set_auto_optimize_delay(100);
 
         PopSizeScaler op2;
         op2.turn_on_auto_optimize();
         op2.set_auto_optimize_delay(100);
-        NodeHeightScaler<PopulationNode> op3;
+        NodeHeightScaler< BasePopulationTree > op3;
         op3.turn_on_auto_optimize();
         op3.set_auto_optimize_delay(100);
         /* MuRateScaler op4; */
@@ -4576,14 +4576,14 @@ TEST_CASE("Testing GlobalHeightSizeScaler with 3 leaves, constrained sizes, and 
         GlobalHeightSizeScaler op;
         op.turn_on_auto_optimize();
         op.set_auto_optimize_delay(100);
-        RootHeightScaler<PopulationNode> rop;
+        RootHeightScaler< BaseTree<PopulationNode> > rop;
         rop.turn_on_auto_optimize();
         rop.set_auto_optimize_delay(100);
 
         PopSizeScaler op2;
         op2.turn_on_auto_optimize();
         op2.set_auto_optimize_delay(100);
-        NodeHeightScaler<PopulationNode> op3;
+        NodeHeightScaler< BasePopulationTree > op3;
         op3.turn_on_auto_optimize();
         op3.set_auto_optimize_delay(100);
         /* MuRateScaler op4; */
@@ -4724,14 +4724,14 @@ TEST_CASE("Testing GlobalHeightRateScaler with 3 leaves, unconstrained sizes, an
         GlobalHeightRateScaler op;
         op.turn_on_auto_optimize();
         op.set_auto_optimize_delay(100);
-        RootHeightScaler<PopulationNode> rop;
+        RootHeightScaler< BaseTree<PopulationNode> > rop;
         rop.turn_on_auto_optimize();
         rop.set_auto_optimize_delay(100);
 
         /* PopSizeScaler op2; */
         /* op2.turn_on_auto_optimize(); */
         /* op2.set_auto_optimize_delay(100); */
-        NodeHeightScaler<PopulationNode> op3;
+        NodeHeightScaler< BasePopulationTree > op3;
         op3.turn_on_auto_optimize();
         op3.set_auto_optimize_delay(100);
         MuRateScaler op4;
@@ -4878,14 +4878,14 @@ TEST_CASE("Testing GlobalHeightRateScaler with 3 leaves, constrained sizes, and 
         GlobalHeightRateScaler op;
         op.turn_on_auto_optimize();
         op.set_auto_optimize_delay(100);
-        RootHeightScaler<PopulationNode> rop;
+        RootHeightScaler< BaseTree<PopulationNode> > rop;
         rop.turn_on_auto_optimize();
         rop.set_auto_optimize_delay(100);
 
         /* PopSizeScaler op2; */
         /* op2.turn_on_auto_optimize(); */
         /* op2.set_auto_optimize_delay(100); */
-        NodeHeightScaler<PopulationNode> op3;
+        NodeHeightScaler< BasePopulationTree > op3;
         op3.turn_on_auto_optimize();
         op3.set_auto_optimize_delay(100);
         MuRateScaler op4;
@@ -5249,7 +5249,7 @@ TEST_CASE("Testing GlobalNodeHeightDirichletOperator with 3 leaves, fixed root, 
         tree.ignore_data();
         tree.estimate_root_height();
 
-        GlobalNodeHeightDirichletOperator<Node> op;
+        GlobalNodeHeightDirichletOperator< BaseTree<Node> > op;
         op.turn_on_auto_optimize();
         op.set_auto_optimize_delay(100);
 
@@ -5341,7 +5341,7 @@ TEST_CASE("Testing GlobalNodeHeightDirichletOperator with 5 leaf ladder and opti
         tree.ignore_data();
         tree.estimate_root_height();
 
-        GlobalNodeHeightDirichletOperator<Node> op;
+        GlobalNodeHeightDirichletOperator< BaseTree<Node> > op;
         op.turn_on_auto_optimize();
         op.set_auto_optimize_delay(100);
 
@@ -5460,7 +5460,7 @@ TEST_CASE("Testing GlobalNodeHeightDirichletOperator with 5 leaf balanced and op
         tree.ignore_data();
         tree.estimate_root_height();
 
-        GlobalNodeHeightDirichletOperator<Node> op;
+        GlobalNodeHeightDirichletOperator< BaseTree<Node> > op;
         op.turn_on_auto_optimize();
         op.set_auto_optimize_delay(100);
 
@@ -5589,7 +5589,7 @@ TEST_CASE("Testing NodeHeightScaler with 5 leaf ladder and optimizing",
         tree.ignore_data();
         tree.estimate_root_height();
 
-        NodeHeightScaler<Node> op;
+        NodeHeightScaler< BaseTree<Node> > op;
         op.turn_on_auto_optimize();
         op.set_auto_optimize_delay(100);
 
@@ -5708,7 +5708,7 @@ TEST_CASE("Testing NodeHeightScaler with 5 leaf balanced and optimizing",
         tree.ignore_data();
         tree.estimate_root_height();
 
-        NodeHeightScaler<Node> op;
+        NodeHeightScaler< BaseTree<Node> > op;
         op.turn_on_auto_optimize();
         op.set_auto_optimize_delay(100);
 
@@ -5838,7 +5838,7 @@ TEST_CASE("Testing NodeHeightDirichletOperator with 5 leaf ladder and optimizing
         tree.ignore_data();
         tree.estimate_root_height();
 
-        NodeHeightDirichletOperator<Node> op;
+        NodeHeightDirichletOperator< BaseTree<Node> > op;
         op.turn_on_auto_optimize();
         op.set_auto_optimize_delay(100);
 
@@ -5957,7 +5957,7 @@ TEST_CASE("Testing NodeHeightDirichletOperator with 5 leaf balanced and optimizi
         tree.ignore_data();
         tree.estimate_root_height();
 
-        NodeHeightDirichletOperator<Node> op;
+        NodeHeightDirichletOperator< BaseTree<Node> > op;
         op.turn_on_auto_optimize();
         op.set_auto_optimize_delay(100);
 
@@ -6091,7 +6091,7 @@ TEST_CASE("Testing NodeHeightDirichletOperator with 5 leaf balanced and optimizi
 //         tree.ignore_data();
 //         tree.estimate_root_height();
 // 
-//         NodeHeightBetaOperator<Node> op;
+//         NodeHeightBetaOperator< BaseTree<Node> > op;
 //         op.turn_on_auto_optimize();
 //         op.set_auto_optimize_delay(100);
 // 
@@ -6210,7 +6210,7 @@ TEST_CASE("Testing NodeHeightDirichletOperator with 5 leaf balanced and optimizi
 //         tree.ignore_data();
 //         tree.estimate_root_height();
 // 
-//         NodeHeightBetaOperator<Node> op;
+//         NodeHeightBetaOperator< BaseTree<Node> > op;
 //         op.turn_on_auto_optimize();
 //         op.set_auto_optimize_delay(100);
 // 
@@ -6341,7 +6341,7 @@ TEST_CASE("Testing NodeHeightMover with 5 leaf ladder and optimizing",
         tree.ignore_data();
         tree.estimate_root_height();
 
-        NodeHeightMover<Node> op;
+        NodeHeightMover< BaseTree<Node> > op;
         op.turn_on_auto_optimize();
         op.set_auto_optimize_delay(100);
 
@@ -6460,7 +6460,7 @@ TEST_CASE("Testing NodeHeightMover with 5 leaf balanced and optimizing",
         tree.ignore_data();
         tree.estimate_root_height();
 
-        NodeHeightMover<Node> op;
+        NodeHeightMover< BaseTree<Node> > op;
         op.turn_on_auto_optimize();
         op.set_auto_optimize_delay(100);
 
@@ -6590,7 +6590,7 @@ TEST_CASE("Testing NodeHeightSlideBumpScaler with 5 leaf ladder and optimizing",
         tree.ignore_data();
         tree.estimate_root_height();
 
-        NodeHeightSlideBumpScaler<Node> op;
+        NodeHeightSlideBumpScaler< BaseTree<Node> > op;
         op.turn_on_auto_optimize();
         op.set_auto_optimize_delay(100);
 
@@ -6709,7 +6709,7 @@ TEST_CASE("Testing NodeHeightSlideBumpScaler with 5 leaf balanced and optimizing
         tree.ignore_data();
         tree.estimate_root_height();
 
-        NodeHeightSlideBumpScaler<Node> op;
+        NodeHeightSlideBumpScaler< BaseTree<Node> > op;
         op.turn_on_auto_optimize();
         op.set_auto_optimize_delay(100);
 
@@ -6839,7 +6839,7 @@ TEST_CASE("Testing NodeHeightSlideBumpMover with 5 leaf ladder and optimizing",
         tree.ignore_data();
         tree.estimate_root_height();
 
-        NodeHeightSlideBumpMover<Node> op;
+        NodeHeightSlideBumpMover< BaseTree<Node> > op;
         op.turn_on_auto_optimize();
         op.set_auto_optimize_delay(100);
 
@@ -6958,7 +6958,7 @@ TEST_CASE("Testing NodeHeightSlideBumpMover with 5 leaf balanced and optimizing"
         tree.ignore_data();
         tree.estimate_root_height();
 
-        NodeHeightSlideBumpMover<Node> op;
+        NodeHeightSlideBumpMover< BaseTree<Node> > op;
         op.turn_on_auto_optimize();
         op.set_auto_optimize_delay(100);
 
@@ -7097,10 +7097,10 @@ TEST_CASE("Testing GlobalHeightSizeMixer with 5 leaf balanced and optimizing",
         GlobalHeightSizeMixer op;
         op.turn_on_auto_optimize();
         op.set_auto_optimize_delay(100);
-        RootHeightScaler<PopulationNode> op2;
+        RootHeightScaler< BasePopulationTree > op2;
         op2.turn_on_auto_optimize();
         op2.set_auto_optimize_delay(100);
-        NodeHeightScaler<PopulationNode> op3;
+        NodeHeightScaler< BasePopulationTree > op3;
         op3.turn_on_auto_optimize();
         op3.set_auto_optimize_delay(100);
         PopSizeScaler op4;
@@ -7281,7 +7281,7 @@ TEST_CASE("Testing HeightSizeMixer with 5 leaf balanced and optimizing",
         HeightSizeMixer op;
         op.turn_on_auto_optimize();
         op.set_auto_optimize_delay(100);
-        NodeHeightScaler<PopulationNode> op3;
+        NodeHeightScaler< BasePopulationTree > op3;
         op3.turn_on_auto_optimize();
         op3.set_auto_optimize_delay(100);
         PopSizeScaler op4;
@@ -7450,7 +7450,7 @@ TEST_CASE("Testing HeightSizeSlideBumpMixer with 5 leaf balanced and optimizing"
         HeightSizeSlideBumpMixer op;
         op.turn_on_auto_optimize();
         op.set_auto_optimize_delay(100);
-        NodeHeightScaler<PopulationNode> op3;
+        NodeHeightScaler< BasePopulationTree > op3;
         op3.turn_on_auto_optimize();
         op3.set_auto_optimize_delay(100);
         PopSizeScaler op4;
@@ -7638,7 +7638,7 @@ TEST_CASE("Testing HeightSizeSlideBumpMixer with 5 leaf ladder and optimizing",
         HeightSizeSlideBumpMixer op;
         op.turn_on_auto_optimize();
         op.set_auto_optimize_delay(100);
-        NodeHeightScaler<PopulationNode> op3;
+        NodeHeightScaler< BasePopulationTree > op3;
         op3.turn_on_auto_optimize();
         op3.set_auto_optimize_delay(100);
         PopSizeScaler op4;
@@ -7822,7 +7822,7 @@ TEST_CASE("Testing HeightSizeSlideBumpMixer with 4 leaf ladder and optimizing",
         HeightSizeSlideBumpMixer op;
         op.turn_on_auto_optimize();
         op.set_auto_optimize_delay(100);
-        NodeHeightScaler<PopulationNode> op3;
+        NodeHeightScaler< BasePopulationTree > op3;
         op3.turn_on_auto_optimize();
         op3.set_auto_optimize_delay(100);
         PopSizeScaler op4;
@@ -7989,7 +7989,7 @@ TEST_CASE("Testing HeightSizeSlideBumpMixer with 4 leaf balanced and optimizing"
         HeightSizeSlideBumpMixer op;
         op.turn_on_auto_optimize();
         op.set_auto_optimize_delay(100);
-        NodeHeightScaler<PopulationNode> op3;
+        NodeHeightScaler< BasePopulationTree > op3;
         op3.turn_on_auto_optimize();
         op3.set_auto_optimize_delay(100);
         PopSizeScaler op4;
