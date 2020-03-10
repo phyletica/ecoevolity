@@ -1217,6 +1217,9 @@ class BaseTree {
         double get_height(const unsigned int height_index) const {
             return this->node_heights_.at(height_index)->get_value();
         }
+        double get_stored_height(const unsigned int height_index) const {
+            return this->node_heights_.at(height_index)->get_stored_value();
+        }
 
         void set_height(const unsigned int height_index, double height) {
             double youngest_parent = std::numeric_limits<double>::infinity();
