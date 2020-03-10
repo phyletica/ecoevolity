@@ -1152,6 +1152,7 @@ class GlobalNodeHeightDirichletOperator : public GeneralTreeOperatorInterface<Ba
                 tree->node_heights_.at(ht_idx)->set_value(abs_value);
                 last_rel_height = rel_ht;
             }
+            tree->sort_node_heights();
             return ln_hastings;
         }
 };
@@ -2899,7 +2900,8 @@ class RootHeightSizeMixer : public GeneralTreeOperatorInterface<BasePopulationTr
             double size_change = new_size - old_size;
             double height_change = -size_change * tree->get_ploidy();
             double new_height = tree->get_root_height() + height_change;
-            if (new_height < 0.0) {
+            unsigned int root_index = tree->get_number_of_node_heights() - 1;
+            if (new_height < tree->get_height_of_oldest_child(root_index)) {
                 return -std::numeric_limits<double>::infinity();
             }
             tree->set_root_population_size(new_size);
@@ -2973,7 +2975,6 @@ class HeightSizeSlideBumpMixer : public GeneralTreeOperatorInterface<BasePopulat
             if (this->operate_on_root_) {
                 max_height_index = num_heights - 1;
             }
-            std::vector<double> old_heights = tree->get_node_heights();
             unsigned int height_index = rng.uniform_int(0,
                     max_height_index);
             double new_height = tree->get_height(height_index);
@@ -2995,20 +2996,20 @@ class HeightSizeSlideBumpMixer : public GeneralTreeOperatorInterface<BasePopulat
             if (! move_happened) {
                 return -std::numeric_limits<double>::infinity();
             }
-            std::vector<double> new_heights = tree->get_node_heights();
             // Change internal node pop sizes according to time changes
-            for (unsigned int i = 0; i < new_heights.size(); ++i) {
-                double height_diff = new_heights.at(i) - old_heights.at(i);
-                if (! almost_equal_abs(height_diff, 0.0, 1e-10)) {
-                    double pop_size_change = -height_diff / tree->get_ploidy();
-                    std::vector< std::shared_ptr<PopulationNode> > mapped_nodes = tree->get_mapped_nodes(i);
-                    for (auto node : mapped_nodes) {
-                        double new_pop_size = node->get_population_size() + pop_size_change;
-                        if (new_pop_size <= 0.0) {
-                            return -std::numeric_limits<double>::infinity();
-                        }
-                        node->set_population_size(new_pop_size);
+            for (unsigned int i = 0; i < max_height_index + 1; ++i) {
+                double height_diff = tree->get_height(i) - tree->get_stored_height(i);
+                if (almost_equal_abs(height_diff, 0.0, 1e-10)) {
+                    continue;
+                }
+                double pop_size_change = -height_diff / tree->get_ploidy();
+                std::vector< std::shared_ptr<PopulationNode> > mapped_nodes = tree->get_mapped_nodes(i);
+                for (auto node : mapped_nodes) {
+                    double new_pop_size = node->get_population_size() + pop_size_change;
+                    if (new_pop_size <= 0.0) {
+                        return -std::numeric_limits<double>::infinity();
                     }
+                    node->set_population_size(new_pop_size);
                 }
             }
             return ln_multiplier;
@@ -3057,16 +3058,16 @@ class GlobalHeightSizeRateScaler : public GeneralTreeOperatorInterface<BasePopul
                 return -std::numeric_limits<double>::infinity();
             }
             double multiplier = this->op_.get_move_amount(rng);
-            tree->scale_tree(1.0/multiplier);
-            unsigned int num_params_inv_scaled = 1;
-            unsigned int num_params_scaled = 0;
+            tree->scale_tree(multiplier);
+            int num_params_scaled = tree->get_number_of_node_heights();
+            int num_params_inv_scaled = 0;
             if (this->scale_sizes_) {
-                num_params_scaled = tree->scale_all_population_sizes(multiplier);
+                num_params_inv_scaled = tree->scale_all_population_sizes(1.0/multiplier);
             }
             if (this->scale_rate_ and (! tree->mutation_rate_is_fixed())) {
                 tree->set_mutation_rate(
-                        tree->get_mutation_rate() * (multiplier));
-                ++num_params_scaled;
+                        tree->get_mutation_rate() * (1.0/multiplier));
+                ++num_params_inv_scaled;
             }
             return std::log(multiplier) * (num_params_scaled - num_params_inv_scaled);
         }
