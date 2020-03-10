@@ -4008,7 +4008,7 @@ TEST_CASE("Testing HeightSizeMixer with 3 leaves, unconstrained sizes, and optim
         SampleSummarizer<double> internal_height_summary;
 
         unsigned int nmoves_per_op = 2;
-        unsigned int niterations = 200000;
+        unsigned int niterations = 300000;
         unsigned int sample_freq = 5;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
