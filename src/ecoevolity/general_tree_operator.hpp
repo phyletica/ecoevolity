@@ -737,11 +737,11 @@ class BetaOp : public BaseOptimizingOp {
 // BaseTree operators 
 //////////////////////////////////////////////////////////////////////////////
 
-template<class NodeType>
-class NodeHeightPriorAlphaScaler : public GeneralTreeOperatorInterface<BaseTree<NodeType>, ScaleOp> {
+template<class TreeType>
+class NodeHeightPriorAlphaScaler : public GeneralTreeOperatorInterface<TreeType, ScaleOp> {
     public:
-        NodeHeightPriorAlphaScaler() : GeneralTreeOperatorInterface<BaseTree<NodeType>, ScaleOp>() { }
-        NodeHeightPriorAlphaScaler(double weight) : GeneralTreeOperatorInterface<BaseTree<NodeType>, ScaleOp>(weight) { }
+        NodeHeightPriorAlphaScaler() : GeneralTreeOperatorInterface<TreeType, ScaleOp>() { }
+        NodeHeightPriorAlphaScaler(double weight) : GeneralTreeOperatorInterface<TreeType, ScaleOp>(weight) { }
 
         std::string get_name() const {
             return "NodeHeightPriorAlphaScaler";
@@ -755,7 +755,7 @@ class NodeHeightPriorAlphaScaler : public GeneralTreeOperatorInterface<BaseTree<
             return BaseGeneralTreeOperatorTemplate::OperatorTypeEnum::node_height_prior_operator;
         }
 
-        bool is_operable(BaseTree<NodeType> * tree) const {
+        bool is_operable(TreeType * tree) const {
             if (tree->alpha_of_node_height_beta_prior_is_fixed()) {
                 return false;
             }
@@ -768,7 +768,7 @@ class NodeHeightPriorAlphaScaler : public GeneralTreeOperatorInterface<BaseTree<
          * @return  Log of Hastings Ratio.
          */
         double propose(RandomNumberGenerator& rng,
-                BaseTree<NodeType> * tree,
+                TreeType * tree,
                 unsigned int nthreads = 1) {
             if (! this->is_operable(tree)) {
                 return -std::numeric_limits<double>::infinity();
@@ -782,11 +782,11 @@ class NodeHeightPriorAlphaScaler : public GeneralTreeOperatorInterface<BaseTree<
 };
 
 
-template<class NodeType>
-class NodeHeightPriorAlphaMover : public GeneralTreeOperatorInterface<BaseTree<NodeType>, WindowOp> {
+template<class TreeType>
+class NodeHeightPriorAlphaMover : public GeneralTreeOperatorInterface<TreeType, WindowOp> {
     public:
-        NodeHeightPriorAlphaMover() : GeneralTreeOperatorInterface<BaseTree<NodeType>, WindowOp>() { }
-        NodeHeightPriorAlphaMover(double weight) : GeneralTreeOperatorInterface<BaseTree<NodeType>, WindowOp>(weight) { }
+        NodeHeightPriorAlphaMover() : GeneralTreeOperatorInterface<TreeType, WindowOp>() { }
+        NodeHeightPriorAlphaMover(double weight) : GeneralTreeOperatorInterface<TreeType, WindowOp>(weight) { }
 
         std::string get_name() const {
             return "NodeHeightPriorAlphaMover";
@@ -800,7 +800,7 @@ class NodeHeightPriorAlphaMover : public GeneralTreeOperatorInterface<BaseTree<N
             return BaseGeneralTreeOperatorTemplate::OperatorTypeEnum::node_height_prior_operator;
         }
 
-        bool is_operable(BaseTree<NodeType> * tree) const {
+        bool is_operable(TreeType * tree) const {
             if (tree->alpha_of_node_height_beta_prior_is_fixed()) {
                 return false;
             }
@@ -813,7 +813,7 @@ class NodeHeightPriorAlphaMover : public GeneralTreeOperatorInterface<BaseTree<N
          * @return  Log of Hastings Ratio.
          */
         double propose(RandomNumberGenerator& rng,
-                BaseTree<NodeType> * tree,
+                TreeType * tree,
                 unsigned int nthreads = 1) {
             if (! this->is_operable(tree)) {
                 return -std::numeric_limits<double>::infinity();
@@ -830,11 +830,11 @@ class NodeHeightPriorAlphaMover : public GeneralTreeOperatorInterface<BaseTree<N
 };
 
 
-template<class NodeType>
-class NodeHeightPriorBetaScaler : public GeneralTreeOperatorInterface<BaseTree<NodeType>, ScaleOp> {
+template<class TreeType>
+class NodeHeightPriorBetaScaler : public GeneralTreeOperatorInterface<TreeType, ScaleOp> {
     public:
-        NodeHeightPriorBetaScaler() : GeneralTreeOperatorInterface<BaseTree<NodeType>, ScaleOp>() { }
-        NodeHeightPriorBetaScaler(double weight) : GeneralTreeOperatorInterface<BaseTree<NodeType>, ScaleOp>(weight) { }
+        NodeHeightPriorBetaScaler() : GeneralTreeOperatorInterface<TreeType, ScaleOp>() { }
+        NodeHeightPriorBetaScaler(double weight) : GeneralTreeOperatorInterface<TreeType, ScaleOp>(weight) { }
 
         std::string get_name() const {
             return "NodeHeightPriorBetaScaler";
@@ -848,7 +848,7 @@ class NodeHeightPriorBetaScaler : public GeneralTreeOperatorInterface<BaseTree<N
             return BaseGeneralTreeOperatorTemplate::OperatorTypeEnum::node_height_prior_operator;
         }
 
-        bool is_operable(BaseTree<NodeType> * tree) const {
+        bool is_operable(TreeType * tree) const {
             if (tree->beta_of_node_height_beta_prior_is_fixed()) {
                 return false;
             }
@@ -861,7 +861,7 @@ class NodeHeightPriorBetaScaler : public GeneralTreeOperatorInterface<BaseTree<N
          * @return  Log of Hastings Ratio.
          */
         double propose(RandomNumberGenerator& rng,
-                BaseTree<NodeType> * tree,
+                TreeType * tree,
                 unsigned int nthreads = 1) {
             if (! this->is_operable(tree)) {
                 return -std::numeric_limits<double>::infinity();
@@ -875,11 +875,11 @@ class NodeHeightPriorBetaScaler : public GeneralTreeOperatorInterface<BaseTree<N
 };
 
 
-template<class NodeType>
-class NodeHeightPriorBetaMover : public GeneralTreeOperatorInterface<BaseTree<NodeType>, WindowOp> {
+template<class TreeType>
+class NodeHeightPriorBetaMover : public GeneralTreeOperatorInterface<TreeType, WindowOp> {
     public:
-        NodeHeightPriorBetaMover() : GeneralTreeOperatorInterface<BaseTree<NodeType>, WindowOp>() { }
-        NodeHeightPriorBetaMover(double weight) : GeneralTreeOperatorInterface<BaseTree<NodeType>, WindowOp>(weight) { }
+        NodeHeightPriorBetaMover() : GeneralTreeOperatorInterface<TreeType, WindowOp>() { }
+        NodeHeightPriorBetaMover(double weight) : GeneralTreeOperatorInterface<TreeType, WindowOp>(weight) { }
 
         std::string get_name() const {
             return "NodeHeightPriorBetaMover";
@@ -893,7 +893,7 @@ class NodeHeightPriorBetaMover : public GeneralTreeOperatorInterface<BaseTree<No
             return BaseGeneralTreeOperatorTemplate::OperatorTypeEnum::node_height_prior_operator;
         }
 
-        bool is_operable(BaseTree<NodeType> * tree) const {
+        bool is_operable(TreeType * tree) const {
             if (tree->beta_of_node_height_beta_prior_is_fixed()) {
                 return false;
             }
@@ -906,7 +906,7 @@ class NodeHeightPriorBetaMover : public GeneralTreeOperatorInterface<BaseTree<No
          * @return  Log of Hastings Ratio.
          */
         double propose(RandomNumberGenerator& rng,
-                BaseTree<NodeType> * tree,
+                TreeType * tree,
                 unsigned int nthreads = 1) {
             if (! this->is_operable(tree)) {
                 return -std::numeric_limits<double>::infinity();
@@ -923,12 +923,12 @@ class NodeHeightPriorBetaMover : public GeneralTreeOperatorInterface<BaseTree<No
 };
 
 
-template<class NodeType>
-class TreeScaler : public GeneralTreeOperatorInterface<BaseTree<NodeType>, ScaleOp> {
+template<class TreeType>
+class TreeScaler : public GeneralTreeOperatorInterface<TreeType, ScaleOp> {
 
     public:
-        TreeScaler() : GeneralTreeOperatorInterface<BaseTree<NodeType>, ScaleOp>() { }
-        TreeScaler(double weight) : GeneralTreeOperatorInterface<BaseTree<NodeType>, ScaleOp>(weight) { }
+        TreeScaler() : GeneralTreeOperatorInterface<TreeType, ScaleOp>() { }
+        TreeScaler(double weight) : GeneralTreeOperatorInterface<TreeType, ScaleOp>(weight) { }
 
         std::string get_name() const {
             return "TreeScaler";
@@ -942,7 +942,7 @@ class TreeScaler : public GeneralTreeOperatorInterface<BaseTree<NodeType>, Scale
             return BaseGeneralTreeOperatorTemplate::OperatorTypeEnum::global_height_operator;
         }
 
-        bool is_operable(BaseTree<NodeType> * tree) const {
+        bool is_operable(TreeType * tree) const {
             if (tree->root_height_is_fixed()) {
                 return false;
             }
@@ -954,7 +954,7 @@ class TreeScaler : public GeneralTreeOperatorInterface<BaseTree<NodeType>, Scale
          * @return  Log of Hastings Ratio.
          */
         double propose(RandomNumberGenerator& rng,
-                BaseTree<NodeType> * tree,
+                TreeType * tree,
                 unsigned int nthreads = 1) {
             if (! this->is_operable(tree)) {
                 return -std::numeric_limits<double>::infinity();
@@ -967,11 +967,11 @@ class TreeScaler : public GeneralTreeOperatorInterface<BaseTree<NodeType>, Scale
 };
 
 
-template<class NodeType>
-class NodeHeightScaler : public GeneralTreeOperatorInterface<BaseTree<NodeType>, ScaleOp> {
+template<class TreeType>
+class NodeHeightScaler : public GeneralTreeOperatorInterface<TreeType, ScaleOp> {
     public:
-        NodeHeightScaler() : GeneralTreeOperatorInterface<BaseTree<NodeType>, ScaleOp>() { }
-        NodeHeightScaler(double weight) : GeneralTreeOperatorInterface<BaseTree<NodeType>, ScaleOp>(weight) { }
+        NodeHeightScaler() : GeneralTreeOperatorInterface<TreeType, ScaleOp>() { }
+        NodeHeightScaler(double weight) : GeneralTreeOperatorInterface<TreeType, ScaleOp>(weight) { }
 
         std::string get_name() const {
             return "NodeHeightScaler";
@@ -985,7 +985,7 @@ class NodeHeightScaler : public GeneralTreeOperatorInterface<BaseTree<NodeType>,
             return BaseGeneralTreeOperatorTemplate::OperatorTypeEnum::node_height_operator;
         }
 
-        bool is_operable(BaseTree<NodeType> * tree) const {
+        bool is_operable(TreeType * tree) const {
             unsigned int num_heights = tree->get_number_of_node_heights();
             if (num_heights < 2) {
                 // No non-root heights to operate on
@@ -1000,7 +1000,7 @@ class NodeHeightScaler : public GeneralTreeOperatorInterface<BaseTree<NodeType>,
          * @return  Log of Hastings Ratio.
          */
         double propose(RandomNumberGenerator& rng,
-                BaseTree<NodeType> * tree,
+                TreeType * tree,
                 unsigned int nthreads = 1) {
             if (! this->is_operable(tree)) {
                 return -std::numeric_limits<double>::infinity();
@@ -1022,11 +1022,11 @@ class NodeHeightScaler : public GeneralTreeOperatorInterface<BaseTree<NodeType>,
 };
 
 
-template<class NodeType>
-class RootHeightScaler : public GeneralTreeOperatorInterface<BaseTree<NodeType>, ScaleOp> {
+template<class TreeType>
+class RootHeightScaler : public GeneralTreeOperatorInterface<TreeType, ScaleOp> {
     public:
-        RootHeightScaler() : GeneralTreeOperatorInterface<BaseTree<NodeType>, ScaleOp>() { }
-        RootHeightScaler(double weight) : GeneralTreeOperatorInterface<BaseTree<NodeType>, ScaleOp>(weight) { }
+        RootHeightScaler() : GeneralTreeOperatorInterface<TreeType, ScaleOp>() { }
+        RootHeightScaler(double weight) : GeneralTreeOperatorInterface<TreeType, ScaleOp>(weight) { }
 
         std::string get_name() const {
             return "RootHeightScaler";
@@ -1040,7 +1040,7 @@ class RootHeightScaler : public GeneralTreeOperatorInterface<BaseTree<NodeType>,
             return BaseGeneralTreeOperatorTemplate::OperatorTypeEnum::root_height_operator;
         }
 
-        bool is_operable(BaseTree<NodeType> * tree) const {
+        bool is_operable(TreeType * tree) const {
             if (tree->root_height_is_fixed()) {
                 return false;
             }
@@ -1053,7 +1053,7 @@ class RootHeightScaler : public GeneralTreeOperatorInterface<BaseTree<NodeType>,
          * @return  Log of Hastings Ratio.
          */
         double propose(RandomNumberGenerator& rng,
-                BaseTree<NodeType> * tree,
+                TreeType * tree,
                 unsigned int nthreads = 1) {
             if (! this->is_operable(tree)) {
                 return -std::numeric_limits<double>::infinity();
@@ -1072,12 +1072,12 @@ class RootHeightScaler : public GeneralTreeOperatorInterface<BaseTree<NodeType>,
 };
 
 
-template<class NodeType>
-class GlobalNodeHeightDirichletOperator : public GeneralTreeOperatorInterface<BaseTree<NodeType>, DirichletOp> {
+template<class TreeType>
+class GlobalNodeHeightDirichletOperator : public GeneralTreeOperatorInterface<TreeType, DirichletOp> {
 
     public:
-        GlobalNodeHeightDirichletOperator() : GeneralTreeOperatorInterface<BaseTree<NodeType>, DirichletOp>() { }
-        GlobalNodeHeightDirichletOperator(double weight) : GeneralTreeOperatorInterface<BaseTree<NodeType>, DirichletOp>(weight) { }
+        GlobalNodeHeightDirichletOperator() : GeneralTreeOperatorInterface<TreeType, DirichletOp>() { }
+        GlobalNodeHeightDirichletOperator(double weight) : GeneralTreeOperatorInterface<TreeType, DirichletOp>(weight) { }
 
         std::string get_name() const {
             return "GlobalNodeHeightDirichletOperator";
@@ -1091,7 +1091,7 @@ class GlobalNodeHeightDirichletOperator : public GeneralTreeOperatorInterface<Ba
             return BaseGeneralTreeOperatorTemplate::OperatorTypeEnum::node_height_operator;
         }
 
-        bool is_operable(BaseTree<NodeType> * tree) const {
+        bool is_operable(TreeType * tree) const {
             unsigned int num_heights = tree->get_number_of_node_heights();
             if (num_heights < 2) {
                 // No non-root heights to operate on
@@ -1106,7 +1106,7 @@ class GlobalNodeHeightDirichletOperator : public GeneralTreeOperatorInterface<Ba
          * @return  Log of Hastings Ratio.
          */
         double propose(RandomNumberGenerator& rng,
-                BaseTree<NodeType> * tree,
+                TreeType * tree,
                 unsigned int nthreads = 1) {
             if (! this->is_operable(tree)) {
                 return -std::numeric_limits<double>::infinity();
@@ -1158,12 +1158,12 @@ class GlobalNodeHeightDirichletOperator : public GeneralTreeOperatorInterface<Ba
 };
 
 
-template<class NodeType>
-class NodeHeightDirichletOperator : public GeneralTreeOperatorInterface<BaseTree<NodeType>, DirichletOp> {
+template<class TreeType>
+class NodeHeightDirichletOperator : public GeneralTreeOperatorInterface<TreeType, DirichletOp> {
 
     public:
-        NodeHeightDirichletOperator() : GeneralTreeOperatorInterface<BaseTree<NodeType>, DirichletOp>() { }
-        NodeHeightDirichletOperator(double weight) : GeneralTreeOperatorInterface<BaseTree<NodeType>, DirichletOp>(weight) { }
+        NodeHeightDirichletOperator() : GeneralTreeOperatorInterface<TreeType, DirichletOp>() { }
+        NodeHeightDirichletOperator(double weight) : GeneralTreeOperatorInterface<TreeType, DirichletOp>(weight) { }
 
         std::string get_name() const {
             return "NodeHeightDirichletOperator";
@@ -1177,7 +1177,7 @@ class NodeHeightDirichletOperator : public GeneralTreeOperatorInterface<BaseTree
             return BaseGeneralTreeOperatorTemplate::OperatorTypeEnum::node_height_operator;
         }
 
-        bool is_operable(BaseTree<NodeType> * tree) const {
+        bool is_operable(TreeType * tree) const {
             unsigned int num_heights = tree->get_number_of_node_heights();
             if (num_heights < 2) {
                 // No non-root heights to operate on
@@ -1192,7 +1192,7 @@ class NodeHeightDirichletOperator : public GeneralTreeOperatorInterface<BaseTree
          * @return  Log of Hastings Ratio.
          */
         double propose(RandomNumberGenerator& rng,
-                BaseTree<NodeType> * tree,
+                TreeType * tree,
                 unsigned int nthreads = 1) {
             if (! this->is_operable(tree)) {
                 return -std::numeric_limits<double>::infinity();
@@ -1223,12 +1223,12 @@ class NodeHeightDirichletOperator : public GeneralTreeOperatorInterface<BaseTree
 ///////////////////////////////////////////////////////////////////////////////
 // This operator is note working correctly
 ///////////////////////////////////////////////////////////////////////////////
-// template<class NodeType>
-// class NodeHeightBetaOperator : public GeneralTreeOperatorInterface<BaseTree<NodeType>, BetaOp> {
+// template<class TreeType>
+// class NodeHeightBetaOperator : public GeneralTreeOperatorInterface<TreeType, BetaOp> {
 // 
 //     public:
-//         NodeHeightBetaOperator() : GeneralTreeOperatorInterface<BaseTree<NodeType>, BetaOp>() { }
-//         NodeHeightBetaOperator(double weight) : GeneralTreeOperatorInterface<BaseTree<NodeType>, BetaOp>(weight) { }
+//         NodeHeightBetaOperator() : GeneralTreeOperatorInterface<TreeType, BetaOp>() { }
+//         NodeHeightBetaOperator(double weight) : GeneralTreeOperatorInterface<TreeType, BetaOp>(weight) { }
 // 
 //         std::string get_name() const {
 //             return "NodeHeightBetaOperator";
@@ -1242,7 +1242,7 @@ class NodeHeightDirichletOperator : public GeneralTreeOperatorInterface<BaseTree
 //             return BaseGeneralTreeOperatorTemplate::OperatorTypeEnum::node_height_operator;
 //         }
 // 
-//         bool is_operable(BaseTree<NodeType> * tree) const {
+//         bool is_operable(TreeType * tree) const {
 //             unsigned int num_heights = tree->get_number_of_node_heights();
 //             if (num_heights < 2) {
 //                 // No non-root heights to operate on
@@ -1257,7 +1257,7 @@ class NodeHeightDirichletOperator : public GeneralTreeOperatorInterface<BaseTree
 //          * @return  Log of Hastings Ratio.
 //          */
 //         double propose(RandomNumberGenerator& rng,
-//                 BaseTree<NodeType> * tree,
+//                 TreeType * tree,
 //                 unsigned int nthreads = 1) {
 //             if (! this->is_operable(tree)) {
 //                 return -std::numeric_limits<double>::infinity();
@@ -1286,11 +1286,11 @@ class NodeHeightDirichletOperator : public GeneralTreeOperatorInterface<BaseTree
 ///////////////////////////////////////////////////////////////////////////////
 
 
-template<class NodeType>
-class NodeHeightMover : public GeneralTreeOperatorInterface<BaseTree<NodeType>, WindowOp> {
+template<class TreeType>
+class NodeHeightMover : public GeneralTreeOperatorInterface<TreeType, WindowOp> {
     public:
-        NodeHeightMover() : GeneralTreeOperatorInterface<BaseTree<NodeType>, WindowOp>() { }
-        NodeHeightMover(double weight) : GeneralTreeOperatorInterface<BaseTree<NodeType>, WindowOp>(weight) { }
+        NodeHeightMover() : GeneralTreeOperatorInterface<TreeType, WindowOp>() { }
+        NodeHeightMover(double weight) : GeneralTreeOperatorInterface<TreeType, WindowOp>(weight) { }
 
         std::string get_name() const {
             return "NodeHeightMover";
@@ -1304,7 +1304,7 @@ class NodeHeightMover : public GeneralTreeOperatorInterface<BaseTree<NodeType>, 
             return BaseGeneralTreeOperatorTemplate::OperatorTypeEnum::node_height_operator;
         }
 
-        bool is_operable(BaseTree<NodeType> * tree) const {
+        bool is_operable(TreeType * tree) const {
             unsigned int num_heights = tree->get_number_of_node_heights();
             if (num_heights < 2) {
                 // No non-root heights to operate on
@@ -1319,7 +1319,7 @@ class NodeHeightMover : public GeneralTreeOperatorInterface<BaseTree<NodeType>, 
          * @return  Log of Hastings Ratio.
          */
         double propose(RandomNumberGenerator& rng,
-                BaseTree<NodeType> * tree,
+                TreeType * tree,
                 unsigned int nthreads = 1) {
             if (! this->is_operable(tree)) {
                 return -std::numeric_limits<double>::infinity();
@@ -1343,11 +1343,11 @@ class NodeHeightMover : public GeneralTreeOperatorInterface<BaseTree<NodeType>, 
 };
 
 
-template<class NodeType>
-class NodeHeightSlideBumpScaler : public GeneralTreeOperatorInterface<BaseTree<NodeType>, ScaleOp> {
+template<class TreeType>
+class NodeHeightSlideBumpScaler : public GeneralTreeOperatorInterface<TreeType, ScaleOp> {
     protected:
         virtual bool call_tree_method_(
-                BaseTree<NodeType> * tree,
+                TreeType * tree,
                 RandomNumberGenerator& rng,
                 unsigned int height_index,
                 double height) {
@@ -1359,8 +1359,8 @@ class NodeHeightSlideBumpScaler : public GeneralTreeOperatorInterface<BaseTree<N
         bool operate_on_root_ = false;
 
     public:
-        NodeHeightSlideBumpScaler() : GeneralTreeOperatorInterface<BaseTree<NodeType>, ScaleOp>() { }
-        NodeHeightSlideBumpScaler(double weight) : GeneralTreeOperatorInterface<BaseTree<NodeType>, ScaleOp>(weight) { }
+        NodeHeightSlideBumpScaler() : GeneralTreeOperatorInterface<TreeType, ScaleOp>() { }
+        NodeHeightSlideBumpScaler(double weight) : GeneralTreeOperatorInterface<TreeType, ScaleOp>(weight) { }
 
         std::string get_name() const {
             return "NodeHeightSlideBumpScaler";
@@ -1378,7 +1378,7 @@ class NodeHeightSlideBumpScaler : public GeneralTreeOperatorInterface<BaseTree<N
             this->operate_on_root_ = operate_on_root;
         }
 
-        bool is_operable(BaseTree<NodeType> * tree) const {
+        bool is_operable(TreeType * tree) const {
             unsigned int num_heights = tree->get_number_of_node_heights();
             if ((! this->operate_on_root_) && (num_heights < 2)) {
                 // No non-root heights to operate on
@@ -1393,7 +1393,7 @@ class NodeHeightSlideBumpScaler : public GeneralTreeOperatorInterface<BaseTree<N
          * @return  Log of Hastings Ratio.
          */
         double propose(RandomNumberGenerator& rng,
-                BaseTree<NodeType> * tree,
+                TreeType * tree,
                 unsigned int nthreads = 1) {
             if (! this->is_operable(tree)) {
                 return -std::numeric_limits<double>::infinity();
@@ -1429,11 +1429,11 @@ class NodeHeightSlideBumpScaler : public GeneralTreeOperatorInterface<BaseTree<N
 };
 
 
-template<class NodeType>
-class NodeHeightSlideBumpPermuteScaler : public NodeHeightSlideBumpScaler<NodeType> {
+template<class TreeType>
+class NodeHeightSlideBumpPermuteScaler : public NodeHeightSlideBumpScaler<TreeType> {
     protected:
         bool call_tree_method_(
-                BaseTree<NodeType> * tree,
+                TreeType * tree,
                 RandomNumberGenerator& rng,
                 unsigned int height_index,
                 double height) {
@@ -1443,8 +1443,8 @@ class NodeHeightSlideBumpPermuteScaler : public NodeHeightSlideBumpScaler<NodeTy
         }
 
     public:
-        NodeHeightSlideBumpPermuteScaler() : NodeHeightSlideBumpScaler<NodeType>() { }
-        NodeHeightSlideBumpPermuteScaler(double weight) : NodeHeightSlideBumpScaler<NodeType>(weight) { }
+        NodeHeightSlideBumpPermuteScaler() : NodeHeightSlideBumpScaler<TreeType>() { }
+        NodeHeightSlideBumpPermuteScaler(double weight) : NodeHeightSlideBumpScaler<TreeType>(weight) { }
 
         std::string get_name() const {
             return "NodeHeightSlideBumpPermuteScaler";
@@ -1452,11 +1452,11 @@ class NodeHeightSlideBumpPermuteScaler : public NodeHeightSlideBumpScaler<NodeTy
 };
 
 
-template<class NodeType>
-class NodeHeightSlideBumpSwapScaler : public NodeHeightSlideBumpScaler<NodeType> {
+template<class TreeType>
+class NodeHeightSlideBumpSwapScaler : public NodeHeightSlideBumpScaler<TreeType> {
     protected:
         bool call_tree_method_(
-                BaseTree<NodeType> * tree,
+                TreeType * tree,
                 RandomNumberGenerator& rng,
                 unsigned int height_index,
                 double height) {
@@ -1466,8 +1466,8 @@ class NodeHeightSlideBumpSwapScaler : public NodeHeightSlideBumpScaler<NodeType>
         }
 
     public:
-        NodeHeightSlideBumpSwapScaler() : NodeHeightSlideBumpScaler<NodeType>() { }
-        NodeHeightSlideBumpSwapScaler(double weight) : NodeHeightSlideBumpScaler<NodeType>(weight) { }
+        NodeHeightSlideBumpSwapScaler() : NodeHeightSlideBumpScaler<TreeType>() { }
+        NodeHeightSlideBumpSwapScaler(double weight) : NodeHeightSlideBumpScaler<TreeType>(weight) { }
 
         std::string get_name() const {
             return "NodeHeightSlideBumpSwapScaler";
@@ -1475,11 +1475,11 @@ class NodeHeightSlideBumpSwapScaler : public NodeHeightSlideBumpScaler<NodeType>
 };
 
 
-template<class NodeType>
-class NodeHeightSlideBumpMover : public GeneralTreeOperatorInterface<BaseTree<NodeType>, WindowOp> {
+template<class TreeType>
+class NodeHeightSlideBumpMover : public GeneralTreeOperatorInterface<TreeType, WindowOp> {
     protected:
         virtual bool call_tree_method_(
-                BaseTree<NodeType> * tree,
+                TreeType * tree,
                 RandomNumberGenerator& rng,
                 unsigned int height_index,
                 double height) {
@@ -1491,8 +1491,8 @@ class NodeHeightSlideBumpMover : public GeneralTreeOperatorInterface<BaseTree<No
         bool operate_on_root_ = false;
 
     public:
-        NodeHeightSlideBumpMover() : GeneralTreeOperatorInterface<BaseTree<NodeType>, WindowOp>() { }
-        NodeHeightSlideBumpMover(double weight) : GeneralTreeOperatorInterface<BaseTree<NodeType>, WindowOp>(weight) { }
+        NodeHeightSlideBumpMover() : GeneralTreeOperatorInterface<TreeType, WindowOp>() { }
+        NodeHeightSlideBumpMover(double weight) : GeneralTreeOperatorInterface<TreeType, WindowOp>(weight) { }
 
         std::string get_name() const {
             return "NodeHeightSlideBumpMover";
@@ -1510,7 +1510,7 @@ class NodeHeightSlideBumpMover : public GeneralTreeOperatorInterface<BaseTree<No
             this->operate_on_root_ = operate_on_root;
         }
 
-        bool is_operable(BaseTree<NodeType> * tree) const {
+        bool is_operable(TreeType * tree) const {
             unsigned int num_heights = tree->get_number_of_node_heights();
             if ((! this->operate_on_root_) && (num_heights < 2)) {
                 // No non-root heights to operate on
@@ -1525,7 +1525,7 @@ class NodeHeightSlideBumpMover : public GeneralTreeOperatorInterface<BaseTree<No
          * @return  Log of Hastings Ratio.
          */
         double propose(RandomNumberGenerator& rng,
-                BaseTree<NodeType> * tree,
+                TreeType * tree,
                 unsigned int nthreads = 1) {
             if (! this->is_operable(tree)) {
                 return -std::numeric_limits<double>::infinity();
@@ -1561,11 +1561,11 @@ class NodeHeightSlideBumpMover : public GeneralTreeOperatorInterface<BaseTree<No
 };
 
 
-template<class NodeType>
-class NodeHeightSlideBumpPermuteMover : public NodeHeightSlideBumpMover<NodeType> {
+template<class TreeType>
+class NodeHeightSlideBumpPermuteMover : public NodeHeightSlideBumpMover<TreeType> {
     protected:
         bool call_tree_method_(
-                BaseTree<NodeType> * tree,
+                TreeType * tree,
                 RandomNumberGenerator& rng,
                 unsigned int height_index,
                 double height) {
@@ -1575,8 +1575,8 @@ class NodeHeightSlideBumpPermuteMover : public NodeHeightSlideBumpMover<NodeType
         }
 
     public:
-        NodeHeightSlideBumpPermuteMover() : NodeHeightSlideBumpMover<NodeType>() { }
-        NodeHeightSlideBumpPermuteMover(double weight) : NodeHeightSlideBumpMover<NodeType>(weight) { }
+        NodeHeightSlideBumpPermuteMover() : NodeHeightSlideBumpMover<TreeType>() { }
+        NodeHeightSlideBumpPermuteMover(double weight) : NodeHeightSlideBumpMover<TreeType>(weight) { }
 
         std::string get_name() const {
             return "NodeHeightSlideBumpPermuteMover";
@@ -1584,11 +1584,11 @@ class NodeHeightSlideBumpPermuteMover : public NodeHeightSlideBumpMover<NodeType
 };
 
 
-template<class NodeType>
-class NodeHeightSlideBumpSwapMover : public NodeHeightSlideBumpMover<NodeType> {
+template<class TreeType>
+class NodeHeightSlideBumpSwapMover : public NodeHeightSlideBumpMover<TreeType> {
     protected:
         bool call_tree_method_(
-                BaseTree<NodeType> * tree,
+                TreeType * tree,
                 RandomNumberGenerator& rng,
                 unsigned int height_index,
                 double height) {
@@ -1598,8 +1598,8 @@ class NodeHeightSlideBumpSwapMover : public NodeHeightSlideBumpMover<NodeType> {
         }
 
     public:
-        NodeHeightSlideBumpSwapMover() : NodeHeightSlideBumpMover<NodeType>() { }
-        NodeHeightSlideBumpSwapMover(double weight) : NodeHeightSlideBumpMover<NodeType>(weight) { }
+        NodeHeightSlideBumpSwapMover() : NodeHeightSlideBumpMover<TreeType>() { }
+        NodeHeightSlideBumpSwapMover(double weight) : NodeHeightSlideBumpMover<TreeType>(weight) { }
 
         std::string get_name() const {
             return "NodeHeightSlideBumpSwapMover";
@@ -1607,12 +1607,12 @@ class NodeHeightSlideBumpSwapMover : public NodeHeightSlideBumpMover<NodeType> {
 };
 
 
-template<class NodeType>
-class NeighborHeightNodePermute : public GeneralTreeOperatorInterface<BaseTree<NodeType>, Op> {
+template<class TreeType>
+class NeighborHeightNodePermute : public GeneralTreeOperatorInterface<TreeType, Op> {
 
     public:
-        NeighborHeightNodePermute() : GeneralTreeOperatorInterface<BaseTree<NodeType>, Op>() { }
-        NeighborHeightNodePermute(double weight) : GeneralTreeOperatorInterface<BaseTree<NodeType>, Op>(weight) { }
+        NeighborHeightNodePermute() : GeneralTreeOperatorInterface<TreeType, Op>() { }
+        NeighborHeightNodePermute(double weight) : GeneralTreeOperatorInterface<TreeType, Op>(weight) { }
 
         std::string get_name() const {
             return "NeighborHeightNodePermute";
@@ -1626,7 +1626,7 @@ class NeighborHeightNodePermute : public GeneralTreeOperatorInterface<BaseTree<N
             return BaseGeneralTreeOperatorTemplate::OperatorTypeEnum::topology_operator;
         }
 
-        bool is_operable(BaseTree<NodeType> * tree) const {
+        bool is_operable(TreeType * tree) const {
             unsigned int num_node_heights = tree->get_number_of_node_heights();
             if (num_node_heights == 1) {
                 // In comb state, so nothing to do; force rejection
@@ -1641,7 +1641,7 @@ class NeighborHeightNodePermute : public GeneralTreeOperatorInterface<BaseTree<N
          * @return  Log of Hastings Ratio.
          */
         double propose(RandomNumberGenerator& rng,
-                BaseTree<NodeType> * tree,
+                TreeType * tree,
                 unsigned int nthreads = 1) {
             if (! this->is_operable(tree)) {
                 return -std::numeric_limits<double>::infinity();
@@ -1657,12 +1657,12 @@ class NeighborHeightNodePermute : public GeneralTreeOperatorInterface<BaseTree<N
 };
 
 
-template<class NodeType>
-class NeighborHeightNodeSwap : public GeneralTreeOperatorInterface<BaseTree<NodeType>, Op> {
+template<class TreeType>
+class NeighborHeightNodeSwap : public GeneralTreeOperatorInterface<TreeType, Op> {
 
     public:
-        NeighborHeightNodeSwap() : GeneralTreeOperatorInterface<BaseTree<NodeType>, Op>() { }
-        NeighborHeightNodeSwap(double weight) : GeneralTreeOperatorInterface<BaseTree<NodeType>, Op>(weight) { }
+        NeighborHeightNodeSwap() : GeneralTreeOperatorInterface<TreeType, Op>() { }
+        NeighborHeightNodeSwap(double weight) : GeneralTreeOperatorInterface<TreeType, Op>(weight) { }
 
         std::string get_name() const {
             return "NeighborHeightNodeSwap";
@@ -1676,7 +1676,7 @@ class NeighborHeightNodeSwap : public GeneralTreeOperatorInterface<BaseTree<Node
             return BaseGeneralTreeOperatorTemplate::OperatorTypeEnum::topology_operator;
         }
 
-        bool is_operable(BaseTree<NodeType> * tree) const {
+        bool is_operable(TreeType * tree) const {
             unsigned int num_node_heights = tree->get_number_of_node_heights();
             if (num_node_heights == 1) {
                 // In comb state, so nothing to do; force rejection
@@ -1691,7 +1691,7 @@ class NeighborHeightNodeSwap : public GeneralTreeOperatorInterface<BaseTree<Node
          * @return  Log of Hastings Ratio.
          */
         double propose(RandomNumberGenerator& rng,
-                BaseTree<NodeType> * tree,
+                TreeType * tree,
                 unsigned int nthreads = 1) {
             if (! this->is_operable(tree)) {
                 return -std::numeric_limits<double>::infinity();
@@ -1707,15 +1707,15 @@ class NeighborHeightNodeSwap : public GeneralTreeOperatorInterface<BaseTree<Node
 };
 
 
-template<class NodeType>
-class SplitLumpNodesRevJumpSampler : public GeneralTreeOperatorInterface<BaseTree<NodeType>, Op> {
+template<class TreeType>
+class SplitLumpNodesRevJumpSampler : public GeneralTreeOperatorInterface<TreeType, Op> {
     protected:
         std::unordered_map<unsigned int, long double> stirling2_numbers;
         std::unordered_map<unsigned int, long double> bell_numbers;
 
     public:
-        SplitLumpNodesRevJumpSampler() : GeneralTreeOperatorInterface<BaseTree<NodeType>, Op>() { }
-        SplitLumpNodesRevJumpSampler(double weight) : GeneralTreeOperatorInterface<BaseTree<NodeType>, Op>(weight) { }
+        SplitLumpNodesRevJumpSampler() : GeneralTreeOperatorInterface<TreeType, Op>() { }
+        SplitLumpNodesRevJumpSampler(double weight) : GeneralTreeOperatorInterface<TreeType, Op>(weight) { }
 
         std::string get_name() const {
             return "SplitLumpNodesRevJumpSampler";
@@ -1743,13 +1743,13 @@ class SplitLumpNodesRevJumpSampler : public GeneralTreeOperatorInterface<BaseTre
             return this->bell_numbers[n];
         }
 
-        bool is_operable(BaseTree<NodeType> * tree) const {
+        bool is_operable(TreeType * tree) const {
             return true;
         }
 
         void operate_plus(RandomNumberGenerator& rng,
-                BaseTree<NodeType> * tree,
-                std::vector< std::shared_ptr< GeneralTreeOperatorTemplate< BaseTree<NodeType> > > > other_operators,
+                TreeType * tree,
+                std::vector< std::shared_ptr< GeneralTreeOperatorTemplate< TreeType > > > other_operators,
                 unsigned int nthreads = 1,
                 unsigned int number_of_moves = 1,
                 unsigned int other_op_number_of_moves = 1) {
@@ -1762,7 +1762,7 @@ class SplitLumpNodesRevJumpSampler : public GeneralTreeOperatorInterface<BaseTre
         }
 
         double propose_split(RandomNumberGenerator& rng,
-                BaseTree<NodeType> * tree,
+                TreeType * tree,
                 unsigned int nthreads = 1) {
             const unsigned int num_heights = tree->get_number_of_node_heights();
             const bool in_comb_state_before = (num_heights == 1);
@@ -2127,7 +2127,7 @@ class SplitLumpNodesRevJumpSampler : public GeneralTreeOperatorInterface<BaseTre
         }
 
         double propose_merge(RandomNumberGenerator& rng,
-                BaseTree<NodeType> * tree,
+                TreeType * tree,
                 const bool in_general_state_before,
                 unsigned int nthreads = 1) {
             const unsigned int num_heights = tree->get_number_of_node_heights();
@@ -2211,7 +2211,7 @@ class SplitLumpNodesRevJumpSampler : public GeneralTreeOperatorInterface<BaseTre
             const double height_diff = older_height - younger_height;
             ECOEVOLITY_ASSERT(height_diff > 0.0);
             const unsigned int post_num_splittable_heights = tree->get_number_of_splittable_heights();
-            std::vector< std::shared_ptr<NodeType> > post_mapped_nodes = tree->get_mapped_nodes(merge_height_idx);
+            std::vector< typename TreeType::NodePtr > post_mapped_nodes = tree->get_mapped_nodes(merge_height_idx);
             const unsigned int post_num_mapped_nodes = post_mapped_nodes.size();
             unsigned int post_num_mapped_poly_nodes = 0; 
             for (auto node : post_mapped_nodes) {
@@ -2338,7 +2338,7 @@ class SplitLumpNodesRevJumpSampler : public GeneralTreeOperatorInterface<BaseTre
          * @return  Log of Hastings Ratio.
          */
         double propose(RandomNumberGenerator& rng,
-                BaseTree<NodeType> * tree,
+                TreeType * tree,
                 unsigned int nthreads = 1) {
             const unsigned int num_heights = tree->get_number_of_node_heights();
             const unsigned int num_leaves = tree->get_leaf_node_count();

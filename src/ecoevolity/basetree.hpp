@@ -30,13 +30,14 @@
 
 class PopSizeScaler;
 class GlobalHeightSizeMixer;
-template<class NodeType> class GlobalNodeHeightDirichletOperator;
+template<class TreeType> class GlobalNodeHeightDirichletOperator;
 
 template<class NodeType>
 class BaseTree {
         friend class PopSizeScaler;
         friend class GlobalHeightSizeMixer;
-        friend class GlobalNodeHeightDirichletOperator<NodeType>;
+        template<class TreeType>
+        friend class GlobalNodeHeightDirichletOperator;
 
     protected:
         std::shared_ptr<NodeType> root_;
@@ -519,6 +520,8 @@ class BaseTree {
             }
         }
 
+        typedef std::shared_ptr<NodeType> NodePtr;
+
         // Used to signify that the likelihood needs recalculating.
         // Node methods are expected to make nodes dirty. However, whenever the
         // node height parameter are updated, this needs to be called, because
@@ -926,7 +929,6 @@ class BaseTree {
         std::vector< std::shared_ptr<NodeType> > get_collision_parents(
                 const unsigned int older_height_index,
                 const unsigned int younger_height_index) {
-            ECOEVOLITY_ASSERT(older_height_index == younger_height_index + 1);
             std::vector< std::shared_ptr<NodeType> > collision_parents;
             std::vector< std::shared_ptr<NodeType> > older_nodes = this->get_mapped_nodes(older_height_index);
             std::vector< std::shared_ptr<NodeType> > younger_nodes = this->get_mapped_nodes(younger_height_index);
