@@ -30,10 +30,10 @@
 #include "rng.hpp"
 #include "assert.hpp"
 
-template<class NodeType>
+template<class TreeType>
 class GeneralTreeOperatorSchedule {
     protected:
-        std::vector< std::shared_ptr< GeneralTreeOperatorInterface<NodeType> > > operators_;
+        std::vector< std::shared_ptr< GeneralTreeOperatorTemplate<TreeType> > > operators_;
         double total_weight_ = 0.0;
         std::vector<double> cumulative_probs_;
 
@@ -42,7 +42,7 @@ class GeneralTreeOperatorSchedule {
         // GeneralTreeOperatorSchedule(const GeneralTreeSettings& settings) { }
         virtual ~GeneralTreeOperatorSchedule() { }
 
-        void add_operator(std::shared_ptr< GeneralTreeOperatorInterface<NodeType> > o) {
+        void add_operator(std::shared_ptr< GeneralTreeOperatorTemplate<TreeType> > o) {
             this->operators_.push_back(o);
             this->total_weight_ += o->get_weight();
             this->cumulative_probs_.push_back(0.0);
@@ -56,30 +56,49 @@ class GeneralTreeOperatorSchedule {
             }
         }
 
-        GeneralTreeOperatorInterface<NodeType>& draw_operator(RandomNumberGenerator& rng) const {
+        std::shared_ptr< GeneralTreeOperatorTemplate<TreeType> > draw_operator(
+                RandomNumberGenerator& rng) const {
             double u = rng.uniform_real();
             for (unsigned int i = 0; i < this->cumulative_probs_.size(); ++i) {
                 if (u <= this->cumulative_probs_.at(i)) {
-                    return *this->operators_.at(i);
+                    return this->operators_.at(i);
                 }
             }
-            return *this->operators_.back();
+            return this->operators_.back();
         }
 
-        GeneralTreeOperatorInterface<NodeType>& get_operator(unsigned int operator_index) const {
-            return *this->operators_.at(operator_index);
+        std::shared_ptr< GeneralTreeOperatorTemplate<TreeType> > draw_operable_operator(
+                RandomNumberGenerator& rng,
+                TreeType * tree,
+                unsigned int max_number_of_attempts = 100) const {
+            std::shared_ptr< GeneralTreeOperatorTemplate<TreeType> > op = this->draw_operator(rng);
+            unsigned int num_of_attempts = 1;
+            while (! op->is_operable(tree)) {
+                if (num_of_attempts >= max_number_of_attempts) {
+                    throw EcoevolityError(
+                            "Hit max number of attempts trying to draw an operable operator");
+                }
+                op = this->draw_operator(rng);
+                ++num_of_attempts;
+            }
+            return op;
         }
 
-        std::vector< std::shared_ptr< GeneralTreeOperatorInterface<NodeType> > > get_node_height_operators() const {
-            std::vector< std::shared_ptr< GeneralTreeOperatorInterface<NodeType> > > ops;
-            for (std::shared_ptr< GeneralTreeOperatorInterface<NodeType> > op: this->operators_) {
-                if (op->get_type() == GeneralTreeOperatorInterface::OperatorTypeEnum::node_height_operator) {
+        std::shared_ptr< GeneralTreeOperatorTemplate<TreeType> > get_operator(
+                unsigned int operator_index) const {
+            return this->operators_.at(operator_index);
+        }
+
+        std::vector< std::shared_ptr< GeneralTreeOperatorTemplate<TreeType> > > get_node_height_operators() const {
+            std::vector< std::shared_ptr< GeneralTreeOperatorTemplate<TreeType> > > ops;
+            for (std::shared_ptr< GeneralTreeOperatorTemplate<TreeType> > op: this->operators_) {
+                if (op->get_type() == BaseGeneralTreeOperatorTemplate::OperatorTypeEnum::node_height_operator) {
                     ops.push_back(op);
                 }
-                else if (op->get_type() == GeneralTreeOperatorInterface::OperatorTypeEnum::root_height_operator) {
+                else if (op->get_type() == BaseGeneralTreeOperatorTemplate::OperatorTypeEnum::root_height_operator) {
                     ops.push_back(op);
                 }
-                else if (op->get_type() == GeneralTreeOperatorInterface::OperatorTypeEnum::global_height_operator) {
+                else if (op->get_type() == BaseGeneralTreeOperatorTemplate::OperatorTypeEnum::global_height_operator) {
                     ops.push_back(op);
                 }
             }
@@ -91,11 +110,11 @@ class GeneralTreeOperatorSchedule {
         }
 
         void write_operator_rates(std::ostream& out) const {
-            OperatorInterface& op = this->get_operator(0);
-            out << op.header_string();
-            out << op.to_string(*this);
+            std::shared_ptr< GeneralTreeOperatorTemplate<TreeType> > op = this->get_operator(0);
+            out << op->header_string();
+            out << op->to_string();
             for (unsigned int i = 1; i < this->operators_.size(); ++i) {
-                out << this->get_operator(i).to_string(*this);
+                out << this->get_operator(i)->to_string();
             }
             out << std::flush;
         }
