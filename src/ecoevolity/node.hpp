@@ -723,7 +723,7 @@ class PopulationNode: public BaseNode<PopulationNode>{
             }
             double new_pop_size = child_pop_size_sum / this->children_.size();
             this->population_size_->set_value(new_pop_size);
-            if (this->children_.at(0)->population_size_->is_fixed()) {;
+            if (this->children_.at(0)->population_size_->is_fixed()) {
                 this->population_size_->fix();
             }
         }
