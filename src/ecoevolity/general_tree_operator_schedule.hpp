@@ -42,6 +42,10 @@ class GeneralTreeOperatorSchedule {
         // GeneralTreeOperatorSchedule(const GeneralTreeSettings& settings) { }
         virtual ~GeneralTreeOperatorSchedule() { }
 
+        unsigned int get_number_of_operators() const {
+            return this->operators_.size();
+        }
+
         void add_operator(std::shared_ptr< GeneralTreeOperatorTemplate<TreeType> > o) {
             this->operators_.push_back(o);
             this->total_weight_ += o->get_weight();
@@ -65,23 +69,6 @@ class GeneralTreeOperatorSchedule {
                 }
             }
             return this->operators_.back();
-        }
-
-        std::shared_ptr< GeneralTreeOperatorTemplate<TreeType> > draw_operable_operator(
-                RandomNumberGenerator& rng,
-                TreeType * tree,
-                unsigned int max_number_of_attempts = 100) const {
-            std::shared_ptr< GeneralTreeOperatorTemplate<TreeType> > op = this->draw_operator(rng);
-            unsigned int num_of_attempts = 1;
-            while (! op->is_operable(tree)) {
-                if (num_of_attempts >= max_number_of_attempts) {
-                    throw EcoevolityError(
-                            "Hit max number of attempts trying to draw an operable operator");
-                }
-                op = this->draw_operator(rng);
-                ++num_of_attempts;
-            }
-            return op;
         }
 
         std::shared_ptr< GeneralTreeOperatorTemplate<TreeType> > get_operator(
