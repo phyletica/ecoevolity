@@ -4294,11 +4294,12 @@ TEST_CASE("Testing SplitLumpNodesRevJumpSampler with BasePopulationTree, 5 leave
     }
 }
 
-TEST_CASE("Testing SplitLumpNodesRevJumpSampler with BasePopulationTree, 5 leaves and full model",
-        "[xBasePopulationTree]") {
+TEST_CASE("Testing SplitLumpNodesRevJumpSampler with BasePopulationTree, 5 leaves, full model, constrained sizes",
+        "[xxx]") {
+        /* "[xBasePopulationTree]") { */
 
-    SECTION("Testing 5 leaves with BasePopulationTree, fixed sizes") {
-        RandomNumberGenerator rng = RandomNumberGenerator(264341468);
+    SECTION("Testing 5 leaves with BasePopulationTree, full model, constrained, sizes") {
+        RandomNumberGenerator rng = RandomNumberGenerator(6543234056);
 
         double mu_rate_shape = 10.0;
         double mu_rate_scale = 0.05;
@@ -4360,9 +4361,9 @@ TEST_CASE("Testing SplitLumpNodesRevJumpSampler with BasePopulationTree, 5 leave
         tree.set_prior_on_alpha_of_node_height_beta_prior(height_alpha_prior);
         tree.set_prior_on_beta_of_node_height_beta_prior(height_beta_prior);
 
+        tree.constrain_population_sizes();
         tree.estimate_mutation_rate();
         tree.estimate_root_height();
-        tree.estimate_population_sizes();
         tree.estimate_state_frequencies();
         tree.estimate_alpha_of_node_height_beta_prior();
         tree.estimate_beta_of_node_height_beta_prior();
@@ -4370,19 +4371,23 @@ TEST_CASE("Testing SplitLumpNodesRevJumpSampler with BasePopulationTree, 5 leave
         GeneralTreeOperatorSchedule< BasePopulationTree > op_schedule;
         std::shared_ptr< GeneralTreeOperatorTemplate< BasePopulationTree > > op;
 
-        op = std::make_shared< SplitLumpNodesRevJumpSampler<BasePopulationTree> >(8.0);
+        op = std::make_shared< SplitLumpNodesRevJumpSampler<BasePopulationTree> >(12.0);
         op_schedule.add_operator(op);
         op = std::make_shared< MuRateScaler >(1.0);
         op_schedule.add_operator(op);
         op = std::make_shared< RootHeightScaler<BasePopulationTree> >(2.0);
-        op_schedule.add_operator(op);
-        op = std::make_shared< RootHeightSizeMixer >(1.0);
         op_schedule.add_operator(op);
         op = std::make_shared< NodeHeightScaler<BasePopulationTree> >(2.0);
         op_schedule.add_operator(op);
         op = std::make_shared< NodeHeightSlideBumpScaler<BasePopulationTree> >(2.0);
         op_schedule.add_operator(op);
         op = std::make_shared< NodeHeightSlideBumpSwapScaler<BasePopulationTree> >(2.0);
+        op_schedule.add_operator(op);
+        op = std::make_shared< NeighborHeightNodeSwap<BasePopulationTree> >(1.0);
+        op_schedule.add_operator(op);
+        op = std::make_shared< NodeHeightSlideBumpPermuteScaler<BasePopulationTree> >(2.0);
+        op_schedule.add_operator(op);
+        op = std::make_shared< NeighborHeightNodePermute<BasePopulationTree> >(1.0);
         op_schedule.add_operator(op);
         op = std::make_shared< NodeHeightDirichletOperator<BasePopulationTree> >(2.0);
         op_schedule.add_operator(op);
@@ -4394,9 +4399,9 @@ TEST_CASE("Testing SplitLumpNodesRevJumpSampler with BasePopulationTree, 5 leave
         op_schedule.add_operator(op);
         op = std::make_shared< StateFreqDirichletOperator >(1.0);
         op_schedule.add_operator(op);
-        op = std::make_shared< NodeHeightPriorAlphaScaler<BasePopulationTree> >(1.0);
+        op = std::make_shared< NodeHeightPriorAlphaScaler<BasePopulationTree> >(3.0);
         op_schedule.add_operator(op);
-        op = std::make_shared< NodeHeightPriorBetaScaler<BasePopulationTree> >(1.0);
+        op = std::make_shared< NodeHeightPriorBetaScaler<BasePopulationTree> >(3.0);
         op_schedule.add_operator(op);
         op = std::make_shared< GlobalHeightSizeRateScaler >(1.0);
         op_schedule.add_operator(op);
@@ -4404,6 +4409,12 @@ TEST_CASE("Testing SplitLumpNodesRevJumpSampler with BasePopulationTree, 5 leave
         op_schedule.add_operator(op);
         op = std::make_shared< GlobalHeightSizeMixer >(1.0);
         op_schedule.add_operator(op);
+
+        for (unsigned int i = 0; i < op_schedule.get_number_of_operators(); ++i) {
+            op = op_schedule.get_operator(i);
+            op->turn_on_auto_optimize();
+            op->set_auto_optimize_delay(1000);
+        }
 
         std::vector< std::shared_ptr< GeneralTreeOperatorTemplate< BasePopulationTree > > > time_ops = op_schedule.get_node_height_operators();
 
@@ -4433,14 +4444,28 @@ TEST_CASE("Testing SplitLumpNodesRevJumpSampler with BasePopulationTree, 5 leave
 
         std::vector< std::shared_ptr<PositiveRealParameter> > pop_sizes;
 
-        unsigned int niterations = 5000000;
+        unsigned int burnin = 10000;
+        for (unsigned int i = 0; i < burnin; ++i) {
+            op = op_schedule.draw_operator(rng);
+            if (op->get_type() == BaseGeneralTreeOperatorTemplate::OperatorTypeEnum::topology_model_operator) {
+                op->operate_plus(rng,
+                        &tree,
+                        time_ops,
+                        1, 1, 1);
+            }
+            else {
+                op->operate(rng, &tree, 1, 1);
+            }
+        }
+
+        unsigned int niterations = 8000000;
         unsigned int sample_freq = 50;
         unsigned int nsamples = niterations / sample_freq;
 
         unsigned int sample_count = 0;
         unsigned int report_freq = 10000;
         for (unsigned int i = 0; i < niterations; ++i) {
-            op = op_schedule.draw_operable_operator(rng, &tree);
+            op = op_schedule.draw_operator(rng);
             if (op->get_type() == BaseGeneralTreeOperatorTemplate::OperatorTypeEnum::topology_model_operator) {
                 op->operate_plus(rng,
                         &tree,
@@ -4471,9 +4496,10 @@ TEST_CASE("Testing SplitLumpNodesRevJumpSampler with BasePopulationTree, 5 leave
                 for (unsigned int height_idx = 0;
                         height_idx < (tree.get_number_of_node_heights() - 1);
                         ++height_idx) {
-                    internal_height_summary.add_sample(tree.get_height(height_idx));
+                    internal_height_summary.add_sample(tree.get_height(height_idx) / tree.get_height_of_youngest_parent(height_idx));
                     if (height_idx == 0) {
                         internal_0_height_summary.add_sample(tree.get_height(height_idx));
+                        internal_0_height_summary.add_sample(tree.get_height(height_idx) / tree.get_height_of_youngest_parent(height_idx));
                     }
                 }
                 if (tree.get_number_of_node_heights() == 1) {
@@ -4565,7 +4591,352 @@ TEST_CASE("Testing SplitLumpNodesRevJumpSampler with BasePopulationTree, 5 leave
             std::cout << "  prop error: " << s_e.second << "\n";
         }
 
-        write_r_script(split_counts, "../5-leaf-general-tree-test-fixed-pop-sizes.r");
+        write_r_script(split_counts, "../5-leaf-general-tree-test-full-model-constrained-pop-sizes.r");
+
+        REQUIRE(total_trees_sampled == nsamples);
+
+        // We should sample every possible tree
+        REQUIRE(split_counts.size() == 336);
+
+        double eps = 0.005;
+        REQUIRE(pop_size_summary.mean() == Approx(pop_size_prior->get_mean()).epsilon(eps));
+        REQUIRE(pop_size_summary.variance() == Approx(pop_size_prior->get_variance()).epsilon(eps));
+        REQUIRE(root_pop_size_summary.mean() == Approx(pop_size_prior->get_mean()).epsilon(eps));
+        REQUIRE(root_pop_size_summary.variance() == Approx(pop_size_prior->get_variance()).epsilon(eps));
+        REQUIRE(leaf0_pop_size_summary.mean() == Approx(pop_size_prior->get_mean()).epsilon(eps));
+        REQUIRE(leaf0_pop_size_summary.variance() == Approx(pop_size_prior->get_variance()).epsilon(eps));
+        REQUIRE(leaf1_pop_size_summary.mean() == Approx(pop_size_prior->get_mean()).epsilon(eps));
+        REQUIRE(leaf1_pop_size_summary.variance() == Approx(pop_size_prior->get_variance()).epsilon(eps));
+        REQUIRE(leaf2_pop_size_summary.mean() == Approx(pop_size_prior->get_mean()).epsilon(eps));
+        REQUIRE(leaf2_pop_size_summary.variance() == Approx(pop_size_prior->get_variance()).epsilon(eps));
+        REQUIRE(leaf3_pop_size_summary.mean() == Approx(pop_size_prior->get_mean()).epsilon(eps));
+        REQUIRE(leaf3_pop_size_summary.variance() == Approx(pop_size_prior->get_variance()).epsilon(eps));
+        REQUIRE(leaf4_pop_size_summary.mean() == Approx(pop_size_prior->get_mean()).epsilon(eps));
+        REQUIRE(leaf4_pop_size_summary.variance() == Approx(pop_size_prior->get_variance()).epsilon(eps));
+
+        REQUIRE(root_height_summary.mean() == Approx(root_height_prior->get_mean()).epsilon(eps));
+        REQUIRE(root_height_summary.variance() == Approx(root_height_prior->get_variance()).epsilon(eps));
+        REQUIRE(height_alpha_summary.mean() == Approx(height_alpha_prior->get_mean()).epsilon(eps * 2.0));
+        REQUIRE(height_alpha_summary.variance() == Approx(height_alpha_prior->get_variance()).epsilon(eps * 2.0));
+        REQUIRE(height_beta_summary.mean() == Approx(height_beta_prior->get_mean()).epsilon(eps * 2.0));
+        REQUIRE(height_beta_summary.variance() == Approx(height_beta_prior->get_variance()).epsilon(eps * 2.0));
+
+        REQUIRE(internal_0_height_summary.mean() == Approx(internal_height_prior_sample.mean()).epsilon(eps));
+        REQUIRE(internal_0_height_summary.variance() == Approx(internal_height_prior_sample.variance()).epsilon(eps));
+        REQUIRE(internal_height_summary.mean() == Approx(internal_height_prior_sample.mean()).epsilon(eps));
+        REQUIRE(internal_height_summary.variance() == Approx(internal_height_prior_sample.variance()).epsilon(eps));
+
+        for (auto s_f : split_freqs) {
+            REQUIRE(s_f.second == Approx(exp_freq).epsilon(eps));
+        }
+
+        REQUIRE(chi_sq_test_statistic < quantile_chi_sq_335_10);
+    }
+}
+
+TEST_CASE("Testing SplitLumpNodesRevJumpSampler with BasePopulationTree, 5 leaves, full model, unconstrained sizes",
+        "[xxxx]") {
+        /* "[xBasePopulationTree]") { */
+
+    SECTION("Testing 5 leaves with BasePopulationTree, full model, unconstrained sizes") {
+        RandomNumberGenerator rng = RandomNumberGenerator(42642642354);
+
+        double mu_rate_shape = 10.0;
+        double mu_rate_scale = 0.05;
+        std::shared_ptr<ContinuousProbabilityDistribution> mu_rate_prior = std::make_shared<GammaDistribution>(
+                mu_rate_shape,
+                mu_rate_scale);
+
+        double root_height_shape = 20.0;
+        double root_height_scale = 0.025;
+        std::shared_ptr<ContinuousProbabilityDistribution> root_height_prior = std::make_shared<GammaDistribution>(
+                root_height_shape,
+                root_height_scale);
+
+        double pop_size_shape = 10.0;
+        double pop_size_scale = 0.05;
+        std::shared_ptr<ContinuousProbabilityDistribution> pop_size_prior = std::make_shared<GammaDistribution>(
+                pop_size_shape,
+                pop_size_scale);
+
+        double freq_a = 3.0;
+        double freq_b = 2.0;
+        std::shared_ptr<ContinuousProbabilityDistribution> freq_prior = std::make_shared<BetaDistribution>(
+                freq_a,
+                freq_b);
+
+        double height_alpha_shape = 20.0;
+        double height_alpha_scale = 0.4;
+        std::shared_ptr<ContinuousProbabilityDistribution> height_alpha_prior = std::make_shared<GammaDistribution>(
+                height_alpha_shape,
+                height_alpha_scale);
+
+        double height_beta_shape = 20.0;
+        double height_beta_scale = 0.3;
+        std::shared_ptr<ContinuousProbabilityDistribution> height_beta_prior = std::make_shared<GammaDistribution>(
+                height_beta_shape,
+                height_beta_scale);
+
+        double root_ht = 0.5;
+        std::shared_ptr<PopulationNode> root = std::make_shared<PopulationNode>(5, "root", root_ht);
+        std::shared_ptr<PopulationNode> leaf0 = std::make_shared<PopulationNode>(0, "leaf0", 0.0);
+        std::shared_ptr<PopulationNode> leaf1 = std::make_shared<PopulationNode>(1, "leaf1", 0.0);
+        std::shared_ptr<PopulationNode> leaf2 = std::make_shared<PopulationNode>(2, "leaf2", 0.0);
+        std::shared_ptr<PopulationNode> leaf3 = std::make_shared<PopulationNode>(3, "leaf3", 0.0);
+        std::shared_ptr<PopulationNode> leaf4 = std::make_shared<PopulationNode>(4, "leaf4", 0.0);
+
+        root->add_child(leaf0);
+        root->add_child(leaf1);
+        root->add_child(leaf2);
+        root->add_child(leaf3);
+        root->add_child(leaf4);
+
+        BasePopulationTree tree(root);
+        tree.ignore_data();
+
+        tree.set_mutation_rate_prior(mu_rate_prior);
+        tree.set_root_node_height_prior(root_height_prior);
+        tree.set_population_size_prior(pop_size_prior);
+        tree.set_freq_1_prior(freq_prior);
+        tree.set_prior_on_alpha_of_node_height_beta_prior(height_alpha_prior);
+        tree.set_prior_on_beta_of_node_height_beta_prior(height_beta_prior);
+
+        tree.estimate_mutation_rate();
+        tree.estimate_root_height();
+        tree.estimate_state_frequencies();
+        tree.estimate_alpha_of_node_height_beta_prior();
+        tree.estimate_beta_of_node_height_beta_prior();
+
+        GeneralTreeOperatorSchedule< BasePopulationTree > op_schedule;
+        std::shared_ptr< GeneralTreeOperatorTemplate< BasePopulationTree > > op;
+
+        op = std::make_shared< SplitLumpNodesRevJumpSampler<BasePopulationTree> >(12.0);
+        op_schedule.add_operator(op);
+        op = std::make_shared< MuRateScaler >(1.0);
+        op_schedule.add_operator(op);
+        op = std::make_shared< RootHeightScaler<BasePopulationTree> >(2.0);
+        op_schedule.add_operator(op);
+        op = std::make_shared< RootHeightSizeMixer >(1.0);
+        op_schedule.add_operator(op);
+        op = std::make_shared< HeightSizeMixer >(1.0);
+        op_schedule.add_operator(op);
+        op = std::make_shared< HeightSizeSlideBumpMixer >(1.0);
+        op_schedule.add_operator(op);
+        op = std::make_shared< NodeHeightScaler<BasePopulationTree> >(2.0);
+        op_schedule.add_operator(op);
+        op = std::make_shared< NodeHeightSlideBumpScaler<BasePopulationTree> >(2.0);
+        op_schedule.add_operator(op);
+        op = std::make_shared< NodeHeightSlideBumpSwapScaler<BasePopulationTree> >(2.0);
+        op_schedule.add_operator(op);
+        op = std::make_shared< NeighborHeightNodeSwap<BasePopulationTree> >(1.0);
+        op_schedule.add_operator(op);
+        op = std::make_shared< NodeHeightSlideBumpPermuteScaler<BasePopulationTree> >(2.0);
+        op_schedule.add_operator(op);
+        op = std::make_shared< NeighborHeightNodePermute<BasePopulationTree> >(1.0);
+        op_schedule.add_operator(op);
+        op = std::make_shared< NodeHeightDirichletOperator<BasePopulationTree> >(2.0);
+        op_schedule.add_operator(op);
+        op = std::make_shared< PopSizeScaler >(2.0);
+        op_schedule.add_operator(op);
+        op = std::make_shared< GlobalPopSizeScaler >(1.0);
+        op_schedule.add_operator(op);
+        op = std::make_shared< StateFreqMover >(1.0);
+        op_schedule.add_operator(op);
+        op = std::make_shared< StateFreqDirichletOperator >(1.0);
+        op_schedule.add_operator(op);
+        op = std::make_shared< NodeHeightPriorAlphaScaler<BasePopulationTree> >(3.0);
+        op_schedule.add_operator(op);
+        op = std::make_shared< NodeHeightPriorBetaScaler<BasePopulationTree> >(3.0);
+        op_schedule.add_operator(op);
+        op = std::make_shared< GlobalHeightSizeRateScaler >(1.0);
+        op_schedule.add_operator(op);
+        op = std::make_shared< GlobalNodeHeightDirichletOperator<BasePopulationTree> >(1.0);
+        op_schedule.add_operator(op);
+        op = std::make_shared< GlobalHeightSizeMixer >(1.0);
+        op_schedule.add_operator(op);
+
+        for (unsigned int i = 0; i < op_schedule.get_number_of_operators(); ++i) {
+            op = op_schedule.get_operator(i);
+            op->turn_on_auto_optimize();
+            op->set_auto_optimize_delay(1000);
+        }
+
+        std::vector< std::shared_ptr< GeneralTreeOperatorTemplate< BasePopulationTree > > > time_ops = op_schedule.get_node_height_operators();
+
+        // Initialize prior probs
+        tree.compute_log_likelihood_and_prior(true);
+
+        std::map< std::set< std::set<Split> >, unsigned int> split_counts;
+
+        unsigned int count_nheights_1 = 0;
+        unsigned int count_nheights_2 = 0;
+        unsigned int count_nheights_3 = 0;
+        unsigned int count_nheights_4 = 0;
+
+        SampleSummarizer<double> pop_size_summary;
+        SampleSummarizer<double> root_pop_size_summary;
+        SampleSummarizer<double> leaf0_pop_size_summary;
+        SampleSummarizer<double> leaf1_pop_size_summary;
+        SampleSummarizer<double> leaf2_pop_size_summary;
+        SampleSummarizer<double> leaf3_pop_size_summary;
+        SampleSummarizer<double> leaf4_pop_size_summary;
+        SampleSummarizer<double> root_height_summary;
+        SampleSummarizer<double> internal_0_height_summary;
+        SampleSummarizer<double> internal_height_summary;
+        SampleSummarizer<double> height_alpha_summary;
+        SampleSummarizer<double> height_beta_summary;
+        SampleSummarizer<double> internal_height_prior_sample;
+
+        std::vector< std::shared_ptr<PositiveRealParameter> > pop_sizes;
+
+        unsigned int burnin = 10000;
+        for (unsigned int i = 0; i < burnin; ++i) {
+            op = op_schedule.draw_operator(rng);
+            if (op->get_type() == BaseGeneralTreeOperatorTemplate::OperatorTypeEnum::topology_model_operator) {
+                op->operate_plus(rng,
+                        &tree,
+                        time_ops,
+                        1, 1, 1);
+            }
+            else {
+                op->operate(rng, &tree, 1, 1);
+            }
+        }
+
+        unsigned int niterations = 1000000;
+        unsigned int sample_freq = 50;
+        unsigned int nsamples = niterations / sample_freq;
+
+        unsigned int sample_count = 0;
+        unsigned int report_freq = 10000;
+        for (unsigned int i = 0; i < niterations; ++i) {
+            op = op_schedule.draw_operator(rng);
+            if (op->get_type() == BaseGeneralTreeOperatorTemplate::OperatorTypeEnum::topology_model_operator) {
+                op->operate_plus(rng,
+                        &tree,
+                        time_ops,
+                        1, 1, 1);
+            }
+            else {
+                op->operate(rng, &tree, 1, 1);
+            }
+            double a = height_alpha_prior->draw(rng);
+            double b = height_beta_prior->draw(rng);
+            double v = BetaDistribution::get_draw(rng, a, b);
+            internal_height_prior_sample.add_sample(v);
+            if ((i + 1) % sample_freq == 0) {
+                pop_sizes = tree.get_pointers_to_population_sizes();
+                for (auto pop_size : pop_sizes) {
+                    pop_size_summary.add_sample(pop_size->get_value());
+                }
+                root_pop_size_summary.add_sample(tree.get_root_population_size());
+                leaf0_pop_size_summary.add_sample(tree.get_node("leaf0")->get_population_size());
+                leaf1_pop_size_summary.add_sample(tree.get_node("leaf1")->get_population_size());
+                leaf2_pop_size_summary.add_sample(tree.get_node("leaf2")->get_population_size());
+                leaf3_pop_size_summary.add_sample(tree.get_node("leaf3")->get_population_size());
+                leaf4_pop_size_summary.add_sample(tree.get_node("leaf4")->get_population_size());
+                root_height_summary.add_sample(tree.get_root_height());
+                height_alpha_summary.add_sample(tree.get_alpha_of_node_height_beta_prior());
+                height_beta_summary.add_sample(tree.get_beta_of_node_height_beta_prior());
+                for (unsigned int height_idx = 0;
+                        height_idx < (tree.get_number_of_node_heights() - 1);
+                        ++height_idx) {
+                    internal_height_summary.add_sample(tree.get_height(height_idx) / tree.get_height_of_youngest_parent(height_idx));
+                    if (height_idx == 0) {
+                        internal_0_height_summary.add_sample(tree.get_height(height_idx));
+                        internal_0_height_summary.add_sample(tree.get_height(height_idx) / tree.get_height_of_youngest_parent(height_idx));
+                    }
+                }
+                if (tree.get_number_of_node_heights() == 1) {
+                    ++count_nheights_1;
+                }
+                else if (tree.get_number_of_node_heights() == 2) {
+                    ++count_nheights_2;
+                }
+                else if (tree.get_number_of_node_heights() == 3) {
+                    ++count_nheights_3;
+                }
+                else if (tree.get_number_of_node_heights() == 4) {
+                    ++count_nheights_4;
+                }
+                std::set< std::set<Split> > splits = tree.get_splits(false);
+                if (split_counts.count(splits) > 0) {
+                    ++split_counts[splits];
+                }
+                else {
+                    split_counts[splits] = 1;
+                }
+                ++sample_count;
+                if (sample_count % report_freq == 0) {
+                    std::cout << "Sampled " << sample_count << " of " << nsamples << std::endl;
+                }
+            }
+        }
+        op_schedule.write_operator_rates(std::cout);
+
+        REQUIRE((count_nheights_1 + count_nheights_2 + count_nheights_3 + count_nheights_4) == nsamples);
+
+        double freq_nheights_1 = count_nheights_1 / (double)nsamples;
+        double freq_nheights_2 = count_nheights_2 / (double)nsamples;
+        double freq_nheights_3 = count_nheights_3 / (double)nsamples;
+        double freq_nheights_4 = count_nheights_4 / (double)nsamples;
+
+        double exp_freq = 1.0/336.0;
+        double exp_count = nsamples/336.0;
+        std::map< std::set< std::set<Split> >, double> bad_splits;
+
+        double prop_error_threshold = 0.2;
+        unsigned int total_trees_sampled = 0;
+        std::map< std::set< std::set<Split> >, double> split_freqs;
+        double chi_sq_test_statistic = 0.0;
+        std::cout << "Total tree topologies sampled: " << split_counts.size() << "\n";
+        for (auto s_c : split_counts) {
+            total_trees_sampled += s_c.second;
+            split_freqs[s_c.first] = s_c.second / (double)nsamples;
+            std::cout << "Tree:\n";
+            for (auto splitset : s_c.first) {
+                unsigned int s_count = 0;
+                for (auto split : splitset) {
+                    if (s_count > 0) {
+                        // Indent shared splits
+                        std::cout << "  ";
+                    }
+                    std::cout << "  " << split.as_string() << "\n";
+                    ++s_count;
+                }
+            }
+            double prop_error = ((double)s_c.second - exp_count) / exp_count;
+            std::cout << "  nsamples: " << s_c.second << "\n";
+            std::cout << "  prop error: " << prop_error << "\n";
+            if (fabs(prop_error) > prop_error_threshold) {
+                bad_splits[s_c.first] = prop_error;
+            }
+            double count_diff = s_c.second - exp_count;
+            chi_sq_test_statistic += (count_diff * count_diff) / exp_count;
+        }
+
+        double quantile_chi_sq_335_10 = 368.6;
+        std::cout << "Chi-square test statistic: " << chi_sq_test_statistic << "\n";
+        std::cout << "Chi-square(335) 0.9 quantile: " << quantile_chi_sq_335_10 << "\n";
+
+        std::cout << "BAD SPLITS (proportional error > " << prop_error_threshold << ")\n";
+        for (auto s_e : bad_splits) {
+            std::cout << "\nTree:\n";
+            for (auto splitset : s_e.first) {
+                unsigned int s_count = 0;
+                for (auto split : splitset) {
+                    if (s_count > 0) {
+                        // Indent shared splits
+                        std::cout << "  ";
+                    }
+                    std::cout << "  " << split.as_string() << "\n";
+                    ++s_count;
+                }
+            }
+            std::cout << "  prop error: " << s_e.second << "\n";
+        }
+
+        write_r_script(split_counts, "../5-leaf-general-tree-test-full-model-free-pop-sizes.r");
 
         REQUIRE(total_trees_sampled == nsamples);
 
