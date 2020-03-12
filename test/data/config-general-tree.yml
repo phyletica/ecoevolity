@@ -92,8 +92,6 @@ operators:
     # turn off if freq fixed
     StateFreqDirichletOperator:
 
-
-
 data:
     ploidy: 2
     constant_sites_removed: false
