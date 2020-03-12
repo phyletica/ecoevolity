@@ -1001,6 +1001,7 @@ class BaseTree {
             if (refresh_node_ordering) {
                 this->refresh_ordered_nodes();
             }
+            this->root_->resize_splits(this->get_leaf_node_count());
         }
 
         void collision_node_swap(
@@ -1055,6 +1056,7 @@ class BaseTree {
             if (refresh_node_ordering) {
                 this->refresh_ordered_nodes();
             }
+            this->root_->resize_splits(this->get_leaf_node_count());
         }
 
         std::vector<unsigned int> get_intervening_height_indices(

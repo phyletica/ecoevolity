@@ -202,6 +202,10 @@ class BaseNode : public std::enable_shared_from_this<DerivedNodeT> {
             }
         }
 
+        unsigned int get_split_size() const {
+            return this->split_.size();
+        }
+
         bool has_parent() const { return this->parent_.expired() ? false : true; }
         bool is_root() const { return this->parent_.expired() ? true : false; }
 
