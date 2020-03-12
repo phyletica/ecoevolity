@@ -35,6 +35,7 @@
 class BaseGeneralTreeOperatorTemplate {
     protected:
         double weight_ = 1.0;
+        bool ignore_proposal_attempt_ = false;
 
     public:
 		enum OperatorTypeEnum {
@@ -90,6 +91,15 @@ class BaseGeneralTreeOperatorTemplate {
         virtual unsigned int get_number_accepted() const = 0;
         virtual unsigned int get_number_rejected_for_correction() const = 0;
         virtual unsigned int get_number_accepted_for_correction() const = 0;
+
+        virtual unsigned int get_number_of_attempts() const = 0;
+        virtual unsigned int get_number_of_attempts_for_correction() const = 0;
+
+        virtual unsigned int get_auto_optimize_delay() const = 0;
+        virtual void set_auto_optimize_delay(unsigned int delay) = 0;
+        virtual bool auto_optimizing() const = 0;
+        virtual void turn_on_auto_optimize() = 0;
+        virtual void turn_off_auto_optimize() = 0;
 
         virtual std::string header_string() const = 0;
 
@@ -162,12 +172,15 @@ class GeneralTreeOperatorInterface : public GeneralTreeOperatorTemplate<TreeType
             // reject before going any further and wasting computation on the
             // likelihood
             if (hastings_ratio == -std::numeric_limits<double>::infinity()) {
-                this->reject();
+                if (! this->ignore_proposal_attempt_) {
+                    this->reject();
+                }
                 this->call_restore_methods(tree);
                 tree->make_clean();
-                if (this->auto_optimizing()) {
+                if (this->auto_optimizing() && (! this->ignore_proposal_attempt_)) {
                     this->optimize(hastings_ratio);
                 }
+                this->ignore_proposal_attempt_ = false;
                 return;
             }
 
@@ -189,18 +202,23 @@ class GeneralTreeOperatorInterface : public GeneralTreeOperatorTemplate<TreeType
             // std::cout << "ln(p(accept)) = " << acceptance_probability << "\n";
             double u = rng.uniform_real();
             if (u < std::exp(acceptance_probability)) {
-                this->accept();
+                if (! this->ignore_proposal_attempt_) {
+                    this->accept();
+                }
                 // std::cout << "ACCEPT!\n";
             }
             else {
-                this->reject();
+                if (! this->ignore_proposal_attempt_) {
+                    this->reject();
+                }
                 // std::cout << "REJECT!\n";
                 this->call_restore_methods(tree);
             }
             tree->make_clean();
-            if (this->auto_optimizing()) {
+            if (this->auto_optimizing() && (! this->ignore_proposal_attempt_)) {
                 this->optimize(acceptance_probability);
             }
+            this->ignore_proposal_attempt_ = false;
         }
 
         void operate(RandomNumberGenerator& rng,
@@ -771,6 +789,7 @@ class NodeHeightPriorAlphaScaler : public GeneralTreeOperatorInterface<TreeType,
                 TreeType * tree,
                 unsigned int nthreads = 1) {
             if (! this->is_operable(tree)) {
+                this->ignore_proposal_attempt_ = true;
                 return -std::numeric_limits<double>::infinity();
             }
             double new_alpha = tree->get_alpha_of_node_height_beta_prior();
@@ -816,6 +835,7 @@ class NodeHeightPriorAlphaMover : public GeneralTreeOperatorInterface<TreeType, 
                 TreeType * tree,
                 unsigned int nthreads = 1) {
             if (! this->is_operable(tree)) {
+                this->ignore_proposal_attempt_ = true;
                 return -std::numeric_limits<double>::infinity();
             }
             double new_alpha = tree->get_alpha_of_node_height_beta_prior();
@@ -864,6 +884,7 @@ class NodeHeightPriorBetaScaler : public GeneralTreeOperatorInterface<TreeType, 
                 TreeType * tree,
                 unsigned int nthreads = 1) {
             if (! this->is_operable(tree)) {
+                this->ignore_proposal_attempt_ = true;
                 return -std::numeric_limits<double>::infinity();
             }
             double new_beta = tree->get_beta_of_node_height_beta_prior();
@@ -909,6 +930,7 @@ class NodeHeightPriorBetaMover : public GeneralTreeOperatorInterface<TreeType, W
                 TreeType * tree,
                 unsigned int nthreads = 1) {
             if (! this->is_operable(tree)) {
+                this->ignore_proposal_attempt_ = true;
                 return -std::numeric_limits<double>::infinity();
             }
             double new_beta = tree->get_beta_of_node_height_beta_prior();
@@ -957,6 +979,7 @@ class TreeScaler : public GeneralTreeOperatorInterface<TreeType, ScaleOp> {
                 TreeType * tree,
                 unsigned int nthreads = 1) {
             if (! this->is_operable(tree)) {
+                this->ignore_proposal_attempt_ = true;
                 return -std::numeric_limits<double>::infinity();
             }
             unsigned int num_heights = tree->get_number_of_node_heights();
@@ -1003,6 +1026,7 @@ class NodeHeightScaler : public GeneralTreeOperatorInterface<TreeType, ScaleOp> 
                 TreeType * tree,
                 unsigned int nthreads = 1) {
             if (! this->is_operable(tree)) {
+                this->ignore_proposal_attempt_ = true;
                 return -std::numeric_limits<double>::infinity();
             }
             unsigned int num_heights = tree->get_number_of_node_heights();
@@ -1056,6 +1080,7 @@ class RootHeightScaler : public GeneralTreeOperatorInterface<TreeType, ScaleOp> 
                 TreeType * tree,
                 unsigned int nthreads = 1) {
             if (! this->is_operable(tree)) {
+                this->ignore_proposal_attempt_ = true;
                 return -std::numeric_limits<double>::infinity();
             }
             unsigned int num_heights = tree->get_number_of_node_heights();
@@ -1109,6 +1134,7 @@ class GlobalNodeHeightDirichletOperator : public GeneralTreeOperatorInterface<Tr
                 TreeType * tree,
                 unsigned int nthreads = 1) {
             if (! this->is_operable(tree)) {
+                this->ignore_proposal_attempt_ = true;
                 return -std::numeric_limits<double>::infinity();
             }
             unsigned int num_heights = tree->get_number_of_node_heights();
@@ -1195,6 +1221,7 @@ class NodeHeightDirichletOperator : public GeneralTreeOperatorInterface<TreeType
                 TreeType * tree,
                 unsigned int nthreads = 1) {
             if (! this->is_operable(tree)) {
+                this->ignore_proposal_attempt_ = true;
                 return -std::numeric_limits<double>::infinity();
             }
             unsigned int num_heights = tree->get_number_of_node_heights();
@@ -1260,6 +1287,7 @@ class NodeHeightDirichletOperator : public GeneralTreeOperatorInterface<TreeType
 //                 TreeType * tree,
 //                 unsigned int nthreads = 1) {
 //             if (! this->is_operable(tree)) {
+//                 this->ignore_proposal_attempt_ = true;
 //                 return -std::numeric_limits<double>::infinity();
 //             }
 //             unsigned int num_heights = tree->get_number_of_node_heights();
@@ -1322,6 +1350,7 @@ class NodeHeightMover : public GeneralTreeOperatorInterface<TreeType, WindowOp> 
                 TreeType * tree,
                 unsigned int nthreads = 1) {
             if (! this->is_operable(tree)) {
+                this->ignore_proposal_attempt_ = true;
                 return -std::numeric_limits<double>::infinity();
             }
             unsigned int num_heights = tree->get_number_of_node_heights();
@@ -1396,6 +1425,7 @@ class NodeHeightSlideBumpScaler : public GeneralTreeOperatorInterface<TreeType, 
                 TreeType * tree,
                 unsigned int nthreads = 1) {
             if (! this->is_operable(tree)) {
+                this->ignore_proposal_attempt_ = true;
                 return -std::numeric_limits<double>::infinity();
             }
             unsigned int num_heights = tree->get_number_of_node_heights();
@@ -1528,6 +1558,7 @@ class NodeHeightSlideBumpMover : public GeneralTreeOperatorInterface<TreeType, W
                 TreeType * tree,
                 unsigned int nthreads = 1) {
             if (! this->is_operable(tree)) {
+                this->ignore_proposal_attempt_ = true;
                 return -std::numeric_limits<double>::infinity();
             }
             unsigned int num_heights = tree->get_number_of_node_heights();
@@ -1644,13 +1675,15 @@ class NeighborHeightNodePermute : public GeneralTreeOperatorInterface<TreeType, 
                 TreeType * tree,
                 unsigned int nthreads = 1) {
             if (! this->is_operable(tree)) {
+                this->ignore_proposal_attempt_ = true;
                 return -std::numeric_limits<double>::infinity();
             }
             unsigned int num_node_heights = tree->get_number_of_node_heights();
             unsigned int height_index = rng.uniform_int(0,
                     num_node_heights - 2);
+            unsigned int parent_index = tree->get_index_of_youngest_parent(height_index);
             tree->collision_node_permute(rng,
-                    height_index + 1,
+                    parent_index,
                     height_index);
             return 0.0;
         }
@@ -1694,13 +1727,15 @@ class NeighborHeightNodeSwap : public GeneralTreeOperatorInterface<TreeType, Op>
                 TreeType * tree,
                 unsigned int nthreads = 1) {
             if (! this->is_operable(tree)) {
+                this->ignore_proposal_attempt_ = true;
                 return -std::numeric_limits<double>::infinity();
             }
             unsigned int num_node_heights = tree->get_number_of_node_heights();
             unsigned int height_index = rng.uniform_int(0,
                     num_node_heights - 2);
+            unsigned int parent_index = tree->get_index_of_youngest_parent(height_index);
             tree->collision_node_swap(rng,
-                    height_index + 1,
+                    parent_index,
                     height_index);
             return 0.0;
         }
@@ -2398,6 +2433,7 @@ class GlobalPopSizeScaler : public GeneralTreeOperatorInterface<BasePopulationTr
                 BasePopulationTree * tree,
                 unsigned int nthreads = 1) {
             if (! this->is_operable(tree)) {
+                this->ignore_proposal_attempt_ = true;
                 return -std::numeric_limits<double>::infinity();
             }
             double multiplier = this->op_.get_move_amount(rng);
@@ -2441,6 +2477,7 @@ class PopSizeScaler : public GeneralTreeOperatorInterface<BasePopulationTree, Sc
                 BasePopulationTree * tree,
                 unsigned int nthreads = 1) {
             if (! this->is_operable(tree)) {
+                this->ignore_proposal_attempt_ = true;
                 return -std::numeric_limits<double>::infinity();
             }
             unsigned int random_node_index = rng.uniform_positive_int(
@@ -2496,6 +2533,7 @@ class MuRateScaler : public GeneralTreeOperatorInterface<BasePopulationTree, Sca
                 BasePopulationTree * tree,
                 unsigned int nthreads = 1) {
             if (! this->is_operable(tree)) {
+                this->ignore_proposal_attempt_ = true;
                 return -std::numeric_limits<double>::infinity();
             }
             double mutation_rate = tree->get_mutation_rate();
@@ -2588,6 +2626,7 @@ class GlobalHeightSizeMixer : public GeneralTreeOperatorInterface<BasePopulation
                 BasePopulationTree * tree,
                 unsigned int nthreads = 1) {
             if (! this->is_operable(tree)) {
+                this->ignore_proposal_attempt_ = true;
                 return -std::numeric_limits<double>::infinity();
             }
             if (tree->population_sizes_are_constrained()) {
@@ -2766,6 +2805,7 @@ class HeightSizeMixer : public GeneralTreeOperatorInterface<BasePopulationTree, 
                 BasePopulationTree * tree,
                 unsigned int nthreads = 1) {
             if (! this->is_operable(tree)) {
+                this->ignore_proposal_attempt_ = true;
                 return -std::numeric_limits<double>::infinity();
             }
             unsigned int num_heights = tree->get_number_of_node_heights();
@@ -2889,6 +2929,7 @@ class RootHeightSizeMixer : public GeneralTreeOperatorInterface<BasePopulationTr
                 BasePopulationTree * tree,
                 unsigned int nthreads = 1) {
             if (! this->is_operable(tree)) {
+                this->ignore_proposal_attempt_ = true;
                 return -std::numeric_limits<double>::infinity();
             }
             double old_size = tree->get_root_population_size();
@@ -2968,6 +3009,7 @@ class HeightSizeSlideBumpMixer : public GeneralTreeOperatorInterface<BasePopulat
                 BasePopulationTree * tree,
                 unsigned int nthreads = 1) {
             if (! this->is_operable(tree)) {
+                this->ignore_proposal_attempt_ = true;
                 return -std::numeric_limits<double>::infinity();
             }
             unsigned int num_heights = tree->get_number_of_node_heights();
@@ -3055,6 +3097,7 @@ class GlobalHeightSizeRateScaler : public GeneralTreeOperatorInterface<BasePopul
                 BasePopulationTree * tree,
                 unsigned int nthreads = 1) {
             if (! this->is_operable(tree)) {
+                this->ignore_proposal_attempt_ = true;
                 return -std::numeric_limits<double>::infinity();
             }
             double multiplier = this->op_.get_move_amount(rng);
@@ -3158,6 +3201,7 @@ class StateFreqMover : public GeneralTreeOperatorInterface<BasePopulationTree, W
                 BasePopulationTree * tree,
                 unsigned int nthreads = 1) {
             if (! this->is_operable(tree)) {
+                this->ignore_proposal_attempt_ = true;
                 return -std::numeric_limits<double>::infinity();
             }
             double freq_1 = tree->get_freq_1();
@@ -3208,6 +3252,7 @@ class StateFreqDirichletOperator : public GeneralTreeOperatorInterface<BasePopul
                 BasePopulationTree * tree,
                 unsigned int nthreads = 1) {
             if (! this->is_operable(tree)) {
+                this->ignore_proposal_attempt_ = true;
                 return -std::numeric_limits<double>::infinity();
             }
             double freq_1 = tree->get_freq_1();
@@ -3258,6 +3303,7 @@ class StateFreqBetaOperator : public GeneralTreeOperatorInterface<BasePopulation
                 BasePopulationTree * tree,
                 unsigned int nthreads = 1) {
             if (! this->is_operable(tree)) {
+                this->ignore_proposal_attempt_ = true;
                 return -std::numeric_limits<double>::infinity();
             }
             double freq_1 = tree->get_freq_1();
