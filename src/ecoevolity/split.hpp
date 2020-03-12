@@ -56,6 +56,7 @@ class Split {
         bool operator<(const Split & other) const;
 
         void clear();
+        unsigned int size() const;
         void resize(unsigned int number_of_leaves);
 
         typedef unsigned long                                   split_unit_t;
@@ -126,6 +127,10 @@ inline bool Split::operator!=(const Split & other) const {
 inline bool Split::operator<(const Split & other) const {
     assert(this->bits_.size() == other.bits_.size());
     return (this->bits_ < other.bits_);
+}
+
+inline unsigned int Split::size() const {
+    return this->number_of_leaves_;
 }
 
 inline void Split::resize(const unsigned int nleaves) {
