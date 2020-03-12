@@ -20,6 +20,17 @@
 #include "tree.hpp"
 
 
+double BasePopulationTree::get_ln_prob_of_drawing_node_state(
+                std::shared_ptr<PopulationNode> node) const {
+    if (this->population_sizes_are_constrained()) {
+        return 0.0;
+    }
+    if (this->population_sizes_are_fixed()) {
+        return 0.0;
+    }
+    return node->get_ln_prob_of_drawing_state();
+}
+
 BasePopulationTree::BasePopulationTree(
         std::string path, 
         char population_name_delimiter,

@@ -1812,7 +1812,8 @@ class SplitLumpNodesRevJumpSampler : public GeneralTreeOperatorInterface<TreeTyp
             unsigned int number_of_nodes_in_split_subset;
             std::vector<unsigned int> moving_polytomy_sizes;
             bool mapped_nodes_include_polytomy;
-            tree->split_node_height_down(rng,
+            double ln_prob_of_drawing_new_node_states = tree->split_node_height_down(
+                    rng,
                     split_height_idx,
                     height_lower_bound,
                     number_of_mapped_nodes,
@@ -1849,9 +1850,14 @@ class SplitLumpNodesRevJumpSampler : public GeneralTreeOperatorInterface<TreeTyp
             //      because we always split nodes into two non-empty
             //      subsets), but in the singleton case that doesn't
             //      happen.
+            //   4) drawing the values of parameters of any new nodes that were
+            //      created (e.g., the effective population size of a
+            //      PopulationNode). This is what is returned by
+            //      'split_node_height_down'
+            //          = z
             //
             // So the prob of the forward split move is
-            // p(split move) =  1 / (number of splittable heights *
+            // p(split move) = z * 1 / (number of splittable heights *
             //                       d *
             //                       (Bell(nchildren) - 2))
             //
@@ -1863,9 +1869,9 @@ class SplitLumpNodesRevJumpSampler : public GeneralTreeOperatorInterface<TreeTyp
             //
             // So, the Hasting ratio for the proposed split move is:
             // p(reverse merge) / p(proposed split) = 
-            //     (number of splittable heights * d * (Bell(n) - 2))
-            //     --------------------------------------------------
-            //         (number of heights before the proposal)
+            //     (number of splittable heights * d * (Bell(n) - 2))    1
+            //     -------------------------------------------------- * ---
+            //         (number of heights before the proposal)           z
             //
             // ================================================================
             // IN CASE OF SHARED BIFURCATING NODES (NO POLYTOMIES)
@@ -1950,9 +1956,14 @@ class SplitLumpNodesRevJumpSampler : public GeneralTreeOperatorInterface<TreeTyp
             //          = \prod (Bell(nchildren) - 1)
             //      We sample these uniformly, so the prob is
             //          = 1/ \prod (Bell(nchildren) - 1)
+            //   5) drawing the values of parameters of any new nodes that were
+            //      created (e.g., the effective population size of a
+            //      PopulationNode). This is what is returned by
+            //      'split_node_height_down'
+            //          = z
             //
             // So the prob of the forward split move is
-            // p(split move) =  1 / (number of splittable heights *
+            // p(split move) = z * 1 / (number of splittable heights *
             //                       ((2 * stirling2(n, 2)) + 1) * d *
             //                       \prod (Bell(nchildren) - 1))
             //
@@ -1963,7 +1974,7 @@ class SplitLumpNodesRevJumpSampler : public GeneralTreeOperatorInterface<TreeTyp
             //                  = 1 / (number of heights before the proposal)
             //
             // So, the Hasting ratio for the proposed split move is:
-            // p(reverse merge) / p(proposed split) = 
+            // p(reverse merge) / p(proposed split) = (1/z) *
             //     (number of splittable heights * ((2 * stirling2(n, 2)) + 1) * d * \prod (Bell(nchild) - 1))
             //     ------------------------------------------------------------------------------------------
             //          (number of heights before the proposal)
@@ -2020,9 +2031,14 @@ class SplitLumpNodesRevJumpSampler : public GeneralTreeOperatorInterface<TreeTyp
             //      and cannot be reversed by a merge move. In this special
             //      case, the number of ways to split up all the nodes is:
             //          = [\prod (Bell(nchildren) - 1)] - 1
+            //   5) drawing the values of parameters of any new nodes that were
+            //      created (e.g., the effective population size of a
+            //      PopulationNode). This is what is returned by
+            //      'split_node_height_down'
+            //          = z
             //
             // So the prob of the forward split move is
-            // p(split move) =  1 / (
+            // p(split move) = z * 1 / (
             //                       number of splittable heights *
             //                       ((2 * stirling2(n, 2)) + 1) * d *
             //                       ((\prod (Bell(nchildren) - 1)) - 1)
@@ -2035,7 +2051,7 @@ class SplitLumpNodesRevJumpSampler : public GeneralTreeOperatorInterface<TreeTyp
             //                  = 1 / (number of heights before the proposal)
             //
             // So, the Hasting ratio for the proposed split move is:
-            // p(reverse merge) / p(proposed split) = 
+            // p(reverse merge) / p(proposed split) = (1/z)
             //     (number of splittable heights * ((2 * stirling2(n, 2)) + 1) * d * ((\prod (Bell(nchild) - 1)) - 1)
             //     ------------------------------------------------------------------------------------------
             //          (number of heights before the proposal)
@@ -2052,6 +2068,7 @@ class SplitLumpNodesRevJumpSampler : public GeneralTreeOperatorInterface<TreeTyp
                         std::log(height_diff) +
                         ln_bell_num_minus_2 -
                         std::log(num_heights);
+                ln_hastings -= ln_prob_of_drawing_new_node_states;
             }
             else if (! mapped_nodes_include_polytomy) {
                 // We have multiple bifurcating nodes mapped to height
@@ -2062,6 +2079,7 @@ class SplitLumpNodesRevJumpSampler : public GeneralTreeOperatorInterface<TreeTyp
                         ln_stirling2 +
                         std::log(height_diff) -
                         std::log(num_heights);
+                ln_hastings -= ln_prob_of_drawing_new_node_states;
             }
             else {
                 // We have multiple nodes mapped to height and some are
@@ -2128,6 +2146,7 @@ class SplitLumpNodesRevJumpSampler : public GeneralTreeOperatorInterface<TreeTyp
                         std::log(height_diff) +
                         ln_bell_term -
                         std::log(num_heights);
+                ln_hastings -= ln_prob_of_drawing_new_node_states;
             }
 
             // For the Hastings ratio, we also have to consider the
@@ -2183,11 +2202,11 @@ class SplitLumpNodesRevJumpSampler : public GeneralTreeOperatorInterface<TreeTyp
             // 
             // When only one node that is a polytomy is mapped to the
             // post-merge height:
-            //   p(rev split move) =  1 / (post-merge num of splittable heights *
+            //   p(rev split move) =  z * 1 / (post-merge num of splittable heights *
             //                            d *
             //                            (Bell(nchildren) - 2))
             //   so, HR =
-            //                   nheights after merge
+            //                  z * nheights after merge
             //   ----------------------------------------------------------------
             //   (post-merge num of splittable heights * d * bell(nchildren) - 2)
             //
@@ -2206,25 +2225,25 @@ class SplitLumpNodesRevJumpSampler : public GeneralTreeOperatorInterface<TreeTyp
             //   EQUAL TO THE NUMBER THAT WAS MAPPED TO THE POST-MERGE HEIGHT
             //   (i.e., in the reverse split move, all nodes are included in
             //   the move subset):
-            //     p(rev split move) =  1 / (
+            //     p(rev split move) = z * 1 / (
             //                           post-merge num of splittable heights *
             //                           ((2 * stirling2(n, 2)) + 1) * d *
             //                           ((\prod (Bell(nchildren) - 1)) - 1)
             //                           )
             //     So, HR =
-            //                     nheights after merge
+            //                  z * nheights after merge
             //     -------------------------------------------------
             //     (post-merge num of splittable heights *
             //         ((2 * stirling2(n, 2)) + 1) * d *
             //         ((\prod (Bell(nchildren) - 1)) - 1))
             //   ELSE:
-            //     p(rev split move) =  1 / (
+            //     p(rev split move) = z * 1 / (
             //                           post-merge num of splittable heights *
             //                           ((2 * stirling2(n, 2)) + 1) * d *
             //                           \prod (Bell(nchildren) - 1)
             //                           )
             //     So, HR =
-            //                     nheights after merge
+            //                  z * nheights after merge
             //     -------------------------------------------------
             //     (post-merge num of splittable heights *
             //         ((2 * stirling2(n, 2)) + 1) * d *
@@ -2235,7 +2254,7 @@ class SplitLumpNodesRevJumpSampler : public GeneralTreeOperatorInterface<TreeTyp
             const unsigned int merge_height_idx = rng.uniform_int(0, num_heights - 2);
             std::vector<unsigned int> sizes_of_mapped_polytomies_after_merge;
             unsigned int number_of_resulting_merged_nodes;
-            tree->merge_node_height_up(merge_height_idx,
+            double ln_prob_of_drawing_old_node_states = tree->merge_node_height_up(merge_height_idx,
                     sizes_of_mapped_polytomies_after_merge,
                     number_of_resulting_merged_nodes);
             const double older_height = tree->get_height(merge_height_idx);
@@ -2263,6 +2282,7 @@ class SplitLumpNodesRevJumpSampler : public GeneralTreeOperatorInterface<TreeTyp
                         (std::log(post_num_splittable_heights) +
                         std::log(height_diff) +
                         std::log(this->get_bell_number(num_polytomy_children) - 2.0));
+                ln_hastings += ln_prob_of_drawing_old_node_states;
             }
             else if (post_num_mapped_poly_nodes < 1) {
                 // Only shared bifurcating nodes
@@ -2273,6 +2293,7 @@ class SplitLumpNodesRevJumpSampler : public GeneralTreeOperatorInterface<TreeTyp
                         std::log(2.0) +
                         ln_stirling2_num +
                         std::log(height_diff));
+                ln_hastings += ln_prob_of_drawing_old_node_states;
             }
             // We have shared nodes that include at least on polytomy
             else {
@@ -2340,6 +2361,7 @@ class SplitLumpNodesRevJumpSampler : public GeneralTreeOperatorInterface<TreeTyp
                         ln_stirling2_term +
                         std::log(height_diff) +
                         ln_bell_term);
+                ln_hastings += ln_prob_of_drawing_old_node_states;
             }
 
             // For the hastings ratio we also have to include the ratio of the

@@ -35,6 +35,7 @@
 #include "assert.hpp"
 #include "error.hpp"
 #include "split.hpp"
+#include "rng.hpp"
 
 /**
  * Base class for a node of a phylogenetic tree.
@@ -275,7 +276,8 @@ class BaseNode : public std::enable_shared_from_this<DerivedNodeT> {
             return grand_parent->get_number_of_children();
         }
 
-        void split_children_from_polytomy(
+        std::shared_ptr<DerivedNodeT> split_children_from_polytomy(
+                RandomNumberGenerator & rng,
                 std::vector< std::shared_ptr<DerivedNodeT> >& children_to_split,
                 std::shared_ptr<PositiveRealParameter> new_height_parameter,
                 unsigned int number_of_leaves_in_tree = 0) {
@@ -300,10 +302,14 @@ class BaseNode : public std::enable_shared_from_this<DerivedNodeT> {
             else {
                 this->add_child(new_node);
             }
-            new_node->finish_initializing_inserted_internal_node();
+            new_node->finish_initializing_inserted_internal_node(rng);
+            return new_node;
         }
 
-        virtual void finish_initializing_inserted_internal_node() { }
+        virtual void finish_initializing_inserted_internal_node(
+                RandomNumberGenerator & rng) { }
+
+        virtual double get_ln_prob_of_drawing_state() { return 0.0; }
 
         bool has_children() const { return !this->children_.empty(); }
         bool is_leaf() const { return this->children_.empty(); }

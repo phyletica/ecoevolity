@@ -24,6 +24,7 @@
 
 #include "basenode.hpp"
 #include "parameter.hpp"
+#include "rng.hpp"
 
 /**
  * Base class for a node of a phylogenetic tree.
@@ -709,7 +710,8 @@ class PopulationNode: public BaseNode<PopulationNode>{
 
         // Overriding this method from BaseNode to make sure newly inserted
         // nodes are fully initialized
-        void finish_initializing_inserted_internal_node() {
+        void finish_initializing_inserted_internal_node(
+                RandomNumberGenerator & rng) {
             ECOEVOLITY_ASSERT(this->has_parent() && this->has_children());
             if (this->get_parent()->get_population_size_parameter() == this->children_.at(0)->population_size_) {
                 this->population_size_ = this->children_.at(0)->population_size_;
@@ -717,15 +719,62 @@ class PopulationNode: public BaseNode<PopulationNode>{
             }
             this->population_size_->estimate();
             this->population_size_->set_prior(this->children_.at(0)->population_size_->get_prior());
-            double child_pop_size_sum = 0.0;
-            for (auto child : this->children_) {
-                child_pop_size_sum += child->get_population_size();
-            }
-            double new_pop_size = child_pop_size_sum / this->children_.size();
-            this->population_size_->set_value(new_pop_size);
             if (this->children_.at(0)->population_size_->is_fixed()) {
+                double child_pop_size_sum = 0.0;
+                for (auto child : this->children_) {
+                    child_pop_size_sum += child->get_population_size();
+                }
+                double new_pop_size = child_pop_size_sum / this->children_.size();
+                this->population_size_->set_value(new_pop_size);
                 this->population_size_->fix();
+                return;
             }
+            double child_max_pop_size = -1.0;
+            double child_min_pop_size = std::numeric_limits<double>::max();
+            for (auto child : this->children_) {
+                double pop_size = child->get_population_size();
+                if (pop_size < child_min_pop_size) {
+                    child_min_pop_size = pop_size;
+                }
+                if (pop_size > child_max_pop_size) {
+                    child_max_pop_size = pop_size;
+                }
+            }
+            double pop_size_diff = child_max_pop_size - child_min_pop_size;
+            if (pop_size_diff == 0.0) {
+                this->population_size_->set_value(child_max_pop_size);
+                return;
+            }
+            double new_pop_size = rng.uniform_real(
+                    child_min_pop_size,
+                    child_max_pop_size);
+            this->population_size_->set_value(new_pop_size);
+        }
+
+        virtual double get_ln_prob_of_drawing_state() {
+            ECOEVOLITY_ASSERT(this->has_parent() && this->has_children());
+            if (this->population_size_->is_fixed()) {
+                return 0.0;
+            }
+            if (this->children_.at(0)->population_size_ == this->population_size_) {
+                return 0.0;
+            }
+            double child_max_pop_size = -1.0;
+            double child_min_pop_size = std::numeric_limits<double>::max();
+            for (auto child : this->children_) {
+                double pop_size = child->get_population_size();
+                if (pop_size < child_min_pop_size) {
+                    child_min_pop_size = pop_size;
+                }
+                if (pop_size > child_max_pop_size) {
+                    child_max_pop_size = pop_size;
+                }
+            }
+            double pop_size_diff = child_max_pop_size - child_min_pop_size;
+            if (pop_size_diff == 0.0) {
+                return std::numeric_limits<double>::infinity();
+            }
+            return -std::log(pop_size_diff);
         }
 };
 

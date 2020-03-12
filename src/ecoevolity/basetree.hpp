@@ -75,7 +75,7 @@ class BaseTree {
         // because we will always break them up into 2 subsets (which means we
         // will always maintain the old node height AND end up with a new
         // younger height).
-        void split_singleton_polytomy(
+        double split_singleton_polytomy(
                 RandomNumberGenerator & rng,
                 std::shared_ptr<NodeType> polytomy_node,
                 std::shared_ptr<PositiveRealParameter> new_height_parameter,
@@ -104,13 +104,16 @@ class BaseTree {
                 // Any groups of children are split from polytomy node
                 child_node_subsets.push_back(polytomy_node->get_children(child_subset));
             }
+            double ln_prob_new_vals = 0.0;
             for (unsigned int subset_index = 0;
                     subset_index < child_node_subsets.size();
                     ++subset_index) {
-                polytomy_node->split_children_from_polytomy(
+                std::shared_ptr<NodeType> new_node = polytomy_node->split_children_from_polytomy(
+                        rng,
                         child_node_subsets.at(subset_index),
                         new_height_parameter,
                         this->get_leaf_node_count());
+                ln_prob_new_vals += this->get_ln_prob_of_drawing_node_state(new_node);
             }
             if (refresh_node_heights) {
                 this->update_node_heights();
@@ -122,6 +125,7 @@ class BaseTree {
             if (refresh_node_ordering) {
                 this->refresh_ordered_nodes();
             }
+            return ln_prob_new_vals;
         }
 
         bool slide_bump_height_(
@@ -522,6 +526,10 @@ class BaseTree {
 
         typedef std::shared_ptr<NodeType> NodePtr;
 
+        virtual double get_ln_prob_of_drawing_node_state(
+                std::shared_ptr<NodeType>) const {
+            return 0.0;
+        }
         // Used to signify that the likelihood needs recalculating.
         // Node methods are expected to make nodes dirty. However, whenever the
         // node height parameter are updated, this needs to be called, because
@@ -653,7 +661,7 @@ class BaseTree {
             return this->root_->get_polytomy_nodes();
         }
 
-        void merge_node_height_up(const unsigned int height_index,
+        double merge_node_height_up(const unsigned int height_index,
                 std::vector<unsigned int> & sizes_of_mapped_polytomies_after_merge,
                 unsigned int & number_of_resulting_merged_nodes,
                 const bool refresh_node_heights = false,
@@ -663,6 +671,7 @@ class BaseTree {
 
             sizes_of_mapped_polytomies_after_merge.clear();
             number_of_resulting_merged_nodes = 0;
+            double ln_prob_of_drawing_state_of_removed_nodes = 0.0;
 
             std::set<std::shared_ptr<NodeType> > nodes_of_polytomies_created;
             std::shared_ptr<PositiveRealParameter> new_height = this->node_heights_.at(height_index + 1);
@@ -673,6 +682,8 @@ class BaseTree {
                 // polytomy
                 if (mapped_nodes.at(i)->get_parent()->get_height_parameter() == new_height) {
                     nodes_of_polytomies_created.insert(mapped_nodes.at(i)->get_parent());
+                    ln_prob_of_drawing_state_of_removed_nodes += this->get_ln_prob_of_drawing_node_state(
+                            mapped_nodes.at(i));
                     mapped_nodes.at(i)->collapse();
                 }
                 else {
@@ -701,9 +712,10 @@ class BaseTree {
             if (refresh_node_ordering) {
                 this->refresh_ordered_nodes();
             }
+            return ln_prob_of_drawing_state_of_removed_nodes;
         }
 
-        void split_node_height_down(
+        double split_node_height_down(
                 RandomNumberGenerator & rng,
                 const unsigned int height_index,
                 double & height_lower_bound,
@@ -719,7 +731,7 @@ class BaseTree {
             if (mapped_nodes.size() < 1) {
                 number_of_nodes_in_split_subset = 0;
                 mapped_nodes_include_polytomy = false;
-                return;
+                return 0.0;
             }
             double max_height = this->node_heights_.at(height_index)->get_value();
             double min_height = 0.0;
@@ -736,11 +748,11 @@ class BaseTree {
                 moving_polytomy_sizes.push_back(mapped_nodes.at(0)->get_number_of_children());
                 number_of_nodes_in_split_subset = 1;
                 mapped_nodes_include_polytomy = false;
-                this->split_singleton_polytomy(rng, mapped_nodes.at(0),
+                return this->split_singleton_polytomy(rng,
+                        mapped_nodes.at(0),
                         new_height_parameter,
                         refresh_node_heights,
                         refresh_node_ordering);
-                return;
             }
 
             mapped_nodes_include_polytomy = false;
@@ -772,7 +784,7 @@ class BaseTree {
                 if (refresh_node_ordering) {
                     this->refresh_ordered_nodes();
                 }
-                return;
+                return 0.0;
             }
 
             // We have at least one polytomy node included in the shared nodes.
@@ -840,6 +852,7 @@ class BaseTree {
                 }
             }
 
+            double ln_prob_new_vals = 0.0;
             number_of_nodes_in_split_subset = move_subset.size();
             for (auto node_index : move_subset) {
                 // If node is a polytomy, we need to deal with splitting it up
@@ -862,10 +875,13 @@ class BaseTree {
                     for (unsigned int subset_index = 0;
                             subset_index < child_node_subsets.size();
                             ++subset_index) {
-                        mapped_nodes.at(node_index)->split_children_from_polytomy(
-                                child_node_subsets.at(subset_index),
-                                new_height_parameter,
-                                this->get_leaf_node_count());
+                        std::shared_ptr<NodeType> new_node = mapped_nodes.at(
+                                node_index)->split_children_from_polytomy(
+                                    rng,
+                                    child_node_subsets.at(subset_index),
+                                    new_height_parameter,
+                                    this->get_leaf_node_count());
+                        ln_prob_new_vals += this->get_ln_prob_of_drawing_node_state(new_node);
                     }
                 }
                 // Node is not a polytomy, so we simply assign it to the new height
@@ -883,6 +899,7 @@ class BaseTree {
             if (refresh_node_ordering) {
                 this->refresh_ordered_nodes();
             }
+            return ln_prob_new_vals;
         }
 
         std::vector<unsigned int> get_indices_of_splittable_heights() const {

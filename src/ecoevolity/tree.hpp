@@ -131,6 +131,9 @@ class BasePopulationTree : public BaseTree<PopulationNode> {
                 bool store_seq_loci_info = false
                 );
 
+        double get_ln_prob_of_drawing_node_state(
+                std::shared_ptr<PopulationNode> node) const;
+
         bool has_seq_loci_info() const {
             return this->data_.has_seq_loci_info();
         }
