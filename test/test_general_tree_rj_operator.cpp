@@ -926,7 +926,7 @@ TEST_CASE("Testing SplitLumpNodesRevJumpSampler with 4 leaves, fixed root, and o
         unsigned int count_3_heights = 0;
         unsigned int count_2_heights = 0;
 
-        unsigned int niterations = 1000000;
+        unsigned int niterations = 1600000;
         unsigned int sample_freq = 10;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
@@ -4457,7 +4457,7 @@ TEST_CASE("Testing SplitLumpNodesRevJumpSampler with BasePopulationTree, 5 leave
             }
         }
 
-        unsigned int niterations = 10000000;
+        unsigned int niterations = 20000000;
         unsigned int sample_freq = 50;
         unsigned int nsamples = niterations / sample_freq;
 
@@ -4637,7 +4637,7 @@ TEST_CASE("Testing SplitLumpNodesRevJumpSampler with BasePopulationTree, 5 leave
         "[xBasePopulationTree]") {
 
     SECTION("Testing 5 leaves with BasePopulationTree, full model, unconstrained sizes") {
-        RandomNumberGenerator rng = RandomNumberGenerator(42642642354);
+        RandomNumberGenerator rng = RandomNumberGenerator(8374523);
 
         double mu_rate_shape = 10.0;
         double mu_rate_scale = 0.05;
@@ -4804,7 +4804,7 @@ TEST_CASE("Testing SplitLumpNodesRevJumpSampler with BasePopulationTree, 5 leave
             }
         }
 
-        unsigned int niterations = 10000000;
+        unsigned int niterations = 20000000;
         unsigned int sample_freq = 50;
         unsigned int nsamples = niterations / sample_freq;
 
