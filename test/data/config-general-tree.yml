@@ -1,20 +1,27 @@
 ---
 # comments should be ok
-parameters:
-    alpha_of_node_age_beta_prior:
-        value: 1.0
-        estimate: true
-        prior:
-            exponential_distribution:
-                rate: 1.0
-    root_age:
-        value: 0.2
-        estimate: true
-        prior:
-            gamma_distribution:
-                shape: 2.0
-                scale: 0.1
-                offset: 0.0
+tree_prior:
+    topology_space:
+        generalized: # bifurcating
+    node_age_prior:
+        root_and_betas:
+            parameters:
+                root_height:
+                    value: 0.2
+                    estimate: true
+                    prior:
+                        gamma_distribution:
+                            shape: 2.0
+                            scale: 0.1
+                            offset: 0.0
+                alpha_of_node_age_beta_prior:
+                    value: 1.0
+                    estimate: true
+                    prior:
+                        exponential_distribution:
+                            rate: 1.0
+
+branch_parameters:
     population_size:
         value: 0.005
         estimate: true
@@ -24,6 +31,8 @@ parameters:
                 shape: 10.0
                 scale: 0.0001
                 offset: 0.0
+
+mutation_parameters:
     freq_1:
         value: 0.5
         estimate: true
@@ -40,19 +49,57 @@ mcmc_settings:
     sample_frequency: 100
 
 operators:
+    # turn off if bifurcating trees
     SplitLumpNodesRevJumpSampler:
         weight: 5.0
+    # turn off if mu rate is fixed
     MuRateScaler:
         scale: 0.2
         weight: 3.0
         auto_optimize: true
         auto_optimize_delay: 1000
+    # turn off if alpha is fixed
+    NodeHeightPriorAlphaScaler:
+    # turn off if root height is fixed
+    TreeScaler:
+    NodeHeightScaler:
+    NodeHeightMover:
+    NodeHeightSlideBumpScaler:
+    NodeHeightSlideBumpPermuteScaler:
+    NodeHeightSlideBumpSwapScaler:
+    NeighborHeightNodePermute:
+    NeighborHeightNodeSwap:
+    # turn off if root heigth is fixed
+    RootHeightScaler:
+    GlobalNodeHeightDirichletOperator:
+    NodeHeightDirichletOperator:
+    # turn off if pop sizes fixed
+    GlobalPopSizeScaler:
+    # turn off if pop sizes fixed
+    PopSizeScaler:
+    # turn off if root height is fixed or pop sizes fixed
+    GlobalHeightSizeMixer:
+    # turn off if pop sizes constrained or fixed
+    HeightSizeMixer:
+    # turn off if pop sizes constrained or fixed
+    HeightSizeSlideBumpMixer:
+    # turn off if root height is fixed or pop sizes constrained or fixed
+    RootHeightSizeMixer:
+    # turn off if root height is fixed
+    GlobalHeightSizeRateScaler:
+    # turn off if freq fixed
+    StateFreqMover:
+    # turn off if freq fixed
+    StateFreqDirichletOperator:
 
 data:
     ploidy: 2
-    genotypes_are_diploid: true     # ignored if YAML data file
-    markers_are_dominant: false     # ignored if YAML data file
-    population_name_delimiter: " "  # ignored if YAML data file
-    population_name_is_prefix: true # ignored if YAML data file
-    # constant_sites_removed: true # Make this CLI argument?
-    path: "data3.nex"
+    constant_sites_removed: false
+    alignment:
+        genotypes_are_diploid: true
+        markers_are_dominant: false
+        population_name_delimiter: " "
+        population_name_is_prefix: true
+        path: "data3.nex"
+    # yaml_allele_counts:
+    #     path: "data3.nex"
