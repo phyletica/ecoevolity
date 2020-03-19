@@ -1,25 +1,27 @@
 ---
 # comments should be ok
-tree_prior:
-    topology_space:
+tree_model:
+    tree_space:
         generalized: # bifurcating
-    node_age_prior:
-        root_and_betas:
-            parameters:
-                root_height:
-                    value: 0.2
-                    estimate: true
-                    prior:
-                        gamma_distribution:
-                            shape: 2.0
-                            scale: 0.1
-                            offset: 0.0
-                alpha_of_node_age_beta_prior:
-                    value: 1.0
-                    estimate: true
-                    prior:
-                        exponential_distribution:
-                            rate: 1.0
+    tree_prior:
+        uniform:
+            node_height_prior:
+                root_and_betas:
+                    parameters:
+                        root_height:
+                            value: 0.2
+                            estimate: true
+                            prior:
+                                gamma_distribution:
+                                    shape: 2.0
+                                    mean: 0.3
+                                    offset: 0.0
+                        alpha_of_node_height_beta_prior:
+                            value: 1.0
+                            estimate: true
+                            prior:
+                                exponential_distribution:
+                                    mean: 1.0
 
 branch_parameters:
     population_size:
@@ -29,7 +31,7 @@ branch_parameters:
         prior:
             gamma_distribution:
                 shape: 10.0
-                scale: 0.0001
+                mean: 0.001
                 offset: 0.0
 
 mutation_parameters:
@@ -54,7 +56,7 @@ operators:
         weight: 5.0
     # turn off if mu rate is fixed
     MuRateScaler:
-        scale: 0.2
+        tuning_parameter: 0.2
         weight: 3.0
         auto_optimize: true
         auto_optimize_delay: 1000
