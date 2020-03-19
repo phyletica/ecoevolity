@@ -263,6 +263,43 @@ TEST_CASE("Testing gamma settings to string", "[ContinuousDistributionSettings]"
     }
 }
 
+TEST_CASE("Testing gamma mean settings to string", "[ContinuousDistributionSettings]") {
+    SECTION("Testing gamma mean to string") {
+        std::string name = "gamma_distribution";
+        std::unordered_map<std::string, double> parameters;
+        parameters["shape"] = 10.0;
+        parameters["mean"] = 10.0;
+        ContinuousDistributionSettings settings = ContinuousDistributionSettings(name, parameters);
+
+        REQUIRE(settings.get_name() == "gamma_distribution");
+        std::string s = settings.to_string(0);
+        std::string e = "gamma_distribution:\n    shape: 10\n    scale: 1\n";
+        REQUIRE(s == e);
+
+        parameters.clear();
+        parameters["shape"] = 10.0;
+        parameters["mean"] = 10.0;
+        parameters["offset"] = 0.01;
+        settings = ContinuousDistributionSettings(name, parameters);
+
+        REQUIRE(settings.get_name() == "gamma_distribution");
+        s = settings.to_string(0);
+        e = "gamma_distribution:\n    shape: 10\n    scale: 1\n    offset: 0.01\n";
+        REQUIRE(s == e);
+
+        parameters.clear();
+        parameters["shape"] = 0.1;
+        parameters["mean"] = 50.0;
+        parameters["offset"] = 0.001;
+        settings = ContinuousDistributionSettings(name, parameters);
+
+        REQUIRE(settings.get_name() == "gamma_distribution");
+        s = settings.to_string(0);
+        e = "gamma_distribution:\n    shape: 0.1\n    scale: 500\n    offset: 0.001\n";
+        REQUIRE(s == e);
+    }
+}
+
 TEST_CASE("Testing exponential settings to string", "[ContinuousDistributionSettings]") {
     SECTION("Testing exponential to string") {
         std::string name = "exponential_distribution";
@@ -297,6 +334,40 @@ TEST_CASE("Testing exponential settings to string", "[ContinuousDistributionSett
     }
 }
 
+TEST_CASE("Testing exponential mean settings to string", "[ContinuousDistributionSettings]") {
+    SECTION("Testing exponential mean to string") {
+        std::string name = "exponential_distribution";
+        std::unordered_map<std::string, double> parameters;
+        parameters["mean"] = 1.0;
+        ContinuousDistributionSettings settings = ContinuousDistributionSettings(name, parameters);
+
+        REQUIRE(settings.get_name() == "exponential_distribution");
+        std::string s = settings.to_string(0);
+        std::string e = "exponential_distribution:\n    rate: 1\n";
+        REQUIRE(s == e);
+
+        parameters.clear();
+        parameters["mean"] = 10.0;
+        parameters["offset"] = 0.01;
+        settings = ContinuousDistributionSettings(name, parameters);
+
+        REQUIRE(settings.get_name() == "exponential_distribution");
+        s = settings.to_string(0);
+        e = "exponential_distribution:\n    rate: 0.1\n    offset: 0.01\n";
+        REQUIRE(s == e);
+
+        parameters.clear();
+        parameters["mean"] = 0.1;
+        parameters["offset"] = 0.001;
+        settings = ContinuousDistributionSettings(name, parameters);
+
+        REQUIRE(settings.get_name() == "exponential_distribution");
+        s = settings.to_string(0);
+        e = "exponential_distribution:\n    rate: 10\n    offset: 0.001\n";
+        REQUIRE(s == e);
+    }
+}
+
 TEST_CASE("Testing gamma settings to instance", "[ContinuousDistributionSettings]") {
     SECTION("Testing gamma to instance") {
         std::string name = "gamma_distribution";
@@ -324,6 +395,33 @@ TEST_CASE("Testing gamma settings to instance", "[ContinuousDistributionSettings
     }
 }
 
+TEST_CASE("Testing gamma mean settings to instance", "[ContinuousDistributionSettings]") {
+    SECTION("Testing gamma to instance") {
+        std::string name = "gamma_distribution";
+        std::unordered_map<std::string, double> parameters;
+        parameters["shape"] = 10.0;
+        parameters["mean"] = 10.0;
+        ContinuousDistributionSettings settings = ContinuousDistributionSettings(name, parameters);
+
+        std::shared_ptr<ContinuousProbabilityDistribution> g;
+        g = settings.get_instance();
+
+        REQUIRE(g->get_min() == 0.0);
+        REQUIRE(g->to_string() == "gamma(shape = 10, scale = 1)");
+
+
+        parameters.clear();
+        parameters["shape"] = 10.0;
+        parameters["mean"] = 10.0;
+        parameters["offset"] = 0.01;
+        settings = ContinuousDistributionSettings(name, parameters);
+
+        g = settings.get_instance();
+
+        REQUIRE(g->to_string() == "gamma(shape = 10, scale = 1, offset = 0.01)");
+    }
+}
+
 TEST_CASE("Testing exponential settings to instance", "[ContinuousDistributionSettings]") {
     SECTION("Testing exponential to instance") {
         std::string name = "exponential_distribution";
@@ -339,6 +437,30 @@ TEST_CASE("Testing exponential settings to instance", "[ContinuousDistributionSe
 
 
         parameters["rate"] = 10.0;
+        parameters["offset"] = 0.01;
+        settings = ContinuousDistributionSettings(name, parameters);
+
+        g = settings.get_instance();
+
+        REQUIRE(g->to_string() == "exp(lambda = 10, offset = 0.01)");
+    }
+}
+
+TEST_CASE("Testing exponential mean settings to instance", "[ContinuousDistributionSettings]") {
+    SECTION("Testing exponential mean to instance") {
+        std::string name = "exponential_distribution";
+        std::unordered_map<std::string, double> parameters;
+        parameters["mean"] = 1.0;
+        ContinuousDistributionSettings settings = ContinuousDistributionSettings(name, parameters);
+
+        std::shared_ptr<ContinuousProbabilityDistribution> g;
+        g = settings.get_instance();
+
+        REQUIRE(g->get_min() == 0.0);
+        REQUIRE(g->to_string() == "exp(lambda = 1)");
+
+
+        parameters["mean"] = 0.1;
         parameters["offset"] = 0.01;
         settings = ContinuousDistributionSettings(name, parameters);
 

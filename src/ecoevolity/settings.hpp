@@ -61,7 +61,7 @@ class ContinuousDistributionSettings {
                             "shape parameter missing for gamma_distribution"
                             );
                 }
-                if (parameters.count("scale") < 1) {
+                if ((parameters.count("scale") < 1) && (parameters.count("mean") < 1)) {
                     throw EcoevolityContinuousDistributionSettingError(
                             "scale parameter missing for gamma_distribution"
                             );
@@ -69,32 +69,47 @@ class ContinuousDistributionSettings {
                 if (parameters.count("offset") < 1) {
                     if (parameters.size() > 2) {
                         throw EcoevolityContinuousDistributionSettingError(
-                                "unrecognized parameters for gamma_distribution (recognized parameters: shape, scale, offset)"
+                                "unrecognized parameters for gamma_distribution (recognized parameters: shape, scale or mean, offset)"
                                 );
                     }
                 }
                 else {
                     if (parameters.size() > 3) {
                         throw EcoevolityContinuousDistributionSettingError(
-                                "unrecognized parameters for gamma_distribution (recognized parameters: shape, scale, offset)"
+                                "unrecognized parameters for gamma_distribution (recognized parameters: shape, scale or mean, offset)"
                                 );
                     }
                 }
-                if ((parameters.at("shape") <= 0.0) || (parameters.at("scale") <= 0.0)) {
+                bool using_mean = true;
+                std::string location_parameter = "mean";
+                if (parameters.count("mean") < 1) {
+                    location_parameter = "scale";
+                    using_mean = false;
+                }
+                if ((parameters.at("shape") <= 0.0) || (parameters.at(location_parameter) <= 0.0)) {
                     throw EcoevolityContinuousDistributionSettingError(
-                            "Shape and scale must be greater than zero for gamma distribution");
+                            "Shape and scale (or mean) must be greater than zero for gamma distribution");
                 }
                 this->parameters_["shape"] = parameters.at("shape");
-                this->parameters_["scale"] = parameters.at("scale");
+                this->parameters_["scale"] = parameters.at(location_parameter);
+                if (using_mean) {
+                    this->parameters_["scale"] = parameters.at(location_parameter) / this->parameters_["shape"];
+                }
                 if (parameters.count("offset") == 1) {
                     this->parameters_["offset"] = parameters.at("offset");
                 }
             }
             // Exponential
             else if (name == "exponential_distribution") {
-                if (parameters.count("rate") < 1) {
+                bool using_mean = true;
+                std::string location_parameter = "mean";
+                if (parameters.count("mean") < 1) {
+                    location_parameter = "rate";
+                    using_mean = false;
+                }
+                if (parameters.count(location_parameter) < 1) {
                     throw EcoevolityContinuousDistributionSettingError(
-                            "rate parameter missing for exponential_distribution"
+                            "rate (or mean) parameter missing for exponential_distribution"
                             );
                 }
                 if (parameters.count("offset") < 1) {
@@ -111,11 +126,14 @@ class ContinuousDistributionSettings {
                                 );
                     }
                 }
-                if (parameters.at("rate") <= 0.0) {
+                if (parameters.at(location_parameter) <= 0.0) {
                     throw EcoevolityContinuousDistributionSettingError(
-                            "rate must be greater than 0 for exponential distribution");
+                            "rate (or mean) must be greater than 0 for exponential distribution");
                 }
-                this->parameters_["rate"] = parameters.at("rate");
+                this->parameters_["rate"] = parameters.at(location_parameter);
+                if (using_mean) {
+                    this->parameters_["rate"] = 1.0 / parameters.at(location_parameter);
+                }
                 if (parameters.count("offset") == 1) {
                     this->parameters_["offset"] = parameters.at("offset");
                 }
@@ -194,14 +212,20 @@ class ContinuousDistributionSettings {
             if (node["gamma_distribution"]) {
                 this->name_ = "gamma_distribution";
                 YAML::Node parameters = node["gamma_distribution"];
+                bool using_mean = true;
+                std::string location_parameter = "mean";
+                if (! parameters["mean"]) {
+                    using_mean = false;
+                    location_parameter = "scale";
+                }
                 if (! parameters["shape"]) {
                     throw EcoevolityContinuousDistributionSettingError(
                             "shape parameter missing for gamma_distribution"
                             );
                 }
-                if (! parameters["scale"]) {
+                if (! parameters[location_parameter]) {
                     throw EcoevolityContinuousDistributionSettingError(
-                            "scale parameter missing for gamma_distribution"
+                            "scale (or mean) parameter missing for gamma_distribution"
                             );
                 }
                 if (! parameters["offset"]) {
@@ -219,10 +243,14 @@ class ContinuousDistributionSettings {
                     }
                 }
                 this->parameters_["shape"] = parameters["shape"].as<double>();
-                this->parameters_["scale"] = parameters["scale"].as<double>();
+                double location_parameter_value = parameters[location_parameter].as<double>();
+                this->parameters_["scale"] = location_parameter_value;
+                if (using_mean) {
+                    this->parameters_["scale"] = location_parameter_value / this->parameters_["shape"];
+                }
                 if ((this->parameters_.at("shape") <= 0.0) || (this->parameters_.at("scale") <= 0.0)) {
                     throw EcoevolityContinuousDistributionSettingError(
-                            "Shape and scale must be greater than zero for gamma distribution");
+                            "Shape and scale (or mean) must be greater than zero for gamma distribution");
                 }
                 if (parameters["offset"]) {
                     this->parameters_["offset"] = parameters["offset"].as<double>();
@@ -232,9 +260,15 @@ class ContinuousDistributionSettings {
             else if (node["exponential_distribution"]) {
                 this->name_ = "exponential_distribution";
                 YAML::Node parameters = node["exponential_distribution"];
-                if (! parameters["rate"]) {
+                bool using_mean = true;
+                std::string location_parameter = "mean";
+                if (! parameters["mean"]) {
+                    using_mean = false;
+                    location_parameter = "rate";
+                }
+                if (! parameters[location_parameter]) {
                     throw EcoevolityContinuousDistributionSettingError(
-                            "rate parameter missing for exponential_distribution"
+                            "rate (or mean) parameter missing for exponential_distribution"
                             );
                 }
                 if (! parameters["offset"]) {
@@ -251,10 +285,14 @@ class ContinuousDistributionSettings {
                                 );
                     }
                 }
-                this->parameters_["rate"] = parameters["rate"].as<double>();
+                double location_parameter_value = parameters[location_parameter].as<double>();
+                this->parameters_["rate"] = location_parameter_value;
+                if (using_mean) {
+                    this->parameters_["rate"] = 1.0 / location_parameter_value;
+                }
                 if (this->parameters_.at("rate") <= 0.0) {
                     throw EcoevolityContinuousDistributionSettingError(
-                            "rate must be greater than 0 for exponential distribution");
+                            "rate (or mean) must be greater than 0 for exponential distribution");
                 }
                 if (parameters["offset"]) {
                     this->parameters_["offset"] = parameters["offset"].as<double>();
