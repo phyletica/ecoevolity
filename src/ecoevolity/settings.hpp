@@ -520,7 +520,7 @@ class PositiveRealParameterSettings {
     friend class RelativeRootComparisonSettings;
     template<typename T> friend class BaseCollectionSettings;
 
-    private:
+    protected:
         double value_ = std::numeric_limits<double>::quiet_NaN();
         std::vector<double> values_; // For Dirichlet distribution
         bool is_fixed_ = false;
@@ -528,36 +528,7 @@ class PositiveRealParameterSettings {
         bool use_empirical_value_ = false;
         ContinuousDistributionSettings prior_settings_;
 
-    public:
-        PositiveRealParameterSettings() { }
-        PositiveRealParameterSettings(
-                double value,
-                bool fix,
-                const std::string& prior_name,
-                const std::unordered_map<std::string, double>& prior_parameters) {
-            if (value < 0.0) {
-                throw EcoevolityPositiveRealParameterSettingError(
-                        "positive real parameter cannot be less than 0"
-                        );
-            }
-            this->value_ = value;
-            this->is_fixed_ = fix;
-            if (fix) {
-                this->prior_settings_ = ContinuousDistributionSettings("none",
-                        prior_parameters);
-            }
-            else {
-                this->prior_settings_ = ContinuousDistributionSettings(prior_name,
-                        prior_parameters);
-            }
-
-            if ((this->is_fixed_) && (std::isnan(this->value_))) {
-                throw EcoevolityPositiveRealParameterSettingError(
-                        "cannot fix parameter without a value"
-                        );
-            }
-        }
-        PositiveRealParameterSettings(const YAML::Node& node) {
+        void init_from_yaml_node(const YAML::Node& node) {
             bool prior_specified = false;
             bool value_specified = false;
             if (! node.IsMap()) {
@@ -679,6 +650,39 @@ class PositiveRealParameterSettings {
                         "cannot fix parameter without a value"
                         );
             }
+        }
+
+    public:
+        PositiveRealParameterSettings() { }
+        PositiveRealParameterSettings(
+                double value,
+                bool fix,
+                const std::string& prior_name,
+                const std::unordered_map<std::string, double>& prior_parameters) {
+            if (value < 0.0) {
+                throw EcoevolityPositiveRealParameterSettingError(
+                        "positive real parameter cannot be less than 0"
+                        );
+            }
+            this->value_ = value;
+            this->is_fixed_ = fix;
+            if (fix) {
+                this->prior_settings_ = ContinuousDistributionSettings("none",
+                        prior_parameters);
+            }
+            else {
+                this->prior_settings_ = ContinuousDistributionSettings(prior_name,
+                        prior_parameters);
+            }
+
+            if ((this->is_fixed_) && (std::isnan(this->value_))) {
+                throw EcoevolityPositiveRealParameterSettingError(
+                        "cannot fix parameter without a value"
+                        );
+            }
+        }
+        PositiveRealParameterSettings(const YAML::Node& node) {
+            this->init_from_yaml_node(node);
         }
         virtual ~PositiveRealParameterSettings() { }
         PositiveRealParameterSettings& operator=(const PositiveRealParameterSettings& other) {
