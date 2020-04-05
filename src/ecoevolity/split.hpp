@@ -111,7 +111,9 @@ inline void Split::clear() {
 }
 
 inline Split & Split::operator=(const Split & other) {
+    this->mask_ = other.mask_;
     this->number_of_leaves_ = other.number_of_leaves_;
+    this->bits_per_unit_ = (CHAR_BIT)*sizeof(Split::split_unit_t);
     this->bits_ = other.bits_;
     return *this;
 }
