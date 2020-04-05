@@ -7,21 +7,20 @@ tree_model:
         uniform:
             node_height_prior:
                 root_and_betas:
-                    parameters:
-                        root_height:
-                            value: 0.2
-                            estimate: true
-                            prior:
-                                gamma_distribution:
-                                    shape: 2.0
-                                    mean: 0.3
-                                    offset: 0.0
-                        alpha_of_node_height_beta_prior:
-                            value: 1.0
-                            estimate: true
-                            prior:
-                                exponential_distribution:
-                                    mean: 1.0
+                    root_height:
+                        value: 0.2
+                        estimate: true
+                        prior:
+                            gamma_distribution:
+                                shape: 2.0
+                                mean: 0.3
+                                offset: 0.0
+                    alpha_of_node_height_beta_prior:
+                        value: 1.0
+                        estimate: true
+                        prior:
+                            exponential_distribution:
+                                mean: 1.0
 
 branch_parameters:
     population_size:
@@ -49,50 +48,49 @@ mutation_parameters:
 mcmc_settings:
     chain_length: 200000
     sample_frequency: 100
-
-operators:
-    # turn off if bifurcating trees
-    SplitLumpNodesRevJumpSampler:
-        weight: 5.0
-    # turn off if mu rate is fixed
-    MuRateScaler:
-        tuning_parameter: 0.2
-        weight: 3.0
-        auto_optimize: true
-        auto_optimize_delay: 1000
-    # turn off if alpha is fixed
-    NodeHeightPriorAlphaScaler:
-    # turn off if root height is fixed
-    TreeScaler:
-    NodeHeightScaler:
-    NodeHeightMover:
-    NodeHeightSlideBumpScaler:
-    NodeHeightSlideBumpPermuteScaler:
-    NodeHeightSlideBumpSwapScaler:
-    NeighborHeightNodePermute:
-    NeighborHeightNodeSwap:
-    # turn off if root heigth is fixed
-    RootHeightScaler:
-    GlobalNodeHeightDirichletOperator:
-    NodeHeightDirichletOperator:
-    # turn off if pop sizes fixed
-    GlobalPopSizeScaler:
-    # turn off if pop sizes fixed
-    PopSizeScaler:
-    # turn off if root height is fixed or pop sizes fixed
-    GlobalHeightSizeMixer:
-    # turn off if pop sizes constrained or fixed
-    HeightSizeMixer:
-    # turn off if pop sizes constrained or fixed
-    HeightSizeSlideBumpMixer:
-    # turn off if root height is fixed or pop sizes constrained or fixed
-    RootHeightSizeMixer:
-    # turn off if root height is fixed
-    GlobalHeightSizeRateScaler:
-    # turn off if freq fixed
-    StateFreqMover:
-    # turn off if freq fixed
-    StateFreqDirichletOperator:
+    operators:
+        # turn off if bifurcating trees
+        SplitLumpNodesRevJumpSampler:
+            weight: 5.0
+        # turn off if mu rate is fixed
+        MuRateScaler:
+            tuning_parameter: 0.2
+            weight: 3.0
+            auto_optimize: true
+            auto_optimize_delay: 1000
+        # turn off if alpha is fixed
+        NodeHeightPriorAlphaScaler:
+        # turn off if root height is fixed
+        TreeScaler:
+        NodeHeightScaler:
+        NodeHeightMover:
+        NodeHeightSlideBumpScaler:
+        NodeHeightSlideBumpPermuteScaler:
+        NodeHeightSlideBumpSwapScaler:
+        NeighborHeightNodePermute:
+        NeighborHeightNodeSwap:
+        # turn off if root heigth is fixed
+        RootHeightScaler:
+        GlobalNodeHeightDirichletOperator:
+        NodeHeightDirichletOperator:
+        # turn off if pop sizes fixed
+        GlobalPopSizeScaler:
+        # turn off if pop sizes fixed
+        PopSizeScaler:
+        # turn off if root height is fixed or pop sizes fixed
+        GlobalHeightSizeMixer:
+        # turn off if pop sizes constrained or fixed
+        HeightSizeMixer:
+        # turn off if pop sizes constrained or fixed
+        HeightSizeSlideBumpMixer:
+        # turn off if root height is fixed or pop sizes constrained or fixed
+        RootHeightSizeMixer:
+        # turn off if root height is fixed
+        GlobalHeightSizeRateScaler:
+        # turn off if freq fixed
+        StateFreqMover:
+        # turn off if freq fixed
+        StateFreqDirichletOperator:
 
 data:
     ploidy: 2
