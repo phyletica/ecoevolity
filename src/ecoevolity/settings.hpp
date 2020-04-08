@@ -519,6 +519,7 @@ class PositiveRealParameterSettings {
     friend class DirichletComparisonSettings;
     friend class RelativeRootComparisonSettings;
     template<typename T> friend class BaseCollectionSettings;
+    friend class GeneralTreeSettings;
 
     protected:
         double value_ = std::numeric_limits<double>::quiet_NaN();
@@ -685,6 +686,14 @@ class PositiveRealParameterSettings {
             this->init_from_yaml_node(node);
         }
         virtual ~PositiveRealParameterSettings() { }
+        PositiveRealParameterSettings(const PositiveRealParameterSettings& other) {
+            this->value_ = other.value_;
+            this->values_ = other.values_;
+            this->is_fixed_ = other.is_fixed_;
+            this->is_vector_ =  other.is_vector_;
+            this->use_empirical_value_ = other.use_empirical_value_;
+            this->prior_settings_ = other.prior_settings_;
+        }
         PositiveRealParameterSettings& operator=(const PositiveRealParameterSettings& other) {
             this->value_ = other.value_;
             this->values_ = other.values_;
