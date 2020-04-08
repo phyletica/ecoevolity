@@ -4,23 +4,22 @@ tree_model:
     tree_space:
         generalized: # bifurcating
     tree_prior:
-        uniform:
-            node_height_prior:
-                root_and_betas:
-                    root_height:
-                        value: 0.2
-                        estimate: true
-                        prior:
-                            gamma_distribution:
-                                shape: 2.0
-                                mean: 0.3
-                                offset: 0.0
-                    alpha_of_node_height_beta_prior:
-                        value: 1.0
-                        estimate: true
-                        prior:
-                            exponential_distribution:
-                                mean: 1.0
+        uniform_root_and_betas:
+            parameters:
+                root_height:
+                    value: 0.2
+                    estimate: true
+                    prior:
+                        gamma_distribution:
+                            shape: 2.0
+                            mean: 0.3
+                            offset: 0.0
+                alpha_of_node_height_beta_prior:
+                    value: 1.0
+                    estimate: true
+                    prior:
+                        exponential_distribution:
+                            mean: 1.0
 
 branch_parameters:
     population_size:

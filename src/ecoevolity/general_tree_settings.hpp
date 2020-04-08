@@ -46,8 +46,22 @@ class TreePriorSettings {
 		enum TreePriorEnum {
             uniform_root_and_betas     = 1,
         };
+        static const std::map<TreePriorSettings::TreePriorEnum, std::string> tree_prior_to_string;
+        static const std::map<std::string, TreePriorSettings::TreePriorEnum> string_to_tree_prior;
         
         virtual TreePriorSettings::TreePriorEnum get_type() const = 0;
+        virtual std::string to_string(unsigned int indent_level = 0) const = 0;
+        virtual bool root_height_is_fixed() const {
+            return false;
+        }
+        virtual void update_operator_weights(std::shared_ptr<GeneralTreeOperatorSettingsCollection> op_collection) const = 0;
+};
+
+const std::map<TreePriorSettings::TreePriorEnum, std::string> TreePriorSettings::tree_prior_to_string = {
+    {TreePriorSettings::TreePriorEnum::uniform_root_and_betas, "uniform_root_and_betas"},
+};
+const std::map<std::string, TreePriorSettings::TreePriorEnum> TreePriorSettings::string_to_tree_prior = {
+    {"uniform_root_and_betas", TreePriorSettings::TreePriorEnum::uniform_root_and_betas},
 };
 
 class UniformTreePriorSettings : public TreePriorSettings {
@@ -68,17 +82,69 @@ class UniformRootAndBetasPriorSettings : public UniformTreePriorSettings {
             return * this;
         }
         UniformRootAndBetasPriorSettings(const YAML::Node& node) {
-            this->parse_root_and_betas(node);
+            this->init_from_yaml_node(node);
         }
 
         TreePriorSettings::TreePriorEnum get_type() const {
             return TreePriorSettings::TreePriorEnum::uniform_root_and_betas;
         }
 
-        void parse_root_and_betas(const YAML::Node& node) {
+        bool root_height_is_fixed() const {
+            return this->root_height_settings_.is_fixed();
+        }
+        bool alpha_of_node_height_beta_prior_is_fixed() const {
+            return this->alpha_of_node_height_beta_settings_.is_fixed();
+        }
+
+        std::string to_string(unsigned int indent_level = 0) const {
+            std::ostringstream ss;
+            ss << std::boolalpha;
+            std::string margin = string_util::get_indent(indent_level);
+            std::string indent = string_util::get_indent(1);
+            ss << margin << TreePriorSettings::tree_prior_to_string.at(this->get_type()) << ":\n"
+               << margin << indent << "parameters:\n"
+               << margin << indent << indent << "root_height:\n"
+               << this->root_height_settings_.to_string(indent_level + 3)
+               << margin << indent << indent << "alpha_of_node_height_beta_prior:\n"
+               << this->alpha_of_node_height_beta_settings_.to_string(indent_level + 3);
+            return ss.str();
+        }
+
+        void update_operator_weights(std::shared_ptr<GeneralTreeOperatorSettingsCollection> op_collection) const {
+            if (this->root_height_is_fixed()) {
+                op_collection->tunable_operators.at("TreeScaler").set_weight(0);
+                op_collection->tunable_operators.at("RootHeightScaler").set_weight(0);
+                op_collection->tunable_operators.at("TreeScaler").set_weight(0);
+                op_collection->tunable_operators.at("RootHeightScaler").set_weight(0);
+
+                if (op_collection->tunable_operators.count("GlobalHeightSizeRateScaler") > 0) {
+                    op_collection->tunable_operators.at("GlobalHeightSizeRateScaler").set_weight(0);
+                }
+                if (op_collection->tunable_operators.count("GlobalHeightRateScaler") > 0) {
+                    op_collection->tunable_operators.at("GlobalHeightRateScaler").set_weight(0);
+                }
+                if (op_collection->tunable_operators.count("GlobalHeightSizeScaler") > 0) {
+                    op_collection->tunable_operators.at("GlobalHeightSizeScaler").set_weight(0);
+                }
+            }
+            if (this->alpha_of_node_height_beta_prior_is_fixed()) {
+                if (op_collection->tunable_operators.count("NodeHeightPriorAlphaMover") > 0) {
+                    op_collection->tunable_operators.at("NodeHeightPriorAlphaMover").set_weight(0);
+                }
+                if (op_collection->tunable_operators.count("NodeHeightPriorAlphaScaler") > 0) {
+                    op_collection->tunable_operators.at("NodeHeightPriorAlphaScaler").set_weight(0);
+                }
+            }
+        }
+
+    protected:
+        PositiveRealParameterSettings root_height_settings_;
+        PositiveRealParameterSettings alpha_of_node_height_beta_settings_;
+
+        void init_from_yaml_node(const YAML::Node& node) {
             if (! node.IsMap()) {
                 std::string message = (
-                        "Expecting root_and_betas to be a map, but found: " +
+                        "Expecting uniform_root_and_betas to be a map, but found: " +
                         YamlCppUtils::get_node_type(node));
                 throw EcoevolityYamlConfigError(message);
             }
@@ -89,7 +155,39 @@ class UniformRootAndBetasPriorSettings : public UniformTreePriorSettings {
                     ++arg) {
                 if (keys.count(arg->first.as<std::string>()) > 0) {
                     std::string message = (
-                            "Duplicate key in root_and_betas: " +
+                            "Duplicate key in uniform_root_and_betas: " +
+                            arg->first.as<std::string>());
+                    throw EcoevolityYamlConfigError(message);
+                }
+                keys.insert(arg->first.as<std::string>());
+
+                if (arg->first.as<std::string>() == "parameters") {
+                    this->parse_parameters(arg->second);
+                }
+                else {
+                    std::string message = (
+                            "Unrecognized uniform_root_and_betas setting: " +
+                            arg->first.as<std::string>());
+                    throw EcoevolityYamlConfigError(message);
+                }
+            }
+        }
+
+        void parse_parameters(const YAML::Node& node) {
+            if (! node.IsMap()) {
+                std::string message = (
+                        "Expecting uniform_root_and_betas parameters to be a map, but found: " +
+                        YamlCppUtils::get_node_type(node));
+                throw EcoevolityYamlConfigError(message);
+            }
+
+            std::unordered_set<std::string> keys;
+            for (YAML::const_iterator arg = node.begin();
+                    arg != node.end();
+                    ++arg) {
+                if (keys.count(arg->first.as<std::string>()) > 0) {
+                    std::string message = (
+                            "Duplicate key in uniform_root_and_betas parameters: " +
                             arg->first.as<std::string>());
                     throw EcoevolityYamlConfigError(message);
                 }
@@ -103,16 +201,12 @@ class UniformRootAndBetasPriorSettings : public UniformTreePriorSettings {
                 }
                 else {
                     std::string message = (
-                            "Unrecognized root_and_betas setting: " +
+                            "Unrecognized uniform_root_and_betas parameters setting: " +
                             arg->first.as<std::string>());
                     throw EcoevolityYamlConfigError(message);
                 }
             }
         }
-
-    protected:
-        PositiveRealParameterSettings root_height_settings_;
-        PositiveRealParameterSettings alpha_of_node_height_beta_settings_;
 };
 
 
@@ -122,6 +216,8 @@ class TreeModelSettings {
             generalized     = 1,
             bifurcating     = 2,
         };
+        const static std::map<TreeModelSettings::TreeSpaceEnum, std::string> tree_space_to_string;
+        const static std::map<std::string, TreeModelSettings::TreeSpaceEnum> string_to_tree_space;
 
         std::shared_ptr<TreePriorSettings> tree_prior = nullptr;
 
@@ -141,6 +237,9 @@ class TreeModelSettings {
 
         TreeModelSettings::TreeSpaceEnum get_tree_space() const {
             return this->tree_space_;
+        }
+        std::string get_tree_space_string() const {
+            return TreeModelSettings::tree_space_to_string.at(this->tree_space_);
         }
 
         void set_tree_space(const TreeModelSettings::TreeSpaceEnum tse) {
@@ -174,20 +273,28 @@ class TreeModelSettings {
 
                 if (arg->first.as<std::string>() == "tree_space") {
                     std::string s = arg->second.as<std::string>();
-                    if (s == "generalized") {
-                        this->set_tree_space(TreeModelSettings::TreeSpaceEnum::generalized);
-                    }
-                    else if (s == "bifurcating") {
-                        this->set_tree_space(TreeModelSettings::TreeSpaceEnum::bifurcating);
-                    }
-                    else {
+                    if (TreeModelSettings::string_to_tree_space.count(s) < 1) {
                         std::string message = (
                                 "Unrecognized tree_space setting: " + s);
                         throw EcoevolityYamlConfigError(message);
                     }
+                    this->set_tree_space(TreeModelSettings::string_to_tree_space.at(s));
                 }
                 else if (arg->first.as<std::string>() == "tree_prior") {
-                    this->parse_tree_prior(arg->second);
+                    std::string s = arg->second.as<std::string>();
+                    if (TreePriorSettings::string_to_tree_prior.count(s) < 1) {
+                        std::string message = (
+                                "Unrecognized tree_prior setting: " + s);
+                        throw EcoevolityYamlConfigError(message);
+                    }
+                    else if (TreePriorSettings::string_to_tree_prior.at(s) == TreePriorSettings::TreePriorEnum::uniform_root_and_betas) {
+                        this->tree_prior = std::make_shared<UniformRootAndBetasPriorSettings>(arg->second);
+                    }
+                    else {
+                        std::string message = (
+                                "Unsupported tree_prior setting: " + s);
+                        throw EcoevolityYamlConfigError(message);
+                    }
                 }
                 else {
                     std::string message = (
@@ -198,6 +305,26 @@ class TreeModelSettings {
             }
         }
 
+        void update_operator_weights const (
+                std::shared_ptr<GeneralTreeOperatorSettingsCollection op_collection) {
+            if (! this->tree_space_generalized()) {
+                op_collection->untunable_operators.at("SplitLumpNodesRevJumpSampler").set_weight(0);
+            }
+            this->tree_prior->update_operator_weights(op_collection);
+        }
+
+        virtual std::string to_string(unsigned int indent_level = 0) const {
+            std::ostringstream ss;
+            ss << std::boolalpha;
+            std::string margin = string_util::get_indent(indent_level);
+            std::string indent = string_util::get_indent(1);
+            ss << margin << "tree_space:\n"
+               << margin << indent << this->get_tree_space_string() << ":\n"
+               << margin << "tree_prior:\n"
+               << this->tree_prior->to_string(indent_level + 1);
+            return ss.str();
+        }
+
     protected:
         TreeModelSettings::TreeSpaceEnum tree_space_ = TreeModelSettings::TreeSpaceEnum::generalized;
 
@@ -205,102 +332,15 @@ class TreeModelSettings {
             this->tree_space_ = TreeModelSettings::TreeSpaceEnum::generalized;
             this->tree_prior = nullptr;
         }
+};
 
-        void parse_tree_prior(const YAML::Node& node) {
-            if (! node.IsMap()) {
-                std::string message = (
-                        "Expecting tree_prior node to be a map, but found: " +
-                        YamlCppUtils::get_node_type(node));
-                throw EcoevolityYamlConfigError(message);
-            }
-
-            std::unordered_set<std::string> keys;
-            for (YAML::const_iterator arg = node.begin();
-                    arg != node.end();
-                    ++arg) {
-                if (keys.count(arg->first.as<std::string>()) > 0) {
-                    std::string message = (
-                            "Duplicate key in tree_prior: " +
-                            arg->first.as<std::string>());
-                    throw EcoevolityYamlConfigError(message);
-                }
-                keys.insert(arg->first.as<std::string>());
-
-                if (arg->first.as<std::string>() == "uniform") {
-                    this->parse_uniform_node(arg->second);
-                }
-                else {
-                    std::string message = (
-                            "Unrecognized tree_prior setting: " +
-                            arg->first.as<std::string>());
-                    throw EcoevolityYamlConfigError(message);
-                }
-            }
-        }
-
-        void parse_uniform_node(const YAML::Node& node) {
-            if (! node.IsMap()) {
-                std::string message = (
-                        "Expecting uniform tree_prior to be a map, but found: " +
-                        YamlCppUtils::get_node_type(node));
-                throw EcoevolityYamlConfigError(message);
-            }
-
-            std::unordered_set<std::string> keys;
-            for (YAML::const_iterator arg = node.begin();
-                    arg != node.end();
-                    ++arg) {
-                if (keys.count(arg->first.as<std::string>()) > 0) {
-                    std::string message = (
-                            "Duplicate key in uniform tree_prior: " +
-                            arg->first.as<std::string>());
-                    throw EcoevolityYamlConfigError(message);
-                }
-                keys.insert(arg->first.as<std::string>());
-
-                if (arg->first.as<std::string>() == "node_height_prior") {
-                    this->parse_node_height_prior(arg->second);
-                }
-                else {
-                    std::string message = (
-                            "Unrecognized uniform tree_prior setting: " +
-                            arg->first.as<std::string>());
-                    throw EcoevolityYamlConfigError(message);
-                }
-            }
-        }
-
-        void parse_node_height_prior(const YAML::Node& node) {
-            if (! node.IsMap()) {
-                std::string message = (
-                        "Expecting node_height_prior to be a map, but found: " +
-                        YamlCppUtils::get_node_type(node));
-                throw EcoevolityYamlConfigError(message);
-            }
-
-            std::unordered_set<std::string> keys;
-            for (YAML::const_iterator arg = node.begin();
-                    arg != node.end();
-                    ++arg) {
-                if (keys.count(arg->first.as<std::string>()) > 0) {
-                    std::string message = (
-                            "Duplicate key in node_height_prior: " +
-                            arg->first.as<std::string>());
-                    throw EcoevolityYamlConfigError(message);
-                }
-                keys.insert(arg->first.as<std::string>());
-
-                if (arg->first.as<std::string>() == "root_and_betas") {
-                    this->tree_prior = std::make_shared<UniformRootAndBetasPriorSettings>(arg->second);
-                }
-                else {
-                    std::string message = (
-                            "Unrecognized node_height_prior setting: " +
-                            arg->first.as<std::string>());
-                    throw EcoevolityYamlConfigError(message);
-                }
-            }
-        }
+const std::map<TreeModelSettings::TreeSpaceEnum, std::string> TreeModelSettings::tree_space_to_string = {
+    {TreeModelSettings::TreeSpaceEnum::generalized, "generalized"},
+    {TreeModelSettings::TreeSpaceEnum::bifurcating, "bifurcating"},
+};
+const std::map<std::string, TreeModelSettings::TreeSpaceEnum> TreeModelSettings::string_to_tree_space = {
+    {"generalized", TreeModelSettings::TreeSpaceEnum::generalized},
+    {"bifurcating", TreeModelSettings::TreeSpaceEnum::bifurcating},
 };
 
 
@@ -739,17 +779,15 @@ class GeneralTreeTunableOperatorSettings : public GeneralTreeOperatorSettings {
         }
 };
 
+
 class GeneralTreeOperatorSettingsCollection {
-    protected:
-        std::map<std::string, GeneralTreeOperatorSettings> untunable_operators_ {
+    public:
+        std::map<std::string, GeneralTreeOperatorSettings> untunable_operators {
             {"SplitLumpNodesRevJumpSampler",        GeneralTreeOperatorSettings(10)},
             {"NeighborHeightNodePermute",           GeneralTreeOperatorSettings(6)},
             {"NeighborHeightNodeSwap",              GeneralTreeOperatorSettings(3)},
         };
-        std::map<std::string, GeneralTreeTunableOperatorSettings> tunable_operators_ {
-            {"MuRateScaler",                        GeneralTreeTunableOperatorSettings(1)},
-            {"NodeHeightPriorAlphaScaler",          GeneralTreeTunableOperatorSettings(1)},
-            {"NodeHeightPriorAlphaMover",           GeneralTreeTunableOperatorSettings(0)},
+        std::map<std::string, GeneralTreeTunableOperatorSettings> tunable_operators {
             {"TreeScaler",                          GeneralTreeTunableOperatorSettings(1)},
             {"NodeHeightScaler",                    GeneralTreeTunableOperatorSettings(1)},
             {"NodeHeightMover",                     GeneralTreeTunableOperatorSettings(1)},
@@ -762,47 +800,35 @@ class GeneralTreeOperatorSettingsCollection {
             {"RootHeightScaler",                    GeneralTreeTunableOperatorSettings(1)},
             {"GlobalNodeHeightDirichletOperator",   GeneralTreeTunableOperatorSettings(1)},
             {"NodeHeightDirichletOperator",         GeneralTreeTunableOperatorSettings(1)},
-            {"GlobalPopSizeScaler",                 GeneralTreeTunableOperatorSettings(1)},
-            {"PopSizeScaler",                       GeneralTreeTunableOperatorSettings(1)},
-            {"GlobalHeightSizeMixer",               GeneralTreeTunableOperatorSettings(1)},
-            {"HeightSizeMixer",                     GeneralTreeTunableOperatorSettings(1)},
-            {"HeightSizeSlideBumpMixer",            GeneralTreeTunableOperatorSettings(0)},
-            {"RootHeightSizeMixer",                 GeneralTreeTunableOperatorSettings(1)},
-            {"GlobalHeightSizeRateScaler",          GeneralTreeTunableOperatorSettings(1)},
-            {"GlobalHeightSizeScaler",              GeneralTreeTunableOperatorSettings(0)},
-            {"GlobalHeightRateScaler",              GeneralTreeTunableOperatorSettings(0)},
-            {"StateFreqMover",                      GeneralTreeTunableOperatorSettings(1)},
-            {"StateFreqDirichletOperator",          GeneralTreeTunableOperatorSettings(1)},
         };
 
-    public:
         GeneralTreeOperatorSettingsCollection() { }
         GeneralTreeOperatorSettingsCollection& operator=(const GeneralTreeOperatorSettingsCollection& other) {
-            this->untunable_operators_ = other.untunable_operators_;
-            this->tunable_operators_ = other.tunable_operators_;
+            this->untunable_operators = other.untunable_operators;
+            this->tunable_operators = other.tunable_operators;
             return * this;
         }
         GeneralTreeOperatorSettingsCollection(const GeneralTreeOperatorSettingsCollection& other) {
-            this->untunable_operators_ = other.untunable_operators_;
-            this->tunable_operators_ = other.tunable_operators_;
+            this->untunable_operators = other.untunable_operators;
+            this->tunable_operators = other.tunable_operators;
         }
         bool is_operator(const std::string & name) const {
-            if (this->untunable_operators_.count(name) > 0) {
+            if (this->untunable_operators.count(name) > 0) {
                 return true;
             }
-            if (this->tunable_operators_.count(name) > 0) {
+            if (this->tunable_operators.count(name) > 0) {
                 return true;
             }
             return false;
         }
         bool is_tunable_operator(const std::string & name) const {
-            if (this->tunable_operators_.count(name) > 0) {
+            if (this->tunable_operators.count(name) > 0) {
                 return true;
             }
             return false;
         }
         bool is_untunable_operator(const std::string & name) const {
-            if (this->untunable_operators_.count(name) > 0) {
+            if (this->untunable_operators.count(name) > 0) {
                 return true;
             }
             return false;
@@ -834,10 +860,10 @@ class GeneralTreeOperatorSettingsCollection {
                 keys.insert(name);
 
                 if (this->is_untunable_operator(name)) {
-                    this->untunable_operators_[name].update_from_config(p->second);
+                    this->untunable_operators[name].update_from_config(p->second);
                 }
                 else if (this->is_tunable_operator(name)) {
-                    this->tunable_operators_[name].update_from_config(p->second);
+                    this->tunable_operators[name].update_from_config(p->second);
                 }
                 else {
                     std::string message = (
@@ -851,11 +877,11 @@ class GeneralTreeOperatorSettingsCollection {
         std::string to_string(unsigned int indent_level = 0) const {
             std::ostringstream ss;
             std::string margin = string_util::get_indent(indent_level);
-            for (auto op : this->untunable_operators_) {
+            for (auto op : this->untunable_operators) {
                 ss << op.first << ":\n";
                 ss << op.second.to_string(indent_level + 1);
             }
-            for (auto op : this->tunable_operators_) {
+            for (auto op : this->tunable_operators) {
                 ss << op.first << ":\n";
                 ss << op.second.to_string(indent_level + 1);
             }
@@ -863,29 +889,87 @@ class GeneralTreeOperatorSettingsCollection {
         }
 };
 
+class BetaTreeOperatorSettingsCollection : public GeneralTreeOperatorSettingsCollection {
+    public:
+        BetaTreeOperatorSettingsCollection() : GeneralTreeOperatorSettingsCollection() {
+            this->tunable_operators["NodeHeightPriorAlphaScaler"]  = GeneralTreeTunableOperatorSettings(1)},
+            this->tunable_operators["NodeHeightPriorAlphaMover"]   = GeneralTreeTunableOperatorSettings(0)},
+        }
+        BetaTreeOperatorSettingsCollection& operator=(const BetaTreeOperatorSettingsCollection& other) {
+            this->untunable_operators = other.untunable_operators;
+            this->tunable_operators = other.tunable_operators;
+            return * this;
+        }
+        BetaTreeOperatorSettingsCollection(const BetaTreeOperatorSettingsCollection& other) :
+            GeneralTreeOperatorSettingsCollection(other) { }
+};
 
-class GeneralTreeSettings {
+class PopulationTreeOperatorSettingsCollection : public GeneralTreeOperatorSettingsCollection {
+
+    public:
+        PopulationTreeOperatorSettingsCollection() : GeneralTreeOperatorSettingsCollection() {
+            this->tunable_operators["MuRateScaler"]                = GeneralTreeTunableOperatorSettings(1);
+            this->tunable_operators["GlobalPopSizeScaler"]         = GeneralTreeTunableOperatorSettings(1);
+            this->tunable_operators["PopSizeScaler"]               = GeneralTreeTunableOperatorSettings(1);
+            this->tunable_operators["GlobalHeightSizeMixer"]       = GeneralTreeTunableOperatorSettings(1);
+            this->tunable_operators["HeightSizeMixer"]             = GeneralTreeTunableOperatorSettings(1);
+            this->tunable_operators["HeightSizeSlideBumpMixer"]    = GeneralTreeTunableOperatorSettings(0);
+            this->tunable_operators["RootHeightSizeMixer"]         = GeneralTreeTunableOperatorSettings(1);
+            this->tunable_operators["GlobalHeightSizeRateScaler"]  = GeneralTreeTunableOperatorSettings(1);
+            this->tunable_operators["GlobalHeightSizeScaler"]      = GeneralTreeTunableOperatorSettings(0);
+            this->tunable_operators["GlobalHeightRateScaler"]      = GeneralTreeTunableOperatorSettings(0);
+            this->tunable_operators["StateFreqMover"]              = GeneralTreeTunableOperatorSettings(1);
+            this->tunable_operators["StateFreqDirichletOperator"]  = GeneralTreeTunableOperatorSettings(1);
+        }
+        PopulationTreeOperatorSettingsCollection& operator=(const PopulationTreeOperatorSettingsCollection& other) {
+            this->untunable_operators = other.untunable_operators;
+            this->tunable_operators = other.tunable_operators;
+            return * this;
+        }
+        PopulationTreeOperatorSettingsCollection(const PopulationTreeOperatorSettingsCollection& other) :
+            GeneralTreeOperatorSettingsCollection(other) { }
+
+};
+
+class BetaPopulationTreeOperatorSettingsCollection : public PopulationTreeOperatorSettingsCollection {
+
+    public:
+        BetaPopulationTreeOperatorSettingsCollection() : PopulationTreeOperatorSettingsCollection() {
+            this->tunable_operators["NodeHeightPriorAlphaScaler"]  = GeneralTreeTunableOperatorSettings(1)},
+            this->tunable_operators["NodeHeightPriorAlphaMover"]   = GeneralTreeTunableOperatorSettings(0)},
+        }
+        BetaPopulationTreeOperatorSettingsCollection& operator=(const BetaPopulationTreeOperatorSettingsCollection& other) {
+            this->untunable_operators = other.untunable_operators;
+            this->tunable_operators = other.tunable_operators;
+            return * this;
+        }
+        BetaPopulationTreeOperatorSettingsCollection(const BetaPopulationTreeOperatorSettingsCollection& other) :
+            PopulationTreeOperatorSettingsCollection(other) { }
+};
+
+
+class PopulationTreeSettings {
     public:
         // Public data members
         PopSizeSettings population_size_settings;
         PositiveRealParameterSettings freq_1_settings;
         PositiveRealParameterSettings mutation_rate_settings;
-        GeneralTreeOperatorSettingsCollection operator_settings;
         GeneralTreeDataSettings data_settings;
         TreeModelSettings tree_model_settings;
+        std::shared_ptr<GeneralTreeOperatorSettingsCollection> operator_settings = nullptr;
 
         // Constructors
-        GeneralTreeSettings() { }
-        GeneralTreeSettings(
+        PopulationTreeSettings() { }
+        PopulationTreeSettings(
                 const std::string & yaml_config_path) {
             this->init_from_config_file(yaml_config_path);
         }
-        GeneralTreeSettings(
+        PopulationTreeSettings(
                 std::istream& yaml_config_stream,
                 const std::string & yaml_config_path) {
             this->init_from_config_stream(yaml_config_stream, yaml_config_path);
         }
-        GeneralTreeSettings(const GeneralTreeSettings & other) {
+        PopulationTreeSettings(const PopulationTreeSettings & other) {
             this->config_path_ = other.config_path_;
             this->chain_length_ = other.chain_length_;
             this->sample_frequency_ = other.sample_frequency_;
@@ -897,9 +981,10 @@ class GeneralTreeSettings {
             this->mutation_rate_settings = other.mutation_rate_settings;
             this->operator_settings = other.operator_settings;
             this->data_settings = other.data_settings;
+            this->tree_model_settings = other.tree_model_settings;
         }
-        virtual ~GeneralTreeSettings() { }
-        GeneralTreeSettings & operator=(const GeneralTreeSettings & other) {
+        virtual ~PopulationTreeSettings() { }
+        PopulationTreeSettings & operator=(const PopulationTreeSettings & other) {
             this->config_path_ = other.config_path_;
             this->chain_length_ = other.chain_length_;
             this->sample_frequency_ = other.sample_frequency_;
@@ -911,6 +996,7 @@ class GeneralTreeSettings {
             this->mutation_rate_settings = other.mutation_rate_settings;
             this->operator_settings = other.operator_settings;
             this->data_settings = other.data_settings;
+            this->tree_model_settings = other.tree_model_settings;
             return * this;
         }
 
@@ -932,11 +1018,79 @@ class GeneralTreeSettings {
         double get_sample_frequency() const {
             return this->sample_frequency_;
         }
+
+        void update_operator_weights() {
+            this->tree_model_settings.update_operator_weights(this->operator_settings);
+
+            if (mutation_rate_settings.is_fixed()) {
+                if (this->operator_settings->tunable_operators.count("MuRateScaler") > 0) {
+                    this->operator_settings->tunable_operators.at("MuRateScaler").set_weight(0);
+                }
+            }
+            if (freq_1_settings.is_fixed()) {
+                if (this->operator_settings->tunable_operators.count("StateFreqMover") > 0) {
+                    this->operator_settings->tunable_operators.at("StateFreqMover").set_weight(0);
+                }
+                if (this->operator_settings->tunable_operators.count("StateFreqDirichletOperator") > 0) {
+                    this->operator_settings->tunable_operators.at("StateFreqDirichletOperator").set_weight(0);
+                }
+            }
+
+            const bool root_height_is_fixed = tree_model_settings.tree_prior->root_height_is_fixed();
+            const bool pop_sizes_fixed = population_size_settings.is_fixed();
+            const bool pop_sizes_constrained = population_size_settings.population_sizes_are_constrained();
+
+            if (root_height_is_fixed || pop_sizes_constrained || pop_sizes_fixed) {
+                if (this->operator_settings->tunable_operators.count("RootHeightSizeMixer") > 0) {
+                    this->operator_settings->tunable_operators.at("RootHeightSizeMixer").set_weight(0);
+                }
+            }
+            if (root_height_is_fixed || pop_sizes_fixed) {
+                if (this->operator_settings->tunable_operators.count("GlobalHeightSizeMixer") > 0) {
+                    this->operator_settings->tunable_operators.at("GlobalHeightSizeMixer").set_weight(0);
+                }
+
+            }
+            if (pop_sizes_fixed || pop_sizes_constrained) {
+                if (this->operator_settings->tunable_operators.count("HeightSizeMixer") > 0) {
+                    this->operator_settings->tunable_operators.at("HeightSizeMixer").set_weight(0);
+                }
+                if (this->operator_settings->tunable_operators.count("HeightSizeSlideBumpMixer") > 0) {
+                    this->operator_settings->tunable_operators.at("HeightSizeSlideBumpMixer").set_weight(0);
+                }
+            }
+            if (pop_sizes_fixed) {
+                if (this->operator_settings->tunable_operators.count("GlobalPopSizeScaler") > 0) {
+                    this->operator_settings->tunable_operators.at("GlobalPopSizeScaler").set_weight(0);
+                }
+                if (this->operator_settings->tunable_operators.count("PopSizeScaler") > 0) {
+                    this->operator_settings->tunable_operators.at("PopSizeScaler").set_weight(0);
+                }
+            }
+        }
+
         void write_settings(std::ostream& out) const {
             std::string indent = string_util::get_indent(1);
             out << std::boolalpha;
 
-            out << "---\n";
+            out << "---\n"
+                << "data:\n"
+                << this->data_settings.to_string(1)
+                << "tree_model:\n"
+                << this->tree_model_settings.to_string(1)
+                << "branch_parameters:\n"
+                << indent << "population_size:\n"
+                << this->population_size_settings.to_string(2)
+                << "mutation_parameters:\n"
+                << indent << "mutation_rate:\n"
+                << this->mutation_rate_settings.to_string(2)
+                << indent << "freq_1:\n"
+                << this->freq_1_settings.to_string(2)
+                << "mcmc_settings:\n"
+                << indent << "chain_length: " << this->get_chain_length() << "\n"
+                << indent << "sample_frequency: " << this->get_sample_frequency() << "\n"
+                << indent << "operators:\n"
+                << this->operator_settings.to_string(2);
         }
 
         std::string to_string() const {
@@ -964,6 +1118,8 @@ class GeneralTreeSettings {
             this->config_path_ = path;
             this->set_output_paths_to_config_directory();
             this->parse_yaml_config(stream);
+            // Update operators
+            this->update_operator_weights();
         }
 
         void init_from_config_file(const std::string& path) {
