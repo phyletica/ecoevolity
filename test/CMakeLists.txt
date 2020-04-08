@@ -3,28 +3,7 @@ set(CMAKE_BUILD_TYPE Debug)
 
 include_directories("${SOURCE_DIR}" "${YAML_CPP_INCLUDE_DIR}" "${EXTERNAL_PROJECT_DIR}")
 
-# file(GLOB ECOEVOLITY_TEST_SOURCES "test_*.cpp")
-set(ECOEVOLITY_TEST_SOURCES
-    # "test_stats_util.cpp"
-#     "test_collection.cpp"
-#     "test_prior_sampling.cpp"
-    # "test_probability.cpp"
-#     "test_parameter.cpp"
-    # "test_settings.cpp"
-    "test_general_tree_settings.cpp"
-    # "test_tree_io.cpp"
-    # "test_tree.cpp"
-    # "test_split.cpp"
-#     "test_node.cpp"
-    # "test_general_tree_operator.cpp"
-    # "test_general_tree_rj_operator.cpp"
-#     "test_operator.cpp"
-    # "test_rng.cpp"
-    # "test_math_util.cpp"
-#     "test_simcoevolity_cli.cpp"
-#     "test_data.cpp"
-    )
-
+file(GLOB ECOEVOLITY_TEST_SOURCES "test_*.cpp")
 
 set(ECOEVOLITY_SOURCES
     "${ECOEVOLITY_SOURCE_DIR}/error.cpp"
