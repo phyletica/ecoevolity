@@ -40,576 +40,6 @@
 #include "settings.hpp"
 
 
-class TreePriorSettings {
-    public:
-        TreePriorSettings() { }
-		enum TreePriorEnum {
-            uniform_root_and_betas     = 1,
-        };
-        static const std::map<TreePriorSettings::TreePriorEnum, std::string> tree_prior_to_string;
-        static const std::map<std::string, TreePriorSettings::TreePriorEnum> string_to_tree_prior;
-        
-        virtual TreePriorSettings::TreePriorEnum get_type() const = 0;
-        virtual std::string to_string(unsigned int indent_level = 0) const = 0;
-        virtual bool root_height_is_fixed() const {
-            return false;
-        }
-        virtual void update_operator_weights(std::shared_ptr<GeneralTreeOperatorSettingsCollection> op_collection) const = 0;
-};
-
-const std::map<TreePriorSettings::TreePriorEnum, std::string> TreePriorSettings::tree_prior_to_string = {
-    {TreePriorSettings::TreePriorEnum::uniform_root_and_betas, "uniform_root_and_betas"},
-};
-const std::map<std::string, TreePriorSettings::TreePriorEnum> TreePriorSettings::string_to_tree_prior = {
-    {"uniform_root_and_betas", TreePriorSettings::TreePriorEnum::uniform_root_and_betas},
-};
-
-class UniformTreePriorSettings : public TreePriorSettings {
-    public:
-        UniformTreePriorSettings() { }
-};
-
-class UniformRootAndBetasPriorSettings : public UniformTreePriorSettings {
-    public:
-        UniformRootAndBetasPriorSettings() { }
-        UniformRootAndBetasPriorSettings(const UniformRootAndBetasPriorSettings & other) {
-            this->root_height_settings_ = other.root_height_settings_;
-            this->alpha_of_node_height_beta_settings_ = other.alpha_of_node_height_beta_settings_;
-        }
-        UniformRootAndBetasPriorSettings& operator=(const UniformRootAndBetasPriorSettings & other) {
-            this->root_height_settings_ = other.root_height_settings_;
-            this->alpha_of_node_height_beta_settings_ = other.alpha_of_node_height_beta_settings_;
-            return * this;
-        }
-        UniformRootAndBetasPriorSettings(const YAML::Node& node) {
-            this->init_from_yaml_node(node);
-        }
-
-        TreePriorSettings::TreePriorEnum get_type() const {
-            return TreePriorSettings::TreePriorEnum::uniform_root_and_betas;
-        }
-
-        bool root_height_is_fixed() const {
-            return this->root_height_settings_.is_fixed();
-        }
-        bool alpha_of_node_height_beta_prior_is_fixed() const {
-            return this->alpha_of_node_height_beta_settings_.is_fixed();
-        }
-
-        std::string to_string(unsigned int indent_level = 0) const {
-            std::ostringstream ss;
-            ss << std::boolalpha;
-            std::string margin = string_util::get_indent(indent_level);
-            std::string indent = string_util::get_indent(1);
-            ss << margin << TreePriorSettings::tree_prior_to_string.at(this->get_type()) << ":\n"
-               << margin << indent << "parameters:\n"
-               << margin << indent << indent << "root_height:\n"
-               << this->root_height_settings_.to_string(indent_level + 3)
-               << margin << indent << indent << "alpha_of_node_height_beta_prior:\n"
-               << this->alpha_of_node_height_beta_settings_.to_string(indent_level + 3);
-            return ss.str();
-        }
-
-        void update_operator_weights(std::shared_ptr<GeneralTreeOperatorSettingsCollection> op_collection) const {
-            if (this->root_height_is_fixed()) {
-                op_collection->tunable_operators.at("TreeScaler").set_weight(0);
-                op_collection->tunable_operators.at("RootHeightScaler").set_weight(0);
-                op_collection->tunable_operators.at("TreeScaler").set_weight(0);
-                op_collection->tunable_operators.at("RootHeightScaler").set_weight(0);
-
-                if (op_collection->tunable_operators.count("GlobalHeightSizeRateScaler") > 0) {
-                    op_collection->tunable_operators.at("GlobalHeightSizeRateScaler").set_weight(0);
-                }
-                if (op_collection->tunable_operators.count("GlobalHeightRateScaler") > 0) {
-                    op_collection->tunable_operators.at("GlobalHeightRateScaler").set_weight(0);
-                }
-                if (op_collection->tunable_operators.count("GlobalHeightSizeScaler") > 0) {
-                    op_collection->tunable_operators.at("GlobalHeightSizeScaler").set_weight(0);
-                }
-            }
-            if (this->alpha_of_node_height_beta_prior_is_fixed()) {
-                if (op_collection->tunable_operators.count("NodeHeightPriorAlphaMover") > 0) {
-                    op_collection->tunable_operators.at("NodeHeightPriorAlphaMover").set_weight(0);
-                }
-                if (op_collection->tunable_operators.count("NodeHeightPriorAlphaScaler") > 0) {
-                    op_collection->tunable_operators.at("NodeHeightPriorAlphaScaler").set_weight(0);
-                }
-            }
-        }
-
-    protected:
-        PositiveRealParameterSettings root_height_settings_;
-        PositiveRealParameterSettings alpha_of_node_height_beta_settings_;
-
-        void init_from_yaml_node(const YAML::Node& node) {
-            if (! node.IsMap()) {
-                std::string message = (
-                        "Expecting uniform_root_and_betas to be a map, but found: " +
-                        YamlCppUtils::get_node_type(node));
-                throw EcoevolityYamlConfigError(message);
-            }
-
-            std::unordered_set<std::string> keys;
-            for (YAML::const_iterator arg = node.begin();
-                    arg != node.end();
-                    ++arg) {
-                if (keys.count(arg->first.as<std::string>()) > 0) {
-                    std::string message = (
-                            "Duplicate key in uniform_root_and_betas: " +
-                            arg->first.as<std::string>());
-                    throw EcoevolityYamlConfigError(message);
-                }
-                keys.insert(arg->first.as<std::string>());
-
-                if (arg->first.as<std::string>() == "parameters") {
-                    this->parse_parameters(arg->second);
-                }
-                else {
-                    std::string message = (
-                            "Unrecognized uniform_root_and_betas setting: " +
-                            arg->first.as<std::string>());
-                    throw EcoevolityYamlConfigError(message);
-                }
-            }
-        }
-
-        void parse_parameters(const YAML::Node& node) {
-            if (! node.IsMap()) {
-                std::string message = (
-                        "Expecting uniform_root_and_betas parameters to be a map, but found: " +
-                        YamlCppUtils::get_node_type(node));
-                throw EcoevolityYamlConfigError(message);
-            }
-
-            std::unordered_set<std::string> keys;
-            for (YAML::const_iterator arg = node.begin();
-                    arg != node.end();
-                    ++arg) {
-                if (keys.count(arg->first.as<std::string>()) > 0) {
-                    std::string message = (
-                            "Duplicate key in uniform_root_and_betas parameters: " +
-                            arg->first.as<std::string>());
-                    throw EcoevolityYamlConfigError(message);
-                }
-                keys.insert(arg->first.as<std::string>());
-
-                if (arg->first.as<std::string>() == "root_height") {
-                    this->root_height_settings_ = PositiveRealParameterSettings(arg->second);
-                }
-                else if (arg->first.as<std::string>() == "alpha_of_node_height_beta_prior") {
-                    this->alpha_of_node_height_beta_settings_ = PositiveRealParameterSettings(arg->second);
-                }
-                else {
-                    std::string message = (
-                            "Unrecognized uniform_root_and_betas parameters setting: " +
-                            arg->first.as<std::string>());
-                    throw EcoevolityYamlConfigError(message);
-                }
-            }
-        }
-};
-
-
-class TreeModelSettings {
-    public:
-		enum TreeSpaceEnum {
-            generalized     = 1,
-            bifurcating     = 2,
-        };
-        const static std::map<TreeModelSettings::TreeSpaceEnum, std::string> tree_space_to_string;
-        const static std::map<std::string, TreeModelSettings::TreeSpaceEnum> string_to_tree_space;
-
-        std::shared_ptr<TreePriorSettings> tree_prior = nullptr;
-
-        TreeModelSettings() { }
-        TreeModelSettings(const TreeModelSettings & other) {
-            this->tree_space_ = other.tree_space_;
-            this->tree_prior = other.tree_prior;
-        }
-        TreeModelSettings& operator=(const TreeModelSettings & other) {
-            this->tree_space_ = other.tree_space_;
-            this->tree_prior = other.tree_prior;
-            return * this;
-        }
-        TreeModelSettings(const YAML::Node& node) {
-            this->update_from_config(node);
-        }
-
-        TreeModelSettings::TreeSpaceEnum get_tree_space() const {
-            return this->tree_space_;
-        }
-        std::string get_tree_space_string() const {
-            return TreeModelSettings::tree_space_to_string.at(this->tree_space_);
-        }
-
-        void set_tree_space(const TreeModelSettings::TreeSpaceEnum tse) {
-            this->tree_space_ = tse;
-        }
-
-        bool tree_space_generalized() const {
-            return (this->get_tree_space() == TreeModelSettings::TreeSpaceEnum::generalized);
-        }
-
-        void update_from_config(const YAML::Node& node) {
-            this->clear();
-            if (! node.IsMap()) {
-                std::string message = (
-                        "Expecting tree_model node to be a map, but found: " +
-                        YamlCppUtils::get_node_type(node));
-                throw EcoevolityYamlConfigError(message);
-            }
-
-            std::unordered_set<std::string> keys;
-            for (YAML::const_iterator arg = node.begin();
-                    arg != node.end();
-                    ++arg) {
-                if (keys.count(arg->first.as<std::string>()) > 0) {
-                    std::string message = (
-                            "Duplicate key in tree_model: " +
-                            arg->first.as<std::string>());
-                    throw EcoevolityYamlConfigError(message);
-                }
-                keys.insert(arg->first.as<std::string>());
-
-                if (arg->first.as<std::string>() == "tree_space") {
-                    std::string s = arg->second.as<std::string>();
-                    if (TreeModelSettings::string_to_tree_space.count(s) < 1) {
-                        std::string message = (
-                                "Unrecognized tree_space setting: " + s);
-                        throw EcoevolityYamlConfigError(message);
-                    }
-                    this->set_tree_space(TreeModelSettings::string_to_tree_space.at(s));
-                }
-                else if (arg->first.as<std::string>() == "tree_prior") {
-                    std::string s = arg->second.as<std::string>();
-                    if (TreePriorSettings::string_to_tree_prior.count(s) < 1) {
-                        std::string message = (
-                                "Unrecognized tree_prior setting: " + s);
-                        throw EcoevolityYamlConfigError(message);
-                    }
-                    else if (TreePriorSettings::string_to_tree_prior.at(s) == TreePriorSettings::TreePriorEnum::uniform_root_and_betas) {
-                        this->tree_prior = std::make_shared<UniformRootAndBetasPriorSettings>(arg->second);
-                    }
-                    else {
-                        std::string message = (
-                                "Unsupported tree_prior setting: " + s);
-                        throw EcoevolityYamlConfigError(message);
-                    }
-                }
-                else {
-                    std::string message = (
-                            "Unrecognized tree_model setting: " +
-                            arg->first.as<std::string>());
-                    throw EcoevolityYamlConfigError(message);
-                }
-            }
-        }
-
-        void update_operator_weights const (
-                std::shared_ptr<GeneralTreeOperatorSettingsCollection op_collection) {
-            if (! this->tree_space_generalized()) {
-                op_collection->untunable_operators.at("SplitLumpNodesRevJumpSampler").set_weight(0);
-            }
-            this->tree_prior->update_operator_weights(op_collection);
-        }
-
-        virtual std::string to_string(unsigned int indent_level = 0) const {
-            std::ostringstream ss;
-            ss << std::boolalpha;
-            std::string margin = string_util::get_indent(indent_level);
-            std::string indent = string_util::get_indent(1);
-            ss << margin << "tree_space:\n"
-               << margin << indent << this->get_tree_space_string() << ":\n"
-               << margin << "tree_prior:\n"
-               << this->tree_prior->to_string(indent_level + 1);
-            return ss.str();
-        }
-
-    protected:
-        TreeModelSettings::TreeSpaceEnum tree_space_ = TreeModelSettings::TreeSpaceEnum::generalized;
-
-        void clear() {
-            this->tree_space_ = TreeModelSettings::TreeSpaceEnum::generalized;
-            this->tree_prior = nullptr;
-        }
-};
-
-const std::map<TreeModelSettings::TreeSpaceEnum, std::string> TreeModelSettings::tree_space_to_string = {
-    {TreeModelSettings::TreeSpaceEnum::generalized, "generalized"},
-    {TreeModelSettings::TreeSpaceEnum::bifurcating, "bifurcating"},
-};
-const std::map<std::string, TreeModelSettings::TreeSpaceEnum> TreeModelSettings::string_to_tree_space = {
-    {"generalized", TreeModelSettings::TreeSpaceEnum::generalized},
-    {"bifurcating", TreeModelSettings::TreeSpaceEnum::bifurcating},
-};
-
-
-class PopSizeSettings : public PositiveRealParameterSettings {
-    protected:
-        bool population_sizes_are_constrained_ = true;
-
-    public:
-        PopSizeSettings() { }
-        PopSizeSettings(const YAML::Node& node) {
-            YAML::Node n = node;
-            if (n["equal_population_sizes"]) {
-                this->population_sizes_are_constrained_ = n["equal_population_sizes"].as<bool>();
-                n.remove("equal_population_sizes");
-            }
-            this->init_from_yaml_node(n);
-        }
-        PopSizeSettings(const PopSizeSettings & other) : PositiveRealParameterSettings(other) {
-            this->population_sizes_are_constrained_ = other.population_sizes_are_constrained_;
-        }
-        PopSizeSettings& operator=(const PopSizeSettings& other) {
-            this->value_ = other.value_;
-            this->values_ = other.values_;
-            this->is_fixed_ = other.is_fixed_;
-            this->is_vector_ =  other.is_vector_;
-            this->use_empirical_value_ = other.use_empirical_value_;
-            this->prior_settings_ = other.prior_settings_;
-            this->population_sizes_are_constrained_ = other.population_sizes_are_constrained_;
-            return * this;
-        }
-        bool population_sizes_are_constrained() const {
-            return this->population_sizes_are_constrained_;
-        }
-        void set_population_sizes_are_constrained(bool b) {
-            this->population_sizes_are_constrained_ = b;
-        }
-        virtual std::string to_string(unsigned int indent_level = 0) const {
-            std::ostringstream ss;
-            ss << std::boolalpha;
-            std::string margin = string_util::get_indent(indent_level);
-            if (this->population_sizes_are_constrained_) {
-                ss << margin << "equal_population_sizes: true\n";
-            }
-            else {
-                ss << margin << "equal_population_sizes: false\n";
-            }
-            if (this->is_vector_) {
-                if (this->values_.size() > 0) {
-                    ss << margin << "value: [" << this->values_.at(0);
-                    for (unsigned int i = 1; i < this->values_.size(); ++i) {
-                        ss << ", " << this->values_.at(i);
-                    }
-                    ss << "]\n";
-                }
-            }
-            else if (! std::isnan(this->get_value())) {
-                ss << margin << "value: " << this->get_value() << "\n";
-            }
-            else if (this->use_empirical_value_) {
-                ss << margin << "value: empirical\n";
-            }
-            ss << margin << "estimate: " << (! this->is_fixed()) << "\n";
-            if (! this->is_fixed()) {
-                ss << margin << "prior:\n";
-                ss << this->prior_settings_.to_string(indent_level + 1);
-            }
-            return ss.str();
-        }
-};
-
-class GeneralTreeDataSettings {
-
-        friend class GeneralTreeSettings;
-
-    protected:
-        std::string path_;
-        char population_name_delimiter_ = ' ';
-        bool population_name_is_prefix_ = true;
-        bool genotypes_are_diploid_ = true;
-        bool markers_are_dominant_ = false;
-        bool constant_sites_removed_ = true;
-        bool using_yaml_data_ = false;
-        double ploidy_ = 2.0;
-
-        void parse_yaml_data_settings(const YAML::Node& node,
-                const std::string & config_path) {
-            this->using_yaml_data_ = true;
-            if (! node.IsMap()) {
-                std::string message = (
-                        "Expecting yaml_allele_counts node to be a map, but found: " +
-                        YamlCppUtils::get_node_type(node));
-                throw EcoevolityYamlConfigError(message);
-            }
-
-            std::unordered_set<std::string> keys;
-            for (YAML::const_iterator arg = node.begin();
-                    arg != node.end();
-                    ++arg) {
-                if (keys.count(arg->first.as<std::string>()) > 0) {
-                    std::string message = (
-                            "Duplicate key in yaml_allele_counts: " +
-                            arg->first.as<std::string>());
-                    throw EcoevolityYamlConfigError(message);
-                }
-                keys.insert(arg->first.as<std::string>());
-
-                if (arg->first.as<std::string>() == "path") {
-                    std::string p = string_util::strip(arg->second.as<std::string>());
-                    this->path_ = path::join(path::dirname(config_path), p);
-                }
-                else {
-                    std::string message = (
-                            "Unrecognized key in yaml_allele_counts: " +
-                            arg->first.as<std::string>());
-                    throw EcoevolityYamlConfigError(message);
-                }
-            }
-        }
-
-        void parse_alignment_settings(const YAML::Node& node,
-                const std::string & config_path) {
-            this->using_yaml_data_ = false;
-            if (! node.IsMap()) {
-                std::string message = (
-                        "Expecting alignment node to be a map, but found: " +
-                        YamlCppUtils::get_node_type(node));
-                throw EcoevolityYamlConfigError(message);
-            }
-
-            std::unordered_set<std::string> keys;
-            for (YAML::const_iterator arg = node.begin();
-                    arg != node.end();
-                    ++arg) {
-                if (keys.count(arg->first.as<std::string>()) > 0) {
-                    std::string message = (
-                            "Duplicate key in alignment parameters: " +
-                            arg->first.as<std::string>());
-                    throw EcoevolityYamlConfigError(message);
-                }
-                keys.insert(arg->first.as<std::string>());
-
-                if (arg->first.as<std::string>() == "genotypes_are_diploid") {
-                    this->genotypes_are_diploid_ = arg->second.as<bool>();
-                }
-                else if (arg->first.as<std::string>() == "markers_are_dominant") {
-                    this->markers_are_dominant_ = arg->second.as<bool>();
-                }
-                else if (arg->first.as<std::string>() == "population_name_is_prefix") {
-                    this->population_name_is_prefix_ = arg->second.as<bool>();
-                }
-                else if (arg->first.as<std::string>() == "population_name_delimiter") {
-                    this->population_name_delimiter_ = arg->second.as<char>();
-                }
-                else if (arg->first.as<std::string>() == "path") {
-                    std::string p = string_util::strip(arg->second.as<std::string>());
-                    this->path_ = path::join(path::dirname(config_path), p);
-                }
-                else {
-                    std::string message = (
-                            "Unrecognized key in alignment parameters: " +
-                            arg->first.as<std::string>());
-                    throw EcoevolityYamlConfigError(message);
-                }
-            }
-        }
-
-    public:
-        GeneralTreeDataSettings() { }
-        GeneralTreeDataSettings(const GeneralTreeDataSettings & other) {
-            this->path_ = other.path_;
-            this->population_name_delimiter_ = other.population_name_delimiter_;
-            this->population_name_is_prefix_ = other.population_name_is_prefix_;
-            this->genotypes_are_diploid_ = other.genotypes_are_diploid_;
-            this->markers_are_dominant_ = other.markers_are_dominant_;
-            this->constant_sites_removed_ = other.constant_sites_removed_;
-            this->using_yaml_data_ = other.using_yaml_data_;
-            this->ploidy_ = other.ploidy_;
-        }
-        GeneralTreeDataSettings& operator=(const GeneralTreeDataSettings& other) {
-            this->path_ = other.path_;
-            this->population_name_delimiter_ = other.population_name_delimiter_;
-            this->population_name_is_prefix_ = other.population_name_is_prefix_;
-            this->genotypes_are_diploid_ = other.genotypes_are_diploid_;
-            this->markers_are_dominant_ = other.markers_are_dominant_;
-            this->constant_sites_removed_ = other.constant_sites_removed_;
-            this->using_yaml_data_ = other.using_yaml_data_;
-            this->ploidy_ = other.ploidy_;
-            return * this;
-        }
-        virtual ~GeneralTreeDataSettings() { }
-        const std::string& get_path() const {
-            return this->path_;
-        }
-        void set_ploidy(double p) {
-            this->ploidy_ = p;
-        }
-        double get_ploidy() const {
-            return this->ploidy_;
-        }
-        void update_from_config(const YAML::Node& node,
-                const std::string & config_path) {
-            if (! node.IsMap()) {
-                std::string message = (
-                        "Expecting data node to be a map, but found: " +
-                        YamlCppUtils::get_node_type(node));
-                throw EcoevolityYamlConfigError(message);
-            }
-
-            if ((node["alignment"]) && (node["yaml_allele_counts"])) {
-                std::string message(
-                        "Data specified as both 'alignment' and 'yaml_allele_counts'");
-                throw EcoevolityYamlConfigError(message);
-            }
-            std::unordered_set<std::string> keys;
-            for (YAML::const_iterator p = node.begin();
-                    p != node.end();
-                    ++p) {
-                if (keys.count(p->first.as<std::string>()) > 0) {
-                    std::string message = (
-                            "Duplicate key in data parameters: " +
-                            p->first.as<std::string>());
-                    throw EcoevolityYamlConfigError(message);
-                }
-                keys.insert(p->first.as<std::string>());
-
-                if (p->first.as<std::string>() == "ploidy") {
-                    this->set_ploidy(p->second.as<double>());
-                }
-                else if (p->first.as<std::string>() == "constant_sites_removed") {
-                    this->constant_sites_removed_ = p->second.as<bool>();
-                }
-                else if (p->first.as<std::string>() == "alignment") {
-                    this->parse_alignment_settings(p->second, config_path);
-                }
-                else if (p->first.as<std::string>() == "yaml_allele_counts") {
-                    this->parse_yaml_data_settings(p->second, config_path);
-                }
-                else {
-                    std::string message = (
-                            "Unrecognized key in data parameters: " +
-                            p->first.as<std::string>());
-                    throw EcoevolityYamlConfigError(message);
-                }
-            }
-        }
-
-        std::string to_string(unsigned int indent_level = 0) const {
-            std::ostringstream ss;
-            std::string margin = string_util::get_indent(indent_level);
-            std::string indent = string_util::get_indent(1);
-            ss << margin << "ploidy: " << this->ploidy_ << "\n";
-            ss << margin << "constant_sites_removed: " << this->constant_sites_removed_ << "\n";
-            if (this->using_yaml_data_) {
-                ss << margin << "yaml_allele_counts:\n";
-                ss << margin << indent << "path: " << this->path_ << "\n";
-            }
-            else {
-                ss << margin << "alignment:\n";
-                ss << margin << indent << "path: " << this->path_ << "\n";
-                ss << margin << indent << "genotypes_are_diploid: " << this->genotypes_are_diploid_ << "\n";
-                ss << margin << indent << "markers_are_dominant: " << this->markers_are_dominant_ << "\n";
-                ss << margin << indent << "population_name_delimiter: '" << this->population_name_delimiter_ << "'\n";
-                ss << margin << indent << "population_name_is_prefix: " << this->population_name_is_prefix_ << "\n";
-            }
-
-            return ss.str();
-        }
-};
-
 class GeneralTreeOperatorSettings {
     protected:
         double weight_ = 1.0;
@@ -892,8 +322,8 @@ class GeneralTreeOperatorSettingsCollection {
 class BetaTreeOperatorSettingsCollection : public GeneralTreeOperatorSettingsCollection {
     public:
         BetaTreeOperatorSettingsCollection() : GeneralTreeOperatorSettingsCollection() {
-            this->tunable_operators["NodeHeightPriorAlphaScaler"]  = GeneralTreeTunableOperatorSettings(1)},
-            this->tunable_operators["NodeHeightPriorAlphaMover"]   = GeneralTreeTunableOperatorSettings(0)},
+            this->tunable_operators["NodeHeightPriorAlphaScaler"]  = GeneralTreeTunableOperatorSettings(1);
+            this->tunable_operators["NodeHeightPriorAlphaMover"]   = GeneralTreeTunableOperatorSettings(0);
         }
         BetaTreeOperatorSettingsCollection& operator=(const BetaTreeOperatorSettingsCollection& other) {
             this->untunable_operators = other.untunable_operators;
@@ -935,8 +365,8 @@ class BetaPopulationTreeOperatorSettingsCollection : public PopulationTreeOperat
 
     public:
         BetaPopulationTreeOperatorSettingsCollection() : PopulationTreeOperatorSettingsCollection() {
-            this->tunable_operators["NodeHeightPriorAlphaScaler"]  = GeneralTreeTunableOperatorSettings(1)},
-            this->tunable_operators["NodeHeightPriorAlphaMover"]   = GeneralTreeTunableOperatorSettings(0)},
+            this->tunable_operators["NodeHeightPriorAlphaScaler"]  = GeneralTreeTunableOperatorSettings(1);
+            this->tunable_operators["NodeHeightPriorAlphaMover"]   = GeneralTreeTunableOperatorSettings(0);
         }
         BetaPopulationTreeOperatorSettingsCollection& operator=(const BetaPopulationTreeOperatorSettingsCollection& other) {
             this->untunable_operators = other.untunable_operators;
@@ -945,6 +375,577 @@ class BetaPopulationTreeOperatorSettingsCollection : public PopulationTreeOperat
         }
         BetaPopulationTreeOperatorSettingsCollection(const BetaPopulationTreeOperatorSettingsCollection& other) :
             PopulationTreeOperatorSettingsCollection(other) { }
+};
+
+
+
+class TreePriorSettings {
+    public:
+        TreePriorSettings() { }
+		enum TreePriorEnum {
+            uniform_root_and_betas     = 1,
+        };
+        static const std::map<TreePriorSettings::TreePriorEnum, std::string> tree_prior_to_string;
+        static const std::map<std::string, TreePriorSettings::TreePriorEnum> string_to_tree_prior;
+        
+        virtual TreePriorSettings::TreePriorEnum get_type() const = 0;
+        virtual std::string to_string(unsigned int indent_level = 0) const = 0;
+        virtual bool root_height_is_fixed() const {
+            return false;
+        }
+        virtual void update_operator_weights(std::shared_ptr<GeneralTreeOperatorSettingsCollection> op_collection) const = 0;
+};
+
+const std::map<TreePriorSettings::TreePriorEnum, std::string> TreePriorSettings::tree_prior_to_string = {
+    {TreePriorSettings::TreePriorEnum::uniform_root_and_betas, "uniform_root_and_betas"},
+};
+const std::map<std::string, TreePriorSettings::TreePriorEnum> TreePriorSettings::string_to_tree_prior = {
+    {"uniform_root_and_betas", TreePriorSettings::TreePriorEnum::uniform_root_and_betas},
+};
+
+class UniformTreePriorSettings : public TreePriorSettings {
+    public:
+        UniformTreePriorSettings() { }
+};
+
+class UniformRootAndBetasPriorSettings : public UniformTreePriorSettings {
+    public:
+        UniformRootAndBetasPriorSettings() { }
+        UniformRootAndBetasPriorSettings(const UniformRootAndBetasPriorSettings & other) {
+            this->root_height_settings_ = other.root_height_settings_;
+            this->alpha_of_node_height_beta_settings_ = other.alpha_of_node_height_beta_settings_;
+        }
+        UniformRootAndBetasPriorSettings& operator=(const UniformRootAndBetasPriorSettings & other) {
+            this->root_height_settings_ = other.root_height_settings_;
+            this->alpha_of_node_height_beta_settings_ = other.alpha_of_node_height_beta_settings_;
+            return * this;
+        }
+        UniformRootAndBetasPriorSettings(const YAML::Node& node) {
+            this->init_from_yaml_node(node);
+        }
+
+        TreePriorSettings::TreePriorEnum get_type() const {
+            return TreePriorSettings::TreePriorEnum::uniform_root_and_betas;
+        }
+
+        bool root_height_is_fixed() const {
+            return this->root_height_settings_.is_fixed();
+        }
+        bool alpha_of_node_height_beta_prior_is_fixed() const {
+            return this->alpha_of_node_height_beta_settings_.is_fixed();
+        }
+
+        std::string to_string(unsigned int indent_level = 0) const {
+            std::ostringstream ss;
+            ss << std::boolalpha;
+            std::string margin = string_util::get_indent(indent_level);
+            std::string indent = string_util::get_indent(1);
+            ss << margin << TreePriorSettings::tree_prior_to_string.at(this->get_type()) << ":\n"
+               << margin << indent << "parameters:\n"
+               << margin << indent << indent << "root_height:\n"
+               << this->root_height_settings_.to_string(indent_level + 3)
+               << margin << indent << indent << "alpha_of_node_height_beta_prior:\n"
+               << this->alpha_of_node_height_beta_settings_.to_string(indent_level + 3);
+            return ss.str();
+        }
+
+        void update_operator_weights(std::shared_ptr<GeneralTreeOperatorSettingsCollection> op_collection) const {
+            if (this->root_height_is_fixed()) {
+                op_collection->tunable_operators.at("TreeScaler").set_weight(0);
+                op_collection->tunable_operators.at("RootHeightScaler").set_weight(0);
+                op_collection->tunable_operators.at("TreeScaler").set_weight(0);
+                op_collection->tunable_operators.at("RootHeightScaler").set_weight(0);
+
+                if (op_collection->tunable_operators.count("GlobalHeightSizeRateScaler") > 0) {
+                    op_collection->tunable_operators.at("GlobalHeightSizeRateScaler").set_weight(0);
+                }
+                if (op_collection->tunable_operators.count("GlobalHeightRateScaler") > 0) {
+                    op_collection->tunable_operators.at("GlobalHeightRateScaler").set_weight(0);
+                }
+                if (op_collection->tunable_operators.count("GlobalHeightSizeScaler") > 0) {
+                    op_collection->tunable_operators.at("GlobalHeightSizeScaler").set_weight(0);
+                }
+            }
+            if (this->alpha_of_node_height_beta_prior_is_fixed()) {
+                if (op_collection->tunable_operators.count("NodeHeightPriorAlphaMover") > 0) {
+                    op_collection->tunable_operators.at("NodeHeightPriorAlphaMover").set_weight(0);
+                }
+                if (op_collection->tunable_operators.count("NodeHeightPriorAlphaScaler") > 0) {
+                    op_collection->tunable_operators.at("NodeHeightPriorAlphaScaler").set_weight(0);
+                }
+            }
+        }
+
+    protected:
+        PositiveRealParameterSettings root_height_settings_;
+        PositiveRealParameterSettings alpha_of_node_height_beta_settings_;
+
+        void init_from_yaml_node(const YAML::Node& node) {
+            if (! node.IsMap()) {
+                std::string message = (
+                        "Expecting uniform_root_and_betas to be a map, but found: " +
+                        YamlCppUtils::get_node_type(node));
+                throw EcoevolityYamlConfigError(message);
+            }
+
+            std::unordered_set<std::string> keys;
+            for (YAML::const_iterator arg = node.begin();
+                    arg != node.end();
+                    ++arg) {
+                if (keys.count(arg->first.as<std::string>()) > 0) {
+                    std::string message = (
+                            "Duplicate key in uniform_root_and_betas: " +
+                            arg->first.as<std::string>());
+                    throw EcoevolityYamlConfigError(message);
+                }
+                keys.insert(arg->first.as<std::string>());
+
+                if (arg->first.as<std::string>() == "parameters") {
+                    this->parse_parameters(arg->second);
+                }
+                else {
+                    std::string message = (
+                            "Unrecognized uniform_root_and_betas setting: " +
+                            arg->first.as<std::string>());
+                    throw EcoevolityYamlConfigError(message);
+                }
+            }
+        }
+
+        void parse_parameters(const YAML::Node& node) {
+            if (! node.IsMap()) {
+                std::string message = (
+                        "Expecting uniform_root_and_betas parameters to be a map, but found: " +
+                        YamlCppUtils::get_node_type(node));
+                throw EcoevolityYamlConfigError(message);
+            }
+
+            std::unordered_set<std::string> keys;
+            for (YAML::const_iterator arg = node.begin();
+                    arg != node.end();
+                    ++arg) {
+                if (keys.count(arg->first.as<std::string>()) > 0) {
+                    std::string message = (
+                            "Duplicate key in uniform_root_and_betas parameters: " +
+                            arg->first.as<std::string>());
+                    throw EcoevolityYamlConfigError(message);
+                }
+                keys.insert(arg->first.as<std::string>());
+
+                if (arg->first.as<std::string>() == "root_height") {
+                    this->root_height_settings_ = PositiveRealParameterSettings(arg->second);
+                }
+                else if (arg->first.as<std::string>() == "alpha_of_node_height_beta_prior") {
+                    this->alpha_of_node_height_beta_settings_ = PositiveRealParameterSettings(arg->second);
+                }
+                else {
+                    std::string message = (
+                            "Unrecognized uniform_root_and_betas parameters setting: " +
+                            arg->first.as<std::string>());
+                    throw EcoevolityYamlConfigError(message);
+                }
+            }
+        }
+};
+
+
+class TreeModelSettings {
+    public:
+		enum TreeSpaceEnum {
+            generalized     = 1,
+            bifurcating     = 2,
+        };
+        const static std::map<TreeModelSettings::TreeSpaceEnum, std::string> tree_space_to_string;
+        const static std::map<std::string, TreeModelSettings::TreeSpaceEnum> string_to_tree_space;
+
+        std::shared_ptr<TreePriorSettings> tree_prior = nullptr;
+
+        TreeModelSettings() { }
+        TreeModelSettings(const TreeModelSettings & other) {
+            this->tree_space_ = other.tree_space_;
+            this->tree_prior = other.tree_prior;
+        }
+        TreeModelSettings& operator=(const TreeModelSettings & other) {
+            this->tree_space_ = other.tree_space_;
+            this->tree_prior = other.tree_prior;
+            return * this;
+        }
+        TreeModelSettings(const YAML::Node& node) {
+            this->update_from_config(node);
+        }
+
+        TreeModelSettings::TreeSpaceEnum get_tree_space() const {
+            return this->tree_space_;
+        }
+        std::string get_tree_space_string() const {
+            return TreeModelSettings::tree_space_to_string.at(this->tree_space_);
+        }
+
+        void set_tree_space(const TreeModelSettings::TreeSpaceEnum tse) {
+            this->tree_space_ = tse;
+        }
+
+        bool tree_space_generalized() const {
+            return (this->get_tree_space() == TreeModelSettings::TreeSpaceEnum::generalized);
+        }
+
+        void update_from_config(const YAML::Node& node) {
+            this->clear();
+            if (! node.IsMap()) {
+                std::string message = (
+                        "Expecting tree_model node to be a map, but found: " +
+                        YamlCppUtils::get_node_type(node));
+                throw EcoevolityYamlConfigError(message);
+            }
+
+            std::unordered_set<std::string> keys;
+            for (YAML::const_iterator arg = node.begin();
+                    arg != node.end();
+                    ++arg) {
+                if (keys.count(arg->first.as<std::string>()) > 0) {
+                    std::string message = (
+                            "Duplicate key in tree_model: " +
+                            arg->first.as<std::string>());
+                    throw EcoevolityYamlConfigError(message);
+                }
+                keys.insert(arg->first.as<std::string>());
+
+                if (arg->first.as<std::string>() == "tree_space") {
+                    std::string s = arg->second.as<std::string>();
+                    if (TreeModelSettings::string_to_tree_space.count(s) < 1) {
+                        std::string message = (
+                                "Unrecognized tree_space setting: " + s);
+                        throw EcoevolityYamlConfigError(message);
+                    }
+                    this->set_tree_space(TreeModelSettings::string_to_tree_space.at(s));
+                }
+                else if (arg->first.as<std::string>() == "tree_prior") {
+                    std::string s = arg->second.as<std::string>();
+                    if (TreePriorSettings::string_to_tree_prior.count(s) < 1) {
+                        std::string message = (
+                                "Unrecognized tree_prior setting: " + s);
+                        throw EcoevolityYamlConfigError(message);
+                    }
+                    else if (TreePriorSettings::string_to_tree_prior.at(s) == TreePriorSettings::TreePriorEnum::uniform_root_and_betas) {
+                        this->tree_prior = std::make_shared<UniformRootAndBetasPriorSettings>(arg->second);
+                    }
+                    else {
+                        std::string message = (
+                                "Unsupported tree_prior setting: " + s);
+                        throw EcoevolityYamlConfigError(message);
+                    }
+                }
+                else {
+                    std::string message = (
+                            "Unrecognized tree_model setting: " +
+                            arg->first.as<std::string>());
+                    throw EcoevolityYamlConfigError(message);
+                }
+            }
+        }
+
+        void update_operator_weights(std::shared_ptr<GeneralTreeOperatorSettingsCollection> op_collection) const {
+            if (! this->tree_space_generalized()) {
+                op_collection->untunable_operators.at("SplitLumpNodesRevJumpSampler").set_weight(0);
+            }
+            this->tree_prior->update_operator_weights(op_collection);
+        }
+
+        virtual std::string to_string(unsigned int indent_level = 0) const {
+            std::ostringstream ss;
+            ss << std::boolalpha;
+            std::string margin = string_util::get_indent(indent_level);
+            std::string indent = string_util::get_indent(1);
+            ss << margin << "tree_space:\n"
+               << margin << indent << this->get_tree_space_string() << ":\n"
+               << margin << "tree_prior:\n"
+               << this->tree_prior->to_string(indent_level + 1);
+            return ss.str();
+        }
+
+    protected:
+        TreeModelSettings::TreeSpaceEnum tree_space_ = TreeModelSettings::TreeSpaceEnum::generalized;
+
+        void clear() {
+            this->tree_space_ = TreeModelSettings::TreeSpaceEnum::generalized;
+            this->tree_prior = nullptr;
+        }
+};
+
+const std::map<TreeModelSettings::TreeSpaceEnum, std::string> TreeModelSettings::tree_space_to_string = {
+    {TreeModelSettings::TreeSpaceEnum::generalized, "generalized"},
+    {TreeModelSettings::TreeSpaceEnum::bifurcating, "bifurcating"},
+};
+const std::map<std::string, TreeModelSettings::TreeSpaceEnum> TreeModelSettings::string_to_tree_space = {
+    {"generalized", TreeModelSettings::TreeSpaceEnum::generalized},
+    {"bifurcating", TreeModelSettings::TreeSpaceEnum::bifurcating},
+};
+
+
+class PopSizeSettings : public PositiveRealParameterSettings {
+    protected:
+        bool population_sizes_are_constrained_ = true;
+
+    public:
+        PopSizeSettings() { }
+        PopSizeSettings(const YAML::Node& node) {
+            YAML::Node n = node;
+            if (n["equal_population_sizes"]) {
+                this->population_sizes_are_constrained_ = n["equal_population_sizes"].as<bool>();
+                n.remove("equal_population_sizes");
+            }
+            this->init_from_yaml_node(n);
+        }
+        PopSizeSettings(const PopSizeSettings & other) : PositiveRealParameterSettings(other) {
+            this->population_sizes_are_constrained_ = other.population_sizes_are_constrained_;
+        }
+        PopSizeSettings& operator=(const PopSizeSettings& other) {
+            this->value_ = other.value_;
+            this->values_ = other.values_;
+            this->is_fixed_ = other.is_fixed_;
+            this->is_vector_ =  other.is_vector_;
+            this->use_empirical_value_ = other.use_empirical_value_;
+            this->prior_settings_ = other.prior_settings_;
+            this->population_sizes_are_constrained_ = other.population_sizes_are_constrained_;
+            return * this;
+        }
+        bool population_sizes_are_constrained() const {
+            return this->population_sizes_are_constrained_;
+        }
+        void set_population_sizes_are_constrained(bool b) {
+            this->population_sizes_are_constrained_ = b;
+        }
+        virtual std::string to_string(unsigned int indent_level = 0) const {
+            std::ostringstream ss;
+            ss << std::boolalpha;
+            std::string margin = string_util::get_indent(indent_level);
+            if (this->population_sizes_are_constrained_) {
+                ss << margin << "equal_population_sizes: true\n";
+            }
+            else {
+                ss << margin << "equal_population_sizes: false\n";
+            }
+            if (this->is_vector_) {
+                if (this->values_.size() > 0) {
+                    ss << margin << "value: [" << this->values_.at(0);
+                    for (unsigned int i = 1; i < this->values_.size(); ++i) {
+                        ss << ", " << this->values_.at(i);
+                    }
+                    ss << "]\n";
+                }
+            }
+            else if (! std::isnan(this->get_value())) {
+                ss << margin << "value: " << this->get_value() << "\n";
+            }
+            else if (this->use_empirical_value_) {
+                ss << margin << "value: empirical\n";
+            }
+            ss << margin << "estimate: " << (! this->is_fixed()) << "\n";
+            if (! this->is_fixed()) {
+                ss << margin << "prior:\n";
+                ss << this->prior_settings_.to_string(indent_level + 1);
+            }
+            return ss.str();
+        }
+};
+
+class GeneralTreeDataSettings {
+
+        friend class PopulationTreeSettings;
+
+    protected:
+        std::string path_;
+        char population_name_delimiter_ = ' ';
+        bool population_name_is_prefix_ = true;
+        bool genotypes_are_diploid_ = true;
+        bool markers_are_dominant_ = false;
+        bool constant_sites_removed_ = true;
+        bool using_yaml_data_ = false;
+        double ploidy_ = 2.0;
+
+        void parse_yaml_data_settings(const YAML::Node& node,
+                const std::string & config_path) {
+            this->using_yaml_data_ = true;
+            if (! node.IsMap()) {
+                std::string message = (
+                        "Expecting yaml_allele_counts node to be a map, but found: " +
+                        YamlCppUtils::get_node_type(node));
+                throw EcoevolityYamlConfigError(message);
+            }
+
+            std::unordered_set<std::string> keys;
+            for (YAML::const_iterator arg = node.begin();
+                    arg != node.end();
+                    ++arg) {
+                if (keys.count(arg->first.as<std::string>()) > 0) {
+                    std::string message = (
+                            "Duplicate key in yaml_allele_counts: " +
+                            arg->first.as<std::string>());
+                    throw EcoevolityYamlConfigError(message);
+                }
+                keys.insert(arg->first.as<std::string>());
+
+                if (arg->first.as<std::string>() == "path") {
+                    std::string p = string_util::strip(arg->second.as<std::string>());
+                    this->path_ = path::join(path::dirname(config_path), p);
+                }
+                else {
+                    std::string message = (
+                            "Unrecognized key in yaml_allele_counts: " +
+                            arg->first.as<std::string>());
+                    throw EcoevolityYamlConfigError(message);
+                }
+            }
+        }
+
+        void parse_alignment_settings(const YAML::Node& node,
+                const std::string & config_path) {
+            this->using_yaml_data_ = false;
+            if (! node.IsMap()) {
+                std::string message = (
+                        "Expecting alignment node to be a map, but found: " +
+                        YamlCppUtils::get_node_type(node));
+                throw EcoevolityYamlConfigError(message);
+            }
+
+            std::unordered_set<std::string> keys;
+            for (YAML::const_iterator arg = node.begin();
+                    arg != node.end();
+                    ++arg) {
+                if (keys.count(arg->first.as<std::string>()) > 0) {
+                    std::string message = (
+                            "Duplicate key in alignment parameters: " +
+                            arg->first.as<std::string>());
+                    throw EcoevolityYamlConfigError(message);
+                }
+                keys.insert(arg->first.as<std::string>());
+
+                if (arg->first.as<std::string>() == "genotypes_are_diploid") {
+                    this->genotypes_are_diploid_ = arg->second.as<bool>();
+                }
+                else if (arg->first.as<std::string>() == "markers_are_dominant") {
+                    this->markers_are_dominant_ = arg->second.as<bool>();
+                }
+                else if (arg->first.as<std::string>() == "population_name_is_prefix") {
+                    this->population_name_is_prefix_ = arg->second.as<bool>();
+                }
+                else if (arg->first.as<std::string>() == "population_name_delimiter") {
+                    this->population_name_delimiter_ = arg->second.as<char>();
+                }
+                else if (arg->first.as<std::string>() == "path") {
+                    std::string p = string_util::strip(arg->second.as<std::string>());
+                    this->path_ = path::join(path::dirname(config_path), p);
+                }
+                else {
+                    std::string message = (
+                            "Unrecognized key in alignment parameters: " +
+                            arg->first.as<std::string>());
+                    throw EcoevolityYamlConfigError(message);
+                }
+            }
+        }
+
+    public:
+        GeneralTreeDataSettings() { }
+        GeneralTreeDataSettings(const GeneralTreeDataSettings & other) {
+            this->path_ = other.path_;
+            this->population_name_delimiter_ = other.population_name_delimiter_;
+            this->population_name_is_prefix_ = other.population_name_is_prefix_;
+            this->genotypes_are_diploid_ = other.genotypes_are_diploid_;
+            this->markers_are_dominant_ = other.markers_are_dominant_;
+            this->constant_sites_removed_ = other.constant_sites_removed_;
+            this->using_yaml_data_ = other.using_yaml_data_;
+            this->ploidy_ = other.ploidy_;
+        }
+        GeneralTreeDataSettings& operator=(const GeneralTreeDataSettings& other) {
+            this->path_ = other.path_;
+            this->population_name_delimiter_ = other.population_name_delimiter_;
+            this->population_name_is_prefix_ = other.population_name_is_prefix_;
+            this->genotypes_are_diploid_ = other.genotypes_are_diploid_;
+            this->markers_are_dominant_ = other.markers_are_dominant_;
+            this->constant_sites_removed_ = other.constant_sites_removed_;
+            this->using_yaml_data_ = other.using_yaml_data_;
+            this->ploidy_ = other.ploidy_;
+            return * this;
+        }
+        virtual ~GeneralTreeDataSettings() { }
+        const std::string& get_path() const {
+            return this->path_;
+        }
+        void set_ploidy(double p) {
+            this->ploidy_ = p;
+        }
+        double get_ploidy() const {
+            return this->ploidy_;
+        }
+        void update_from_config(const YAML::Node& node,
+                const std::string & config_path) {
+            if (! node.IsMap()) {
+                std::string message = (
+                        "Expecting data node to be a map, but found: " +
+                        YamlCppUtils::get_node_type(node));
+                throw EcoevolityYamlConfigError(message);
+            }
+
+            if ((node["alignment"]) && (node["yaml_allele_counts"])) {
+                std::string message(
+                        "Data specified as both 'alignment' and 'yaml_allele_counts'");
+                throw EcoevolityYamlConfigError(message);
+            }
+            std::unordered_set<std::string> keys;
+            for (YAML::const_iterator p = node.begin();
+                    p != node.end();
+                    ++p) {
+                if (keys.count(p->first.as<std::string>()) > 0) {
+                    std::string message = (
+                            "Duplicate key in data parameters: " +
+                            p->first.as<std::string>());
+                    throw EcoevolityYamlConfigError(message);
+                }
+                keys.insert(p->first.as<std::string>());
+
+                if (p->first.as<std::string>() == "ploidy") {
+                    this->set_ploidy(p->second.as<double>());
+                }
+                else if (p->first.as<std::string>() == "constant_sites_removed") {
+                    this->constant_sites_removed_ = p->second.as<bool>();
+                }
+                else if (p->first.as<std::string>() == "alignment") {
+                    this->parse_alignment_settings(p->second, config_path);
+                }
+                else if (p->first.as<std::string>() == "yaml_allele_counts") {
+                    this->parse_yaml_data_settings(p->second, config_path);
+                }
+                else {
+                    std::string message = (
+                            "Unrecognized key in data parameters: " +
+                            p->first.as<std::string>());
+                    throw EcoevolityYamlConfigError(message);
+                }
+            }
+        }
+
+        std::string to_string(unsigned int indent_level = 0) const {
+            std::ostringstream ss;
+            std::string margin = string_util::get_indent(indent_level);
+            std::string indent = string_util::get_indent(1);
+            ss << margin << "ploidy: " << this->ploidy_ << "\n";
+            ss << margin << "constant_sites_removed: " << this->constant_sites_removed_ << "\n";
+            if (this->using_yaml_data_) {
+                ss << margin << "yaml_allele_counts:\n";
+                ss << margin << indent << "path: " << this->path_ << "\n";
+            }
+            else {
+                ss << margin << "alignment:\n";
+                ss << margin << indent << "path: " << this->path_ << "\n";
+                ss << margin << indent << "genotypes_are_diploid: " << this->genotypes_are_diploid_ << "\n";
+                ss << margin << indent << "markers_are_dominant: " << this->markers_are_dominant_ << "\n";
+                ss << margin << indent << "population_name_delimiter: '" << this->population_name_delimiter_ << "'\n";
+                ss << margin << indent << "population_name_is_prefix: " << this->population_name_is_prefix_ << "\n";
+            }
+
+            return ss.str();
+        }
 };
 
 
@@ -1090,7 +1091,7 @@ class PopulationTreeSettings {
                 << indent << "chain_length: " << this->get_chain_length() << "\n"
                 << indent << "sample_frequency: " << this->get_sample_frequency() << "\n"
                 << indent << "operators:\n"
-                << this->operator_settings.to_string(2);
+                << this->operator_settings->to_string(2);
         }
 
         std::string to_string() const {
@@ -1152,9 +1153,21 @@ class PopulationTreeSettings {
                         "Expecting top-level of config to be a map, but found: " +
                         YamlCppUtils::get_node_type(top_level_node));
             }
+
+            // parse data settings
             if (! top_level_node["data"]) {
                 throw EcoevolityYamlConfigError("No data");
             }
+            this->data_settings.update_from_config(
+                    top_level_node["data"],
+                    this->config_path_);
+
+            // Parse tree model first, because we need it for determining what
+            // type off operator collection settings is needed
+            if (top_level_node["tree_model"]) {
+                this->tree_model_settings.update_from_config(top_level_node["tree_model"]);
+            }
+
             std::unordered_set<std::string> keys;
             for (YAML::const_iterator top = top_level_node.begin();
                     top != top_level_node.end();
@@ -1167,17 +1180,15 @@ class PopulationTreeSettings {
                 }
                 keys.insert(top->first.as<std::string>());
 
-                // parse data settings
                 if (top->first.as<std::string>() == "data") {
-                    this->data_settings.update_from_config(top->second, this->config_path_);
+                    // Already parsed above
+                }
+                else if (top->first.as<std::string>() == "tree_model") {
+                    // Already parsed above
                 }
                 // parse mcmc settings
                 else if (top->first.as<std::string>() == "mcmc_settings") {
                     this->parse_mcmc_settings(top->second);
-                }
-                // parse tree model 
-                else if (top->first.as<std::string>() == "tree_model") {
-                    this->tree_model_settings.update_from_config(top->second);
                 }
                 // parse branch parameters
                 else if (top->first.as<std::string>() == "branch_parameters") {
@@ -1289,7 +1300,18 @@ class PopulationTreeSettings {
                 }
                 // parse operator settings
                 else if (mcmc->first.as<std::string>() == "operators") {
-                    this->operator_settings.update_from_config(mcmc->second);
+                    TreePriorSettings::TreePriorEnum tree_prior_type = this->tree_model_settings.tree_prior->get_type();
+                    if (tree_prior_type == TreePriorSettings::TreePriorEnum::uniform_root_and_betas) {
+                        std::shared_ptr<GeneralTreeOperatorSettingsCollection> op_settings = std::make_shared<BetaPopulationTreeOperatorSettingsCollection>();
+                        op_settings->update_from_config(mcmc->second);
+                        this->operator_settings = op_settings;
+                    }
+                    else {
+                        std::string message = (
+                                "Do not have OperatorSettingsCollection to match tree prior: " +
+                                TreePriorSettings::tree_prior_to_string.at(tree_prior_type));
+                        throw EcoevolityYamlConfigError(message);
+                    }
                 }
                 else {
                     throw EcoevolityYamlConfigError(

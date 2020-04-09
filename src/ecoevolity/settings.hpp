@@ -519,7 +519,7 @@ class PositiveRealParameterSettings {
     friend class DirichletComparisonSettings;
     friend class RelativeRootComparisonSettings;
     template<typename T> friend class BaseCollectionSettings;
-    friend class GeneralTreeSettings;
+    friend class PopulationTreeSettings;
 
     protected:
         double value_ = std::numeric_limits<double>::quiet_NaN();
