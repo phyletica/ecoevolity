@@ -40,6 +40,68 @@ class EcoevolityOptions {
             gibbs_pyp = 4,
         };
 
+		enum TreePrior {
+            uniform_root_and_betas = 1,
+        };
+
+		enum TreeSpace {
+            generalized     = 1,
+            bifurcating     = 2,
+        };
+
+
+        static bool is_tree_prior(const std::string & s) {
+            try {
+                EcoevolityOptions::get_tree_prior(s);
+            }
+            catch (...) {
+                return false;
+            }
+            return true;
+        }
+        static std::string get_tree_prior_string(const EcoevolityOptions::TreePrior tp) {
+            if (tp == EcoevolityOptions::TreePrior::uniform_root_and_betas) {
+                return "uniform_root_and_betas";
+            }
+            throw "EcoevolityOptions: Invalid tree prior";
+        }
+        static EcoevolityOptions::TreePrior get_tree_prior(const std::string & s) {
+            if (s == EcoevolityOptions::get_tree_prior_string(
+                        EcoevolityOptions::TreePrior::uniform_root_and_betas)) {
+                return EcoevolityOptions::TreePrior::uniform_root_and_betas;
+            }
+            throw "EcoevolityOptions: Invalid tree prior string";
+        }
+
+        static bool is_tree_space(const std::string & s) {
+            try {
+                EcoevolityOptions::get_tree_space(s);
+            }
+            catch (...) {
+                return false;
+            }
+            return true;
+        }
+        static std::string get_tree_space_string(const EcoevolityOptions::TreeSpace ts) {
+            if (ts == EcoevolityOptions::TreeSpace::generalized) {
+                return "generalized";
+            }
+            if (ts == EcoevolityOptions::TreeSpace::bifurcating) {
+                return "bifurcating";
+            }
+            throw "EcoevolityOptions: Invalid tree space";
+        }
+        static EcoevolityOptions::TreeSpace get_tree_space(const std::string & s) {
+            if (s == EcoevolityOptions::get_tree_space_string(
+                        EcoevolityOptions::TreeSpace::generalized)) {
+                return EcoevolityOptions::TreeSpace::generalized;
+            }
+            if (s == EcoevolityOptions::get_tree_space_string(
+                        EcoevolityOptions::TreeSpace::bifurcating)) {
+                return EcoevolityOptions::TreeSpace::bifurcating;
+            }
+            throw "EcoevolityOptions: Invalid tree space string";
+        }
 };
 
 #endif
