@@ -1,8 +1,7 @@
 ---
 # comments should be ok
 tree_model:
-    tree_space:
-        generalized: # bifurcating
+    tree_space: "generalized" # bifurcating
     tree_prior:
         uniform_root_and_betas:
             parameters:
@@ -20,6 +19,10 @@ tree_model:
                     prior:
                         exponential_distribution:
                             mean: 1.0
+    starting_tree:
+        option: "upgma" # "polytomy"
+        # string: ((a,b),c);
+        # path: 'path/to/tree_file.txt";
 
 branch_parameters:
     population_size:

@@ -591,10 +591,6 @@ class TreeModelSettings {
             this->tree_space_ = ts;
         }
 
-        bool tree_space_generalized() const {
-            return (this->get_tree_space() == EcoevolityOptions::TreeSpace::generalized);
-        }
-
         void update_from_config(const YAML::Node& node) {
             this->clear();
             if (! node.IsMap()) {
@@ -617,29 +613,28 @@ class TreeModelSettings {
                 keys.insert(arg->first.as<std::string>());
 
                 if (arg->first.as<std::string>() == "tree_space") {
-                    std::string s = arg->second.as<std::string>();
-                    if (! EcoevolityOptions::is_tree_space(s)) {
+                    std::string tree_space_value = arg->second.as<std::string>();
+
+                    if (! EcoevolityOptions::is_tree_space(tree_space_value)) {
                         std::string message = (
-                                "Unrecognized tree_space setting: " + s);
+                                "Unrecognized tree_space setting: " + tree_space_value);
                         throw EcoevolityYamlConfigError(message);
                     }
-                    this->set_tree_space(EcoevolityOptions::get_tree_space(s));
+                    this->set_tree_space(EcoevolityOptions::get_tree_space(
+                                tree_space_value));
                 }
                 else if (arg->first.as<std::string>() == "tree_prior") {
-                    std::string s = arg->second.as<std::string>();
-                    if (! EcoevolityOptions::is_tree_prior(s)) {
+                    if (! arg->first.IsScalar()) {
                         std::string message = (
-                                "Unrecognized tree_prior setting: " + s);
+                                "Expecting tree_prior node to be a scalar, but found: " +
+                                YamlCppUtils::get_node_type(arg->first));
                         throw EcoevolityYamlConfigError(message);
                     }
-                    else if (EcoevolityOptions::get_tree_prior(s) == EcoevolityOptions::TreePrior::uniform_root_and_betas) {
-                        this->tree_prior = std::make_shared<UniformRootAndBetasPriorSettings>(arg->second);
+                    if (arg->second.size() != 1) {
+                        throw EcoevolityYamlConfigError(
+                                "tree_prior node should have one key");
                     }
-                    else {
-                        std::string message = (
-                                "Unsupported tree_model setting: " + s);
-                        throw EcoevolityYamlConfigError(message);
-                    }
+                    this->parse_tree_prior(arg->second);
                 }
                 else {
                     std::string message = (
@@ -650,9 +645,60 @@ class TreeModelSettings {
             }
         }
 
+        void parse_tree_prior(const YAML::Node& node) {
+            std::unordered_set<std::string> keys;
+            unsigned int key_count = 0;
+            for (YAML::const_iterator arg = node.begin();
+                    arg != node.end();
+                    ++arg) {
+                if (key_count > 0) {
+                    throw EcoevolityYamlConfigError(
+                            "tree_prior node should have at most one key");
+
+                }
+                ++key_count;
+
+                std::string tree_prior_key = arg->first.as<std::string>();
+
+                if (! EcoevolityOptions::is_tree_prior(tree_prior_key)) {
+                    std::string message = (
+                            "Unrecognized tree_prior setting: " + tree_prior_key);
+                    throw EcoevolityYamlConfigError(message);
+                }
+                if (! node.IsMap()) {
+                    std::string message = (
+                            "Expecting " + tree_prior_key + " node to be a map, but found: " +
+                            YamlCppUtils::get_node_type(node));
+                    throw EcoevolityYamlConfigError(message);
+                }
+
+                if (EcoevolityOptions::get_tree_prior(tree_prior_key) ==
+                        EcoevolityOptions::TreePrior::uniform_root_and_betas) {
+                    this->tree_prior = std::make_shared<UniformRootAndBetasPriorSettings>(
+                            node[tree_prior_key]);
+                }
+                else {
+                    std::string message = (
+                            "Unsupported tree_model setting: " + tree_prior_key);
+                    throw EcoevolityYamlConfigError(message);
+                }
+            }
+        }
+
         void update_operator_weights(std::shared_ptr<GeneralTreeOperatorSettingsCollection> op_collection) const {
-            if (! this->tree_space_generalized()) {
+            if (this->get_tree_space() == EcoevolityOptions::TreeSpace::bifurcating) {
+                // Turn off RJ move that moves through generalized tree space
                 op_collection->untunable_operators.at("SplitLumpNodesRevJumpSampler").set_weight(0);
+            }
+            else if (this->get_tree_space() == EcoevolityOptions::TreeSpace::fixed_tree) {
+                // Turn off topology changing moves
+                op_collection->untunable_operators.at("SplitLumpNodesRevJumpSampler").set_weight(0);
+                op_collection->untunable_operators.at("NeighborHeightNodeSwap").set_weight(0);
+                op_collection->untunable_operators.at("NeighborHeightNodePermute").set_weight(0);
+                op_collection->untunable_operators.at("NodeHeightSlideBumpSwapMover").set_weight(0);
+                op_collection->untunable_operators.at("NodeHeightSlideBumpSwapScaler").set_weight(0);
+                op_collection->untunable_operators.at("NodeHeightSlideBumpPermuteMover").set_weight(0);
+                op_collection->untunable_operators.at("NodeHeightSlideBumpPermuteScaler").set_weight(0);
             }
             this->tree_prior->update_operator_weights(op_collection);
         }
@@ -662,8 +708,7 @@ class TreeModelSettings {
             ss << std::boolalpha;
             std::string margin = string_util::get_indent(indent_level);
             std::string indent = string_util::get_indent(1);
-            ss << margin << "tree_space:\n"
-               << margin << indent << this->get_tree_space_string() << ":\n"
+            ss << margin << "tree_space: " << this->get_tree_space_string() << "\n"
                << margin << "tree_prior:\n"
                << this->tree_prior->to_string(indent_level + 1);
             return ss.str();

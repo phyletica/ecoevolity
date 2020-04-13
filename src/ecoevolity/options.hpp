@@ -47,6 +47,7 @@ class EcoevolityOptions {
 		enum TreeSpace {
             generalized     = 1,
             bifurcating     = 2,
+            fixed_tree      = 3,
         };
 
 
@@ -89,6 +90,9 @@ class EcoevolityOptions {
             if (ts == EcoevolityOptions::TreeSpace::bifurcating) {
                 return "bifurcating";
             }
+            if (ts == EcoevolityOptions::TreeSpace::fixed_tree) {
+                return "fixed";
+            }
             throw "EcoevolityOptions: Invalid tree space";
         }
         static EcoevolityOptions::TreeSpace get_tree_space(const std::string & s) {
@@ -99,6 +103,10 @@ class EcoevolityOptions {
             if (s == EcoevolityOptions::get_tree_space_string(
                         EcoevolityOptions::TreeSpace::bifurcating)) {
                 return EcoevolityOptions::TreeSpace::bifurcating;
+            }
+            if (s == EcoevolityOptions::get_tree_space_string(
+                        EcoevolityOptions::TreeSpace::fixed_tree)) {
+                return EcoevolityOptions::TreeSpace::fixed_tree;
             }
             throw "EcoevolityOptions: Invalid tree space string";
         }

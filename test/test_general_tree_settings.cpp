@@ -125,33 +125,31 @@ TEST_CASE("Testing PopulationTreeSettings with uniform_root_and_betas tree prior
         std::string cfg_path = "data/dummy.yml";
 
         std::stringstream cfg_stream;
-        cfg_stream << "---\n"
-                   << "tree_model:\n"
-                   << "    tree_space: generalized\n"
-                   // << "    tree_space:\n"
-                   // << "        generalized:\n"
-                   // << "    tree_prior:\n"
-                   // << "        uniform_root_and_betas:\n"
-                   // << "            parameters:\n"
-                   // << "                root_height:\n"
-                   // << "                    value: 0.3\n"
-                   // << "                    estimate: true\n"
-                   // << "                    prior:\n"
-                   // << "                        gamma_distribution:\n"
-                   // << "                            shape: 8.0\n"
-                   // << "                            mean: 0.3\n"
-                   // << "                alpha_of_node_height_beta_prior:\n"
-                   // << "                    value: 1.0\n"
-                   // << "                    estimate: true\n"
-                   // << "                    prior:\n"
-                   // << "                        gamma_distribution:\n"
-                   // << "                            shape: 4.0\n"
-                   // << "                            mean: 1.0\n"
-                   << "data:\n"
-                   << "    ploidy: 1\n"
-                   << "    constant_sites_removed: false\n"
-                   << "    yaml_allele_counts:\n"
-                   << "        path: \"diploid-dna-constant-missing.yml\"\n";
+        cfg_stream << "---\n";
+        cfg_stream << "tree_model:\n";
+        cfg_stream << "    tree_space: \"generalized\"\n";
+        cfg_stream << "    tree_prior:\n";
+        cfg_stream << "        uniform_root_and_betas:\n";
+        cfg_stream << "            parameters:\n";
+        cfg_stream << "                root_height:\n";
+        cfg_stream << "                    value: 0.3\n";
+        cfg_stream << "                    estimate: true\n";
+        cfg_stream << "                    prior:\n";
+        cfg_stream << "                        gamma_distribution:\n";
+        cfg_stream << "                            shape: 8.0\n";
+        cfg_stream << "                            mean: 0.3\n";
+        cfg_stream << "                alpha_of_node_height_beta_prior:\n";
+        cfg_stream << "                    value: 1.0\n";
+        cfg_stream << "                    estimate: true\n";
+        cfg_stream << "                    prior:\n";
+        cfg_stream << "                        gamma_distribution:\n";
+        cfg_stream << "                            shape: 4.0\n";
+        cfg_stream << "                            mean: 1.0\n";
+        cfg_stream << "data:\n";
+        cfg_stream << "    ploidy: 1\n";
+        cfg_stream << "    constant_sites_removed: false\n";
+        cfg_stream << "    yaml_allele_counts:\n";
+        cfg_stream << "        path: \"diploid-dna-constant-missing.yml\"\n";
 
         std::cout << "Testing the following config:\n";
         std::cout << cfg_stream.str() << "\n";
