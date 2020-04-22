@@ -40,6 +40,145 @@
 #include "settings.hpp"
 
 
+class StartingTreeSettings {
+    public:
+
+        StartingTreeSettings() { }
+
+        enum Source {
+            option = 1,
+            string = 2,
+            path = 3,
+        };
+
+		enum Option {
+            comb = 1,
+            random = 2,
+            upgma = 3,
+        };
+
+    protected:
+
+        std::string path_ = "";
+        std::string string_ = "";
+        StartingTreeSettings::Option option_ = StartingTreeSettings::Option::random;
+        StartingTreeSettings::Source source_ = StartingTreeSettings::Source::option;
+
+    public:
+
+        StartingTreeSettings::Source get_tree_source() const {
+            return this->source_;
+        }
+        StartingTreeSettings::Option get_tree_option() const {
+            return this->option_;
+        }
+        const std::string& get_tree_path() const {
+            return this->path_;
+        }
+        const std::string& get_tree_string() const {
+            return this->string_;
+        }
+
+        void update_from_config(const YAML::Node& node,
+                const std::string & config_path) {
+            if (! node.IsMap()) {
+                std::string message = (
+                        "Expecting starting_tree to be a map, but found: " +
+                        YamlCppUtils::get_node_type(node));
+                throw EcoevolityYamlConfigError(message);
+            }
+            if (node.size() != 1) {
+                throw EcoevolityYamlConfigError(
+                        "starting_tree node should only have a single key");
+            }
+            std::unordered_set<std::string> keys;
+            for (YAML::const_iterator arg = node.begin();
+                    arg != node.end();
+                    ++arg) {
+                if (keys.count(arg->first.as<std::string>()) > 0) {
+                    std::string message = (
+                            "Duplicate key in starting_tree: " +
+                            arg->first.as<std::string>());
+                    throw EcoevolityYamlConfigError(message);
+                }
+                keys.insert(arg->first.as<std::string>());
+
+                if (arg->first.as<std::string>() == "option") {
+                    this->source_ = StartingTreeSettings::Source::option;
+                    std::string opt = arg->second.as<std::string>();
+                    if (opt == "comb") {
+                        this->option_ = StartingTreeSettings::Option::comb;
+                    }
+                    else if (opt == "random") {
+                        this->option_ = StartingTreeSettings::Option::random;
+                    }
+                    else if (opt == "upgma") {
+                        this->option_ = StartingTreeSettings::Option::upgma;
+                        throw EcoevolityYamlConfigError(
+                                "UPGMA starting tree not implemented");
+                    }
+                    else {
+                        throw EcoevolityYamlConfigError(
+                                "Unrecognized starting_tree option: " + opt);
+                    }
+                }
+                else if (arg->first.as<std::string>() == "string") {
+                    this->source_ = StartingTreeSettings::Source::string;
+                    this->string_ = arg->second.as<std::string>();
+                }
+                else if (arg->first.as<std::string>() == "path") {
+                    this->source_ = StartingTreeSettings::Source::path;
+                    std::string p = string_util::strip(arg->second.as<std::string>());
+                    this->path_ = path::join(path::dirname(config_path), p);
+                    if (! path::isfile(this->path_)) {
+                        std::string message = (
+                                "starting tree path \'" + this->path_ + "\' is not a file");
+                        throw EcoevolityYamlConfigError(message);
+                    }
+                }
+                else {
+                    std::string message = (
+                            "Unrecognized key in starting_tree: " +
+                            arg->first.as<std::string>());
+                    throw EcoevolityYamlConfigError(message);
+                }
+            }
+        }
+
+        std::string to_string(unsigned int indent_level = 0) const {
+            std::ostringstream ss;
+            ss << std::boolalpha;
+            std::string margin = string_util::get_indent(indent_level);
+            if (this->source_ == StartingTreeSettings::Source::option) {
+                if (this->option_ == StartingTreeSettings::Option::random) {
+                    ss << margin << "option: random\n";
+                }
+                else if (this->option_ == StartingTreeSettings::Option::comb) {
+                    ss << margin << "option: comb\n";
+                }
+                else if (this->option_ == StartingTreeSettings::Option::upgma) {
+                    ss << margin << "option: upgma\n";
+                }
+                else {
+                    throw EcoevolityYamlConfigError(
+                            "Unexpected StartingTreeSettings::option_");
+                }
+            }
+            else if (this->source_ == StartingTreeSettings::Source::string) {
+                ss << margin << "string: " << this->string_ << "\n";
+            }
+            else if (this->source_ == StartingTreeSettings::Source::path) {
+                ss << margin << "path: " << this->path_ << "\n";
+            }
+            else {
+                throw EcoevolityYamlConfigError(
+                        "Unexpected StartingTreeSettings::source_");
+            }
+            return ss.str();
+        }
+};
+
+
 class GeneralTreeOperatorSettings {
     protected:
         double weight_ = 1.0;
@@ -830,6 +969,11 @@ class GeneralTreeDataSettings {
                 if (arg->first.as<std::string>() == "path") {
                     std::string p = string_util::strip(arg->second.as<std::string>());
                     this->path_ = path::join(path::dirname(config_path), p);
+                    if (! path::isfile(this->path_)) {
+                        std::string message = (
+                                "yaml data path \'" + this->path_ + "\' is not a file");
+                        throw EcoevolityYamlConfigError(message);
+                    }
                 }
                 else {
                     std::string message = (
@@ -877,6 +1021,11 @@ class GeneralTreeDataSettings {
                 else if (arg->first.as<std::string>() == "path") {
                     std::string p = string_util::strip(arg->second.as<std::string>());
                     this->path_ = path::join(path::dirname(config_path), p);
+                    if (! path::isfile(this->path_)) {
+                        std::string message = (
+                                "alignment path \'" + this->path_ + "\' is not a file");
+                        throw EcoevolityYamlConfigError(message);
+                    }
                 }
                 else {
                     std::string message = (
@@ -1001,6 +1150,7 @@ class PopulationTreeSettings {
         GeneralTreeDataSettings data_settings;
         TreeModelSettings tree_model_settings;
         std::shared_ptr<GeneralTreeOperatorSettingsCollection> operator_settings;
+        StartingTreeSettings starting_tree_settings;
 
         // Constructors
         PopulationTreeSettings() {
@@ -1029,6 +1179,7 @@ class PopulationTreeSettings {
             this->operator_settings = other.operator_settings;
             this->data_settings = other.data_settings;
             this->tree_model_settings = other.tree_model_settings;
+            this->starting_tree_settings = this->starting_tree_settings;
         }
         virtual ~PopulationTreeSettings() { }
         PopulationTreeSettings & operator=(const PopulationTreeSettings & other) {
@@ -1044,6 +1195,7 @@ class PopulationTreeSettings {
             this->operator_settings = other.operator_settings;
             this->data_settings = other.data_settings;
             this->tree_model_settings = other.tree_model_settings;
+            this->starting_tree_settings = this->starting_tree_settings;
             return * this;
         }
 
@@ -1133,6 +1285,8 @@ class PopulationTreeSettings {
                 << this->data_settings.to_string(1)
                 << "tree_model:\n"
                 << this->tree_model_settings.to_string(1)
+                << "starting_tree:\n"
+                << this->starting_tree_settings.to_string(1)
                 << "branch_parameters:\n"
                 << indent << "population_size:\n"
                 << this->population_size_settings.to_string(2)
@@ -1252,6 +1406,12 @@ class PopulationTreeSettings {
                 // parse mutation parameters
                 else if (top->first.as<std::string>() == "mutation_parameters") {
                     this->parse_mutation_parameters(top->second);
+                }
+                else if (top->first.as<std::string>() == "starting_tree") {
+                    this->starting_tree_settings.update_from_config(
+                            top->second,
+                            this->config_path_);
+
                 }
                 else {
                     throw EcoevolityYamlConfigError(
