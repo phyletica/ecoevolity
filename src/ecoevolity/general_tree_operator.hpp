@@ -47,6 +47,14 @@ class BaseGeneralTreeOperatorTemplate {
             node_height_prior_operator          = 6,
             derived_operator                    = 7,
         };
+		enum OperatorScopeEnum {
+            topology                            = 1,
+            global                              = 2,
+            node_height                         = 3,
+            root_height                         = 4,
+            branch                              = 5,
+            hyper                               = 6,
+        };
 
         BaseGeneralTreeOperatorTemplate() { }
         BaseGeneralTreeOperatorTemplate(double weight) {
@@ -54,6 +62,7 @@ class BaseGeneralTreeOperatorTemplate {
         }
 
         virtual BaseGeneralTreeOperatorTemplate::OperatorTypeEnum get_type() const = 0;
+        virtual BaseGeneralTreeOperatorTemplate::OperatorScopeEnum get_scope() const = 0;
 
         double get_weight() const {
             return this->weight_;
@@ -772,6 +781,9 @@ class NodeHeightPriorAlphaScaler : public GeneralTreeOperatorInterface<TreeType,
         BaseGeneralTreeOperatorTemplate::OperatorTypeEnum get_type() const {
             return BaseGeneralTreeOperatorTemplate::OperatorTypeEnum::node_height_prior_operator;
         }
+        BaseGeneralTreeOperatorTemplate::OperatorScopeEnum get_scope() const {
+            return BaseGeneralTreeOperatorTemplate::OperatorScopeEnum::hyper;
+        }
 
         bool is_operable(TreeType * tree) const {
             if (tree->alpha_of_node_height_beta_prior_is_fixed()) {
@@ -817,6 +829,9 @@ class NodeHeightPriorAlphaMover : public GeneralTreeOperatorInterface<TreeType, 
 
         BaseGeneralTreeOperatorTemplate::OperatorTypeEnum get_type() const {
             return BaseGeneralTreeOperatorTemplate::OperatorTypeEnum::node_height_prior_operator;
+        }
+        BaseGeneralTreeOperatorTemplate::OperatorScopeEnum get_scope() const {
+            return BaseGeneralTreeOperatorTemplate::OperatorScopeEnum::hyper;
         }
 
         bool is_operable(TreeType * tree) const {
@@ -867,6 +882,9 @@ class NodeHeightPriorBetaScaler : public GeneralTreeOperatorInterface<TreeType, 
         BaseGeneralTreeOperatorTemplate::OperatorTypeEnum get_type() const {
             return BaseGeneralTreeOperatorTemplate::OperatorTypeEnum::node_height_prior_operator;
         }
+        BaseGeneralTreeOperatorTemplate::OperatorScopeEnum get_scope() const {
+            return BaseGeneralTreeOperatorTemplate::OperatorScopeEnum::hyper;
+        }
 
         bool is_operable(TreeType * tree) const {
             if (tree->beta_of_node_height_beta_prior_is_fixed()) {
@@ -912,6 +930,9 @@ class NodeHeightPriorBetaMover : public GeneralTreeOperatorInterface<TreeType, W
 
         BaseGeneralTreeOperatorTemplate::OperatorTypeEnum get_type() const {
             return BaseGeneralTreeOperatorTemplate::OperatorTypeEnum::node_height_prior_operator;
+        }
+        BaseGeneralTreeOperatorTemplate::OperatorScopeEnum get_scope() const {
+            return BaseGeneralTreeOperatorTemplate::OperatorScopeEnum::hyper;
         }
 
         bool is_operable(TreeType * tree) const {
@@ -963,6 +984,9 @@ class TreeScaler : public GeneralTreeOperatorInterface<TreeType, ScaleOp> {
         BaseGeneralTreeOperatorTemplate::OperatorTypeEnum get_type() const {
             return BaseGeneralTreeOperatorTemplate::OperatorTypeEnum::global_height_operator;
         }
+        BaseGeneralTreeOperatorTemplate::OperatorScopeEnum get_scope() const {
+            return BaseGeneralTreeOperatorTemplate::OperatorScopeEnum::global;
+        }
 
         bool is_operable(TreeType * tree) const {
             if (tree->root_height_is_fixed()) {
@@ -1006,6 +1030,9 @@ class NodeHeightScaler : public GeneralTreeOperatorInterface<TreeType, ScaleOp> 
 
         BaseGeneralTreeOperatorTemplate::OperatorTypeEnum get_type() const {
             return BaseGeneralTreeOperatorTemplate::OperatorTypeEnum::node_height_operator;
+        }
+        BaseGeneralTreeOperatorTemplate::OperatorScopeEnum get_scope() const {
+            return BaseGeneralTreeOperatorTemplate::OperatorScopeEnum::node_height;
         }
 
         bool is_operable(TreeType * tree) const {
@@ -1063,6 +1090,9 @@ class RootHeightScaler : public GeneralTreeOperatorInterface<TreeType, ScaleOp> 
         BaseGeneralTreeOperatorTemplate::OperatorTypeEnum get_type() const {
             return BaseGeneralTreeOperatorTemplate::OperatorTypeEnum::root_height_operator;
         }
+        BaseGeneralTreeOperatorTemplate::OperatorScopeEnum get_scope() const {
+            return BaseGeneralTreeOperatorTemplate::OperatorScopeEnum::root_height;
+        }
 
         bool is_operable(TreeType * tree) const {
             if (tree->root_height_is_fixed()) {
@@ -1113,7 +1143,10 @@ class GlobalNodeHeightDirichletOperator : public GeneralTreeOperatorInterface<Tr
         }
 
         BaseGeneralTreeOperatorTemplate::OperatorTypeEnum get_type() const {
-            return BaseGeneralTreeOperatorTemplate::OperatorTypeEnum::node_height_operator;
+            return BaseGeneralTreeOperatorTemplate::OperatorTypeEnum::global_height_operator;
+        }
+        BaseGeneralTreeOperatorTemplate::OperatorScopeEnum get_scope() const {
+            return BaseGeneralTreeOperatorTemplate::OperatorScopeEnum::global;
         }
 
         bool is_operable(TreeType * tree) const {
@@ -1202,6 +1235,9 @@ class NodeHeightDirichletOperator : public GeneralTreeOperatorInterface<TreeType
         BaseGeneralTreeOperatorTemplate::OperatorTypeEnum get_type() const {
             return BaseGeneralTreeOperatorTemplate::OperatorTypeEnum::node_height_operator;
         }
+        BaseGeneralTreeOperatorTemplate::OperatorScopeEnum get_scope() const {
+            return BaseGeneralTreeOperatorTemplate::OperatorScopeEnum::node_height;
+        }
 
         bool is_operable(TreeType * tree) const {
             unsigned int num_heights = tree->get_number_of_node_heights();
@@ -1248,7 +1284,7 @@ class NodeHeightDirichletOperator : public GeneralTreeOperatorInterface<TreeType
 
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
-// This operator is note working correctly
+// This operator is not working correctly
 ///////////////////////////////////////////////////////////////////////////////
 // template<class TreeType>
 // class NodeHeightBetaOperator : public GeneralTreeOperatorInterface<TreeType, BetaOp> {
@@ -1267,6 +1303,9 @@ class NodeHeightDirichletOperator : public GeneralTreeOperatorInterface<TreeType
 // 
 //         BaseGeneralTreeOperatorTemplate::OperatorTypeEnum get_type() const {
 //             return BaseGeneralTreeOperatorTemplate::OperatorTypeEnum::node_height_operator;
+//         }
+//         BaseGeneralTreeOperatorTemplate::OperatorScopeEnum get_scope() const {
+//             return BaseGeneralTreeOperatorTemplate::OperatorScopeEnum::node_height;
 //         }
 // 
 //         bool is_operable(TreeType * tree) const {
@@ -1330,6 +1369,9 @@ class NodeHeightMover : public GeneralTreeOperatorInterface<TreeType, WindowOp> 
 
         BaseGeneralTreeOperatorTemplate::OperatorTypeEnum get_type() const {
             return BaseGeneralTreeOperatorTemplate::OperatorTypeEnum::node_height_operator;
+        }
+        BaseGeneralTreeOperatorTemplate::OperatorScopeEnum get_scope() const {
+            return BaseGeneralTreeOperatorTemplate::OperatorScopeEnum::node_height;
         }
 
         bool is_operable(TreeType * tree) const {
@@ -1401,6 +1443,9 @@ class NodeHeightSlideBumpScaler : public GeneralTreeOperatorInterface<TreeType, 
 
         BaseGeneralTreeOperatorTemplate::OperatorTypeEnum get_type() const {
             return BaseGeneralTreeOperatorTemplate::OperatorTypeEnum::node_height_operator;
+        }
+        BaseGeneralTreeOperatorTemplate::OperatorScopeEnum get_scope() const {
+            return BaseGeneralTreeOperatorTemplate::OperatorScopeEnum::node_height;
         }
 
         virtual void set_operate_on_root(bool operate_on_root) {
@@ -1535,6 +1580,9 @@ class NodeHeightSlideBumpMover : public GeneralTreeOperatorInterface<TreeType, W
         BaseGeneralTreeOperatorTemplate::OperatorTypeEnum get_type() const {
             return BaseGeneralTreeOperatorTemplate::OperatorTypeEnum::node_height_operator;
         }
+        BaseGeneralTreeOperatorTemplate::OperatorScopeEnum get_scope() const {
+            return BaseGeneralTreeOperatorTemplate::OperatorScopeEnum::node_height;
+        }
 
         virtual void set_operate_on_root(bool operate_on_root) {
             this->operate_on_root_ = operate_on_root;
@@ -1656,6 +1704,9 @@ class NeighborHeightNodePermute : public GeneralTreeOperatorInterface<TreeType, 
         BaseGeneralTreeOperatorTemplate::OperatorTypeEnum get_type() const {
             return BaseGeneralTreeOperatorTemplate::OperatorTypeEnum::topology_operator;
         }
+        BaseGeneralTreeOperatorTemplate::OperatorScopeEnum get_scope() const {
+            return BaseGeneralTreeOperatorTemplate::OperatorScopeEnum::topology;
+        }
 
         bool is_operable(TreeType * tree) const {
             unsigned int num_node_heights = tree->get_number_of_node_heights();
@@ -1707,6 +1758,9 @@ class NeighborHeightNodeSwap : public GeneralTreeOperatorInterface<TreeType, Op>
 
         BaseGeneralTreeOperatorTemplate::OperatorTypeEnum get_type() const {
             return BaseGeneralTreeOperatorTemplate::OperatorTypeEnum::topology_operator;
+        }
+        BaseGeneralTreeOperatorTemplate::OperatorScopeEnum get_scope() const {
+            return BaseGeneralTreeOperatorTemplate::OperatorScopeEnum::topology;
         }
 
         bool is_operable(TreeType * tree) const {
@@ -1762,6 +1816,9 @@ class SplitLumpNodesRevJumpSampler : public GeneralTreeOperatorInterface<TreeTyp
 
         BaseGeneralTreeOperatorTemplate::OperatorTypeEnum get_type() const {
             return BaseGeneralTreeOperatorTemplate::OperatorTypeEnum::topology_model_operator;
+        }
+        BaseGeneralTreeOperatorTemplate::OperatorScopeEnum get_scope() const {
+            return BaseGeneralTreeOperatorTemplate::OperatorScopeEnum::topology;
         }
 
         double get_stirling2(unsigned int n) {
@@ -2438,6 +2495,9 @@ class GlobalPopSizeScaler : public GeneralTreeOperatorInterface<BasePopulationTr
         BaseGeneralTreeOperatorTemplate::OperatorTypeEnum get_type() const {
             return BaseGeneralTreeOperatorTemplate::OperatorTypeEnum::derived_operator;
         }
+        BaseGeneralTreeOperatorTemplate::OperatorScopeEnum get_scope() const {
+            return BaseGeneralTreeOperatorTemplate::OperatorScopeEnum::global;
+        }
 
         bool is_operable(BasePopulationTree * tree) const {
             if (tree->population_sizes_are_fixed()) {
@@ -2481,6 +2541,9 @@ class PopSizeScaler : public GeneralTreeOperatorInterface<BasePopulationTree, Sc
 
         BaseGeneralTreeOperatorTemplate::OperatorTypeEnum get_type() const {
             return BaseGeneralTreeOperatorTemplate::OperatorTypeEnum::derived_operator;
+        }
+        BaseGeneralTreeOperatorTemplate::OperatorScopeEnum get_scope() const {
+            return BaseGeneralTreeOperatorTemplate::OperatorScopeEnum::branch;
         }
 
         bool is_operable(BasePopulationTree * tree) const {
@@ -2538,6 +2601,9 @@ class MuRateScaler : public GeneralTreeOperatorInterface<BasePopulationTree, Sca
         BaseGeneralTreeOperatorTemplate::OperatorTypeEnum get_type() const {
             return BaseGeneralTreeOperatorTemplate::OperatorTypeEnum::derived_operator;
         }
+        BaseGeneralTreeOperatorTemplate::OperatorScopeEnum get_scope() const {
+            return BaseGeneralTreeOperatorTemplate::OperatorScopeEnum::global;
+        }
 
         bool is_operable(BasePopulationTree * tree) const {
             if (tree->mutation_rate_is_fixed()) {
@@ -2585,6 +2651,9 @@ class GlobalHeightSizeMixer : public GeneralTreeOperatorInterface<BasePopulation
 
         BaseGeneralTreeOperatorTemplate::OperatorTypeEnum get_type() const {
             return BaseGeneralTreeOperatorTemplate::OperatorTypeEnum::global_height_operator;
+        }
+        BaseGeneralTreeOperatorTemplate::OperatorScopeEnum get_scope() const {
+            return BaseGeneralTreeOperatorTemplate::OperatorScopeEnum::global;
         }
 
         bool is_operable(BasePopulationTree * tree) const {
@@ -2656,7 +2725,7 @@ class GlobalHeightSizeMixer : public GeneralTreeOperatorInterface<BasePopulation
                 // to scale the shared pop size, and then change all the node
                 // heights accordingly. We are (probably) less likely to
                 // propose a negative node height value this way then we are to
-                // get a negative pop sizes if we scaled the node heights.
+                // get a negative pop size if we scaled the node heights.
                 double old_size = tree->get_root_population_size();
                 double multiplier = this->op_.get_move_amount(rng);
                 double new_size = old_size * multiplier;
@@ -2761,6 +2830,9 @@ class HeightSizeMixer : public GeneralTreeOperatorInterface<BasePopulationTree, 
 
         BaseGeneralTreeOperatorTemplate::OperatorTypeEnum get_type() const {
             return BaseGeneralTreeOperatorTemplate::OperatorTypeEnum::node_height_operator;
+        }
+        BaseGeneralTreeOperatorTemplate::OperatorScopeEnum get_scope() const {
+            return BaseGeneralTreeOperatorTemplate::OperatorScopeEnum::node_height;
         }
 
         bool is_operable(BasePopulationTree * tree) const {
@@ -2888,6 +2960,9 @@ class RootHeightSizeMixer : public GeneralTreeOperatorInterface<BasePopulationTr
         BaseGeneralTreeOperatorTemplate::OperatorTypeEnum get_type() const {
             return BaseGeneralTreeOperatorTemplate::OperatorTypeEnum::root_height_operator;
         }
+        BaseGeneralTreeOperatorTemplate::OperatorScopeEnum get_scope() const {
+            return BaseGeneralTreeOperatorTemplate::OperatorScopeEnum::root_height;
+        }
 
         bool is_operable(BasePopulationTree * tree) const {
             if (tree->root_height_is_fixed()) {
@@ -3003,6 +3078,9 @@ class HeightSizeSlideBumpMixer : public GeneralTreeOperatorInterface<BasePopulat
         BaseGeneralTreeOperatorTemplate::OperatorTypeEnum get_type() const {
             return BaseGeneralTreeOperatorTemplate::OperatorTypeEnum::node_height_operator;
         }
+        BaseGeneralTreeOperatorTemplate::OperatorScopeEnum get_scope() const {
+            return BaseGeneralTreeOperatorTemplate::OperatorScopeEnum::node_height;
+        }
 
         virtual void set_operate_on_root(bool operate_on_root) {
             this->operate_on_root_ = operate_on_root;
@@ -3102,6 +3180,9 @@ class GlobalHeightSizeRateScaler : public GeneralTreeOperatorInterface<BasePopul
         BaseGeneralTreeOperatorTemplate::OperatorTypeEnum get_type() const {
             return BaseGeneralTreeOperatorTemplate::OperatorTypeEnum::global_height_operator;
         }
+        BaseGeneralTreeOperatorTemplate::OperatorScopeEnum get_scope() const {
+            return BaseGeneralTreeOperatorTemplate::OperatorScopeEnum::global;
+        }
 
         bool is_operable(BasePopulationTree * tree) const {
             if (tree->root_height_is_fixed()) {
@@ -3160,6 +3241,9 @@ class GlobalHeightRateScaler : public GlobalHeightSizeRateScaler {
         BaseGeneralTreeOperatorTemplate::OperatorTypeEnum get_type() const {
             return BaseGeneralTreeOperatorTemplate::OperatorTypeEnum::global_height_operator;
         }
+        BaseGeneralTreeOperatorTemplate::OperatorScopeEnum get_scope() const {
+            return BaseGeneralTreeOperatorTemplate::OperatorScopeEnum::global;
+        }
 };
 
 
@@ -3184,6 +3268,9 @@ class GlobalHeightSizeScaler : public GlobalHeightSizeRateScaler {
         BaseGeneralTreeOperatorTemplate::OperatorTypeEnum get_type() const {
             return BaseGeneralTreeOperatorTemplate::OperatorTypeEnum::global_height_operator;
         }
+        BaseGeneralTreeOperatorTemplate::OperatorScopeEnum get_scope() const {
+            return BaseGeneralTreeOperatorTemplate::OperatorScopeEnum::global;
+        }
 };
 
 
@@ -3202,6 +3289,9 @@ class StateFreqMover : public GeneralTreeOperatorInterface<BasePopulationTree, W
 
         BaseGeneralTreeOperatorTemplate::OperatorTypeEnum get_type() const {
             return BaseGeneralTreeOperatorTemplate::OperatorTypeEnum::derived_operator;
+        }
+        BaseGeneralTreeOperatorTemplate::OperatorScopeEnum get_scope() const {
+            return BaseGeneralTreeOperatorTemplate::OperatorScopeEnum::global;
         }
 
         bool is_operable(BasePopulationTree * tree) const {
@@ -3254,6 +3344,9 @@ class StateFreqDirichletOperator : public GeneralTreeOperatorInterface<BasePopul
         BaseGeneralTreeOperatorTemplate::OperatorTypeEnum get_type() const {
             return BaseGeneralTreeOperatorTemplate::OperatorTypeEnum::derived_operator;
         }
+        BaseGeneralTreeOperatorTemplate::OperatorScopeEnum get_scope() const {
+            return BaseGeneralTreeOperatorTemplate::OperatorScopeEnum::global;
+        }
 
         bool is_operable(BasePopulationTree * tree) const {
             if (tree->state_frequencies_are_fixed()) {
@@ -3304,6 +3397,9 @@ class StateFreqBetaOperator : public GeneralTreeOperatorInterface<BasePopulation
 
         BaseGeneralTreeOperatorTemplate::OperatorTypeEnum get_type() const {
             return BaseGeneralTreeOperatorTemplate::OperatorTypeEnum::derived_operator;
+        }
+        BaseGeneralTreeOperatorTemplate::OperatorScopeEnum get_scope() const {
+            return BaseGeneralTreeOperatorTemplate::OperatorScopeEnum::global;
         }
 
         bool is_operable(BasePopulationTree * tree) const {
