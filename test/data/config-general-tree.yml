@@ -19,11 +19,11 @@ tree_model:
                     prior:
                         exponential_distribution:
                             mean: 1.0
-
-starting_tree:
-    option: "comb" # "random"
-    # string: ((a,b),c);
-    # path: 'path/to/tree_file.txt";
+    starting_tree: comb
+    # starting_tree: random
+    # starting_tree: upgma
+    # starting_tree: ((a,b),c)
+    # starting_tree: path/to/tree_file.txt
 
 branch_parameters:
     population_size:
