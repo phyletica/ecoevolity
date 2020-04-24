@@ -3,7 +3,7 @@
 #include "ecoevolity/stats_util.hpp"
 
 
-TEST_CASE("Testing BaseTree::draw_from_prior", "[xBaseTree]") {
+TEST_CASE("Testing BaseTree::draw_from_prior", "[BaseTree]") {
     SECTION("Testing BaseTree::draw_from_prior") {
         RandomNumberGenerator rng = RandomNumberGenerator(9487503);
 
@@ -134,7 +134,7 @@ TEST_CASE("Testing BaseTree::draw_from_prior", "[xBaseTree]") {
     }
 }
 
-TEST_CASE("Testing BaseTree::draw_from_prior with beta height hyper priors", "[xBaseTree]") {
+TEST_CASE("Testing BaseTree::draw_from_prior with beta height hyper priors", "[BaseTree]") {
     SECTION("Testing draw_from_prior with beta height hyper priors") {
         RandomNumberGenerator rng = RandomNumberGenerator(72974987);
 
@@ -281,7 +281,7 @@ TEST_CASE("Testing BaseTree::draw_from_prior with beta height hyper priors", "[x
 }
 
 
-TEST_CASE("Testing BasePopulationTree::draw_from_prior", "[xBasePopulationTree]") {
+TEST_CASE("Testing BasePopulationTree::draw_from_prior", "[BasePopulationTree]") {
     SECTION("Testing BasePopulationTree::draw_from_prior") {
         RandomNumberGenerator rng = RandomNumberGenerator(9487503);
 
@@ -456,7 +456,7 @@ TEST_CASE("Testing BasePopulationTree::draw_from_prior", "[xBasePopulationTree]"
     }
 }
 
-TEST_CASE("Testing BasePopulationTree::draw_from_prior with beta height hyper priors", "[xBasePopulationTree]") {
+TEST_CASE("Testing BasePopulationTree::draw_from_prior with beta height hyper priors", "[BasePopulationTree]") {
     SECTION("Testing draw_from_prior with beta height hyper priors") {
         RandomNumberGenerator rng = RandomNumberGenerator(72974987);
 
@@ -645,7 +645,7 @@ TEST_CASE("Testing BasePopulationTree::draw_from_prior with beta height hyper pr
     }
 }
 
-TEST_CASE("Testing BasePopulationTree::draw_from_prior with constrained pop sizes", "[xBasePopulationTree]") {
+TEST_CASE("Testing BasePopulationTree::draw_from_prior with constrained pop sizes", "[BasePopulationTree]") {
     SECTION("Testing BasePopulationTree::draw_from_prior with constrained pop sizes") {
         RandomNumberGenerator rng = RandomNumberGenerator(79849583);
 
