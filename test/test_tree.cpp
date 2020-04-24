@@ -3,6 +3,826 @@
 #include "ecoevolity/stats_util.hpp"
 
 
+TEST_CASE("Testing BaseTree::draw_from_prior", "[xBaseTree]") {
+    SECTION("Testing BaseTree::draw_from_prior") {
+        RandomNumberGenerator rng = RandomNumberGenerator(9487503);
+
+        double root_height_shape = 20.0;
+        double root_height_scale = 0.025;
+        std::shared_ptr<ContinuousProbabilityDistribution> root_height_prior = std::make_shared<GammaDistribution>(
+                root_height_shape,
+                root_height_scale);
+
+        std::shared_ptr<Node> root = std::make_shared<Node>("root", 0.25);
+        std::shared_ptr<Node> internal0a = std::make_shared<Node>("internal0a", 0.05);
+        std::shared_ptr<Node> internal0b = std::make_shared<Node>("internal0b", 0.05);
+        internal0a->set_height_parameter(internal0b->get_height_parameter());
+        std::shared_ptr<Node> internal1a = std::make_shared<Node>("internal1a", 0.1);
+        std::shared_ptr<Node> internal1b = std::make_shared<Node>("internal1b", 0.1);
+        internal1a->set_height_parameter(internal1b->get_height_parameter());
+        std::shared_ptr<Node> internal2 = std::make_shared<Node>("internal2", 0.15);
+        std::shared_ptr<Node> internal3 = std::make_shared<Node>("internal3", 0.17);
+        std::shared_ptr<Node> internal4 = std::make_shared<Node>("internal4", 0.2);
+        std::shared_ptr<Node> leaf1 = std::make_shared<Node>("leaf1", 0.0);
+        std::shared_ptr<Node> leaf2 = std::make_shared<Node>("leaf2", 0.0);
+        std::shared_ptr<Node> leaf3 = std::make_shared<Node>("leaf3", 0.0);
+        std::shared_ptr<Node> leaf4 = std::make_shared<Node>("leaf4", 0.0);
+        std::shared_ptr<Node> leaf5 = std::make_shared<Node>("leaf5", 0.0);
+        std::shared_ptr<Node> leaf6 = std::make_shared<Node>("leaf6", 0.0);
+        std::shared_ptr<Node> leaf7 = std::make_shared<Node>("leaf7", 0.0);
+        std::shared_ptr<Node> leaf8 = std::make_shared<Node>("leaf8", 0.0);
+        std::shared_ptr<Node> leaf9 = std::make_shared<Node>("leaf9", 0.0);
+        std::shared_ptr<Node> leaf10 = std::make_shared<Node>("leaf10", 0.0);
+        std::shared_ptr<Node> leaf11 = std::make_shared<Node>("leaf11", 0.0);
+
+        internal0a->add_child(leaf1);
+        internal0a->add_child(leaf2);
+        internal1a->add_child(leaf3);
+        internal1a->add_child(leaf4);
+        internal1a->add_child(leaf5);
+
+        internal2->add_child(internal0a);
+        internal2->add_child(internal1a);
+
+        internal0b->add_child(leaf6);
+        internal0b->add_child(leaf7);
+        internal1b->add_child(leaf8);
+        internal1b->add_child(leaf9);
+        internal1b->add_child(leaf10);
+
+        internal3->add_child(internal0b);
+        internal3->add_child(internal1b);
+
+        internal4->add_child(internal2);
+        internal4->add_child(internal3);
+
+        root->add_child(leaf11);
+        root->add_child(internal4);
+
+        BaseTree<Node> tree(root);
+
+        tree.set_root_node_height_prior(root_height_prior);
+
+        tree.estimate_root_height();
+
+        tree.estimate_alpha_of_node_height_beta_prior();
+        tree.estimate_beta_of_node_height_beta_prior();
+        tree.set_alpha_of_node_height_beta_prior(2.0);
+        tree.set_beta_of_node_height_beta_prior(1.0);
+        tree.fix_alpha_of_node_height_beta_prior();
+        tree.fix_beta_of_node_height_beta_prior();
+        BetaDistribution beta_prior(2.0, 1.0);
+
+        SampleSummarizer<double> root_height_summary;
+        SampleSummarizer<double> internal_0_height_summary;
+        SampleSummarizer<double> internal_1_height_summary;
+        SampleSummarizer<double> internal_2_height_summary;
+        SampleSummarizer<double> internal_3_height_summary;
+        SampleSummarizer<double> internal_4_height_summary;
+
+        unsigned int nsamples = 10000;
+        for (unsigned int i = 0; i < nsamples; ++i) {
+            tree.draw_from_prior(rng);
+
+            REQUIRE(tree.get_number_of_node_heights() == 6);
+
+            double internal_0a_height = tree.get_node("internal0a")->get_height();
+            double internal_0b_height = tree.get_node("internal0b")->get_height();
+            REQUIRE(internal_0a_height == internal_0b_height);
+
+            double internal_1a_height = tree.get_node("internal1a")->get_height();
+            double internal_1b_height = tree.get_node("internal1b")->get_height();
+            REQUIRE(internal_1a_height == internal_1b_height);
+            REQUIRE(internal_1a_height != internal_0a_height);
+
+            double internal_2_height = tree.get_node("internal2")->get_height();
+            double internal_3_height = tree.get_node("internal3")->get_height();
+            double internal_4_height = tree.get_node("internal4")->get_height();
+
+            double root_ht = tree.get_root_height();
+
+            double youngest_parent = internal_2_height;
+            if (internal_3_height < youngest_parent) {
+                youngest_parent = internal_3_height;
+            }
+
+            internal_0_height_summary.add_sample(internal_0a_height / youngest_parent);
+            internal_1_height_summary.add_sample(internal_1a_height / youngest_parent);
+
+            internal_2_height_summary.add_sample(internal_2_height / internal_4_height);
+            internal_3_height_summary.add_sample(internal_3_height / internal_4_height);
+
+            internal_4_height_summary.add_sample(internal_4_height / root_ht);
+
+            root_height_summary.add_sample(root_ht);
+        }
+
+        double eps = 0.005;
+        REQUIRE(root_height_summary.mean() == Approx(root_height_prior->get_mean()).epsilon(eps));
+        REQUIRE(root_height_summary.variance() == Approx(root_height_prior->get_variance()).epsilon(eps));
+
+        REQUIRE(internal_2_height_summary.mean() == Approx(beta_prior.get_mean()).epsilon(eps));
+        REQUIRE(internal_2_height_summary.variance() == Approx(beta_prior.get_variance()).epsilon(eps));
+        REQUIRE(internal_3_height_summary.mean() == Approx(beta_prior.get_mean()).epsilon(eps));
+        REQUIRE(internal_3_height_summary.variance() == Approx(beta_prior.get_variance()).epsilon(eps));
+        REQUIRE(internal_4_height_summary.mean() == Approx(beta_prior.get_mean()).epsilon(eps));
+        REQUIRE(internal_4_height_summary.variance() == Approx(beta_prior.get_variance()).epsilon(eps));
+        REQUIRE(internal_0_height_summary.mean() == Approx(beta_prior.get_mean()).epsilon(eps));
+        REQUIRE(internal_0_height_summary.variance() == Approx(beta_prior.get_variance()).epsilon(eps));
+        REQUIRE(internal_1_height_summary.mean() == Approx(beta_prior.get_mean()).epsilon(eps));
+        REQUIRE(internal_1_height_summary.variance() == Approx(beta_prior.get_variance()).epsilon(eps));
+    }
+}
+
+TEST_CASE("Testing BaseTree::draw_from_prior with beta height hyper priors", "[xBaseTree]") {
+    SECTION("Testing draw_from_prior with beta height hyper priors") {
+        RandomNumberGenerator rng = RandomNumberGenerator(72974987);
+
+        double height_alpha_shape = 20.0;
+        double height_alpha_scale = 0.1;
+        std::shared_ptr<ContinuousProbabilityDistribution> height_alpha_prior = std::make_shared<GammaDistribution>(
+                height_alpha_shape,
+                height_alpha_scale);
+
+        double height_beta_shape = 20.0;
+        double height_beta_scale = 0.05;
+        std::shared_ptr<ContinuousProbabilityDistribution> height_beta_prior = std::make_shared<GammaDistribution>(
+                height_beta_shape,
+                height_beta_scale);
+
+        double root_height_shape = 20.0;
+        double root_height_scale = 0.025;
+        std::shared_ptr<ContinuousProbabilityDistribution> root_height_prior = std::make_shared<GammaDistribution>(
+                root_height_shape,
+                root_height_scale);
+
+        std::shared_ptr<Node> root = std::make_shared<Node>("root", 0.25);
+        std::shared_ptr<Node> internal0a = std::make_shared<Node>("internal0a", 0.05);
+        std::shared_ptr<Node> internal0b = std::make_shared<Node>("internal0b", 0.05);
+        internal0a->set_height_parameter(internal0b->get_height_parameter());
+        std::shared_ptr<Node> internal1a = std::make_shared<Node>("internal1a", 0.1);
+        std::shared_ptr<Node> internal1b = std::make_shared<Node>("internal1b", 0.1);
+        internal1a->set_height_parameter(internal1b->get_height_parameter());
+        std::shared_ptr<Node> internal2 = std::make_shared<Node>("internal2", 0.15);
+        std::shared_ptr<Node> internal3 = std::make_shared<Node>("internal3", 0.17);
+        std::shared_ptr<Node> internal4 = std::make_shared<Node>("internal4", 0.2);
+        std::shared_ptr<Node> leaf1 = std::make_shared<Node>("leaf1", 0.0);
+        std::shared_ptr<Node> leaf2 = std::make_shared<Node>("leaf2", 0.0);
+        std::shared_ptr<Node> leaf3 = std::make_shared<Node>("leaf3", 0.0);
+        std::shared_ptr<Node> leaf4 = std::make_shared<Node>("leaf4", 0.0);
+        std::shared_ptr<Node> leaf5 = std::make_shared<Node>("leaf5", 0.0);
+        std::shared_ptr<Node> leaf6 = std::make_shared<Node>("leaf6", 0.0);
+        std::shared_ptr<Node> leaf7 = std::make_shared<Node>("leaf7", 0.0);
+        std::shared_ptr<Node> leaf8 = std::make_shared<Node>("leaf8", 0.0);
+        std::shared_ptr<Node> leaf9 = std::make_shared<Node>("leaf9", 0.0);
+        std::shared_ptr<Node> leaf10 = std::make_shared<Node>("leaf10", 0.0);
+        std::shared_ptr<Node> leaf11 = std::make_shared<Node>("leaf11", 0.0);
+
+        internal0a->add_child(leaf1);
+        internal0a->add_child(leaf2);
+        internal1a->add_child(leaf3);
+        internal1a->add_child(leaf4);
+        internal1a->add_child(leaf5);
+
+        internal2->add_child(internal0a);
+        internal2->add_child(internal1a);
+
+        internal0b->add_child(leaf6);
+        internal0b->add_child(leaf7);
+        internal1b->add_child(leaf8);
+        internal1b->add_child(leaf9);
+        internal1b->add_child(leaf10);
+
+        internal3->add_child(internal0b);
+        internal3->add_child(internal1b);
+
+        internal4->add_child(internal2);
+        internal4->add_child(internal3);
+
+        root->add_child(leaf11);
+        root->add_child(internal4);
+
+        BaseTree<Node> tree(root);
+
+        tree.set_root_node_height_prior(root_height_prior);
+        tree.set_prior_on_alpha_of_node_height_beta_prior(height_alpha_prior);
+        tree.set_prior_on_beta_of_node_height_beta_prior(height_beta_prior);
+
+        tree.estimate_root_height();
+        tree.estimate_alpha_of_node_height_beta_prior();
+        tree.estimate_beta_of_node_height_beta_prior();
+
+        BetaDistribution beta_prior(2.0, 1.0);
+
+        SampleSummarizer<double> root_height_summary;
+        SampleSummarizer<double> internal_0_height_summary;
+        SampleSummarizer<double> internal_1_height_summary;
+        SampleSummarizer<double> internal_2_height_summary;
+        SampleSummarizer<double> internal_3_height_summary;
+        SampleSummarizer<double> internal_4_height_summary;
+        SampleSummarizer<double> height_alpha_summary;
+        SampleSummarizer<double> height_beta_summary;
+
+        unsigned int nsamples = 10000;
+        for (unsigned int i = 0; i < nsamples; ++i) {
+            tree.draw_from_prior(rng);
+
+            REQUIRE(tree.get_number_of_node_heights() == 6);
+
+            double internal_0a_height = tree.get_node("internal0a")->get_height();
+            double internal_0b_height = tree.get_node("internal0b")->get_height();
+            REQUIRE(internal_0a_height == internal_0b_height);
+
+            double internal_1a_height = tree.get_node("internal1a")->get_height();
+            double internal_1b_height = tree.get_node("internal1b")->get_height();
+            REQUIRE(internal_1a_height == internal_1b_height);
+            REQUIRE(internal_1a_height != internal_0a_height);
+
+            double internal_2_height = tree.get_node("internal2")->get_height();
+            double internal_3_height = tree.get_node("internal3")->get_height();
+            double internal_4_height = tree.get_node("internal4")->get_height();
+
+            double root_ht = tree.get_root_height();
+
+            double youngest_parent = internal_2_height;
+            if (internal_3_height < youngest_parent) {
+                youngest_parent = internal_3_height;
+            }
+
+            internal_0_height_summary.add_sample(internal_0a_height / youngest_parent);
+            internal_1_height_summary.add_sample(internal_1a_height / youngest_parent);
+
+            internal_2_height_summary.add_sample(internal_2_height / internal_4_height);
+            internal_3_height_summary.add_sample(internal_3_height / internal_4_height);
+
+            internal_4_height_summary.add_sample(internal_4_height / root_ht);
+
+            root_height_summary.add_sample(root_ht);
+
+            height_alpha_summary.add_sample(tree.get_alpha_of_node_height_beta_prior());
+            height_beta_summary.add_sample(tree.get_beta_of_node_height_beta_prior());
+        }
+
+        double eps = 0.005;
+        REQUIRE(root_height_summary.mean() == Approx(root_height_prior->get_mean()).epsilon(eps));
+        REQUIRE(root_height_summary.variance() == Approx(root_height_prior->get_variance()).epsilon(eps));
+
+        REQUIRE(internal_2_height_summary.mean() == Approx(beta_prior.get_mean()).epsilon(eps));
+        REQUIRE(internal_3_height_summary.mean() == Approx(beta_prior.get_mean()).epsilon(eps));
+        REQUIRE(internal_4_height_summary.mean() == Approx(beta_prior.get_mean()).epsilon(eps));
+        REQUIRE(internal_0_height_summary.mean() == Approx(beta_prior.get_mean()).epsilon(eps));
+        REQUIRE(internal_1_height_summary.mean() == Approx(beta_prior.get_mean()).epsilon(eps));
+
+        REQUIRE(height_alpha_summary.mean() == Approx(height_alpha_prior->get_mean()).epsilon(eps));
+        REQUIRE(height_alpha_summary.variance() == Approx(height_alpha_prior->get_variance()).epsilon(eps));
+        REQUIRE(height_beta_summary.mean() == Approx(height_beta_prior->get_mean()).epsilon(eps));
+        REQUIRE(height_beta_summary.variance() == Approx(height_beta_prior->get_variance()).epsilon(eps));
+    }
+}
+
+
+TEST_CASE("Testing BasePopulationTree::draw_from_prior", "[xBasePopulationTree]") {
+    SECTION("Testing BasePopulationTree::draw_from_prior") {
+        RandomNumberGenerator rng = RandomNumberGenerator(9487503);
+
+        double root_height_shape = 20.0;
+        double root_height_scale = 0.025;
+        std::shared_ptr<ContinuousProbabilityDistribution> root_height_prior = std::make_shared<GammaDistribution>(
+                root_height_shape,
+                root_height_scale);
+
+        double mu_rate_shape = 10.0;
+        double mu_rate_scale = 0.05;
+        std::shared_ptr<ContinuousProbabilityDistribution> mu_rate_prior = std::make_shared<GammaDistribution>(
+                mu_rate_shape,
+                mu_rate_scale);
+
+        double pop_size_shape = 10.0;
+        double pop_size_scale = 0.05;
+        std::shared_ptr<ContinuousProbabilityDistribution> pop_size_prior = std::make_shared<GammaDistribution>(
+                pop_size_shape,
+                pop_size_scale);
+
+        double freq_a = 3.0;
+        double freq_b = 2.0;
+        std::shared_ptr<ContinuousProbabilityDistribution> freq_1_prior = std::make_shared<BetaDistribution>(
+                freq_a,
+                freq_b);
+
+        std::shared_ptr<PopulationNode> root = std::make_shared<PopulationNode>("root", 0.25);
+        std::shared_ptr<PopulationNode> internal0a = std::make_shared<PopulationNode>("internal0a", 0.05);
+        std::shared_ptr<PopulationNode> internal0b = std::make_shared<PopulationNode>("internal0b", 0.05);
+        internal0a->set_height_parameter(internal0b->get_height_parameter());
+        std::shared_ptr<PopulationNode> internal1a = std::make_shared<PopulationNode>("internal1a", 0.1);
+        std::shared_ptr<PopulationNode> internal1b = std::make_shared<PopulationNode>("internal1b", 0.1);
+        internal1a->set_height_parameter(internal1b->get_height_parameter());
+        std::shared_ptr<PopulationNode> internal2 = std::make_shared<PopulationNode>("internal2", 0.15);
+        std::shared_ptr<PopulationNode> internal3 = std::make_shared<PopulationNode>("internal3", 0.17);
+        std::shared_ptr<PopulationNode> internal4 = std::make_shared<PopulationNode>("internal4", 0.2);
+        std::shared_ptr<PopulationNode> leaf1 = std::make_shared<PopulationNode>("leaf1", 0.0);
+        std::shared_ptr<PopulationNode> leaf2 = std::make_shared<PopulationNode>("leaf2", 0.0);
+        std::shared_ptr<PopulationNode> leaf3 = std::make_shared<PopulationNode>("leaf3", 0.0);
+        std::shared_ptr<PopulationNode> leaf4 = std::make_shared<PopulationNode>("leaf4", 0.0);
+        std::shared_ptr<PopulationNode> leaf5 = std::make_shared<PopulationNode>("leaf5", 0.0);
+        std::shared_ptr<PopulationNode> leaf6 = std::make_shared<PopulationNode>("leaf6", 0.0);
+        std::shared_ptr<PopulationNode> leaf7 = std::make_shared<PopulationNode>("leaf7", 0.0);
+        std::shared_ptr<PopulationNode> leaf8 = std::make_shared<PopulationNode>("leaf8", 0.0);
+        std::shared_ptr<PopulationNode> leaf9 = std::make_shared<PopulationNode>("leaf9", 0.0);
+        std::shared_ptr<PopulationNode> leaf10 = std::make_shared<PopulationNode>("leaf10", 0.0);
+        std::shared_ptr<PopulationNode> leaf11 = std::make_shared<PopulationNode>("leaf11", 0.0);
+
+        internal0a->add_child(leaf1);
+        internal0a->add_child(leaf2);
+        internal1a->add_child(leaf3);
+        internal1a->add_child(leaf4);
+        internal1a->add_child(leaf5);
+
+        internal2->add_child(internal0a);
+        internal2->add_child(internal1a);
+
+        internal0b->add_child(leaf6);
+        internal0b->add_child(leaf7);
+        internal1b->add_child(leaf8);
+        internal1b->add_child(leaf9);
+        internal1b->add_child(leaf10);
+
+        internal3->add_child(internal0b);
+        internal3->add_child(internal1b);
+
+        internal4->add_child(internal2);
+        internal4->add_child(internal3);
+
+        root->add_child(leaf11);
+        root->add_child(internal4);
+
+        BasePopulationTree tree(root);
+
+        tree.set_root_node_height_prior(root_height_prior);
+        tree.set_mutation_rate_prior(mu_rate_prior);
+        tree.set_population_size_prior(pop_size_prior);
+        tree.set_freq_1_prior(freq_1_prior);
+
+        tree.estimate_root_height();
+        tree.estimate_mutation_rate();
+        tree.estimate_state_frequencies();
+
+        tree.estimate_alpha_of_node_height_beta_prior();
+        tree.estimate_beta_of_node_height_beta_prior();
+        tree.set_alpha_of_node_height_beta_prior(2.0);
+        tree.set_beta_of_node_height_beta_prior(1.0);
+        tree.fix_alpha_of_node_height_beta_prior();
+        tree.fix_beta_of_node_height_beta_prior();
+
+        BetaDistribution beta_prior(2.0, 1.0);
+
+        SampleSummarizer<double> root_height_summary;
+        SampleSummarizer<double> internal_0_height_summary;
+        SampleSummarizer<double> internal_1_height_summary;
+        SampleSummarizer<double> internal_2_height_summary;
+        SampleSummarizer<double> internal_3_height_summary;
+        SampleSummarizer<double> internal_4_height_summary;
+
+        SampleSummarizer<double> pop_size_summary;
+        SampleSummarizer<double> mu_rate_summary;
+        SampleSummarizer<double> freq_1_summary;
+
+        std::vector< std::shared_ptr<PositiveRealParameter> > pop_sizes;
+
+        unsigned int nsamples = 10000;
+        for (unsigned int i = 0; i < nsamples; ++i) {
+            tree.draw_from_prior(rng);
+
+            REQUIRE(tree.get_number_of_node_heights() == 6);
+
+            double internal_0a_height = tree.get_node("internal0a")->get_height();
+            double internal_0b_height = tree.get_node("internal0b")->get_height();
+            REQUIRE(internal_0a_height == internal_0b_height);
+
+            double internal_1a_height = tree.get_node("internal1a")->get_height();
+            double internal_1b_height = tree.get_node("internal1b")->get_height();
+            REQUIRE(internal_1a_height == internal_1b_height);
+            REQUIRE(internal_1a_height != internal_0a_height);
+
+            double internal_2_height = tree.get_node("internal2")->get_height();
+            double internal_3_height = tree.get_node("internal3")->get_height();
+            double internal_4_height = tree.get_node("internal4")->get_height();
+
+            double root_ht = tree.get_root_height();
+
+            double youngest_parent = internal_2_height;
+            if (internal_3_height < youngest_parent) {
+                youngest_parent = internal_3_height;
+            }
+
+            internal_0_height_summary.add_sample(internal_0a_height / youngest_parent);
+            internal_1_height_summary.add_sample(internal_1a_height / youngest_parent);
+
+            internal_2_height_summary.add_sample(internal_2_height / internal_4_height);
+            internal_3_height_summary.add_sample(internal_3_height / internal_4_height);
+
+            internal_4_height_summary.add_sample(internal_4_height / root_ht);
+
+            root_height_summary.add_sample(root_ht);
+
+            pop_sizes = tree.get_pointers_to_population_sizes();
+            REQUIRE(pop_sizes.size() == 19);
+            for (auto pop_size : pop_sizes) {
+                pop_size_summary.add_sample(pop_size->get_value());
+            }
+            mu_rate_summary.add_sample(tree.get_mutation_rate());
+            freq_1_summary.add_sample(tree.get_freq_1());
+        }
+
+        double eps = 0.005;
+        REQUIRE(root_height_summary.mean() == Approx(root_height_prior->get_mean()).epsilon(eps));
+        REQUIRE(root_height_summary.variance() == Approx(root_height_prior->get_variance()).epsilon(eps));
+
+        REQUIRE(internal_2_height_summary.mean() == Approx(beta_prior.get_mean()).epsilon(eps));
+        REQUIRE(internal_2_height_summary.variance() == Approx(beta_prior.get_variance()).epsilon(eps));
+        REQUIRE(internal_3_height_summary.mean() == Approx(beta_prior.get_mean()).epsilon(eps));
+        REQUIRE(internal_3_height_summary.variance() == Approx(beta_prior.get_variance()).epsilon(eps));
+        REQUIRE(internal_4_height_summary.mean() == Approx(beta_prior.get_mean()).epsilon(eps));
+        REQUIRE(internal_4_height_summary.variance() == Approx(beta_prior.get_variance()).epsilon(eps));
+        REQUIRE(internal_0_height_summary.mean() == Approx(beta_prior.get_mean()).epsilon(eps));
+        REQUIRE(internal_0_height_summary.variance() == Approx(beta_prior.get_variance()).epsilon(eps));
+        REQUIRE(internal_1_height_summary.mean() == Approx(beta_prior.get_mean()).epsilon(eps));
+        REQUIRE(internal_1_height_summary.variance() == Approx(beta_prior.get_variance()).epsilon(eps));
+        REQUIRE(pop_size_summary.mean() == Approx(pop_size_prior->get_mean()).epsilon(eps));
+        REQUIRE(pop_size_summary.variance() == Approx(pop_size_prior->get_variance()).epsilon(eps));
+        REQUIRE(mu_rate_summary.mean() == Approx(mu_rate_prior->get_mean()).epsilon(eps));
+        REQUIRE(mu_rate_summary.variance() == Approx(mu_rate_prior->get_variance()).epsilon(eps));
+        REQUIRE(freq_1_summary.mean() == Approx(freq_1_prior->get_mean()).epsilon(eps));
+        REQUIRE(freq_1_summary.variance() == Approx(freq_1_prior->get_variance()).epsilon(eps));
+    }
+}
+
+TEST_CASE("Testing BasePopulationTree::draw_from_prior with beta height hyper priors", "[xBasePopulationTree]") {
+    SECTION("Testing draw_from_prior with beta height hyper priors") {
+        RandomNumberGenerator rng = RandomNumberGenerator(72974987);
+
+        double height_alpha_shape = 20.0;
+        double height_alpha_scale = 0.1;
+        std::shared_ptr<ContinuousProbabilityDistribution> height_alpha_prior = std::make_shared<GammaDistribution>(
+                height_alpha_shape,
+                height_alpha_scale);
+
+        double height_beta_shape = 20.0;
+        double height_beta_scale = 0.05;
+        std::shared_ptr<ContinuousProbabilityDistribution> height_beta_prior = std::make_shared<GammaDistribution>(
+                height_beta_shape,
+                height_beta_scale);
+
+        double root_height_shape = 20.0;
+        double root_height_scale = 0.025;
+        std::shared_ptr<ContinuousProbabilityDistribution> root_height_prior = std::make_shared<GammaDistribution>(
+                root_height_shape,
+                root_height_scale);
+
+        double mu_rate_shape = 10.0;
+        double mu_rate_scale = 0.05;
+        std::shared_ptr<ContinuousProbabilityDistribution> mu_rate_prior = std::make_shared<GammaDistribution>(
+                mu_rate_shape,
+                mu_rate_scale);
+
+        double pop_size_shape = 10.0;
+        double pop_size_scale = 0.05;
+        std::shared_ptr<ContinuousProbabilityDistribution> pop_size_prior = std::make_shared<GammaDistribution>(
+                pop_size_shape,
+                pop_size_scale);
+
+        double freq_a = 3.0;
+        double freq_b = 2.0;
+        std::shared_ptr<ContinuousProbabilityDistribution> freq_1_prior = std::make_shared<BetaDistribution>(
+                freq_a,
+                freq_b);
+
+        std::shared_ptr<PopulationNode> root = std::make_shared<PopulationNode>("root", 0.25);
+        std::shared_ptr<PopulationNode> internal0a = std::make_shared<PopulationNode>("internal0a", 0.05);
+        std::shared_ptr<PopulationNode> internal0b = std::make_shared<PopulationNode>("internal0b", 0.05);
+        internal0a->set_height_parameter(internal0b->get_height_parameter());
+        std::shared_ptr<PopulationNode> internal1a = std::make_shared<PopulationNode>("internal1a", 0.1);
+        std::shared_ptr<PopulationNode> internal1b = std::make_shared<PopulationNode>("internal1b", 0.1);
+        internal1a->set_height_parameter(internal1b->get_height_parameter());
+        std::shared_ptr<PopulationNode> internal2 = std::make_shared<PopulationNode>("internal2", 0.15);
+        std::shared_ptr<PopulationNode> internal3 = std::make_shared<PopulationNode>("internal3", 0.17);
+        std::shared_ptr<PopulationNode> internal4 = std::make_shared<PopulationNode>("internal4", 0.2);
+        std::shared_ptr<PopulationNode> leaf1 = std::make_shared<PopulationNode>("leaf1", 0.0);
+        std::shared_ptr<PopulationNode> leaf2 = std::make_shared<PopulationNode>("leaf2", 0.0);
+        std::shared_ptr<PopulationNode> leaf3 = std::make_shared<PopulationNode>("leaf3", 0.0);
+        std::shared_ptr<PopulationNode> leaf4 = std::make_shared<PopulationNode>("leaf4", 0.0);
+        std::shared_ptr<PopulationNode> leaf5 = std::make_shared<PopulationNode>("leaf5", 0.0);
+        std::shared_ptr<PopulationNode> leaf6 = std::make_shared<PopulationNode>("leaf6", 0.0);
+        std::shared_ptr<PopulationNode> leaf7 = std::make_shared<PopulationNode>("leaf7", 0.0);
+        std::shared_ptr<PopulationNode> leaf8 = std::make_shared<PopulationNode>("leaf8", 0.0);
+        std::shared_ptr<PopulationNode> leaf9 = std::make_shared<PopulationNode>("leaf9", 0.0);
+        std::shared_ptr<PopulationNode> leaf10 = std::make_shared<PopulationNode>("leaf10", 0.0);
+        std::shared_ptr<PopulationNode> leaf11 = std::make_shared<PopulationNode>("leaf11", 0.0);
+
+        internal0a->add_child(leaf1);
+        internal0a->add_child(leaf2);
+        internal1a->add_child(leaf3);
+        internal1a->add_child(leaf4);
+        internal1a->add_child(leaf5);
+
+        internal2->add_child(internal0a);
+        internal2->add_child(internal1a);
+
+        internal0b->add_child(leaf6);
+        internal0b->add_child(leaf7);
+        internal1b->add_child(leaf8);
+        internal1b->add_child(leaf9);
+        internal1b->add_child(leaf10);
+
+        internal3->add_child(internal0b);
+        internal3->add_child(internal1b);
+
+        internal4->add_child(internal2);
+        internal4->add_child(internal3);
+
+        root->add_child(leaf11);
+        root->add_child(internal4);
+
+        BasePopulationTree tree(root);
+
+        tree.set_root_node_height_prior(root_height_prior);
+        tree.set_mutation_rate_prior(mu_rate_prior);
+        tree.set_population_size_prior(pop_size_prior);
+        tree.set_freq_1_prior(freq_1_prior);
+        tree.set_prior_on_alpha_of_node_height_beta_prior(height_alpha_prior);
+        tree.set_prior_on_beta_of_node_height_beta_prior(height_beta_prior);
+
+        tree.estimate_root_height();
+        tree.estimate_mutation_rate();
+        tree.estimate_state_frequencies();
+        tree.estimate_alpha_of_node_height_beta_prior();
+        tree.estimate_beta_of_node_height_beta_prior();
+
+        BetaDistribution beta_prior(2.0, 1.0);
+
+        SampleSummarizer<double> root_height_summary;
+        SampleSummarizer<double> internal_0_height_summary;
+        SampleSummarizer<double> internal_1_height_summary;
+        SampleSummarizer<double> internal_2_height_summary;
+        SampleSummarizer<double> internal_3_height_summary;
+        SampleSummarizer<double> internal_4_height_summary;
+        SampleSummarizer<double> height_alpha_summary;
+        SampleSummarizer<double> height_beta_summary;
+
+        SampleSummarizer<double> pop_size_summary;
+        SampleSummarizer<double> mu_rate_summary;
+        SampleSummarizer<double> freq_1_summary;
+
+        std::vector< std::shared_ptr<PositiveRealParameter> > pop_sizes;
+
+        unsigned int nsamples = 10000;
+        for (unsigned int i = 0; i < nsamples; ++i) {
+            tree.draw_from_prior(rng);
+
+            REQUIRE(tree.get_number_of_node_heights() == 6);
+
+            double internal_0a_height = tree.get_node("internal0a")->get_height();
+            double internal_0b_height = tree.get_node("internal0b")->get_height();
+            REQUIRE(internal_0a_height == internal_0b_height);
+
+            double internal_1a_height = tree.get_node("internal1a")->get_height();
+            double internal_1b_height = tree.get_node("internal1b")->get_height();
+            REQUIRE(internal_1a_height == internal_1b_height);
+            REQUIRE(internal_1a_height != internal_0a_height);
+
+            double internal_2_height = tree.get_node("internal2")->get_height();
+            double internal_3_height = tree.get_node("internal3")->get_height();
+            double internal_4_height = tree.get_node("internal4")->get_height();
+
+            double root_ht = tree.get_root_height();
+
+            double youngest_parent = internal_2_height;
+            if (internal_3_height < youngest_parent) {
+                youngest_parent = internal_3_height;
+            }
+
+            internal_0_height_summary.add_sample(internal_0a_height / youngest_parent);
+            internal_1_height_summary.add_sample(internal_1a_height / youngest_parent);
+
+            internal_2_height_summary.add_sample(internal_2_height / internal_4_height);
+            internal_3_height_summary.add_sample(internal_3_height / internal_4_height);
+
+            internal_4_height_summary.add_sample(internal_4_height / root_ht);
+
+            root_height_summary.add_sample(root_ht);
+
+            height_alpha_summary.add_sample(tree.get_alpha_of_node_height_beta_prior());
+            height_beta_summary.add_sample(tree.get_beta_of_node_height_beta_prior());
+
+            pop_sizes = tree.get_pointers_to_population_sizes();
+            REQUIRE(pop_sizes.size() == 19);
+            for (auto pop_size : pop_sizes) {
+                pop_size_summary.add_sample(pop_size->get_value());
+            }
+            mu_rate_summary.add_sample(tree.get_mutation_rate());
+            freq_1_summary.add_sample(tree.get_freq_1());
+        }
+
+        double eps = 0.005;
+        REQUIRE(root_height_summary.mean() == Approx(root_height_prior->get_mean()).epsilon(eps));
+        REQUIRE(root_height_summary.variance() == Approx(root_height_prior->get_variance()).epsilon(eps));
+
+        REQUIRE(internal_2_height_summary.mean() == Approx(beta_prior.get_mean()).epsilon(eps));
+        REQUIRE(internal_3_height_summary.mean() == Approx(beta_prior.get_mean()).epsilon(eps));
+        REQUIRE(internal_4_height_summary.mean() == Approx(beta_prior.get_mean()).epsilon(eps));
+        REQUIRE(internal_0_height_summary.mean() == Approx(beta_prior.get_mean()).epsilon(eps));
+        REQUIRE(internal_1_height_summary.mean() == Approx(beta_prior.get_mean()).epsilon(eps));
+
+        REQUIRE(height_alpha_summary.mean() == Approx(height_alpha_prior->get_mean()).epsilon(eps));
+        REQUIRE(height_alpha_summary.variance() == Approx(height_alpha_prior->get_variance()).epsilon(eps));
+        REQUIRE(height_beta_summary.mean() == Approx(height_beta_prior->get_mean()).epsilon(eps));
+        REQUIRE(height_beta_summary.variance() == Approx(height_beta_prior->get_variance()).epsilon(eps));
+        REQUIRE(pop_size_summary.mean() == Approx(pop_size_prior->get_mean()).epsilon(eps));
+        REQUIRE(pop_size_summary.variance() == Approx(pop_size_prior->get_variance()).epsilon(eps));
+        REQUIRE(mu_rate_summary.mean() == Approx(mu_rate_prior->get_mean()).epsilon(eps));
+        REQUIRE(mu_rate_summary.variance() == Approx(mu_rate_prior->get_variance()).epsilon(eps));
+        REQUIRE(freq_1_summary.mean() == Approx(freq_1_prior->get_mean()).epsilon(eps));
+        REQUIRE(freq_1_summary.variance() == Approx(freq_1_prior->get_variance()).epsilon(eps));
+    }
+}
+
+TEST_CASE("Testing BasePopulationTree::draw_from_prior with constrained pop sizes", "[xBasePopulationTree]") {
+    SECTION("Testing BasePopulationTree::draw_from_prior with constrained pop sizes") {
+        RandomNumberGenerator rng = RandomNumberGenerator(79849583);
+
+        double root_height_shape = 20.0;
+        double root_height_scale = 0.025;
+        std::shared_ptr<ContinuousProbabilityDistribution> root_height_prior = std::make_shared<GammaDistribution>(
+                root_height_shape,
+                root_height_scale);
+
+        double mu_rate_shape = 10.0;
+        double mu_rate_scale = 0.05;
+        std::shared_ptr<ContinuousProbabilityDistribution> mu_rate_prior = std::make_shared<GammaDistribution>(
+                mu_rate_shape,
+                mu_rate_scale);
+
+        double pop_size_shape = 10.0;
+        double pop_size_scale = 0.05;
+        std::shared_ptr<ContinuousProbabilityDistribution> pop_size_prior = std::make_shared<GammaDistribution>(
+                pop_size_shape,
+                pop_size_scale);
+
+        double freq_a = 3.0;
+        double freq_b = 2.0;
+        std::shared_ptr<ContinuousProbabilityDistribution> freq_1_prior = std::make_shared<BetaDistribution>(
+                freq_a,
+                freq_b);
+
+        std::shared_ptr<PopulationNode> root = std::make_shared<PopulationNode>("root", 0.25);
+        std::shared_ptr<PopulationNode> internal0a = std::make_shared<PopulationNode>("internal0a", 0.05);
+        std::shared_ptr<PopulationNode> internal0b = std::make_shared<PopulationNode>("internal0b", 0.05);
+        internal0a->set_height_parameter(internal0b->get_height_parameter());
+        std::shared_ptr<PopulationNode> internal1a = std::make_shared<PopulationNode>("internal1a", 0.1);
+        std::shared_ptr<PopulationNode> internal1b = std::make_shared<PopulationNode>("internal1b", 0.1);
+        internal1a->set_height_parameter(internal1b->get_height_parameter());
+        std::shared_ptr<PopulationNode> internal2 = std::make_shared<PopulationNode>("internal2", 0.15);
+        std::shared_ptr<PopulationNode> internal3 = std::make_shared<PopulationNode>("internal3", 0.17);
+        std::shared_ptr<PopulationNode> internal4 = std::make_shared<PopulationNode>("internal4", 0.2);
+        std::shared_ptr<PopulationNode> leaf1 = std::make_shared<PopulationNode>("leaf1", 0.0);
+        std::shared_ptr<PopulationNode> leaf2 = std::make_shared<PopulationNode>("leaf2", 0.0);
+        std::shared_ptr<PopulationNode> leaf3 = std::make_shared<PopulationNode>("leaf3", 0.0);
+        std::shared_ptr<PopulationNode> leaf4 = std::make_shared<PopulationNode>("leaf4", 0.0);
+        std::shared_ptr<PopulationNode> leaf5 = std::make_shared<PopulationNode>("leaf5", 0.0);
+        std::shared_ptr<PopulationNode> leaf6 = std::make_shared<PopulationNode>("leaf6", 0.0);
+        std::shared_ptr<PopulationNode> leaf7 = std::make_shared<PopulationNode>("leaf7", 0.0);
+        std::shared_ptr<PopulationNode> leaf8 = std::make_shared<PopulationNode>("leaf8", 0.0);
+        std::shared_ptr<PopulationNode> leaf9 = std::make_shared<PopulationNode>("leaf9", 0.0);
+        std::shared_ptr<PopulationNode> leaf10 = std::make_shared<PopulationNode>("leaf10", 0.0);
+        std::shared_ptr<PopulationNode> leaf11 = std::make_shared<PopulationNode>("leaf11", 0.0);
+
+        internal0a->add_child(leaf1);
+        internal0a->add_child(leaf2);
+        internal1a->add_child(leaf3);
+        internal1a->add_child(leaf4);
+        internal1a->add_child(leaf5);
+
+        internal2->add_child(internal0a);
+        internal2->add_child(internal1a);
+
+        internal0b->add_child(leaf6);
+        internal0b->add_child(leaf7);
+        internal1b->add_child(leaf8);
+        internal1b->add_child(leaf9);
+        internal1b->add_child(leaf10);
+
+        internal3->add_child(internal0b);
+        internal3->add_child(internal1b);
+
+        internal4->add_child(internal2);
+        internal4->add_child(internal3);
+
+        root->add_child(leaf11);
+        root->add_child(internal4);
+
+        BasePopulationTree tree(root);
+
+        tree.set_root_node_height_prior(root_height_prior);
+        tree.set_mutation_rate_prior(mu_rate_prior);
+        tree.set_population_size_prior(pop_size_prior);
+        tree.set_freq_1_prior(freq_1_prior);
+
+        tree.estimate_root_height();
+        tree.estimate_mutation_rate();
+        tree.estimate_state_frequencies();
+
+        tree.constrain_population_sizes();
+
+        tree.estimate_alpha_of_node_height_beta_prior();
+        tree.estimate_beta_of_node_height_beta_prior();
+        tree.set_alpha_of_node_height_beta_prior(2.0);
+        tree.set_beta_of_node_height_beta_prior(1.0);
+        tree.fix_alpha_of_node_height_beta_prior();
+        tree.fix_beta_of_node_height_beta_prior();
+
+        BetaDistribution beta_prior(2.0, 1.0);
+
+        SampleSummarizer<double> root_height_summary;
+        SampleSummarizer<double> internal_0_height_summary;
+        SampleSummarizer<double> internal_1_height_summary;
+        SampleSummarizer<double> internal_2_height_summary;
+        SampleSummarizer<double> internal_3_height_summary;
+        SampleSummarizer<double> internal_4_height_summary;
+
+        SampleSummarizer<double> pop_size_summary;
+        SampleSummarizer<double> mu_rate_summary;
+        SampleSummarizer<double> freq_1_summary;
+
+        std::vector< std::shared_ptr<PositiveRealParameter> > pop_sizes;
+
+        unsigned int nsamples = 10000;
+        for (unsigned int i = 0; i < nsamples; ++i) {
+            tree.draw_from_prior(rng);
+
+            REQUIRE(tree.get_number_of_node_heights() == 6);
+
+            double internal_0a_height = tree.get_node("internal0a")->get_height();
+            double internal_0b_height = tree.get_node("internal0b")->get_height();
+            REQUIRE(internal_0a_height == internal_0b_height);
+
+            double internal_1a_height = tree.get_node("internal1a")->get_height();
+            double internal_1b_height = tree.get_node("internal1b")->get_height();
+            REQUIRE(internal_1a_height == internal_1b_height);
+            REQUIRE(internal_1a_height != internal_0a_height);
+
+            double internal_2_height = tree.get_node("internal2")->get_height();
+            double internal_3_height = tree.get_node("internal3")->get_height();
+            double internal_4_height = tree.get_node("internal4")->get_height();
+
+            double root_ht = tree.get_root_height();
+
+            double youngest_parent = internal_2_height;
+            if (internal_3_height < youngest_parent) {
+                youngest_parent = internal_3_height;
+            }
+
+            internal_0_height_summary.add_sample(internal_0a_height / youngest_parent);
+            internal_1_height_summary.add_sample(internal_1a_height / youngest_parent);
+
+            internal_2_height_summary.add_sample(internal_2_height / internal_4_height);
+            internal_3_height_summary.add_sample(internal_3_height / internal_4_height);
+
+            internal_4_height_summary.add_sample(internal_4_height / root_ht);
+
+            root_height_summary.add_sample(root_ht);
+
+            pop_sizes = tree.get_pointers_to_population_sizes();
+            REQUIRE(pop_sizes.size() == 1);
+            for (auto pop_size : pop_sizes) {
+                pop_size_summary.add_sample(pop_size->get_value());
+            }
+            mu_rate_summary.add_sample(tree.get_mutation_rate());
+            freq_1_summary.add_sample(tree.get_freq_1());
+        }
+
+        double eps = 0.005;
+        REQUIRE(root_height_summary.mean() == Approx(root_height_prior->get_mean()).epsilon(eps));
+        REQUIRE(root_height_summary.variance() == Approx(root_height_prior->get_variance()).epsilon(eps));
+
+        REQUIRE(internal_2_height_summary.mean() == Approx(beta_prior.get_mean()).epsilon(eps));
+        REQUIRE(internal_2_height_summary.variance() == Approx(beta_prior.get_variance()).epsilon(eps));
+        REQUIRE(internal_3_height_summary.mean() == Approx(beta_prior.get_mean()).epsilon(eps));
+        REQUIRE(internal_3_height_summary.variance() == Approx(beta_prior.get_variance()).epsilon(eps));
+        REQUIRE(internal_4_height_summary.mean() == Approx(beta_prior.get_mean()).epsilon(eps));
+        REQUIRE(internal_4_height_summary.variance() == Approx(beta_prior.get_variance()).epsilon(eps));
+        REQUIRE(internal_0_height_summary.mean() == Approx(beta_prior.get_mean()).epsilon(eps));
+        REQUIRE(internal_0_height_summary.variance() == Approx(beta_prior.get_variance()).epsilon(eps));
+        REQUIRE(internal_1_height_summary.mean() == Approx(beta_prior.get_mean()).epsilon(eps));
+        REQUIRE(internal_1_height_summary.variance() == Approx(beta_prior.get_variance()).epsilon(eps));
+        REQUIRE(pop_size_summary.mean() == Approx(pop_size_prior->get_mean()).epsilon(eps));
+        REQUIRE(pop_size_summary.variance() == Approx(pop_size_prior->get_variance()).epsilon(eps));
+        REQUIRE(mu_rate_summary.mean() == Approx(mu_rate_prior->get_mean()).epsilon(eps));
+        REQUIRE(mu_rate_summary.variance() == Approx(mu_rate_prior->get_variance()).epsilon(eps));
+        REQUIRE(freq_1_summary.mean() == Approx(freq_1_prior->get_mean()).epsilon(eps));
+        REQUIRE(freq_1_summary.variance() == Approx(freq_1_prior->get_variance()).epsilon(eps));
+    }
+}
+
+
 TEST_CASE("Testing BaseTree", "[BaseTree]") {
     SECTION("Testing three species") {
         std::shared_ptr<Node> root = std::make_shared<Node>("root", 0.1);

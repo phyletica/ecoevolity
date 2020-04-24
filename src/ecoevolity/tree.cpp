@@ -20,6 +20,64 @@
 #include "tree.hpp"
 
 
+void BasePopulationTree::draw_from_prior(RandomNumberGenerator& rng) {
+    // Base class will handle node heights and height hyper-parameters
+    BaseTree::draw_from_prior(rng);
+    if ((! this->state_frequencies_are_fixed()) && (! this->state_frequencies_are_constrained())) {
+        this->freq_1_->set_value_from_prior(rng);
+    }
+    if (! this->mutation_rate_is_fixed()) {
+        this->mutation_rate_->set_value_from_prior(rng);
+    }
+    if (! this->population_sizes_are_fixed()) {
+        if (this->population_sizes_are_constrained()) {
+            this->set_root_population_size(this->population_size_prior_->draw(rng));
+        }
+        else {
+            for (auto node : this->pre_ordered_nodes_) {
+                node->set_population_size(this->population_size_prior_->draw(rng));
+            }
+        }
+    }
+}
+
+void BasePopulationTree::write_state_log_header(
+        std::ostream& out,
+        bool include_event_index,
+        const std::string& delimiter) const {
+    out << "ln_likelihood" << delimiter
+        << "ln_prior" << delimiter
+        << "root_height" << delimiter
+        << "mutation_rate" << delimiter
+        << "freq_1" << delimiter;
+    // Only output leaf and root pop sizes
+    for (auto label : this->data_.get_population_labels()) {
+        out << "pop_size_" << label << delimiter;
+    }
+    out << "pop_size_root";
+}
+
+void BasePopulationTree::log_state(
+        std::ostream& out,
+        const std::string& delimiter) const {
+    out << this->log_likelihood_.get_value() << delimiter
+        << this->log_prior_density_.get_value() << delimiter
+        << this->get_root_height() << delimiter
+        << this->get_mutation_rate() << delimiter
+        << this->get_freq_1() << delimiter;
+    // Only output leaf and root pop sizes
+    for (auto label : this->data_.get_population_labels()) {
+        out << this->get_node(label)->get_population_size() << delimiter;
+    }
+    out << this->get_root_population_size();
+}
+void BasePopulationTree::log_state(
+        std::ostream& out,
+        unsigned int event_index,
+        const std::string& delimiter) const {
+    this->log_state(out, delimiter);
+}
+
 double BasePopulationTree::get_ln_prob_of_drawing_node_state(
                 std::shared_ptr<PopulationNode> node) const {
     if (this->population_sizes_are_constrained()) {

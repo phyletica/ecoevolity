@@ -385,6 +385,16 @@ class BasePopulationTree : public BaseTree<PopulationNode> {
             this->data_.write_summary(out, indent_level);
         }
 
+        virtual void draw_from_prior(RandomNumberGenerator& rng);
+
+        void write_state_log_header(std::ostream& out,
+                bool include_event_index,
+                const std::string& delimiter = "\t") const;
+        void log_state(std::ostream& out,
+                unsigned int event_index,
+                const std::string& delimiter = "\t") const;
+        void log_state(std::ostream& out,
+                const std::string& delimiter = "\t") const;
 };
 
 

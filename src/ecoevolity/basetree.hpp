@@ -532,8 +532,8 @@ class BaseTree {
         }
         // Used to signify that the likelihood needs recalculating.
         // Node methods are expected to make nodes dirty. However, whenever the
-        // node height parameter are updated, this needs to be called, because
-        // node are bypassed (and thus don't end up dirty)
+        // node height parameters are updated, this needs to be called, because
+        // nodes are bypassed (and thus don't end up dirty)
         void make_dirty() {
             this->is_dirty_ = true;
         }
@@ -1628,6 +1628,10 @@ class BaseTree {
                 const std::string& delimiter = "\t") const {
             throw EcoevolityError("write_state_log_header called from base BaseTree class");
         }
+        virtual void write_state_log_header(std::ostream& out,
+                const std::string& delimiter = "\t") const {
+            write_state_log_header(out, false, delimiter);
+        }
         virtual void log_state(std::ostream& out,
                 unsigned int event_index,
                 const std::string& delimiter = "\t") const {
@@ -1639,7 +1643,21 @@ class BaseTree {
         }
 
         virtual void draw_from_prior(RandomNumberGenerator& rng) {
-            throw EcoevolityError("draw_from_prior called from base BaseTree class");
+            this->alpha_of_node_height_beta_prior_->set_value_from_prior(rng);
+            this->beta_of_node_height_beta_prior_->set_value_from_prior(rng);
+            unsigned int num_heights = this->get_number_of_node_heights();
+            if (! this->root_height_is_fixed()) {
+                this->node_heights_.at(num_heights - 1)->set_value(
+                        this->get_root_node_height_prior()->draw(rng));
+            }
+            for (int i = (num_heights - 2); i >= 0; --i) {
+                double youngest_parent_height = this->get_height_of_youngest_parent(i);
+                double beta_draw = rng.beta(
+                        this->alpha_of_node_height_beta_prior_->get_value(),
+                        this->beta_of_node_height_beta_prior_->get_value());
+                double height = youngest_parent_height * beta_draw;
+                this->node_heights_.at(i)->set_value(height);
+            }
         }
 
         void store_splits_by_height_index(
