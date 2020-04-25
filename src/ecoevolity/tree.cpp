@@ -20,6 +20,72 @@
 #include "tree.hpp"
 
 
+BasePopulationTree::BasePopulationTree(
+        const PopulationTreeSettings& settings,
+        RandomNumberGenerator& rng,
+        bool strict_on_constant_sites,
+        bool strict_on_missing_sites, 
+        bool strict_on_triallelic_sites,
+        bool store_seq_loci_info) {
+    this->init(settings.data_settings.get_path(),
+               settings.data_settings.get_population_name_delimiter(),
+               settings.data_settings.population_name_is_prefix(),
+               settings.data_settings.genotypes_are_diploid(),
+               settings.data_settings.markers_are_dominant(),
+               settings.data_settings.constant_sites_removed(),
+               true, // validate
+               strict_on_constant_sites,
+               strict_on_missing_sites,
+               strict_on_triallelic_sites,
+               settings.get_ploidy(),
+               store_seq_loci_info);
+    if (settings.constrain_state_frequencies()) {
+        this->constrain_state_frequencies();
+        this->fold_patterns();
+    }
+    this->set_population_size_prior(
+            settings.population_size_settings.get_prior_settings().get_instance());
+    if (settings.population_size_settings.population_sizes_are_constrained()) {
+        this->constrain_population_sizes();
+    }
+    PositiveRealParameter p = PositiveRealParameter(
+            settings.population_size_settings,
+            rng);
+    this->set_all_population_sizes(p.get_value());
+    if (settings.population_size_settings.is_fixed()) {
+        this->fix_population_sizes();
+    }
+    
+    this->set_freq_1_prior(settings.freq_1_settings.get_prior_settings().get_instance());
+    if (settings.constrain_state_frequencies()) {
+        this->constrain_state_frequencies();
+    }
+    else {
+        PositiveRealParameter freq_1 = PositiveRealParameter(
+                settings.freq_1_settings,
+                rng);
+        this->set_freq_1(freq_1.get_value());
+        if (freq_1.is_fixed()) {
+            this->fix_state_frequencies();
+        }
+    }
+    this->set_mutation_rate_parameter(
+            std::make_shared<PositiveRealParameter>(
+                    settings.mutation_rate_settings,
+                    rng));
+    if (this->data_.get_number_of_populations() < 2) {
+        std::ostringstream message;
+        message << "\n"
+                << "#######################################################################\n"
+                << "###############################  ERROR  ###############################\n"
+                << "The alignment in:\n    \'"
+                << this->data_.get_path() << "\'\n"
+                << "contains only a single population; at least 2 are required.\n"
+                << "#######################################################################\n";
+        throw EcoevolityComparisonSettingError(message.str(), this->data_.get_path());
+    }
+}
+
 void BasePopulationTree::draw_from_prior(RandomNumberGenerator& rng) {
     // Base class will handle node heights and height hyper-parameters
     BaseTree::draw_from_prior(rng);

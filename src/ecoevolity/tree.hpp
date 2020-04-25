@@ -28,6 +28,7 @@
 #include "probability.hpp"
 #include "error.hpp"
 #include "assert.hpp"
+#include "general_tree_settings.hpp"
 
 
 class BasePopulationTree : public BaseTree<PopulationNode> {
@@ -98,6 +99,14 @@ class BasePopulationTree : public BaseTree<PopulationNode> {
                 bool strict_on_missing_sites = false,
                 bool strict_on_triallelic_sites = true,
                 double ploidy = 2.0,
+                bool store_seq_loci_info = false
+                );
+        BasePopulationTree(
+                const PopulationTreeSettings& settings,
+                RandomNumberGenerator& rng,
+                bool strict_on_constant_sites = false,
+                bool strict_on_missing_sites = false,
+                bool strict_on_triallelic_sites = true,
                 bool store_seq_loci_info = false
                 );
 
