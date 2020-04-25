@@ -1067,6 +1067,24 @@ class GeneralTreeDataSettings {
         double get_ploidy() const {
             return this->ploidy_;
         }
+        char get_population_name_delimiter() const {
+            return this->population_name_delimiter_;
+        }
+        bool using_yaml_data() const {
+            return this->using_yaml_data_;
+        }
+        bool population_name_is_prefix() const {
+            return this->population_name_is_prefix_;
+        }
+        bool genotypes_are_diploid() const {
+            return this->genotypes_are_diploid_;
+        }
+        bool markers_are_dominant() const {
+            return this->markers_are_dominant_;
+        }
+        bool constant_sites_removed() const {
+            return this->constant_sites_removed_;
+        }
         void update_from_config(const YAML::Node& node,
                 const std::string & config_path) {
             if (! node.IsMap()) {
@@ -1238,6 +1256,10 @@ class PopulationTreeSettings {
         }
         double get_sample_frequency() const {
             return this->sample_frequency_;
+        }
+        bool constrain_state_frequencies() const {
+            return ((this->freq_1_settings.is_fixed()) &&
+                    (this->freq_1_settings.get_value() == 0.5));
         }
 
         void update_operator_weights() {
