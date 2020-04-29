@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
  
+set -e
+ 
 # get location of script
 ECOEVOLITY_BASE_DIR=""
 this_dir=`dirname "$0"`
