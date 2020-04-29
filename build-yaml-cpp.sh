@@ -26,7 +26,7 @@ else
     mkdir -p "$INSTALL_DIR"
 fi
 
-YAML_CPP_DIR="${ECOEVOLITY_BASE_DIR}/src/external/yaml-cpp-master-7d2873c"
+YAML_CPP_DIR="${ECOEVOLITY_BASE_DIR}/src/external/yaml-cpp-master-ce056ac"
 
 # number of cpus to use during compile
 COMPILETHREADS=4
