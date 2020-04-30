@@ -597,6 +597,9 @@ class BaseNode : public std::enable_shared_from_this<DerivedNodeT> {
             ECOEVOLITY_ASSERT(this->index_ > -1);
             return this->index_;
         }
+        void set_index(int i) {
+            this->index_ = i;
+        }
         const std::string& get_label() const {
             return this->label_;
         }
