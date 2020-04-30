@@ -503,6 +503,9 @@ class TreePriorSettings {
         }
         virtual void update_operator_weights(std::shared_ptr<GeneralTreeOperatorSettingsCollection> op_collection) const = 0;
         virtual void set_defaults() = 0;
+
+        virtual std::map<std::string, PositiveRealParameterSettings>
+        get_parameter_settings() const = 0;
 };
 
 class UniformTreePriorSettings : public TreePriorSettings {
@@ -517,15 +520,23 @@ class UniformRootAndBetasPriorSettings : public UniformTreePriorSettings {
         }
         UniformRootAndBetasPriorSettings(const UniformRootAndBetasPriorSettings & other) {
             this->root_height_settings_ = other.root_height_settings_;
-            this->alpha_of_node_height_beta_settings_ = other.alpha_of_node_height_beta_settings_;
+            this->alpha_of_node_height_settings_ = other.alpha_of_node_height_settings_;
         }
         UniformRootAndBetasPriorSettings& operator=(const UniformRootAndBetasPriorSettings & other) {
             this->root_height_settings_ = other.root_height_settings_;
-            this->alpha_of_node_height_beta_settings_ = other.alpha_of_node_height_beta_settings_;
+            this->alpha_of_node_height_settings_ = other.alpha_of_node_height_settings_;
             return * this;
         }
         UniformRootAndBetasPriorSettings(const YAML::Node& node) : UniformRootAndBetasPriorSettings() {
             this->init_from_yaml_node(node);
+        }
+
+        std::map<std::string, PositiveRealParameterSettings>
+        get_parameter_settings() const {
+            std::map<std::string, PositiveRealParameterSettings> p;
+            p["root_height"] = this->root_height_settings_;
+            p["alpha_of_node_height_beta"] = this->alpha_of_node_height_settings_;
+            return p;
         }
 
         EcoevolityOptions::TreePrior get_type() const {
@@ -536,7 +547,7 @@ class UniformRootAndBetasPriorSettings : public UniformTreePriorSettings {
             return this->root_height_settings_.is_fixed();
         }
         bool alpha_of_node_height_beta_prior_is_fixed() const {
-            return this->alpha_of_node_height_beta_settings_.is_fixed();
+            return this->alpha_of_node_height_settings_.is_fixed();
         }
 
         std::string to_string(unsigned int indent_level = 0) const {
@@ -549,7 +560,7 @@ class UniformRootAndBetasPriorSettings : public UniformTreePriorSettings {
                << margin << indent << indent << "root_height:\n"
                << this->root_height_settings_.to_string(indent_level + 3)
                << margin << indent << indent << "alpha_of_node_height_beta_prior:\n"
-               << this->alpha_of_node_height_beta_settings_.to_string(indent_level + 3);
+               << this->alpha_of_node_height_settings_.to_string(indent_level + 3);
             return ss.str();
         }
 
@@ -569,7 +580,7 @@ class UniformRootAndBetasPriorSettings : public UniformTreePriorSettings {
             ss << "value: 1.0\n"
                << "estimate: false\n";
             n = YAML::Load(ss);
-            this->alpha_of_node_height_beta_settings_ = PositiveRealParameterSettings(n);
+            this->alpha_of_node_height_settings_ = PositiveRealParameterSettings(n);
         }
 
         void update_operator_weights(std::shared_ptr<GeneralTreeOperatorSettingsCollection> op_collection) const {
@@ -601,7 +612,7 @@ class UniformRootAndBetasPriorSettings : public UniformTreePriorSettings {
 
     protected:
         PositiveRealParameterSettings root_height_settings_;
-        PositiveRealParameterSettings alpha_of_node_height_beta_settings_;
+        PositiveRealParameterSettings alpha_of_node_height_settings_;
 
         void init_from_yaml_node(const YAML::Node& node) {
             if (! node.IsMap()) {
@@ -656,10 +667,12 @@ class UniformRootAndBetasPriorSettings : public UniformTreePriorSettings {
                 keys.insert(arg->first.as<std::string>());
 
                 if (arg->first.as<std::string>() == "root_height") {
-                    this->root_height_settings_ = PositiveRealParameterSettings(arg->second);
+                    this->root_height_settings_ = PositiveRealParameterSettings(
+                            arg->second,
+                            true);
                 }
                 else if (arg->first.as<std::string>() == "alpha_of_node_height_beta_prior") {
-                    this->alpha_of_node_height_beta_settings_ = PositiveRealParameterSettings(arg->second);
+                    this->alpha_of_node_height_settings_ = PositiveRealParameterSettings(arg->second);
                 }
                 else {
                     std::string message = (
@@ -691,6 +704,51 @@ class TreeModelSettings {
             {
                 throw EcoevolityYamlConfigError(
                         "tree_space is fixed, but a starting_tree was not provided");
+            }
+            if (
+                (this->tree_space_ == EcoevolityOptions::TreeSpace::bifurcating)
+                &&
+                (
+                 (this->starting_tree_settings.get_tree_source()
+                     == StartingTreeSettings::Source::option)
+                 &&
+                 (this->starting_tree_settings.get_tree_option()
+                     == StartingTreeSettings::Option::comb)
+                )
+               )
+            {
+                throw EcoevolityYamlConfigError(
+                        "tree_space is bifurcating, but a starting_tree was comb");
+            }
+
+            std::map<std::string, PositiveRealParameterSettings> tree_parameters;
+            tree_parameters = this->tree_prior->get_parameter_settings();
+
+            if (this->tree_prior->get_type() ==
+                    EcoevolityOptions::TreePrior::uniform_root_and_betas)
+            {
+                PositiveRealParameterSettings root_ht = tree_parameters.at("root_height");
+
+                if (std::isnan(root_ht.get_value())
+                        && root_ht.is_fixed())
+                {
+                    if (this->starting_tree_settings.get_tree_source()
+                            == StartingTreeSettings::Source::option)
+                    {
+                        throw EcoevolityYamlConfigError(
+                                "root_height fixed, but no value or starting tree provided");
+                    }
+                }
+
+                if (! std::isnan(root_ht.get_value()))
+                {
+                    if (this->starting_tree_settings.get_tree_source()
+                            != StartingTreeSettings::Source::option)
+                    {
+                        throw EcoevolityYamlConfigError(
+                                "root_height value AND starting tree provided");
+                    }
+                }
             }
         }
 
