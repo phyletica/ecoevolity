@@ -636,7 +636,7 @@ void BaseComparisonPopulationTreeCollection::write_state_log_header(
             tree_idx < this->trees_.size();
             ++tree_idx) {
         out << this->logging_delimiter_;
-        this->trees_.at(tree_idx)->write_state_log_header(out,
+        this->trees_.at(tree_idx)->write_comparison_state_log_header(out,
                 true,
                 this->logging_delimiter_);
     }
@@ -673,7 +673,7 @@ void BaseComparisonPopulationTreeCollection::log_state(std::ostream& out,
             tree_idx < this->trees_.size();
             ++tree_idx) {
         out << this->logging_delimiter_;
-        this->trees_.at(tree_idx)->log_state(out,
+        this->trees_.at(tree_idx)->log_comparison_state(out,
                 standardized_height_indices.at(tree_idx),
                 this->logging_delimiter_);
     }

@@ -67,6 +67,20 @@ class BasePopulationTree : public BaseTree<PopulationNode> {
                 bool strict_on_triallelic_sites = true);
 
         void init_tree();
+        void init_data(
+                std::string path, 
+                char population_name_delimiter = ' ',
+                bool population_name_is_prefix = true,
+                bool genotypes_are_diploid = true,
+                bool markers_are_dominant = false,
+                bool constant_sites_removed = true,
+                bool validate = true,
+                bool strict_on_constant_sites = false,
+                bool strict_on_missing_sites = false,
+                bool strict_on_triallelic_sites = true,
+                double ploidy = 2.0,
+                bool store_seq_loci_info = false
+                );
 
         // bool constant_site_counts_were_provided();
         void calculate_likelihood_correction();
@@ -84,6 +98,22 @@ class BasePopulationTree : public BaseTree<PopulationNode> {
                 std::vector<double> & sizes) const;
 
         void update_unique_allele_counts();
+
+        void update_leaf_label_indices();
+        void set_tree_to_comb();
+        void set_tree_to_random_bifurcating(RandomNumberGenerator & rng);
+        void set_tree_to_upgma();
+        void set_tree_from_path(const std::string & path);
+        void set_tree_from_string(const std::string & newick_tree_string);
+
+        void establish_tree_and_node_heights(
+                const PopulationTreeSettings& settings,
+                RandomNumberGenerator& rng);
+        void establish_branch_and_mu_parameters(
+                const PopulationTreeSettings& settings,
+                RandomNumberGenerator& rng);
+
+        void set_root(std::shared_ptr<PopulationNode> root);
 
     public:
         BasePopulationTree() { }
@@ -152,6 +182,8 @@ class BasePopulationTree : public BaseTree<PopulationNode> {
         bool constant_sites_removed() const {
             return this->constant_sites_removed_;
         }
+
+        void check_if_leaf_labels_match_data() const;
 
         // int get_provided_number_of_constant_red_sites() const {
         //     return this->provided_number_of_constant_red_sites_;
@@ -397,10 +429,6 @@ class BasePopulationTree : public BaseTree<PopulationNode> {
         virtual void draw_from_prior(RandomNumberGenerator& rng);
 
         void write_state_log_header(std::ostream& out,
-                bool include_event_index,
-                const std::string& delimiter = "\t") const;
-        void log_state(std::ostream& out,
-                unsigned int event_index,
                 const std::string& delimiter = "\t") const;
         void log_state(std::ostream& out,
                 const std::string& delimiter = "\t") const;
@@ -587,6 +615,17 @@ class PopulationTree : public BasePopulationTree {
         virtual std::shared_ptr<PositiveRealParameter> get_child_population_size_parameter(
                 unsigned int child_index) const {
             throw EcoevolityError("get_child_population_size_parameter called from PopulationTree");
+        }
+
+        virtual void write_comparison_state_log_header(std::ostream& out,
+                bool include_event_index,
+                const std::string& delimiter = "\t") const {
+            throw EcoevolityError("write_comparison_state_log_header called from base PopulationTree class");
+        }
+        virtual void log_comparison_state(std::ostream& out,
+                unsigned int event_index,
+                const std::string& delimiter = "\t") const {
+            throw EcoevolityError("log_comparison_state called from base PopulationTree class");
         }
 };
 
@@ -779,10 +818,10 @@ class ComparisonPopulationTree: public PopulationTree {
 
         double compute_log_prior_density();
 
-        void write_state_log_header(std::ostream& out,
+        virtual void write_comparison_state_log_header(std::ostream& out,
                 bool include_event_index,
                 const std::string& delimiter = "\t") const;
-        void log_state(std::ostream& out,
+        virtual void log_comparison_state(std::ostream& out,
                 unsigned int event_index,
                 const std::string& delimiter = "\t") const;
         void log_state(std::ostream& out,
@@ -849,10 +888,10 @@ class ComparisonRelativeRootPopulationTree: public RelativeRootPopulationTree {
 
         double compute_log_prior_density();
 
-        void write_state_log_header(std::ostream& out,
+        void write_comparison_state_log_header(std::ostream& out,
                 bool include_event_index,
                 const std::string& delimiter = "\t") const;
-        void log_state(std::ostream& out,
+        void log_comparison_state(std::ostream& out,
                 unsigned int event_index,
                 const std::string& delimiter = "\t") const;
         void log_state(std::ostream& out,
@@ -916,10 +955,10 @@ class ComparisonDirichletPopulationTree: public ComparisonPopulationTree {
 
         double compute_log_prior_density_of_population_sizes() const;
 
-        void write_state_log_header(std::ostream& out,
+        void write_comparison_state_log_header(std::ostream& out,
                 bool include_event_index,
                 const std::string& delimiter = "\t") const;
-        void log_state(std::ostream& out,
+        void log_comparison_state(std::ostream& out,
                 unsigned int event_index,
                 const std::string& delimiter = "\t") const;
         void log_state(std::ostream& out,

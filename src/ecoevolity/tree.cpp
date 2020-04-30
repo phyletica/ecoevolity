@@ -19,6 +19,10 @@
 
 #include "tree.hpp"
 
+void BasePopulationTree::set_root(std::shared_ptr<PopulationNode> root) {
+    BaseTree::set_root(root);
+    this->root_->resize_all();
+}
 
 BasePopulationTree::BasePopulationTree(
         const PopulationTreeSettings& settings,
@@ -37,8 +41,107 @@ BasePopulationTree::BasePopulationTree(
                strict_on_constant_sites,
                strict_on_missing_sites,
                strict_on_triallelic_sites,
-               settings.get_ploidy(),
+               settings.data_settings.get_ploidy(),
                store_seq_loci_info);
+    this->establish_tree_and_node_heights(settings, rng);
+    this->establish_branch_and_mu_parameters(settings, rng);
+}
+
+void BasePopulationTree::establish_tree_and_node_heights(
+        const PopulationTreeSettings& settings,
+        RandomNumberGenerator& rng) {
+    if (this->data_.get_number_of_populations() < 2) {
+        std::ostringstream message;
+        message << "\n"
+                << "#######################################################################\n"
+                << "###############################  ERROR  ###############################\n"
+                << "The alignment in:\n    \'"
+                << this->data_.get_path() << "\'\n"
+                << "contains only a single population; at least 2 are required.\n"
+                << "#######################################################################\n";
+        throw EcoevolityError(message.str());
+    }
+    ECOEVOLITY_ASSERT(settings.tree_model_settings.tree_prior->get_type() ==
+            EcoevolityOptions::TreePrior::uniform_root_and_betas);
+
+    // Get a copy of the settings for the node heights 
+    std::map<std::string, PositiveRealParameterSettings> height_param_settings;
+    height_param_settings = settings.tree_model_settings.tree_prior->get_parameter_settings();
+    PositiveRealParameterSettings root_ht_settings;
+    PositiveRealParameterSettings alpha_of_beta_settings;
+    root_ht_settings = height_param_settings.at("root_height");
+    alpha_of_beta_settings = height_param_settings.at("alpha_of_node_height_beta");
+
+    // If the root height parameter is fixed but not set, it needs according to
+    // the starting tree, which will happen below. For now, we will give it a
+    // dummy value
+    if (root_ht_settings.is_fixed() && std::isnan(root_ht_settings.get_value())) {
+        root_ht_settings.set_value(1.0);
+    }
+    PositiveRealParameter root_ht = PositiveRealParameter(
+            root_ht_settings,
+            rng);
+    this->set_root_node_height_prior(root_ht.get_prior());
+    this->set_root_height(root_ht.get_value());
+    if (root_ht.is_fixed()) {
+        this->fix_root_height();
+    }
+
+    PositiveRealParameter alpha_of_beta = PositiveRealParameter(
+            alpha_of_beta_settings,
+            rng);
+    this->estimate_alpha_of_node_height_beta_prior();
+    this->set_prior_on_alpha_of_node_height_beta_prior(alpha_of_beta.get_prior());
+    this->set_alpha_of_node_height_beta_prior(alpha_of_beta.get_value());
+    if (alpha_of_beta.is_fixed()) {
+        this->fix_alpha_of_node_height_beta_prior();
+    }
+
+    this->estimate_beta_of_node_height_beta_prior();
+    this->set_beta_of_node_height_beta_prior(1.0);
+    this->fix_beta_of_node_height_beta_prior();
+
+
+    if (settings.tree_model_settings.starting_tree_settings.get_tree_source() ==
+            StartingTreeSettings::Source::option) {
+        if (settings.tree_model_settings.starting_tree_settings.get_tree_option() ==
+                StartingTreeSettings::Option::comb) {
+            this->set_tree_to_comb();
+        }
+        else if (settings.tree_model_settings.starting_tree_settings.get_tree_option() ==
+                StartingTreeSettings::Option::upgma) {
+            this->set_tree_to_upgma();
+        }
+        else if (settings.tree_model_settings.starting_tree_settings.get_tree_option() ==
+                StartingTreeSettings::Option::random) {
+            this->set_tree_to_random_bifurcating(rng);
+        }
+        else {
+            std::ostringstream message;
+            message << "Unexpected StartingTreeSettings::Option: "
+                << (int)settings.tree_model_settings.starting_tree_settings.get_tree_option();
+            throw EcoevolityError(message.str());
+        }
+    }
+    else if (settings.tree_model_settings.starting_tree_settings.get_tree_source() ==
+            StartingTreeSettings::Source::string) {
+        this->set_tree_from_string(settings.tree_model_settings.starting_tree_settings.get_tree_string());
+    }
+    else if (settings.tree_model_settings.starting_tree_settings.get_tree_source() ==
+            StartingTreeSettings::Source::path) {
+        this->set_tree_from_path(settings.tree_model_settings.starting_tree_settings.get_tree_path());
+    }
+    else {
+        std::ostringstream message;
+        message << "Unexpected StartingTreeSettings::Source: "
+            << (int)settings.tree_model_settings.starting_tree_settings.get_tree_source();
+        throw EcoevolityError(message.str());
+    }
+}
+
+void BasePopulationTree::establish_branch_and_mu_parameters(
+        const PopulationTreeSettings& settings,
+        RandomNumberGenerator& rng) {
     if (settings.constrain_state_frequencies()) {
         this->constrain_state_frequencies();
         this->fold_patterns();
@@ -73,17 +176,6 @@ BasePopulationTree::BasePopulationTree(
             std::make_shared<PositiveRealParameter>(
                     settings.mutation_rate_settings,
                     rng));
-    if (this->data_.get_number_of_populations() < 2) {
-        std::ostringstream message;
-        message << "\n"
-                << "#######################################################################\n"
-                << "###############################  ERROR  ###############################\n"
-                << "The alignment in:\n    \'"
-                << this->data_.get_path() << "\'\n"
-                << "contains only a single population; at least 2 are required.\n"
-                << "#######################################################################\n";
-        throw EcoevolityComparisonSettingError(message.str(), this->data_.get_path());
-    }
 }
 
 void BasePopulationTree::draw_from_prior(RandomNumberGenerator& rng) {
@@ -109,7 +201,6 @@ void BasePopulationTree::draw_from_prior(RandomNumberGenerator& rng) {
 
 void BasePopulationTree::write_state_log_header(
         std::ostream& out,
-        bool include_event_index,
         const std::string& delimiter) const {
     out << "ln_likelihood" << delimiter
         << "ln_prior" << delimiter
@@ -136,12 +227,6 @@ void BasePopulationTree::log_state(
         out << this->get_node(label)->get_population_size() << delimiter;
     }
     out << this->get_root_population_size();
-}
-void BasePopulationTree::log_state(
-        std::ostream& out,
-        unsigned int event_index,
-        const std::string& delimiter) const {
-    this->log_state(out, delimiter);
 }
 
 double BasePopulationTree::get_ln_prob_of_drawing_node_state(
@@ -224,7 +309,6 @@ BasePopulationTree::BasePopulationTree(
     this->data_ = bd;
     this->set_root(root);
     this->constant_sites_removed_ = false;
-    this->root_->resize_all();
     std::shared_ptr<ContinuousProbabilityDistribution> root_height_prior = std::make_shared<ExponentialDistribution>(100.0);
     this->root_->set_all_node_height_priors(root_height_prior);
     this->root_->set_all_population_size_priors(this->population_size_prior_);
@@ -238,7 +322,7 @@ BasePopulationTree::BasePopulationTree(
     this->update_node_heights();
 }
 
-void BasePopulationTree::init(
+void BasePopulationTree::init_data(
         std::string path, 
         char population_name_delimiter,
         bool population_name_is_prefix,
@@ -288,10 +372,6 @@ void BasePopulationTree::init(
             strict_on_missing_sites,
             strict_on_triallelic_sites);
 
-    this->init_tree();
-
-    this->root_->resize_all();
-
     // Store unique allele counts and weights for calculating the likelihood
     // correction term for constant sites.
     // At this point, no data manipulation should happen that would require
@@ -299,6 +379,35 @@ void BasePopulationTree::init(
     // unique allele counts or weights).
     this->update_unique_allele_counts();
     this->update_node_heights();
+}
+
+void BasePopulationTree::init(
+        std::string path, 
+        char population_name_delimiter,
+        bool population_name_is_prefix,
+        bool genotypes_are_diploid,
+        bool markers_are_dominant,
+        bool constant_sites_removed,
+        bool validate,
+        bool strict_on_constant_sites,
+        bool strict_on_missing_sites,
+        bool strict_on_triallelic_sites,
+        double ploidy,
+        bool store_seq_loci_info) {
+    this->init_data(
+            path,
+            population_name_delimiter,
+            population_name_is_prefix,
+            genotypes_are_diploid,
+            markers_are_dominant,
+            constant_sites_removed,
+            validate,
+            strict_on_constant_sites,
+            strict_on_missing_sites,
+            strict_on_triallelic_sites,
+            ploidy,
+            store_seq_loci_info);
+    this->init_tree();
 }
 
 void BasePopulationTree::process_and_vet_initialized_data(
@@ -449,6 +558,179 @@ void BasePopulationTree::init_tree() {
         ancestor = next_ancestor;
     }
     this->set_root(ancestor);
+}
+
+void BasePopulationTree::set_tree_to_comb() {
+    std::shared_ptr<PopulationNode> root = std::make_shared<PopulationNode>(
+            this->data_.get_number_of_populations(),
+            this->get_root_height());
+    root->set_height_parameter(this->root_->get_height_parameter());
+    root->set_label(this->root_->get_label());
+    for (unsigned int pop_idx = 0;
+            pop_idx < this->data_.get_number_of_populations();
+            ++pop_idx) {
+        std::shared_ptr<PopulationNode> tip = std::make_shared<PopulationNode>(
+                pop_idx,
+                this->data_.get_population_label(pop_idx),
+                0.0,
+                this->data_.get_max_allele_count(pop_idx));
+        tip->fix_node_height();
+        root->add_child(tip);
+    }
+    this->set_root(root);
+}
+
+void BasePopulationTree::set_tree_to_random_bifurcating(
+        RandomNumberGenerator & rng) {
+    unsigned int next_index = this->data_.get_number_of_populations();
+    std::shared_ptr<PopulationNode> root = std::make_shared<PopulationNode>(
+            next_index,
+            this->get_root_height());
+    ++next_index;
+    root->set_height_parameter(this->root_->get_height_parameter());
+    root->set_label(this->root_->get_label());
+
+    std::vector< std::shared_ptr<PopulationNode> > existing_nodes;
+
+    std::vector<unsigned int> leaf_indices(this->data_.get_number_of_populations());
+    for (unsigned int i = 0; i < this->data_.get_number_of_populations(); ++i) {
+        leaf_indices.at(i) = i;
+    }
+    rng.shuffle<unsigned int>(leaf_indices);
+
+    unsigned int leaf_idx = leaf_indices.back();
+    leaf_indices.pop_back();
+    std::shared_ptr<PopulationNode> leaf1 = std::make_shared<PopulationNode>(
+            leaf_idx,
+            this->data_.get_population_label(leaf_idx),
+            0.0,
+            this->data_.get_max_allele_count(leaf_idx));
+    leaf1->fix_node_height();
+    root->add_child(leaf1);
+    existing_nodes.push_back(leaf1);
+
+    leaf_idx = leaf_indices.back();
+    leaf_indices.pop_back();
+    std::shared_ptr<PopulationNode> leaf2 = std::make_shared<PopulationNode>(
+            leaf_idx,
+            this->data_.get_population_label(leaf_idx),
+            0.0,
+            this->data_.get_max_allele_count(leaf_idx));
+    leaf2->fix_node_height();
+    root->add_child(leaf2);
+    existing_nodes.push_back(leaf2);
+
+    unsigned int attach_idx;
+    std::shared_ptr<PopulationNode> sib_node;
+    std::shared_ptr<PopulationNode> parent_node;
+    while(leaf_indices.size() > 0) {
+        leaf_idx = leaf_indices.back();
+        leaf_indices.pop_back();
+        std::shared_ptr<PopulationNode> leaf = std::make_shared<PopulationNode>(
+                leaf_idx,
+                this->data_.get_population_label(leaf_idx),
+                0.0,
+                this->data_.get_max_allele_count(leaf_idx));
+        leaf->fix_node_height();
+
+        attach_idx = rng.uniform_int(0, existing_nodes.size() - 1);
+        sib_node = existing_nodes.at(attach_idx);
+        parent_node = sib_node->get_parent();
+        double sib_length = sib_node->get_length();
+        double new_height = sib_node->get_height() + (0.5 * sib_length);
+        std::shared_ptr<PopulationNode> new_node = std::make_shared<PopulationNode>(
+                next_index,
+                new_height);
+        ++next_index;
+        sib_node->remove_parent();
+        new_node->add_child(sib_node);
+        new_node->add_child(leaf);
+        new_node->add_parent(parent_node);
+        existing_nodes.push_back(leaf);
+        existing_nodes.push_back(new_node);
+    }
+    this->set_root(root);
+    // Draw heights from prior
+    BaseTree::draw_from_prior(rng);
+}
+
+void BasePopulationTree::set_tree_to_upgma() {
+    throw EcoevolityNotImplementedError(
+            "BasePopulationTree::set_tree_to_upgma is not implemented");
+}
+
+void BasePopulationTree::set_tree_from_path(const std::string & path) {
+    bool root_ht_fixed = this->root_height_is_fixed();
+    std::shared_ptr<ContinuousProbabilityDistribution> root_ht_prior = this->get_root_node_height_prior();
+
+    std::ifstream in_stream;
+    in_stream.open(path);
+    if (! in_stream.is_open()) {
+        throw EcoevolityParsingError(
+                "Could not open tree file",
+                path);
+    }
+    try {
+        this->build_from_stream_(in_stream, "relaxedphyliptree");
+    }
+    catch(...) {
+        std::cerr << "ERROR: Problem parsing tree file path: "
+                << path << "\n";
+        throw;
+    }
+    this->update_leaf_label_indices();
+
+    this->set_root_node_height_prior(root_ht_prior);
+    if (root_ht_fixed) {
+        this->fix_root_height();
+    }
+    else {
+        this->estimate_root_height();
+    }
+}
+
+void BasePopulationTree::set_tree_from_string(const std::string & newick_tree_string) {
+    bool root_ht_fixed = this->root_height_is_fixed();
+    std::shared_ptr<ContinuousProbabilityDistribution> root_ht_prior = this->get_root_node_height_prior();
+
+    std::istringstream tree_stream(newick_tree_string);
+    try {
+        this->build_from_stream_(tree_stream, "relaxedphyliptree");
+    }
+    catch(...) {
+        std::cerr << "ERROR: Problem parsing newick tree string:\n"
+                << newick_tree_string << "\n";
+        throw;
+    }
+    this->update_leaf_label_indices();
+
+    this->set_root_node_height_prior(root_ht_prior);
+    if (root_ht_fixed) {
+        this->fix_root_height();
+    }
+    else {
+        this->estimate_root_height();
+    }
+}
+
+void BasePopulationTree::check_if_leaf_labels_match_data() const {
+    // Make sure labels on tree match the data
+    std::vector<std::string> leaf_labels = this->root_->get_leaf_labels();
+    std::vector<std::string> pop_labels = this->data_.get_population_labels();
+    if (! std::is_permutation(pop_labels.begin(), pop_labels.end(), leaf_labels.begin())) {
+        std::ostringstream message;
+        message << "Tip labels in provided tree do not match labels in data file";
+        throw EcoevolityError(message.str());
+
+    }
+}
+
+void BasePopulationTree::update_leaf_label_indices() {
+    this->check_if_leaf_labels_match_data();
+    // Make sure leaf indices match indices to data
+    for (unsigned int i = 0; i < this->data_.get_number_of_populations(); ++i) {
+        this->get_node(this->data_.get_population_label(i))->set_index(i);
+    }
 }
 
 void BasePopulationTree::set_data(const BiallelicData & data, bool constant_sites_removed) {
@@ -1732,7 +2014,7 @@ void ComparisonPopulationTree::restore_parameters() {
     // this->restore_all_heights();
 }
 
-void ComparisonPopulationTree::write_state_log_header(
+void ComparisonPopulationTree::write_comparison_state_log_header(
         std::ostream& out,
         bool include_event_index,
         const std::string& delimiter) const {
@@ -1766,7 +2048,7 @@ void ComparisonPopulationTree::log_state(
     }
     out << this->get_root_population_size();
 }
-void ComparisonPopulationTree::log_state(
+void ComparisonPopulationTree::log_comparison_state(
         std::ostream& out,
         unsigned int event_index,
         const std::string& delimiter) const {
@@ -1990,7 +2272,7 @@ ComparisonDirichletPopulationTree::ComparisonDirichletPopulationTree(
     }
 }
 
-void ComparisonDirichletPopulationTree::write_state_log_header(
+void ComparisonDirichletPopulationTree::write_comparison_state_log_header(
         std::ostream& out,
         bool include_event_index,
         const std::string& delimiter) const {
@@ -2030,7 +2312,7 @@ void ComparisonDirichletPopulationTree::log_state(
     out << multipliers.at(root_index);
 }
 
-void ComparisonDirichletPopulationTree::log_state(
+void ComparisonDirichletPopulationTree::log_comparison_state(
         std::ostream& out,
         unsigned int event_index,
         const std::string& delimiter) const {
@@ -2426,7 +2708,7 @@ void ComparisonRelativeRootPopulationTree::restore_parameters() {
     // this->restore_all_heights();
 }
 
-void ComparisonRelativeRootPopulationTree::write_state_log_header(
+void ComparisonRelativeRootPopulationTree::write_comparison_state_log_header(
         std::ostream& out,
         bool include_event_index,
         const std::string& delimiter) const {
@@ -2460,7 +2742,7 @@ void ComparisonRelativeRootPopulationTree::log_state(
     }
     out << this->get_root_population_size();
 }
-void ComparisonRelativeRootPopulationTree::log_state(
+void ComparisonRelativeRootPopulationTree::log_comparison_state(
         std::ostream& out,
         unsigned int event_index,
         const std::string& delimiter) const {
