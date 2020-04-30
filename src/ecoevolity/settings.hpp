@@ -529,7 +529,8 @@ class PositiveRealParameterSettings {
         bool use_empirical_value_ = false;
         ContinuousDistributionSettings prior_settings_;
 
-        void init_from_yaml_node(const YAML::Node& node) {
+        void init_from_yaml_node(const YAML::Node& node,
+                const bool allow_fix_without_value = false) {
             bool prior_specified = false;
             bool value_specified = false;
             if (! node.IsMap()) {
@@ -646,7 +647,8 @@ class PositiveRealParameterSettings {
             if ((this->is_fixed_) &&
                     (std::isnan(this->value_)) &&
                     (! this->is_vector_) &&
-                    (! this->use_empirical_value_)) {
+                    (! this->use_empirical_value_) &&
+                    (! allow_fix_without_value)) {
                 throw EcoevolityPositiveRealParameterSettingError(
                         "cannot fix parameter without a value"
                         );
@@ -682,8 +684,9 @@ class PositiveRealParameterSettings {
                         );
             }
         }
-        PositiveRealParameterSettings(const YAML::Node& node) {
-            this->init_from_yaml_node(node);
+        PositiveRealParameterSettings(const YAML::Node& node,
+                const bool allow_fix_without_value = false) {
+            this->init_from_yaml_node(node, allow_fix_without_value);
         }
         virtual ~PositiveRealParameterSettings() { }
         PositiveRealParameterSettings(const PositiveRealParameterSettings& other) {
@@ -706,6 +709,9 @@ class PositiveRealParameterSettings {
 
         double get_value() const {
             return this->value_;
+        }
+        void set_value(double value) {
+            this->value_ = value;
         }
         const std::vector<double> & get_values() const {
             return this->values_;
