@@ -1209,7 +1209,7 @@ class BaseTree {
             return this->slide_bump_height_(rng, height_index, new_height, 2);
         }
 
-        void set_root(std::shared_ptr<NodeType> root) {
+        virtual void set_root(std::shared_ptr<NodeType> root) {
             this->root_ = root;
             this->vet_tree();
             this->update_node_heights();
@@ -1624,18 +1624,8 @@ class BaseTree {
         }
 
         virtual void write_state_log_header(std::ostream& out,
-                bool include_event_index,
                 const std::string& delimiter = "\t") const {
             throw EcoevolityError("write_state_log_header called from base BaseTree class");
-        }
-        virtual void write_state_log_header(std::ostream& out,
-                const std::string& delimiter = "\t") const {
-            write_state_log_header(out, false, delimiter);
-        }
-        virtual void log_state(std::ostream& out,
-                unsigned int event_index,
-                const std::string& delimiter = "\t") const {
-            throw EcoevolityError("log_state called from base BaseTree class");
         }
         virtual void log_state(std::ostream& out,
                 const std::string& delimiter = "\t") const {
