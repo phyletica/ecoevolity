@@ -189,26 +189,32 @@ int phycoevolity_main(int argc, char * argv[]) {
             rng,
             strict_on_constant_sites,
             strict_on_missing_sites,
-            strict_on_triallelic_sites);
+            strict_on_triallelic_sites,
+            false // store_seq_loci_info
+            );
 
     if (ignore_data) {
-        comparisons.ignore_data();
+        tree.ignore_data();
     }
     else {
-        comparisons.use_data();
+        tree.use_data();
     }
 
+    std::string tree_log_path = settings.get_tree_log_path();
+    std::string state_log_path = settings.get_state_log_path();
+    std::string operator_log_path = settings.get_operator_log_path();
     if (options.is_set_by_user("prefix")) {
         std::string output_prefix = options.get("prefix").get_str();
-        comparisons.add_log_prefix(output_prefix);
+        tree_log_path = prefix + path::basename(tree_log_path);
+        state_log_path = prefix + path::basename(state_log_path);
+        operator_log_path = prefix + path::basename(operator_log_path);
     }
 
     std::cout << "\n" << string_util::banner('-') << "\n";
-    comparisons.write_summary(std::cout);
+    tree.write_data_summary(std::cout);
     std::cout << string_util::banner('-') << "\n\n";
 
-    comparisons.set_number_of_threads(nthreads);
-    std::cout << "Number of threads: " << comparisons.get_number_of_threads() << std::endl;
+    std::cout << "Number of threads: " << nthreads << std::endl;
 
     if (dry_run) {
         return 0;
@@ -219,10 +225,11 @@ int phycoevolity_main(int argc, char * argv[]) {
     time(&start);
 
     std::cout << "Firing up MCMC..." << std::endl;
-    comparisons.mcmc(
+    tree.mcmc(
             rng,
             settings.get_chain_length(),
-            settings.get_sample_frequency());
+            settings.get_sample_frequency(),
+            nthreads);
 
     time(&finish);
     double duration = difftime(finish, start);
