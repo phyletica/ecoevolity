@@ -1303,6 +1303,9 @@ class PopulationTreeSettings {
         std::string get_config_directory() const {
             return path::dirname(this->get_config_path());
         }
+        const std::string& get_tree_log_path() const {
+            return this->tree_log_path_;
+        }
         const std::string& get_state_log_path() const {
             return this->state_log_path_;
         }
