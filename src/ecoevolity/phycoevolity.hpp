@@ -192,6 +192,8 @@ int phycoevolity_main(int argc, char * argv[]) {
             strict_on_triallelic_sites,
             false // store_seq_loci_info
             );
+    GeneralTreeOperatorSchedule<BasePopulationTree> operator_schedule(
+            setings);
 
     if (ignore_data) {
         tree.ignore_data();
@@ -225,10 +227,15 @@ int phycoevolity_main(int argc, char * argv[]) {
     time(&start);
 
     std::cout << "Firing up MCMC..." << std::endl;
-    tree.mcmc(
+    mcmc<BasePopulationTree>(
             rng,
+            tree,
+            operator_schedule,
             settings.get_chain_length(),
             settings.get_sample_frequency(),
+            tree_log_path,
+            state_log_path,
+            operator_log_path,
             nthreads);
 
     time(&finish);
