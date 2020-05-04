@@ -39,7 +39,27 @@ class GeneralTreeOperatorSchedule {
 
     public:
         GeneralTreeOperatorSchedule() { }
-        // GeneralTreeOperatorSchedule(const GeneralTreeSettings& settings) { }
+        GeneralTreeOperatorSchedule(
+                std::shared_ptr<GeneralTreeOperatorSettingsCollection> settings,
+                unsigned int number_of_leaves) {
+            for (auto op_settings : settings->untunable_operators) {
+                if (op_settings.second.get_weight() != 0.0) {
+                    this->_add_untunable_op(
+                            op_settings.first,
+                            op_settings.second,
+                            number_of_leaves);
+                }
+            }
+            for (auto op_settings : settings->tunable_operators) {
+                if (op_settings.second.get_weight() != 0.0) {
+                    this->_add_tunable_op(
+                            op_settings.first,
+                            op_settings.second,
+                            number_of_leaves);
+                }
+            }
+            this->provide_split_lump_rj_move_with_helper_ops();
+        }
         virtual ~GeneralTreeOperatorSchedule() { }
 
         unsigned int get_number_of_operators() const {
@@ -76,20 +96,124 @@ class GeneralTreeOperatorSchedule {
             return this->operators_.at(operator_index);
         }
 
-        std::vector< std::shared_ptr< GeneralTreeOperatorTemplate<TreeType> > > get_node_height_operators() const {
-            std::vector< std::shared_ptr< GeneralTreeOperatorTemplate<TreeType> > > ops;
+        void append_operator(
+                const std::string & op_name,
+                std::vector< std::shared_ptr< GeneralTreeOperatorTemplate<TreeType> > > & ops
+                ) const {
             for (std::shared_ptr< GeneralTreeOperatorTemplate<TreeType> > op: this->operators_) {
-                if (op->get_type() == BaseGeneralTreeOperatorTemplate::OperatorTypeEnum::node_height_operator) {
+                if (op->get_name() == op_name) {
                     ops.push_back(op);
+                    return;
                 }
-                else if (op->get_type() == BaseGeneralTreeOperatorTemplate::OperatorTypeEnum::root_height_operator) {
-                    ops.push_back(op);
+            }
+        }
+
+        void get_operator(
+                const std::string & op_name,
+                std::shared_ptr< GeneralTreeOperatorTemplate<TreeType> > op) const {
+            for (std::shared_ptr< GeneralTreeOperatorTemplate<TreeType> > op_iter: this->operators_) {
+                if (op_iter->get_name() == op_name) {
+                    op = op_iter;
+                    return;
                 }
-                else if (op->get_type() == BaseGeneralTreeOperatorTemplate::OperatorTypeEnum::global_height_operator) {
+            }
+        }
+
+        std::shared_ptr< GeneralTreeOperatorTemplate<TreeType> > get_operator(
+                const std::string & op_name) const {
+            std::shared_ptr< GeneralTreeOperatorTemplate<TreeType> > return_op;
+            this->get_operator(op_name, return_op);
+            return return_op;
+        }
+
+        void get_operators(
+                const BaseGeneralTreeOperatorTemplate::OperatorTypeEnum op_type,
+                std::vector< std::shared_ptr< GeneralTreeOperatorTemplate<TreeType> > > & ops
+                ) const {
+            for (std::shared_ptr< GeneralTreeOperatorTemplate<TreeType> > op: this->operators_) {
+                if (op->get_type() == op_type) {
                     ops.push_back(op);
                 }
             }
+        }
+
+        std::vector< std::shared_ptr< GeneralTreeOperatorTemplate<TreeType> > > get_operators(
+                const BaseGeneralTreeOperatorTemplate::OperatorTypeEnum op_type
+                ) const {
+            std::vector< std::shared_ptr< GeneralTreeOperatorTemplate<TreeType> > > ops;
+            this->get_operators(op_type);
             return ops;
+        }
+
+        void get_split_lump_rj_operator(
+                std::shared_ptr< GeneralTreeOperatorTemplate<TreeType> > rj_op) const {
+            this->get_operator("SplitLumpNodesRevJumpSampler", rj_op);
+        }
+
+        std::shared_ptr< GeneralTreeOperatorTemplate<TreeType> > get_split_lump_rj_operator() const {
+            std::shared_ptr< GeneralTreeOperatorTemplate<TreeType> > return_op;
+            this->get_split_lump_rj_operator(return_op);
+            return return_op;
+        }
+
+        void get_root_height_operators(
+                std::vector< std::shared_ptr< GeneralTreeOperatorTemplate<TreeType> > > & ops
+                ) const {
+            this->get_operators(
+                    BaseGeneralTreeOperatorTemplate::OperatorTypeEnum::root_height_operator,
+                    ops);
+        }
+
+        std::vector< std::shared_ptr< GeneralTreeOperatorTemplate<TreeType> > > get_root_height_operators() const {
+            std::vector< std::shared_ptr< GeneralTreeOperatorTemplate<TreeType> > > ops;
+            this->get_root_height_operators(ops);
+            return ops;
+        }
+
+        void get_node_height_operators(
+                std::vector< std::shared_ptr< GeneralTreeOperatorTemplate<TreeType> > > & ops
+                ) const {
+            this->get_root_height_operators(ops);
+            this->get_operators(
+                    BaseGeneralTreeOperatorTemplate::OperatorTypeEnum::node_height_operator,
+                    ops);
+            this->get_operators(
+                    BaseGeneralTreeOperatorTemplate::OperatorTypeEnum::global_height_operator,
+                    ops);
+        }
+
+        std::vector< std::shared_ptr< GeneralTreeOperatorTemplate<TreeType> > > get_node_height_operators() const {
+            std::vector< std::shared_ptr< GeneralTreeOperatorTemplate<TreeType> > > ops;
+            this->get_node_height_operators(ops);
+            return ops;
+        }
+
+        void get_preferred_node_height_operators(
+                std::vector< std::shared_ptr< GeneralTreeOperatorTemplate<TreeType> > > ops) const {
+            std::shared_ptr< GeneralTreeOperatorTemplate<TreeType> >
+                op = this->get_operator("GlobalNodeHeightDirichletOperator");
+            if (op) {
+                ops.push_back(op);
+                this->get_root_height_operators(ops);
+                return;
+            }
+            this->get_node_height_operators(ops);
+        }
+
+        std::vector< std::shared_ptr< GeneralTreeOperatorTemplate<TreeType> > > get_preferred_node_height_operators() const {
+            std::vector< std::shared_ptr< GeneralTreeOperatorTemplate<TreeType> > > ops;
+            this->get_preferred_node_height_operators(ops);
+            return ops;
+        }
+
+        void provide_split_lump_rj_move_with_helper_ops() {
+            std::shared_ptr< GeneralTreeOperatorTemplate<TreeType> > rj_op = this->get_split_lump_rj_operator();
+            if (! rj_op) {
+                return;
+            }
+            std::vector< std::shared_ptr< GeneralTreeOperatorTemplate<TreeType> > > ops;
+            this->get_preferred_node_height_operators(ops);
+            rj_op->helper_ops = ops;
         }
 
         double get_total_weight() const {
@@ -104,6 +228,205 @@ class GeneralTreeOperatorSchedule {
                 out << this->get_operator(i)->to_string();
             }
             out << std::flush;
+        }
+
+
+    protected:
+        void _add_untunable_op(
+                const std::string & op_name,
+                GeneralTreeOperatorSettings op_settings,
+                unsigned int number_of_leaves) {
+            std::shared_ptr< GeneralTreeOperatorSettingsCollection<TreeType> > op;
+            if (op_name == "SplitLumpNodesRevJumpSampler") {
+                op = std::make_shared<
+                            SplitLumpNodesRevJumpSampler<TreeType>
+                                      >();
+            }
+            else if (op_name == "NeighborHeightNodePermute") {
+                op = std::make_shared<
+                                 NeighborHeightNodePermute<TreeType>
+                                      >();
+            }
+            else if (op_name == "NeighborHeightNodeSwap") {
+                op = std::make_shared<
+                                 NeighborHeightNodeSwap<TreeType>
+                                      >();
+            }
+            else {
+                throw EcoevolityError(
+                        "GeneralTreeOperatorSchedule: Unrecognized untunable operator: " + op_name);
+            }
+
+            if (op_settings.get_weight() < 0.0) {
+                op->set_default_weight(number_of_leaves);
+            }
+            else {
+                op->set_weight(op_settings.get_weight());
+            }
+
+            this->add_operator(op);
+        }
+        void _add_tunable_op(
+                const std::string & op_name,
+                GeneralTreeTunableOperatorSettings op_settings,
+                unsigned int number_of_leaves) {
+            std::shared_ptr< GeneralTreeOperatorSettingsCollection<TreeType> > op;
+            if (op_name == "TreeScaler") {
+                op = std::make_shared<
+                            TreeScaler<TreeType> >();
+            }
+            else if (op_name == "NodeHeightScaler") {
+                op = std::make_shared<
+                                 NodeHeightScaler<TreeType>
+                                      >();
+            }
+            else if (op_name == "NodeHeightMover") {
+                op = std::make_shared<
+                                 NodeHeightMover<TreeType>
+                                      >();
+            }
+            else if (op_name == "NodeHeightSlideBumpScaler") {
+                op = std::make_shared<
+                                 NodeHeightSlideBumpScaler<TreeType>
+                                      >();
+            }
+            else if (op_name == "NodeHeightSlideBumpPermuteScaler") {
+                op = std::make_shared<
+                                 NodeHeightSlideBumpPermuteScaler<TreeType>
+                                      >();
+            }
+            else if (op_name == "NodeHeightSlideBumpSwapScaler") {
+                op = std::make_shared<
+                                 NodeHeightSlideBumpSwapScaler<TreeType>
+                                      >();
+            }
+            else if (op_name == "NodeHeightSlideBumpMover") {
+                op = std::make_shared<
+                                 NodeHeightSlideBumpMover<TreeType>
+                                      >();
+            }
+            else if (op_name == "NodeHeightSlideBumpPermuteMover") {
+                op = std::make_shared<
+                                 NodeHeightSlideBumpPermuteMover<TreeType>
+                                      >();
+            }
+            else if (op_name == "NodeHeightSlideBumpSwapMover") {
+                op = std::make_shared<
+                                 NodeHeightSlideBumpSwapMover<TreeType>
+                                      >();
+            }
+            else if (op_name == "RootHeightScaler") {
+                op = std::make_shared<
+                                 RootHeightScaler<TreeType>
+                                      >();
+            }
+            else if (op_name == "GlobalNodeHeightDirichletOperator") {
+                op = std::make_shared<
+                                 GlobalNodeHeightDirichletOperator<TreeType>
+                                      >();
+            }
+            else if (op_name == "NodeHeightDirichletOperator") {
+                op = std::make_shared<
+                                 NodeHeightDirichletOperator<TreeType>
+                                      >();
+            }
+            else if (op_name == "NodeHeightPriorAlphaScaler") {
+                op = std::make_shared<
+                                 NodeHeightPriorAlphaScaler<TreeType>
+                                      >();
+            }
+            else if (op_name == "NodeHeightPriorAlphaMover") {
+                op = std::make_shared<
+                                 NodeHeightPriorAlphaMover<TreeType>
+                                      >();
+            }
+            else if (op_name == "MuRateScaler") {
+                op = std::make_shared<
+                                 MuRateScaler
+                                      >();
+            }
+            else if (op_name == "GlobalPopSizeScaler") {
+                op = std::make_shared<
+                                 GlobalPopSizeScaler
+                                      >();
+            }
+            else if (op_name == "PopSizeScaler") {
+                op = std::make_shared<
+                                 PopSizeScaler
+                                      >();
+            }
+            else if (op_name == "GlobalHeightSizeMixer") {
+                op = std::make_shared<
+                                 GlobalHeightSizeMixer
+                                      >();
+            }
+            else if (op_name == "HeightSizeMixer") {
+                op = std::make_shared<
+                                 HeightSizeMixer
+                                      >();
+            }
+            else if (op_name == "HeightSizeSlideBumpMixer") {
+                op = std::make_shared<
+                                 HeightSizeSlideBumpMixer
+                                      >();
+            }
+            else if (op_name == "RootHeightSizeMixer") {
+                op = std::make_shared<
+                                 RootHeightSizeMixer
+                                      >();
+            }
+            else if (op_name == "GlobalHeightSizeRateScaler") {
+                op = std::make_shared<
+                                 GlobalHeightSizeRateScaler
+                                      >();
+            }
+            else if (op_name == "GlobalHeightSizeScaler") {
+                op = std::make_shared<
+                                 GlobalHeightSizeScaler
+                                      >();
+            }
+            else if (op_name == "GlobalHeightRateScaler") {
+                op = std::make_shared<
+                                 GlobalHeightRateScaler
+                                      >();
+            }
+            else if (op_name == "StateFreqMover") {
+                op = std::make_shared<
+                                 StateFreqMover
+                                      >();
+            }
+            else if (op_name == "StateFreqDirichletOperator") {
+                op = std::make_shared<
+                                 StateFreqDirichletOperator
+                                      >();
+            }
+            else {
+                throw EcoevolityError(
+                        "GeneralTreeOperatorSchedule: Unrecognized tunable operator: " + op_name);
+            }
+
+            if (op_settings.get_weight() < 0.0) {
+                op->set_default_weight(number_of_leaves);
+            }
+            else {
+                op->set_weight(op_settings.get_weight());
+            }
+
+            op->set_auto_optimize_delay(op_settings.get_auto_optimize_delay());
+
+            // If the tuning parameter is negative, it has not been set,
+            // and we will keep the default value of the operator class
+            if (op_settings.get_tuning_parameter() > 0.0) {
+                op->set_coercable_parameter_value(
+                        op_settings.get_tuning_parameter());
+            }
+
+            op->turn_on_auto_optimize();
+            if (! op_settings.auto_optimizing()) {
+                op->turn_off_auto_optimize();
+            }
+
+            this->add_operator(op);
         }
 };
 

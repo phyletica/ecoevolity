@@ -152,7 +152,7 @@ class StartingTreeSettings {
 
 class GeneralTreeOperatorSettings {
     protected:
-        double weight_ = 1.0;
+        double weight_ = -1.0;
 
     public:
         GeneralTreeOperatorSettings() { }
@@ -222,7 +222,7 @@ class GeneralTreeOperatorSettings {
 
 class GeneralTreeTunableOperatorSettings : public GeneralTreeOperatorSettings {
     protected:
-        double tuning_parameter_ = 1.0;
+        double tuning_parameter_ = -1.0;
         bool auto_optimize_ = true;
         unsigned int auto_optimize_delay_ = 1000;
 
@@ -289,16 +289,28 @@ class GeneralTreeTunableOperatorSettings : public GeneralTreeOperatorSettings {
                 keys.insert(p->first.as<std::string>());
 
                 if (p->first.as<std::string>() == "weight") {
-                    this->set_weight(p->second.as<double>());
+                    double wt = p->second.as<double>();
+                    if (wt < 0.0) {
+                        throw EcoevolityYamlConfigError("operator weight cannot be negative");
+                    }
+                    this->set_weight(wt);
                 }
                 else if (p->first.as<std::string>() == "tuning_parameter") {
-                    this->set_tuning_parameter(p->second.as<double>());
+                    double tuning_param = p->second.as<double>();
+                    if (tuning_param <= 0.0) {
+                        throw EcoevolityYamlConfigError("tuning_parameter must be positive");
+                    }
+                    this->set_tuning_parameter(tuning_param);
                 }
                 else if (p->first.as<std::string>() == "auto_optimize") {
-                    this->set_tuning_parameter(p->second.as<bool>());
+                    this->set_auto_optimize(p->second.as<bool>());
                 }
                 else if (p->first.as<std::string>() == "auto_optimize_delay") {
-                    this->set_tuning_parameter(p->second.as<unsigned int>());
+                    int opt_delay = p->second.as<int>();
+                    if (opt_delay <= 0) {
+                        throw EcoevolityYamlConfigError("auto_optimize_delay must be positive");
+                    }
+                    this->set_auto_optimize_delay(opt_delay);
                 }
                 else {
                     std::string message = (
@@ -325,23 +337,29 @@ class GeneralTreeTunableOperatorSettings : public GeneralTreeOperatorSettings {
 class GeneralTreeOperatorSettingsCollection {
     public:
         std::map<std::string, GeneralTreeOperatorSettings> untunable_operators {
-            {"SplitLumpNodesRevJumpSampler",        GeneralTreeOperatorSettings(10)},
-            {"NeighborHeightNodePermute",           GeneralTreeOperatorSettings(6)},
-            {"NeighborHeightNodeSwap",              GeneralTreeOperatorSettings(3)},
+            // If not set in the config, negative weights will be updated to
+            // default weight for the operator class and zero weights will
+            // prevent operator from being created.
+            {"SplitLumpNodesRevJumpSampler",        GeneralTreeOperatorSettings(-1)},
+            {"NeighborHeightNodePermute",           GeneralTreeOperatorSettings(-1)},
+            {"NeighborHeightNodeSwap",              GeneralTreeOperatorSettings(-1)},
         };
         std::map<std::string, GeneralTreeTunableOperatorSettings> tunable_operators {
-            {"TreeScaler",                          GeneralTreeTunableOperatorSettings(1)},
-            {"NodeHeightScaler",                    GeneralTreeTunableOperatorSettings(1)},
-            {"NodeHeightMover",                     GeneralTreeTunableOperatorSettings(1)},
-            {"NodeHeightSlideBumpScaler",           GeneralTreeTunableOperatorSettings(1)},
+            // If not set in the config, negative weights will be updated to
+            // default weight for the operator class and zero weights will
+            // prevent operator from being created.
+            {"TreeScaler",                          GeneralTreeTunableOperatorSettings(-1)},
+            {"NodeHeightScaler",                    GeneralTreeTunableOperatorSettings(-1)},
+            {"NodeHeightMover",                     GeneralTreeTunableOperatorSettings(-1)},
+            {"NodeHeightSlideBumpScaler",           GeneralTreeTunableOperatorSettings(-1)},
             {"NodeHeightSlideBumpPermuteScaler",    GeneralTreeTunableOperatorSettings(0)},
-            {"NodeHeightSlideBumpSwapScaler",       GeneralTreeTunableOperatorSettings(1)},
+            {"NodeHeightSlideBumpSwapScaler",       GeneralTreeTunableOperatorSettings(-1)},
             {"NodeHeightSlideBumpMover",            GeneralTreeTunableOperatorSettings(0)},
             {"NodeHeightSlideBumpPermuteMover",     GeneralTreeTunableOperatorSettings(0)},
             {"NodeHeightSlideBumpSwapMover",        GeneralTreeTunableOperatorSettings(0)},
-            {"RootHeightScaler",                    GeneralTreeTunableOperatorSettings(1)},
-            {"GlobalNodeHeightDirichletOperator",   GeneralTreeTunableOperatorSettings(1)},
-            {"NodeHeightDirichletOperator",         GeneralTreeTunableOperatorSettings(1)},
+            {"RootHeightScaler",                    GeneralTreeTunableOperatorSettings(-1)},
+            {"GlobalNodeHeightDirichletOperator",   GeneralTreeTunableOperatorSettings(-1)},
+            {"NodeHeightDirichletOperator",         GeneralTreeTunableOperatorSettings(-1)},
         };
 
         GeneralTreeOperatorSettingsCollection() { }
@@ -435,7 +453,10 @@ class GeneralTreeOperatorSettingsCollection {
 class BetaTreeOperatorSettingsCollection : public GeneralTreeOperatorSettingsCollection {
     public:
         BetaTreeOperatorSettingsCollection() : GeneralTreeOperatorSettingsCollection() {
-            this->tunable_operators["NodeHeightPriorAlphaScaler"]  = GeneralTreeTunableOperatorSettings(1);
+            // If not set in the config, negative weights will be updated to
+            // default weight for the operator class and zero weights will
+            // prevent operator from being created.
+            this->tunable_operators["NodeHeightPriorAlphaScaler"]  = GeneralTreeTunableOperatorSettings(-1);
             this->tunable_operators["NodeHeightPriorAlphaMover"]   = GeneralTreeTunableOperatorSettings(0);
         }
         BetaTreeOperatorSettingsCollection& operator=(const BetaTreeOperatorSettingsCollection& other) {
@@ -451,18 +472,21 @@ class PopulationTreeOperatorSettingsCollection : public GeneralTreeOperatorSetti
 
     public:
         PopulationTreeOperatorSettingsCollection() : GeneralTreeOperatorSettingsCollection() {
-            this->tunable_operators["MuRateScaler"]                = GeneralTreeTunableOperatorSettings(1);
-            this->tunable_operators["GlobalPopSizeScaler"]         = GeneralTreeTunableOperatorSettings(1);
-            this->tunable_operators["PopSizeScaler"]               = GeneralTreeTunableOperatorSettings(1);
-            this->tunable_operators["GlobalHeightSizeMixer"]       = GeneralTreeTunableOperatorSettings(1);
-            this->tunable_operators["HeightSizeMixer"]             = GeneralTreeTunableOperatorSettings(1);
+            // If not set in the config, negative weights will be updated to
+            // default weight for the operator class and zero weights will
+            // prevent operator from being created.
+            this->tunable_operators["MuRateScaler"]                = GeneralTreeTunableOperatorSettings(-1);
+            this->tunable_operators["GlobalPopSizeScaler"]         = GeneralTreeTunableOperatorSettings(-1);
+            this->tunable_operators["PopSizeScaler"]               = GeneralTreeTunableOperatorSettings(-1);
+            this->tunable_operators["GlobalHeightSizeMixer"]       = GeneralTreeTunableOperatorSettings(-1);
+            this->tunable_operators["HeightSizeMixer"]             = GeneralTreeTunableOperatorSettings(-1);
             this->tunable_operators["HeightSizeSlideBumpMixer"]    = GeneralTreeTunableOperatorSettings(0);
-            this->tunable_operators["RootHeightSizeMixer"]         = GeneralTreeTunableOperatorSettings(1);
-            this->tunable_operators["GlobalHeightSizeRateScaler"]  = GeneralTreeTunableOperatorSettings(1);
+            this->tunable_operators["RootHeightSizeMixer"]         = GeneralTreeTunableOperatorSettings(-1);
+            this->tunable_operators["GlobalHeightSizeRateScaler"]  = GeneralTreeTunableOperatorSettings(-1);
             this->tunable_operators["GlobalHeightSizeScaler"]      = GeneralTreeTunableOperatorSettings(0);
             this->tunable_operators["GlobalHeightRateScaler"]      = GeneralTreeTunableOperatorSettings(0);
-            this->tunable_operators["StateFreqMover"]              = GeneralTreeTunableOperatorSettings(1);
-            this->tunable_operators["StateFreqDirichletOperator"]  = GeneralTreeTunableOperatorSettings(1);
+            this->tunable_operators["StateFreqMover"]              = GeneralTreeTunableOperatorSettings(-1);
+            this->tunable_operators["StateFreqDirichletOperator"]  = GeneralTreeTunableOperatorSettings(-1);
         }
         PopulationTreeOperatorSettingsCollection& operator=(const PopulationTreeOperatorSettingsCollection& other) {
             this->untunable_operators = other.untunable_operators;
@@ -478,7 +502,10 @@ class BetaPopulationTreeOperatorSettingsCollection : public PopulationTreeOperat
 
     public:
         BetaPopulationTreeOperatorSettingsCollection() : PopulationTreeOperatorSettingsCollection() {
-            this->tunable_operators["NodeHeightPriorAlphaScaler"]  = GeneralTreeTunableOperatorSettings(1);
+            // If not set in the config, negative weights will be updated to
+            // default weight for the operator class and zero weights will
+            // prevent operator from being created.
+            this->tunable_operators["NodeHeightPriorAlphaScaler"]  = GeneralTreeTunableOperatorSettings(-1);
             this->tunable_operators["NodeHeightPriorAlphaMover"]   = GeneralTreeTunableOperatorSettings(0);
         }
         BetaPopulationTreeOperatorSettingsCollection& operator=(const BetaPopulationTreeOperatorSettingsCollection& other) {
@@ -1351,6 +1378,30 @@ class PopulationTreeSettings {
             if (pop_sizes_fixed) {
                 this->operator_settings->tunable_operators.at("GlobalPopSizeScaler").set_weight(0);
                 this->operator_settings->tunable_operators.at("PopSizeScaler").set_weight(0);
+            }
+
+            if (pop_sizes_constrained && (! pop_sizes_fixed)) {
+                // If pop sizes are constrained, we don't want to use
+                // PopSizeScaler class' default for the weight, because it is
+                // set assuming each branch has an independent pop size (i.e.,
+                // the weight would be way too large).
+                // If sizes are constrained, PopSizeScaler and
+                // GlobalPopSizeScaler are equivalent, so we'll use the latter.
+                double size_scaler_wt = this->operator_settings->tunable_operators.at("PopSizeScaler").get_weight();
+                double global_size_scaler_wt = this->operator_settings->tunable_operators.at("GlobalPopSizeScaler").get_weight();
+                if (size_scaler_wt < 0.0) {
+                    this->operator_settings->tunable_operators.at("PopSizeScaler").set_weight(0);
+                    if (global_size_scaler_wt <= 0.0) {
+                        // Make sure we use default weight for GlobalPopSizeScaler
+                        this->operator_settings->tunable_operators.at("GlobalPopSizeScaler").set_weight(-1);
+                    }
+                }
+                else if (size_scaler_wt > 0.0) {
+                    this->operator_settings->tunable_operators.at("PopSizeScaler").set_weight(0);
+                    if (global_size_scaler_wt <= 0.0) {
+                        this->operator_settings->tunable_operators.at("GlobalPopSizeScaler").set_weight(size_scaler_wt);
+                    }
+                }
             }
         }
 
