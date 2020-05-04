@@ -72,6 +72,23 @@ class BaseGeneralTreeOperatorTemplate {
             ECOEVOLITY_ASSERT(weight >= 0.0);
             this->weight_ = weight;
         }
+        virtual void set_default_weight(unsigned int number_of_leaves) {
+            if (this->get_type() == BaseGeneralTreeOperatorTemplate::OperatorTypeEnum::topology_model_operator) {
+                this->weight_ = (double)number_of_leaves;
+            }
+            else if (this->get_scope() == BaseGeneralTreeOperatorTemplate::OperatorScopeEnum::topology) {
+                this->weight_ = (double)number_of_leaves / 2.0;
+            }
+            else if (this->get_scope() == BaseGeneralTreeOperatorTemplate::OperatorScopeEnum::node_height) {
+                this->weight_ = (double)number_of_leaves / 2.0;
+            }
+            else if (this->get_scope() == BaseGeneralTreeOperatorTemplate::OperatorScopeEnum::branch) {
+                this->weight_ = (double)number_of_leaves / 2.0;
+            }
+            else {
+                this->weight_ = 1.0;
+            }
+        }
 
         virtual std::string get_name() const = 0;
 
@@ -122,6 +139,8 @@ class GeneralTreeOperatorTemplate : public BaseGeneralTreeOperatorTemplate {
         GeneralTreeOperatorTemplate() : BaseGeneralTreeOperatorTemplate() { }
         GeneralTreeOperatorTemplate(double weight) : BaseGeneralTreeOperatorTemplate(weight) { }
 
+        std::vector< std::shared_ptr< GeneralTreeOperatorTemplate< TreeType > > > helper_ops;
+
         virtual void call_store_methods(
                 TreeType * tree) const {
             tree->store_state();
@@ -156,7 +175,11 @@ class GeneralTreeOperatorTemplate : public BaseGeneralTreeOperatorTemplate {
                 unsigned int nthreads = 1,
                 unsigned int number_of_moves = 1,
                 unsigned int other_op_number_of_moves = 1) = 0;
-
+        virtual void operate_with_helpers(RandomNumberGenerator& rng,
+                TreeType * tree,
+                unsigned int nthreads = 1,
+                unsigned int number_of_moves = 1,
+                unsigned int helper_op_number_of_moves = 1) = 0;
 };
 
 
@@ -246,6 +269,19 @@ class GeneralTreeOperatorInterface : public GeneralTreeOperatorTemplate<TreeType
                 unsigned int number_of_moves = 1,
                 unsigned int other_op_number_of_moves = 1) {
             this->operate(rng, tree, nthreads, number_of_moves);
+        }
+
+        void operate_with_helpers(RandomNumberGenerator& rng,
+                TreeType * tree,
+                unsigned int nthreads = 1,
+                unsigned int number_of_moves = 1,
+                unsigned int helper_op_number_of_moves = 1) {
+            for (unsigned int i = 0; i < number_of_moves; ++i) {
+                this->perform_move(rng, tree, nthreads);
+                for (auto helper_op : this->helper_ops) {
+                    helper_op->operate(rng, tree, nthreads, helper_op_number_of_moves);
+                }
+            }
         }
 
         virtual void optimize(double log_alpha) {
