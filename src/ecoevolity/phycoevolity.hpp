@@ -184,6 +184,7 @@ int phycoevolity_main(int argc, char * argv[]) {
     std::cout << string_util::banner('-') << "\n\n";
 
     std::cout << "Configuring model..." << std::endl;
+
     BasePopulationTree tree = BasePopulationTree(
             settings,
             rng,
@@ -192,8 +193,11 @@ int phycoevolity_main(int argc, char * argv[]) {
             strict_on_triallelic_sites,
             false // store_seq_loci_info
             );
+
     GeneralTreeOperatorSchedule<BasePopulationTree> operator_schedule(
-            setings);
+            settings);
+
+    unsigned int n_moves_per_generation = tree.get_leaf_node_count();
 
     if (ignore_data) {
         tree.ignore_data();
@@ -233,6 +237,7 @@ int phycoevolity_main(int argc, char * argv[]) {
             operator_schedule,
             settings.get_chain_length(),
             settings.get_sample_frequency(),
+            n_moves_per_generation,
             tree_log_path,
             state_log_path,
             operator_log_path,

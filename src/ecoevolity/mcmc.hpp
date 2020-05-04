@@ -31,6 +31,7 @@ inline void mcmc(
         GeneralTreeOperatorSchedule<TreeType> & operator_schedule,
         unsigned int chain_length,
         unsigned int sample_frequency,
+        unsigned int number_of_moves_per_generation,
         const std::string & tree_log_path,
         const std::string & state_log_path,
         const std::string & operator_log_path,
