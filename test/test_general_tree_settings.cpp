@@ -1,6 +1,8 @@
 #include "catch.hpp"
 #include "ecoevolity/general_tree_settings.hpp"
+#include "ecoevolity/settings_io.hpp"
 #include "ecoevolity/parameter.hpp"
+#include "ecoevolity/tree.hpp"
 
 
 TEST_CASE("Testing basic settings", "[PopSizeSettings]") {
@@ -161,6 +163,9 @@ TEST_CASE("Testing PopulationTreeSettings with uniform_root_and_betas tree prior
         REQUIRE(settings.tree_model_settings.get_tree_space() ==
                 EcoevolityOptions::TreeSpace::generalized);
 
-        settings.write_settings(std::cout);
+        GeneralTreeOperatorSchedule<BasePopulationTree> op_schedule(
+                settings.operator_settings, 3);
+
+        write_settings(std::cout, settings, op_schedule);
     }
 }
