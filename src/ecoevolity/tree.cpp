@@ -199,34 +199,46 @@ void BasePopulationTree::draw_from_prior(RandomNumberGenerator& rng) {
     }
 }
 
-void BasePopulationTree::write_state_log_header(
-        std::ostream& out,
-        const std::string& delimiter) const {
+void BasePopulationTree::write_state_log_header(std::ostream& out,
+        const std::string& delimiter,
+        bool short_summary) const {
     out << "ln_likelihood" << delimiter
         << "ln_prior" << delimiter
         << "root_height" << delimiter
         << "mutation_rate" << delimiter
-        << "freq_1" << delimiter;
-    // Only output leaf and root pop sizes
-    for (auto label : this->data_.get_population_labels()) {
-        out << "pop_size_" << label << delimiter;
+        << "freq_1" << delimiter
+        << "pop_size_root";
+    if (short_summary) {
+        out << std::endl;
+        return;
     }
-    out << "pop_size_root";
+    // Only output leaf pop sizes
+    for (auto label : this->data_.get_population_labels()) {
+        out << delimiter << "pop_size_" << label;
+    }
+    out << std::endl;
 }
 
-void BasePopulationTree::log_state(
-        std::ostream& out,
-        const std::string& delimiter) const {
-    out << this->log_likelihood_.get_value() << delimiter
+void BasePopulationTree::log_state(std::ostream& out,
+        unsigned int generation_index,
+        const std::string& delimiter,
+        bool short_summary) const {
+    out << generation_index << delimiter
+        << this->log_likelihood_.get_value() << delimiter
         << this->log_prior_density_.get_value() << delimiter
         << this->get_root_height() << delimiter
         << this->get_mutation_rate() << delimiter
-        << this->get_freq_1() << delimiter;
-    // Only output leaf and root pop sizes
-    for (auto label : this->data_.get_population_labels()) {
-        out << this->get_node(label)->get_population_size() << delimiter;
+        << this->get_freq_1() << delimiter
+        << this->get_root_population_size();
+    if (short_summary) {
+        out << std::endl;
+        return;
     }
-    out << this->get_root_population_size();
+    // Only output leaf pop sizes
+    for (auto label : this->data_.get_population_labels()) {
+        out << delimiter << this->get_node(label)->get_population_size();
+    }
+    out << std::endl;
 }
 
 double BasePopulationTree::get_ln_prob_of_drawing_node_state(
@@ -2034,10 +2046,12 @@ void ComparisonPopulationTree::write_comparison_state_log_header(
     out << "pop_size_root" << suffix;
 }
 
-void ComparisonPopulationTree::log_state(
+void ComparisonPopulationTree::log_comparison_state(
         std::ostream& out,
+        unsigned int event_index,
         const std::string& delimiter) const {
-    out << this->log_likelihood_.get_value() << delimiter
+    out << event_index << delimiter
+        << this->log_likelihood_.get_value() << delimiter
         << this->log_prior_density_.get_value() << delimiter
         << this->get_root_height() << delimiter
         << this->get_mutation_rate() << delimiter
@@ -2047,13 +2061,6 @@ void ComparisonPopulationTree::log_state(
         out << this->get_child_population_size(1) << delimiter;
     }
     out << this->get_root_population_size();
-}
-void ComparisonPopulationTree::log_comparison_state(
-        std::ostream& out,
-        unsigned int event_index,
-        const std::string& delimiter) const {
-    out << event_index << delimiter;
-    this->log_state(out, delimiter);
 }
 
 void ComparisonPopulationTree::draw_from_prior(RandomNumberGenerator& rng) {
@@ -2293,9 +2300,11 @@ void ComparisonDirichletPopulationTree::write_comparison_state_log_header(
     out << "pop_size_multiplier_root" << suffix;
 }
 
-void ComparisonDirichletPopulationTree::log_state(
+void ComparisonDirichletPopulationTree::log_comparison_state(
         std::ostream& out,
+        unsigned int event_index,
         const std::string& delimiter) const {
+    out << event_index << delimiter;
     std::vector<double> multipliers = this->get_population_sizes_as_multipliers();
     out << this->log_likelihood_.get_value() << delimiter
         << this->log_prior_density_.get_value() << delimiter
@@ -2310,14 +2319,6 @@ void ComparisonDirichletPopulationTree::log_state(
         ++root_index;
     }
     out << multipliers.at(root_index);
-}
-
-void ComparisonDirichletPopulationTree::log_comparison_state(
-        std::ostream& out,
-        unsigned int event_index,
-        const std::string& delimiter) const {
-    out << event_index << delimiter;
-    this->log_state(out, delimiter);
 }
 
 void ComparisonDirichletPopulationTree::draw_from_prior(RandomNumberGenerator& rng) {
@@ -2728,10 +2729,12 @@ void ComparisonRelativeRootPopulationTree::write_comparison_state_log_header(
     out << "pop_size_root" << suffix;
 }
 
-void ComparisonRelativeRootPopulationTree::log_state(
+void ComparisonRelativeRootPopulationTree::log_comparison_state(
         std::ostream& out,
+        unsigned int event_index,
         const std::string& delimiter) const {
-    out << this->log_likelihood_.get_value() << delimiter
+    out << event_index << delimiter
+        << this->log_likelihood_.get_value() << delimiter
         << this->log_prior_density_.get_value() << delimiter
         << this->get_root_height() << delimiter
         << this->get_mutation_rate() << delimiter
@@ -2741,13 +2744,6 @@ void ComparisonRelativeRootPopulationTree::log_state(
         out << this->get_child_population_size(1) << delimiter;
     }
     out << this->get_root_population_size();
-}
-void ComparisonRelativeRootPopulationTree::log_comparison_state(
-        std::ostream& out,
-        unsigned int event_index,
-        const std::string& delimiter) const {
-    out << event_index << delimiter;
-    this->log_state(out, delimiter);
 }
 
 void ComparisonRelativeRootPopulationTree::draw_from_prior(RandomNumberGenerator& rng) {

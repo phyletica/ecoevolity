@@ -429,9 +429,12 @@ class BasePopulationTree : public BaseTree<PopulationNode> {
         virtual void draw_from_prior(RandomNumberGenerator& rng);
 
         void write_state_log_header(std::ostream& out,
-                const std::string& delimiter = "\t") const;
+                const std::string& delimiter = "\t",
+                bool short_summary = false) const;
         void log_state(std::ostream& out,
-                const std::string& delimiter = "\t") const;
+                unsigned int generation_index,
+                const std::string& delimiter = "\t",
+                bool short_summary = false) const;
 };
 
 
@@ -824,8 +827,6 @@ class ComparisonPopulationTree: public PopulationTree {
         virtual void log_comparison_state(std::ostream& out,
                 unsigned int event_index,
                 const std::string& delimiter = "\t") const;
-        void log_state(std::ostream& out,
-                const std::string& delimiter = "\t") const;
 
         void draw_from_prior(RandomNumberGenerator& rng);
 
@@ -894,8 +895,6 @@ class ComparisonRelativeRootPopulationTree: public RelativeRootPopulationTree {
         void log_comparison_state(std::ostream& out,
                 unsigned int event_index,
                 const std::string& delimiter = "\t") const;
-        void log_state(std::ostream& out,
-                const std::string& delimiter = "\t") const;
 
         void draw_from_prior(RandomNumberGenerator& rng);
 
@@ -960,8 +959,6 @@ class ComparisonDirichletPopulationTree: public ComparisonPopulationTree {
                 const std::string& delimiter = "\t") const;
         void log_comparison_state(std::ostream& out,
                 unsigned int event_index,
-                const std::string& delimiter = "\t") const;
-        void log_state(std::ostream& out,
                 const std::string& delimiter = "\t") const;
 
         void draw_from_prior(RandomNumberGenerator& rng);

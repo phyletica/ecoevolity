@@ -1624,11 +1624,14 @@ class BaseTree {
         }
 
         virtual void write_state_log_header(std::ostream& out,
-                const std::string& delimiter = "\t") const {
+                const std::string& delimiter = "\t",
+                bool short_summary = false) const {
             throw EcoevolityError("write_state_log_header called from base BaseTree class");
         }
         virtual void log_state(std::ostream& out,
-                const std::string& delimiter = "\t") const {
+                unsigned int generation_index,
+                const std::string& delimiter = "\t",
+                bool short_summary = false) const {
             throw EcoevolityError("log_state called from base BaseTree class");
         }
 
