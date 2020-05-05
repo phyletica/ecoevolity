@@ -30,6 +30,7 @@
 #include "rng.hpp"
 #include "path.hpp"
 #include "general_tree_settings.hpp"
+#include "settings_io.hpp"
 
 
 void write_splash(std::ostream& out);
@@ -179,10 +180,6 @@ int phycoevolity_main(int argc, char * argv[]) {
     std::cout << "Parsing config file..." << std::endl;
     PopulationTreeSettings = PopulationTreeSettings(config_path);
 
-    std::cout << "\n" << string_util::banner('-') << "\n";
-    settings.write_settings(std::cout);
-    std::cout << string_util::banner('-') << "\n\n";
-
     std::cout << "Configuring model..." << std::endl;
 
     BasePopulationTree tree = BasePopulationTree(
@@ -196,6 +193,10 @@ int phycoevolity_main(int argc, char * argv[]) {
 
     GeneralTreeOperatorSchedule<BasePopulationTree> operator_schedule(
             settings);
+
+    std::cout << "\n" << string_util::banner('-') << "\n";
+    write_settings(std::cout, settings, operator_schedule);
+    std::cout << string_util::banner('-') << "\n\n";
 
     unsigned int n_moves_per_generation = tree.get_leaf_node_count();
 
@@ -241,6 +242,8 @@ int phycoevolity_main(int argc, char * argv[]) {
             tree_log_path,
             state_log_path,
             operator_log_path,
+            std::cout,
+            logging_precision,
             nthreads);
 
     time(&finish);
