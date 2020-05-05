@@ -430,11 +430,11 @@ class BasePopulationTree : public BaseTree<PopulationNode> {
 
         void write_state_log_header(std::ostream& out,
                 const std::string& delimiter = "\t",
-                bool short_summary = false) const;
+                const bool short_summary = false) const;
         void log_state(std::ostream& out,
-                unsigned int generation_index,
+                const unsigned int generation_index,
                 const std::string& delimiter = "\t",
-                bool short_summary = false) const;
+                const bool short_summary = false) const;
 };
 
 

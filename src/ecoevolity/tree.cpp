@@ -201,7 +201,7 @@ void BasePopulationTree::draw_from_prior(RandomNumberGenerator& rng) {
 
 void BasePopulationTree::write_state_log_header(std::ostream& out,
         const std::string& delimiter,
-        bool short_summary) const {
+        const bool short_summary) const {
     out << "generation" << delimiter
         << "ln_likelihood" << delimiter
         << "ln_prior" << delimiter
@@ -221,9 +221,9 @@ void BasePopulationTree::write_state_log_header(std::ostream& out,
 }
 
 void BasePopulationTree::log_state(std::ostream& out,
-        unsigned int generation_index,
+        const unsigned int generation_index,
         const std::string& delimiter,
-        bool short_summary) const {
+        const bool short_summary) const {
     out << generation_index << delimiter
         << this->log_likelihood_.get_value() << delimiter
         << this->log_prior_density_.get_value() << delimiter
