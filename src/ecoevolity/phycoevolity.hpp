@@ -29,16 +29,19 @@
 #include "error.hpp"
 #include "rng.hpp"
 #include "path.hpp"
+#include "string_util.hpp"
 #include "general_tree_settings.hpp"
 #include "settings_io.hpp"
+#include "mcmc.hpp"
 
 
-void write_splash(std::ostream& out);
+void write_phy_splash(std::ostream& out);
 
 
+template <class TreeType>
 int phycoevolity_main(int argc, char * argv[]) {
 
-    write_splash(std::cout);
+    write_phy_splash(std::cout);
     std::cout << "\n";
 
     const std::string usage = 
@@ -178,11 +181,11 @@ int phycoevolity_main(int argc, char * argv[]) {
     std::cout << "Config path: " << config_path << std::endl;
 
     std::cout << "Parsing config file..." << std::endl;
-    PopulationTreeSettings = PopulationTreeSettings(config_path);
+    PopulationTreeSettings settings(config_path);
 
     std::cout << "Configuring model..." << std::endl;
 
-    BasePopulationTree tree = BasePopulationTree(
+    TreeType tree(
             settings,
             rng,
             strict_on_constant_sites,
@@ -192,7 +195,7 @@ int phycoevolity_main(int argc, char * argv[]) {
             );
 
     GeneralTreeOperatorSchedule<BasePopulationTree> operator_schedule(
-            settings);
+            settings.operator_settings, tree.get_leaf_node_count());
 
     std::cout << "\n" << string_util::banner('-') << "\n";
     write_settings(std::cout, settings, operator_schedule);
@@ -207,14 +210,16 @@ int phycoevolity_main(int argc, char * argv[]) {
         tree.use_data();
     }
 
+    unsigned int logging_precision = 18;
+
     std::string tree_log_path = settings.get_tree_log_path();
     std::string state_log_path = settings.get_state_log_path();
     std::string operator_log_path = settings.get_operator_log_path();
     if (options.is_set_by_user("prefix")) {
         std::string output_prefix = options.get("prefix").get_str();
-        tree_log_path = prefix + path::basename(tree_log_path);
-        state_log_path = prefix + path::basename(state_log_path);
-        operator_log_path = prefix + path::basename(operator_log_path);
+        tree_log_path = output_prefix + path::basename(tree_log_path);
+        state_log_path = output_prefix + path::basename(state_log_path);
+        operator_log_path = output_prefix + path::basename(operator_log_path);
     }
 
     std::cout << "\n" << string_util::banner('-') << "\n";
@@ -227,24 +232,85 @@ int phycoevolity_main(int argc, char * argv[]) {
         return 0;
     }
 
+    if (path::exists(tree_log_path)) {
+        std::ostringstream message;
+        message << "ERROR: The tree log file \'"
+                << tree_log_path
+                << "\' already exists!\n";
+        throw EcoevolityError(message.str());
+    }
+    if (path::exists(state_log_path)) {
+        std::ostringstream message;
+        message << "ERROR: The state log file \'"
+                << state_log_path
+                << "\' already exists!\n";
+        throw EcoevolityError(message.str());
+    }
+    if (path::exists(operator_log_path)) {
+        std::ostringstream message;
+        message << "ERROR: The operator log file \'"
+                << operator_log_path
+                << "\' already exists!\n";
+        throw EcoevolityError(message.str());
+    }
+
+    std::ofstream tree_log_stream;
+    std::ofstream state_log_stream;
+    std::ofstream operator_log_stream;
+
+    tree_log_stream.open(tree_log_path);
+    state_log_stream.open(state_log_path);
+    operator_log_stream.open(operator_log_path);
+    
+    if (! tree_log_stream.is_open()) {
+        std::ostringstream message;
+        message << "ERROR: Could not open tree log file \'"
+                << tree_log_path
+                << "\'\n";
+        throw EcoevolityError(message.str());
+    }
+    if (! state_log_stream.is_open()) {
+        std::ostringstream message;
+        message << "ERROR: Could not open state log file \'"
+                << state_log_path
+                << "\'\n";
+        throw EcoevolityError(message.str());
+    }
+    if (! operator_log_stream.is_open()) {
+        std::ostringstream message;
+        message << "ERROR: Could not open operator log file \'"
+                << operator_log_path
+                << "\'\n";
+        throw EcoevolityError(message.str());
+    }
+
+    std::cout << "Tree log path: " << tree_log_path << std::endl;
+    std::cout << "State log path: " << state_log_path << std::endl;
+    std::cout << "Operator log path: " << operator_log_path << std::endl;
+
     time_t start;
     time_t finish;
     time(&start);
 
     std::cout << "Firing up MCMC..." << std::endl;
-    mcmc<BasePopulationTree>(
+    mcmc<TreeType>(
             rng,
             tree,
             operator_schedule,
             settings.get_chain_length(),
             settings.get_sample_frequency(),
             n_moves_per_generation,
-            tree_log_path,
-            state_log_path,
-            operator_log_path,
+            tree_log_stream,
+            state_log_stream,
+            operator_log_stream,
             std::cout,
+            "\t",
             logging_precision,
             nthreads);
+
+    tree_log_stream.close();
+    state_log_stream.close();
+    operator_log_stream.close();
 
     time(&finish);
     double duration = difftime(finish, start);

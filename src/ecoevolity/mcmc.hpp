@@ -23,6 +23,9 @@
 #include "assert.hpp"
 #include "error.hpp"
 
+#include "tree.hpp"
+#include "general_tree_operator.hpp"
+#include "general_tree_operator_schedule.hpp"
 
 template<class TreeType>
 inline void mcmc(
@@ -36,30 +39,15 @@ inline void mcmc(
         std::ostream & state_log_stream,
         std::ostream & operator_log_stream,
         std::ostream & std_output_stream,
+        const std::string & logging_delimiter = "\t",
         const unsigned int logging_precision = 18,
         const unsigned int nthreads = 1) {
-    if (! tree_log_stream.is_open()) {
-        throw EcoevolityError("mcmc: tree log stream is not open");
-    }
-    if (! state_log_stream.is_open()) {
-        throw EcoevolityError("mcmc: state log stream is not open");
-    }
-    if (! operator_log_stream.is_open()) {
-        throw EcoevolityError("mcmc: operator log stream is not open");
-    }
-    if (! std_output_stream.is_open()) {
-        throw EcoevolityError("mcmc: std output is not open");
-    }
-    if (! std_error_stream.is_open()) {
-        throw EcoevolityError("mcmc: std error is not open");
-    }
-    
     tree_log_stream.precision(logging_precision);
     state_log_stream.precision(logging_precision);
     operator_log_stream.precision(logging_precision);
 
-    write_state_log_header(state_log_stream);
-    write_state_log_header(std_output_stream, true);
+    tree.write_state_log_header(state_log_stream, logging_delimiter);
+    tree.write_state_log_header(std_output_stream, logging_delimiter, true);
 
     tree_log_stream << "#NEXUS" << std::endl;
     tree.write_nexus_taxa_block(tree_log_stream);
@@ -67,7 +55,7 @@ inline void mcmc(
 
     tree.make_dirty();
     tree.compute_log_likelihood_and_prior(nthreads);
-    if (tree.get_log_likelihood() == -std::numeric_limits<double>::infinity()) {
+    if (tree.get_log_likelihood_value() == -std::numeric_limits<double>::infinity()) {
         std::ostringstream message;
         message << "\n\n"
                 << "#######################################################################\n"
@@ -76,7 +64,7 @@ inline void mcmc(
                 << "#######################################################################\n";
         throw EcoevolityError(message.str());
     }
-    if (std::isnan(tree.get_log_likelihood())) {
+    if (std::isnan(tree.get_log_likelihood_value())) {
         std::ostringstream message;
         message << "\n\n"
                 << "#######################################################################\n"
@@ -85,12 +73,11 @@ inline void mcmc(
                 << "#######################################################################\n";
         throw EcoevolityError(message.str());
     }
-    tree.log_state(state_log_stream, 0);
-    tree.log_state(std_output_stream, 0, true);
+    tree.log_state(state_log_stream, 0, logging_delimiter);
+    tree.log_state(std_output_stream, 0, logging_delimiter, true);
     tree.log_nexus_tree(tree_log_stream, 0, true, logging_precision);
 
     std::shared_ptr< GeneralTreeOperatorTemplate< TreeType > > op;
-    unsigned int
     unsigned int gen;
     unsigned int gen_of_last_state_log = 0;
     unsigned int gen_of_last_operator_log = 0;
@@ -99,18 +86,18 @@ inline void mcmc(
                 move_count < number_of_moves_per_generation;
                 ++move_count) {
             op = operator_schedule.draw_operator(rng);
-            op.operate_with_helpers(rng,
+            op->operate_with_helpers(rng,
                     &tree,
                     nthreads, 1, 1);
         }
 
         if ((gen + 1) % sample_frequency == 0) {
-            tree.log_state(state_log_stream, gen + 1);
+            tree.log_state(state_log_stream, gen + 1, logging_delimiter);
             tree.log_nexus_tree(tree_log_stream, gen + 1, true, logging_precision);
             gen_of_last_state_log = gen;
             // Log every 10th sample to std out
             if ((gen + 1) % (sample_frequency * 10) == 0) {
-                tree.log_state(std_output_stream, gen + 1, true);
+                tree.log_state(std_output_stream, gen + 1, logging_delimiter, true);
                 // Log operator performance every 100 samples
                 if ((gen + 1) % (sample_frequency * 100) == 0) {
                     operator_log_stream << "generation " << gen + 1 << ":\n";
@@ -122,16 +109,16 @@ inline void mcmc(
     }
     // Make sure last generation is reported
     if (gen > (gen_of_last_state_log + 1)) {
-        tree.log_state(state_log_stream, gen + 1);
-        tree.log_state(std_output_stream, gen + 1, true);
+        tree.log_state(state_log_stream, gen + 1, logging_delimiter);
+        tree.log_state(std_output_stream, gen + 1, logging_delimiter, true);
         tree.log_nexus_tree(tree_log_stream, gen + 1, true, logging_precision);
     }
     if (gen > (gen_of_last_operator_log + 1)) {
         operator_log_stream << "generation " << gen + 1 << ":\n";
-        operator_schedule_.write_operator_rates(operator_log_stream);
+        operator_schedule.write_operator_rates(operator_log_stream);
     }
     std_output_stream << "\nOperator stats:\n";
-    operator_schedule_.write_operator_rates(std_output_stream);
+    operator_schedule.write_operator_rates(std_output_stream);
     std_output_stream << "\n";
 }
 

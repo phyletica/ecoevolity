@@ -20,6 +20,6 @@
 #include "phycoevolity.hpp"
 
 int main(int argc, char *argv[]) {
-    phycoevolity_main(argc, argv);
+    phycoevolity_main<BasePopulationTree>(argc, argv);
     return 0;
 }
