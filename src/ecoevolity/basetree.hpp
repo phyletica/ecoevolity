@@ -1572,8 +1572,9 @@ class BaseTree {
         // Derived classes can override this
         virtual void restore_derived_class_parameters() { }
 
-        std::string to_parentheses(bool include_comments = true,
-                unsigned int precision = 12) const {
+        std::string to_parentheses(
+                const bool include_comments = true,
+                const unsigned int precision = 12) const {
             if (! include_comments) {
                 return this->root_->to_parentheses(precision);
             }
@@ -1582,7 +1583,7 @@ class BaseTree {
 
         std::string to_parentheses(
                 std::shared_ptr<NodeType> node,
-                unsigned int precision = 12) const {
+                const unsigned int precision = 12) const {
             std::ostringstream s;
             s.precision(precision);
             if (node->is_leaf()) {
@@ -1608,7 +1609,7 @@ class BaseTree {
 
         std::string get_comment_data_string(
                 std::shared_ptr<NodeType> node,
-                unsigned int precision = 12) const {
+                const unsigned int precision = 12) const {
             std::ostringstream s;
             s.precision(precision);
             s << "[&";
@@ -1633,6 +1634,25 @@ class BaseTree {
                 const std::string& delimiter = "\t",
                 bool short_summary = false) const {
             throw EcoevolityError("log_state called from base BaseTree class");
+        }
+        virtual void log_nexus_tree(std::ostream& out,
+                const unsigned int generation_index,
+                const bool include_comments = true,
+                const unsigned int precision = 12) const {
+            out << "    TREE gen" << generation_index << " = "
+                << this->to_parentheses(include_comments, precision)
+                << ";" << std::endl;
+        }
+        void write_nexus_taxa_block(std::ostream& out) const {
+            std::vector<std::string> leaf_labels = this->root_->get_leaf_labels();
+            out << "BEGIN TAXA;\n"
+                << "    DIMENSIONS NTAX=" << leaf_labels.size() << ";\n"
+                << "    TAXLABELS\n";
+            for (auto label : leaf_labels) {
+                out << "        " << label << "\n";
+            }
+            out << "    ;\n"
+                << "END;" << std::endl;
         }
 
         virtual void draw_from_prior(RandomNumberGenerator& rng) {
