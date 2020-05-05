@@ -355,14 +355,18 @@ class GeneralTreeOperatorInterface : public GeneralTreeOperatorTemplate<TreeType
         }
 
         std::string header_string() const {
-            return "name\tnumber_accepted\tnumber_rejected\tweight\ttuning_parameter\n";
+            return "name\tprop_accepted\tnumber_accepted\tnumber_rejected\tweight\ttuning_parameter\n";
         }
 
         virtual std::string to_string() const {
+            unsigned int n_accepted = this->op_.get_number_accepted();
+            unsigned int n_rejected = this->op_.get_number_rejected();
+            double p_accepted = (double)n_accepted / (n_accepted + n_rejected);
             std::ostringstream ss;
             ss << this->get_name() << "\t"
-               << this->op_.get_number_accepted() << "\t"
-               << this->op_.get_number_rejected() << "\t"
+               << p_accepted << "\t"
+               << n_accepted << "\t"
+               << n_rejected << "\t"
                << this->get_weight() << "\t";
 
             double tuning = this->op_.get_coercable_parameter_value();
