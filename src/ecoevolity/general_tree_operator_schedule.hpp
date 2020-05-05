@@ -230,13 +230,42 @@ class GeneralTreeOperatorSchedule {
             out << std::flush;
         }
 
+        std::set<std::string> write_op_settings(
+                std::ostream & out,
+                const unsigned int indent_level = 0) const {
+            std::set<std::string> op_names;
+            out << std::boolalpha;
+            std::string margin = string_util::get_indent(indent_level);
+            std::string indent = string_util::get_indent(1);
+            for (auto op : this->operators_) {
+                op_names.insert(op->get_name());
+                out << margin << op->get_name() << ":\n"
+                    << margin << indent
+                    << "weight: " << op->get_weight() << "\n";
+                if (std::isnan(op->get_coercable_parameter_value())) {
+                    continue;
+                }
+                out << margin << indent
+                    << "tuning_parameter: "
+                    << op->get_coercable_parameter_value() << "\n"
+                    << margin << indent
+                    << "auto_optimize: " << op->auto_optimizing() << "\n";
+                if (op->auto_optimizing()) {
+                    out << margin << indent
+                        << "auto_optimize_delay: "
+                        << op->get_auto_optimize_delay() << "\n";
+                }
+            }
+            return op_names;
+        }
+
 
     protected:
         void _add_untunable_op(
                 const std::string & op_name,
                 GeneralTreeOperatorSettings op_settings,
                 unsigned int number_of_leaves) {
-            std::shared_ptr< GeneralTreeOperatorSettingsCollection<TreeType> > op;
+            std::shared_ptr< GeneralTreeOperatorTemplate<TreeType> > op;
             if (op_name == "SplitLumpNodesRevJumpSampler") {
                 op = std::make_shared<
                             SplitLumpNodesRevJumpSampler<TreeType>
@@ -270,7 +299,7 @@ class GeneralTreeOperatorSchedule {
                 const std::string & op_name,
                 GeneralTreeTunableOperatorSettings op_settings,
                 unsigned int number_of_leaves) {
-            std::shared_ptr< GeneralTreeOperatorSettingsCollection<TreeType> > op;
+            std::shared_ptr< GeneralTreeOperatorTemplate<TreeType> > op;
             if (op_name == "TreeScaler") {
                 op = std::make_shared<
                             TreeScaler<TreeType> >();
