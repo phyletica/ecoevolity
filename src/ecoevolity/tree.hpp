@@ -267,7 +267,7 @@ class BasePopulationTree : public BaseTree<PopulationNode> {
 
         double get_likelihood_correction(bool force = false);
 
-        double compute_log_likelihood(unsigned int nthreads = 1);
+        double compute_log_likelihood(const unsigned int nthreads = 1);
 
         double get_derived_class_component_of_log_prior_density() const;
         double compute_log_prior_density_of_state_frequencies() const;
@@ -592,7 +592,7 @@ class PopulationTree : public BasePopulationTree {
         double compute_log_prior_density_of_node_heights() const;
 
         // Override to old comparison behavior
-        void compute_log_likelihood_and_prior(unsigned int nthreads = 1) {
+        void compute_log_likelihood_and_prior(const unsigned int nthreads = 1) {
             if (this->is_dirty()) {
                 this->compute_log_likelihood(nthreads);
                 ++this->number_of_likelihood_calculations_;

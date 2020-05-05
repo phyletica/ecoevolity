@@ -202,7 +202,8 @@ void BasePopulationTree::draw_from_prior(RandomNumberGenerator& rng) {
 void BasePopulationTree::write_state_log_header(std::ostream& out,
         const std::string& delimiter,
         bool short_summary) const {
-    out << "ln_likelihood" << delimiter
+    out << "generation" << delimiter
+        << "ln_likelihood" << delimiter
         << "ln_prior" << delimiter
         << "root_height" << delimiter
         << "mutation_rate" << delimiter
@@ -1675,7 +1676,7 @@ BasePopulationTree::simulate_biallelic_site_sans_missing(
 }
 
 double BasePopulationTree::compute_log_likelihood(
-        unsigned int nthreads) {
+        const unsigned int nthreads) {
     if (this->ignoring_data()) {
         this->log_likelihood_.set_value(0.0);
         return 0.0;
