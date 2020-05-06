@@ -10,7 +10,7 @@ set(ECOEVOLITY_SOURCES
     collection.cpp
     "${EXTERNAL_PROJECT_DIR}/cpp-optparse/OptionParser.cpp"
     ecoevolity.cpp
-    phycoevolity.cpp
+    phycoeval.cpp
     simcoevolity.cpp
     nex2yml.cpp
     dpprobs.cpp
@@ -68,7 +68,7 @@ target_link_libraries(nex2yml ${LIBRARIES_TO_LINK})
 install(TARGETS nex2yml
         DESTINATION bin)
 
-add_executable(phycoevolity phycoevolity_main.cpp)
-target_link_libraries(phycoevolity ${LIBRARIES_TO_LINK})
-install(TARGETS phycoevolity
+add_executable(phycoeval phycoeval_main.cpp)
+target_link_libraries(phycoeval ${LIBRARIES_TO_LINK})
+install(TARGETS phycoeval
         DESTINATION bin)

@@ -17,8 +17,8 @@
  * with Ecoevolity.  If not, see <http://www.gnu.org/licenses/>.
 ******************************************************************************/
 
-#ifndef PHYCOEVOLITY_HPP
-#define PHYCOEVOLITY_HPP
+#ifndef PHYCOEVAL_HPP
+#define PHYCOEVAL_HPP
 
 #include <limits>
 #include <time.h>
@@ -39,7 +39,7 @@ void write_phy_splash(std::ostream& out);
 
 
 template <class TreeType>
-int phycoevolity_main(int argc, char * argv[]) {
+int phycoeval_main(int argc, char * argv[]) {
 
     write_phy_splash(std::cout);
     std::cout << "\n";
@@ -52,7 +52,7 @@ int phycoevolity_main(int argc, char * argv[]) {
     const std::string version = version_ss.str();
 
     const std::string description =
-        "Phycoevolity: Fully phylogenetic evolutionary coevality";
+        "Phycoeval: Estimating phylogenetic coevality";
     // const std::string epilog =
     //     "Epilog goes here...";
 
@@ -94,8 +94,8 @@ int phycoevolity_main(int argc, char * argv[]) {
             .action("store_true")
             .dest("relax_constant_sites")
             .help("By default, if you specify \'constant_sites_removed = true\' "
-                  "and constant sites are found, phycoevolity throws an error. "
-                  "With this option, phycoevolity will automatically ignore the "
+                  "and constant sites are found, phycoeval throws an error. "
+                  "With this option, phycoeval will automatically ignore the "
                   "constant sites and only issue a warning (and correct for "
                   "constant sites in the likelihood calculation). Please make sure "
                   "you understand what you are doing when you use this option."
@@ -104,16 +104,16 @@ int phycoevolity_main(int argc, char * argv[]) {
             .action("store_true")
             .dest("relax_missing_sites")
             .help("By default, if a column is found for which there is no data "
-                  "for at least one population, phycoevolity throws an error. "
-                  "With this option, phycoevolity will automatically ignore such "
+                  "for at least one population, phycoeval throws an error. "
+                  "With this option, phycoeval will automatically ignore such "
                   "sites and only issue a warning."
                 );
     parser.add_option("--relax-triallelic-sites")
             .action("store_true")
             .dest("relax_triallelic_sites")
             .help("By default, if a DNA site is found for which there is more "
-                  "than two nucleotide states, phycoevolity throws an error. "
-                  "With this option, phycoevolity will automatically recode such "
+                  "than two nucleotide states, phycoeval throws an error. "
+                  "With this option, phycoeval will automatically recode such "
                   "sites as biallelic and only issue a warning. These sites "
                   "are recoded by assigning state 0 to the first nucleotide "
                   "found and state 1 to all others. If you do not wish to "

@@ -17,9 +17,18 @@
  * with Ecoevolity.  If not, see <http://www.gnu.org/licenses/>.
 ******************************************************************************/
 
-#include "phycoevolity.hpp"
+#include "phycoeval.hpp"
 
-int main(int argc, char *argv[]) {
-    phycoevolity_main<BasePopulationTree>(argc, argv);
-    return 0;
+
+void write_phy_splash(std::ostream& out) {
+    std::string v = "Version ";
+    v += PROJECT_DETAILED_VERSION;
+    out << string_util::banner('=') << "\n" 
+        << string_util::center("Phycoeval") << "\n"
+        << string_util::center("Estimating phylogenetic coevality") << "\n\n"
+        << string_util::center("Part of:") << "\n"
+        << string_util::center(PROJECT_NAME) << "\n"
+        << string_util::center(v) << "\n"
+        << string_util::banner('=') << "\n";
 }
+
