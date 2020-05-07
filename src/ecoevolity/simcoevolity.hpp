@@ -96,7 +96,7 @@ int simcoevolity_main(int argc, char * argv[]) {
             .set_default("1.0")
             .help("The probability of sampling singleton site patterns. This "
                   "is used to simulate data acquisition biases against "
-                  "character patterns where only gene copy has an allele "
+                  "character patterns where only one gene copy has an allele "
                   "that is different from all the others. "
                   "Default: 1.0 (no acquisition bias).");
     parser.add_option("-l", "--locus-size")
@@ -140,7 +140,7 @@ int simcoevolity_main(int argc, char * argv[]) {
             .help("By default, sequence alignments and associated config files "
                   "are generated for each replicate. When this option is "
                   "specified, only the parameter values drawn for each "
-                  "replicate are written to standard output (no seqence data "
+                  "replicate are written to standard output (no sequence data "
                   "are simulated). Because no data or configs are created, the "
                   "settings for the '-o/--output-directory', '-l/--locus-size' "
                   "and '-p/--prior' options will be ignored."
