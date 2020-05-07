@@ -1146,6 +1146,9 @@ class GeneralTreeDataSettings {
         const std::string& get_path() const {
             return this->path_;
         }
+        void set_path(const std::string & path) {
+            this->path_ = path;
+        }
         void set_ploidy(double p) {
             this->ploidy_ = p;
         }
@@ -1158,6 +1161,9 @@ class GeneralTreeDataSettings {
         bool using_yaml_data() const {
             return this->using_yaml_data_;
         }
+        void set_using_yaml_data(bool b) {
+            this->using_yaml_data_ = b;
+        }
         bool population_name_is_prefix() const {
             return this->population_name_is_prefix_;
         }
@@ -1169,6 +1175,9 @@ class GeneralTreeDataSettings {
         }
         bool constant_sites_removed() const {
             return this->constant_sites_removed_;
+        }
+        void set_constant_sites_removed(bool b) {
+            this->constant_sites_removed_ = b;
         }
         void update_from_config(const YAML::Node& node,
                 const std::string & config_path) {
