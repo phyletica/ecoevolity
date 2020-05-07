@@ -145,6 +145,25 @@ class GeneralTreeOperatorSchedule {
             return ops;
         }
 
+        void get_operators(
+                const BaseGeneralTreeOperatorTemplate::OperatorScopeEnum op_scope,
+                std::vector< std::shared_ptr< GeneralTreeOperatorTemplate<TreeType> > > & ops
+                ) const {
+            for (std::shared_ptr< GeneralTreeOperatorTemplate<TreeType> > op: this->operators_) {
+                if (op->get_scope() == op_scope) {
+                    ops.push_back(op);
+                }
+            }
+        }
+
+        std::vector< std::shared_ptr< GeneralTreeOperatorTemplate<TreeType> > > get_operators(
+                const BaseGeneralTreeOperatorTemplate::OperatorScopeEnum op_scope
+                ) const {
+            std::vector< std::shared_ptr< GeneralTreeOperatorTemplate<TreeType> > > ops;
+            this->get_operators(op_scope);
+            return ops;
+        }
+
         void get_split_lump_rj_operator(
                 std::shared_ptr< GeneralTreeOperatorTemplate<TreeType> > rj_op) const {
             this->get_operator("SplitLumpNodesRevJumpSampler", rj_op);
