@@ -110,7 +110,7 @@ class GeneralTreeOperatorSchedule {
 
         void get_operator(
                 const std::string & op_name,
-                std::shared_ptr< GeneralTreeOperatorTemplate<TreeType> > op) const {
+                std::shared_ptr< GeneralTreeOperatorTemplate<TreeType> > & op) const {
             for (std::shared_ptr< GeneralTreeOperatorTemplate<TreeType> > op_iter: this->operators_) {
                 if (op_iter->get_name() == op_name) {
                     op = op_iter;
@@ -165,7 +165,7 @@ class GeneralTreeOperatorSchedule {
         }
 
         void get_split_lump_rj_operator(
-                std::shared_ptr< GeneralTreeOperatorTemplate<TreeType> > rj_op) const {
+                std::shared_ptr< GeneralTreeOperatorTemplate<TreeType> > & rj_op) const {
             this->get_operator("SplitLumpNodesRevJumpSampler", rj_op);
         }
 
@@ -208,7 +208,7 @@ class GeneralTreeOperatorSchedule {
         }
 
         void get_preferred_node_height_operators(
-                std::vector< std::shared_ptr< GeneralTreeOperatorTemplate<TreeType> > > ops) const {
+                std::vector< std::shared_ptr< GeneralTreeOperatorTemplate<TreeType> > > & ops) const {
             std::shared_ptr< GeneralTreeOperatorTemplate<TreeType> >
                 op = this->get_operator("GlobalNodeHeightDirichletOperator");
             if (op) {
