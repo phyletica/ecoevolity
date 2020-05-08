@@ -391,7 +391,6 @@ void BasePopulationTree::init_data(
     // these to be updated (only pattern folding, which will not change the
     // unique allele counts or weights).
     this->update_unique_allele_counts();
-    this->update_node_heights();
 }
 
 void BasePopulationTree::init(
