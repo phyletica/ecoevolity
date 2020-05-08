@@ -16,6 +16,8 @@ set(ECOEVOLITY_SOURCES
     "${EXTERNAL_PROJECT_DIR}/cpp-optparse/OptionParser.cpp"
     "${ECOEVOLITY_SOURCE_DIR}/ecoevolity.cpp"
     "${ECOEVOLITY_SOURCE_DIR}/simcoevolity.cpp"
+    "${ECOEVOLITY_SOURCE_DIR}/phycoeval.cpp"
+    "${ECOEVOLITY_SOURCE_DIR}/simphycoeval.cpp"
     "${ECOEVOLITY_SOURCE_DIR}/data.cpp")
 
 if (BUILD_WITH_THREADS)
