@@ -117,6 +117,7 @@ inline void mcmc(
         operator_log_stream << "generation " << gen + 1 << ":\n";
         operator_schedule.write_operator_rates(operator_log_stream);
     }
+    tree_log_stream << "END;";
     std_output_stream << "\nOperator stats:\n";
     operator_schedule.write_operator_rates(std_output_stream);
     std_output_stream << "\n";
