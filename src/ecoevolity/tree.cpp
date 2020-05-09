@@ -205,6 +205,9 @@ void BasePopulationTree::write_state_log_header(std::ostream& out,
     out << "generation" << delimiter
         << "ln_likelihood" << delimiter
         << "ln_prior" << delimiter
+        << "alpha_of_height_beta_prior" << delimiter
+        << "beta_of_height_beta_prior" << delimiter
+        << "number_of_heights" << delimiter
         << "root_height" << delimiter
         << "mutation_rate" << delimiter
         << "freq_1" << delimiter
@@ -227,6 +230,9 @@ void BasePopulationTree::log_state(std::ostream& out,
     out << generation_index << delimiter
         << this->log_likelihood_.get_value() << delimiter
         << this->log_prior_density_.get_value() << delimiter
+        << this->get_alpha_of_node_height_beta_prior() << delimiter
+        << this->get_beta_of_node_height_beta_prior() << delimiter
+        << this->get_number_of_node_heights() << delimiter
         << this->get_root_height() << delimiter
         << this->get_mutation_rate() << delimiter
         << this->get_freq_1() << delimiter
