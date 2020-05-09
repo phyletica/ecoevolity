@@ -231,6 +231,17 @@ class BaseTree {
             const NxsFullTreeDescription & tree_description = tree_block->GetFullTreeDescription(0);
             // std::cout << "Tree is processed: " << tree_description.IsProcessed() << "\n";
             // std::cout << "Tree is rooted: " << tree_description.IsRooted() << "\n";
+            this->build_from_ncl_tree_description_(tree_description,
+                    taxa_block,
+                    ultrametricity_tolerance);
+
+            nexus_reader.DeleteBlocksFromFactories();
+        }
+
+        void build_from_ncl_tree_description_(
+                const NxsFullTreeDescription & tree_description,
+                NxsTaxaBlock * taxa_block,
+                double ultrametricity_tolerance = 1e-6) {
             // Tree must be processed to create the NxsSimpleTree
             if (! tree_description.IsProcessed()) {
                 throw EcoevolityError("Input tree was not processed by NCL");
@@ -317,8 +328,6 @@ class BaseTree {
                     using_height_comments);
 
             this->set_root(root);
-
-            nexus_reader.DeleteBlocksFromFactories();
         }
 
         bool parsed_tree_is_ultrametric_(const NxsSimpleTree & simple_tree,
@@ -525,6 +534,91 @@ class BaseTree {
         }
 
         typedef std::shared_ptr<NodeType> NodePtr;
+
+        static void get_trees(
+                std::istream & tree_stream,
+                const std::string & ncl_file_format,
+                std::vector< BaseTree<NodeType> > & trees,
+                double ultrametricity_tolerance = 1e-6
+                ) {
+            MultiFormatReader nexus_reader(-1, NxsReader::WARNINGS_TO_STDERR);
+            try {
+                nexus_reader.ReadStream(tree_stream, ncl_file_format.c_str());
+            }
+            catch(...) {
+                nexus_reader.DeleteBlocksFromFactories();
+                throw;
+            }
+            unsigned int num_taxa_blocks = nexus_reader.GetNumTaxaBlocks();
+            ECOEVOLITY_ASSERT(num_taxa_blocks == 1);
+            NxsTaxaBlock * taxa_block = nexus_reader.GetTaxaBlock(0);
+
+            unsigned int num_tree_blocks = nexus_reader.GetNumTreesBlocks(taxa_block);
+            ECOEVOLITY_ASSERT(num_tree_blocks == 1);
+
+            NxsTreesBlock * tree_block = nexus_reader.GetTreesBlock(taxa_block, 0);
+            unsigned int num_trees = tree_block->GetNumTrees();
+            ECOEVOLITY_ASSERT(num_trees > 0);
+
+            for (unsigned int i = 0; i < num_trees; ++i) {
+                const NxsFullTreeDescription & tree_description = tree_block->GetFullTreeDescription(i);
+                BaseTree<NodeType> t;
+                t.build_from_ncl_tree_description_(tree_description,
+                        taxa_block,
+                        ultrametricity_tolerance);
+                trees.push_back(t);
+            }
+            nexus_reader.DeleteBlocksFromFactories();
+        }
+        static std::vector< BaseTree<NodeType> > get_trees(
+                std::istream & tree_stream,
+                const std::string & ncl_file_format,
+                double ultrametricity_tolerance = 1e-6
+                ) {
+            std::vector< BaseTree<NodeType> > trees;
+            BaseTree::get_trees(tree_stream,
+                    ncl_file_format,
+                    trees,
+                    ultrametricity_tolerance);
+            return trees;
+        }
+        static void get_trees(
+                const std::string & path,
+                const std::string & ncl_file_format,
+                std::vector< BaseTree<NodeType> > & trees,
+                double ultrametricity_tolerance = 1e-6
+                ) {
+            std::ifstream in_stream;
+            in_stream.open(path);
+            if (! in_stream.is_open()) {
+                throw EcoevolityParsingError(
+                        "Could not open tree file",
+                        path);
+            }
+            try {
+                BaseTree::get_trees(in_stream,
+                        ncl_file_format,
+                        trees,
+                        ultrametricity_tolerance);
+            }
+            catch(...) {
+                std::cerr << "ERROR: Problem parsing tree file path: "
+                        << path << "\n";
+                throw;
+            }
+        }
+        static std::vector< BaseTree<NodeType> > get_trees(
+                const std::string & path,
+                const std::string & ncl_file_format,
+                double ultrametricity_tolerance = 1e-6
+                ) {
+            std::vector< BaseTree<NodeType> > trees;
+            BaseTree::get_trees(path,
+                    ncl_file_format,
+                    trees,
+                    ultrametricity_tolerance);
+            return trees;
+        }
 
         virtual double get_ln_prob_of_drawing_node_state(
                 std::shared_ptr<NodeType>) const {
