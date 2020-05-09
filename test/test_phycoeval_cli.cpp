@@ -46,6 +46,7 @@ TEST_CASE("Testing phycoeval cli with 5 leaves, full model, unconstrained sizes"
 
         unsigned int chain_length = 10000;
         unsigned int sample_frequency = 20;
+        unsigned int nsamples = (chain_length / sample_frequency) + 1;
 
         std::string tag = rng.random_string(10);
         std::string test_path = "data/tmp-config-" + tag + "-phyco.cfg";
@@ -124,126 +125,125 @@ TEST_CASE("Testing phycoeval cli with 5 leaves, full model, unconstrained sizes"
         ret = phycoeval_main<BasePopulationTree>(argc, argv);
         REQUIRE(ret == 0);
 
-        delete[] cfg_path;
+        REQUIRE(path::exists(log_path));
+        REQUIRE(path::exists(tree_path));
 
-        /* std::map< std::set< std::set<Split> >, unsigned int> split_counts; */
+        std::vector< BaseTree<PopulationNode> > trees;
+        BaseTree<PopulationNode>::get_trees(
+                tree_path,
+                "nexus",
+                trees,
+                1e-6);
 
-        /* unsigned int count_nheights_1 = 0; */
-        /* unsigned int count_nheights_2 = 0; */
-        /* unsigned int count_nheights_3 = 0; */
-        /* unsigned int count_nheights_4 = 0; */
+        REQUIRE(trees.size() == nsamples);
 
-        /* SampleSummarizer<double> pop_size_summary; */
-        /* SampleSummarizer<double> root_pop_size_summary; */
-        /* SampleSummarizer<double> leaf0_pop_size_summary; */
-        /* SampleSummarizer<double> leaf1_pop_size_summary; */
-        /* SampleSummarizer<double> leaf2_pop_size_summary; */
-        /* SampleSummarizer<double> leaf3_pop_size_summary; */
-        /* SampleSummarizer<double> leaf4_pop_size_summary; */
-        /* SampleSummarizer<double> root_height_summary; */
-        /* SampleSummarizer<double> internal_0_height_summary; */
-        /* SampleSummarizer<double> internal_height_summary; */
-        /* SampleSummarizer<double> height_alpha_summary; */
-        /* SampleSummarizer<double> height_beta_summary; */
-        /* SampleSummarizer<double> internal_height_prior_sample; */
+        spreadsheet::Spreadsheet prior_sample;
+        prior_sample.update(log_path);
 
-        /* std::vector< std::shared_ptr<PositiveRealParameter> > pop_sizes; */
+        SampleSummarizer<double> l_root_pop_size_summary = prior_sample.summarize<double>("pop_size_root");
+        REQUIRE(l_root_pop_size_summary.sample_size() == nsamples);
+        SampleSummarizer<double> l_leaf0_pop_size_summary = prior_sample.summarize<double>("pop_size_sp1");
+        REQUIRE(l_leaf0_pop_size_summary.sample_size() == nsamples);
+        SampleSummarizer<double> l_leaf1_pop_size_summary = prior_sample.summarize<double>("pop_size_sp2");
+        REQUIRE(l_leaf1_pop_size_summary.sample_size() == nsamples);
+        SampleSummarizer<double> l_leaf2_pop_size_summary = prior_sample.summarize<double>("pop_size_sp3");
+        REQUIRE(l_leaf2_pop_size_summary.sample_size() == nsamples);
+        SampleSummarizer<double> l_leaf3_pop_size_summary = prior_sample.summarize<double>("pop_size_sp4");
+        REQUIRE(l_leaf3_pop_size_summary.sample_size() == nsamples);
+        SampleSummarizer<double> l_leaf4_pop_size_summary = prior_sample.summarize<double>("pop_size_sp5");
+        REQUIRE(l_leaf4_pop_size_summary.sample_size() == nsamples);
 
-        /* unsigned int burnin = 10000; */
-        /* for (unsigned int i = 0; i < burnin; ++i) { */
-        /*     op = op_schedule.draw_operator(rng); */
-        /*     if (op->get_type() == BaseGeneralTreeOperatorTemplate::OperatorTypeEnum::topology_model_operator) { */
-        /*         op->operate_plus(rng, */
-        /*                 &tree, */
-        /*                 time_ops, */
-        /*                 1, 1, 1); */
-        /*     } */
-        /*     else { */
-        /*         op->operate(rng, &tree, 1, 1); */
-        /*     } */
-        /* } */
+        SampleSummarizer<double> l_root_height_summary = prior_sample.summarize<double>("root_height");
+        REQUIRE(l_root_height_summary.sample_size() == nsamples);
+        SampleSummarizer<double> l_height_alpha_summary = prior_sample.summarize<double>("alpha_of_height_beta_prior");
+        REQUIRE(l_height_alpha_summary.sample_size() == nsamples);
+        SampleSummarizer<double> l_height_beta_summary = prior_sample.summarize<double>("beta_of_height_beta_prior");
+        REQUIRE(l_height_beta_summary.sample_size() == nsamples);
 
-        /* unsigned int niterations = 20000000; */
-        /* unsigned int sample_freq = 50; */
-        /* unsigned int nsamples = niterations / sample_freq; */
+        SampleSummarizer<double> l_mu_rate_summary = prior_sample.summarize<double>("mutation_rate");
+        REQUIRE(l_mu_rate_summary.sample_size() == nsamples);
+        SampleSummarizer<double> l_freq_summary = prior_sample.summarize<double>("freq_1");
+        REQUIRE(l_freq_summary.sample_size() == nsamples);
 
-        /* unsigned int sample_count = 0; */
-        /* unsigned int report_freq = 10000; */
-        /* for (unsigned int i = 0; i < niterations; ++i) { */
-        /*     op = op_schedule.draw_operator(rng); */
-        /*     if (op->get_type() == BaseGeneralTreeOperatorTemplate::OperatorTypeEnum::topology_model_operator) { */
-        /*         op->operate_plus(rng, */
-        /*                 &tree, */
-        /*                 time_ops, */
-        /*                 1, 1, 1); */
-        /*     } */
-        /*     else { */
-        /*         op->operate(rng, &tree, 1, 1); */
-        /*     } */
-        /*     double a = height_alpha_prior->draw(rng); */
-        /*     double b = height_beta_prior->draw(rng); */
-        /*     double v = BetaDistribution::get_draw(rng, a, b); */
-        /*     internal_height_prior_sample.add_sample(v); */
-        /*     if ((i + 1) % sample_freq == 0) { */
-        /*         pop_sizes = tree.get_pointers_to_population_sizes(); */
-        /*         for (auto pop_size : pop_sizes) { */
-        /*             pop_size_summary.add_sample(pop_size->get_value()); */
-        /*         } */
-        /*         root_pop_size_summary.add_sample(tree.get_root_population_size()); */
-        /*         leaf0_pop_size_summary.add_sample(tree.get_node("leaf0")->get_population_size()); */
-        /*         leaf1_pop_size_summary.add_sample(tree.get_node("leaf1")->get_population_size()); */
-        /*         leaf2_pop_size_summary.add_sample(tree.get_node("leaf2")->get_population_size()); */
-        /*         leaf3_pop_size_summary.add_sample(tree.get_node("leaf3")->get_population_size()); */
-        /*         leaf4_pop_size_summary.add_sample(tree.get_node("leaf4")->get_population_size()); */
-        /*         root_height_summary.add_sample(tree.get_root_height()); */
-        /*         height_alpha_summary.add_sample(tree.get_alpha_of_node_height_beta_prior()); */
-        /*         height_beta_summary.add_sample(tree.get_beta_of_node_height_beta_prior()); */
-        /*         for (unsigned int height_idx = 0; */
-        /*                 height_idx < (tree.get_number_of_node_heights() - 1); */
-        /*                 ++height_idx) { */
-        /*             internal_height_summary.add_sample(tree.get_height(height_idx) / tree.get_height_of_youngest_parent(height_idx)); */
-        /*             if (height_idx == 0) { */
-        /*                 internal_0_height_summary.add_sample(tree.get_height(height_idx)); */
-        /*                 internal_0_height_summary.add_sample(tree.get_height(height_idx) / tree.get_height_of_youngest_parent(height_idx)); */
-        /*             } */
-        /*         } */
-        /*         if (tree.get_number_of_node_heights() == 1) { */
-        /*             ++count_nheights_1; */
-        /*         } */
-        /*         else if (tree.get_number_of_node_heights() == 2) { */
-        /*             ++count_nheights_2; */
-        /*         } */
-        /*         else if (tree.get_number_of_node_heights() == 3) { */
-        /*             ++count_nheights_3; */
-        /*         } */
-        /*         else if (tree.get_number_of_node_heights() == 4) { */
-        /*             ++count_nheights_4; */
-        /*         } */
-        /*         std::set< std::set<Split> > splits = tree.get_splits(false); */
-        /*         if (split_counts.count(splits) > 0) { */
-        /*             ++split_counts[splits]; */
-        /*         } */
-        /*         else { */
-        /*             split_counts[splits] = 1; */
-        /*         } */
-        /*         ++sample_count; */
-        /*         if (sample_count % report_freq == 0) { */
-        /*             std::cout << "Sampled " << sample_count << " of " << nsamples << std::endl; */
-        /*         } */
-        /*     } */
-        /* } */
-        /* op_schedule.write_operator_rates(std::cout); */
+        std::map< std::set< std::set<Split> >, unsigned int> split_counts;
 
-        /* REQUIRE((count_nheights_1 + count_nheights_2 + count_nheights_3 + count_nheights_4) == nsamples); */
+        unsigned int count_nheights_1 = 0;
+        unsigned int count_nheights_2 = 0;
+        unsigned int count_nheights_3 = 0;
+        unsigned int count_nheights_4 = 0;
 
-        /* double freq_nheights_1 = count_nheights_1 / (double)nsamples; */
-        /* double freq_nheights_2 = count_nheights_2 / (double)nsamples; */
-        /* double freq_nheights_3 = count_nheights_3 / (double)nsamples; */
-        /* double freq_nheights_4 = count_nheights_4 / (double)nsamples; */
+        SampleSummarizer<double> internal_height_prior_sample;
+        for (unsigned int i = 0; i < chain_length; ++i) {
+            double a = height_alpha_prior->draw(rng);
+            double v = BetaDistribution::get_draw(rng, a, 1.0);
+            internal_height_prior_sample.add_sample(v);
+        }
 
-        /* double exp_freq = 1.0/336.0; */
-        /* double exp_count = nsamples/336.0; */
-        /* std::map< std::set< std::set<Split> >, double> bad_splits; */
+        SampleSummarizer<double> internal_0_height_summary;
+        SampleSummarizer<double> internal_height_summary;
+        SampleSummarizer<double> root_pop_size_summary;
+        SampleSummarizer<double> leaf0_pop_size_summary;
+        SampleSummarizer<double> leaf1_pop_size_summary;
+        SampleSummarizer<double> leaf2_pop_size_summary;
+        SampleSummarizer<double> leaf3_pop_size_summary;
+        SampleSummarizer<double> leaf4_pop_size_summary;
+        SampleSummarizer<double> root_height_summary;
+        SampleSummarizer<double> pop_size_summary;
+
+        std::vector< std::shared_ptr<PositiveRealParameter> > pop_sizes;
+
+        for (auto tree : trees) {
+            pop_sizes = tree.get_pointers_to_population_sizes();
+            for (auto pop_size : pop_sizes) {
+                pop_size_summary.add_sample(pop_size->get_value());
+            }
+            root_pop_size_summary.add_sample(tree.get_root_population_size());
+            leaf0_pop_size_summary.add_sample(tree.get_node("leaf0")->get_population_size());
+            leaf1_pop_size_summary.add_sample(tree.get_node("leaf1")->get_population_size());
+            leaf2_pop_size_summary.add_sample(tree.get_node("leaf2")->get_population_size());
+            leaf3_pop_size_summary.add_sample(tree.get_node("leaf3")->get_population_size());
+            leaf4_pop_size_summary.add_sample(tree.get_node("leaf4")->get_population_size());
+            root_height_summary.add_sample(tree.get_root_height());
+            for (unsigned int height_idx = 0;
+                    height_idx < (tree.get_number_of_node_heights() - 1);
+                    ++height_idx) {
+                internal_height_summary.add_sample(tree.get_height(height_idx) / tree.get_height_of_youngest_parent(height_idx));
+                if (height_idx == 0) {
+                    internal_0_height_summary.add_sample(tree.get_height(height_idx));
+                    internal_0_height_summary.add_sample(tree.get_height(height_idx) / tree.get_height_of_youngest_parent(height_idx));
+                }
+            }
+            if (tree.get_number_of_node_heights() == 1) {
+                ++count_nheights_1;
+            }
+            else if (tree.get_number_of_node_heights() == 2) {
+                ++count_nheights_2;
+            }
+            else if (tree.get_number_of_node_heights() == 3) {
+                ++count_nheights_3;
+            }
+            else if (tree.get_number_of_node_heights() == 4) {
+                ++count_nheights_4;
+            }
+            std::set< std::set<Split> > splits = tree.get_splits(false);
+            if (split_counts.count(splits) > 0) {
+                ++split_counts[splits];
+            }
+            else {
+                split_counts[splits] = 1;
+            }
+        }
+
+        REQUIRE((count_nheights_1 + count_nheights_2 + count_nheights_3 + count_nheights_4) == nsamples);
+
+        double freq_nheights_1 = count_nheights_1 / (double)nsamples;
+        double freq_nheights_2 = count_nheights_2 / (double)nsamples;
+        double freq_nheights_3 = count_nheights_3 / (double)nsamples;
+        double freq_nheights_4 = count_nheights_4 / (double)nsamples;
+
+        double exp_freq = 1.0/336.0;
+        double exp_count = nsamples/336.0;
+        std::map< std::set< std::set<Split> >, double> bad_splits;
 
         /* double prop_error_threshold = 0.2; */
         /* unsigned int total_trees_sampled = 0; */
@@ -296,45 +296,65 @@ TEST_CASE("Testing phycoeval cli with 5 leaves, full model, unconstrained sizes"
         /*     std::cout << "  prop error: " << s_e.second << "\n"; */
         /* } */
 
-        /* write_r_script(split_counts, "../5-leaf-general-tree-test-full-model-free-pop-sizes.r"); */
+        write_r_script(split_counts, "../phyco-5-leaf-general-tree-test-full-model-free-pop-sizes.r");
 
-        /* REQUIRE(total_trees_sampled == nsamples); */
+        // We should sample every possible tree
+        REQUIRE(split_counts.size() == 336);
 
-        /* // We should sample every possible tree */
-        /* REQUIRE(split_counts.size() == 336); */
+        REQUIRE(root_pop_size_summary.mean() ==     Approx(l_root_pop_size_summary.mean()));
+        REQUIRE(root_pop_size_summary.variance() == Approx(l_root_pop_size_summary.variance()));
+        REQUIRE(leaf0_pop_size_summary.mean() ==     Approx(l_leaf0_pop_size_summary.mean()));
+        REQUIRE(leaf0_pop_size_summary.variance() == Approx(l_leaf0_pop_size_summary.variance()));
+        REQUIRE(leaf1_pop_size_summary.mean() ==     Approx(l_leaf1_pop_size_summary.mean()));
+        REQUIRE(leaf1_pop_size_summary.variance() == Approx(l_leaf1_pop_size_summary.variance()));
+        REQUIRE(leaf2_pop_size_summary.mean() ==     Approx(l_leaf2_pop_size_summary.mean()));
+        REQUIRE(leaf2_pop_size_summary.variance() == Approx(l_leaf2_pop_size_summary.variance()));
+        REQUIRE(leaf3_pop_size_summary.mean() ==     Approx(l_leaf3_pop_size_summary.mean()));
+        REQUIRE(leaf3_pop_size_summary.variance() == Approx(l_leaf3_pop_size_summary.variance()));
+        REQUIRE(leaf4_pop_size_summary.mean() ==     Approx(l_leaf4_pop_size_summary.mean()));
+        REQUIRE(leaf4_pop_size_summary.variance() == Approx(l_leaf4_pop_size_summary.variance()));
+        REQUIRE(root_height_summary.mean() ==     Approx(l_root_height_summary.mean()));
+        REQUIRE(root_height_summary.variance() == Approx(l_root_height_summary.variance()));
 
-        /* double eps = 0.005; */
-        /* REQUIRE(pop_size_summary.mean() == Approx(pop_size_prior->get_mean()).epsilon(eps)); */
-        /* REQUIRE(pop_size_summary.variance() == Approx(pop_size_prior->get_variance()).epsilon(eps)); */
-        /* REQUIRE(root_pop_size_summary.mean() == Approx(pop_size_prior->get_mean()).epsilon(eps)); */
-        /* REQUIRE(root_pop_size_summary.variance() == Approx(pop_size_prior->get_variance()).epsilon(eps)); */
-        /* REQUIRE(leaf0_pop_size_summary.mean() == Approx(pop_size_prior->get_mean()).epsilon(eps)); */
-        /* REQUIRE(leaf0_pop_size_summary.variance() == Approx(pop_size_prior->get_variance()).epsilon(eps)); */
-        /* REQUIRE(leaf1_pop_size_summary.mean() == Approx(pop_size_prior->get_mean()).epsilon(eps)); */
-        /* REQUIRE(leaf1_pop_size_summary.variance() == Approx(pop_size_prior->get_variance()).epsilon(eps)); */
-        /* REQUIRE(leaf2_pop_size_summary.mean() == Approx(pop_size_prior->get_mean()).epsilon(eps)); */
-        /* REQUIRE(leaf2_pop_size_summary.variance() == Approx(pop_size_prior->get_variance()).epsilon(eps)); */
-        /* REQUIRE(leaf3_pop_size_summary.mean() == Approx(pop_size_prior->get_mean()).epsilon(eps)); */
-        /* REQUIRE(leaf3_pop_size_summary.variance() == Approx(pop_size_prior->get_variance()).epsilon(eps)); */
-        /* REQUIRE(leaf4_pop_size_summary.mean() == Approx(pop_size_prior->get_mean()).epsilon(eps)); */
-        /* REQUIRE(leaf4_pop_size_summary.variance() == Approx(pop_size_prior->get_variance()).epsilon(eps)); */
+        double eps = 0.005;
+        REQUIRE(pop_size_summary.mean() == Approx(pop_size_prior->get_mean()).epsilon(eps));
+        REQUIRE(pop_size_summary.variance() == Approx(pop_size_prior->get_variance()).epsilon(eps));
+        REQUIRE(root_pop_size_summary.mean() == Approx(pop_size_prior->get_mean()).epsilon(eps));
+        REQUIRE(root_pop_size_summary.variance() == Approx(pop_size_prior->get_variance()).epsilon(eps));
+        REQUIRE(leaf0_pop_size_summary.mean() == Approx(pop_size_prior->get_mean()).epsilon(eps));
+        REQUIRE(leaf0_pop_size_summary.variance() == Approx(pop_size_prior->get_variance()).epsilon(eps));
+        REQUIRE(leaf1_pop_size_summary.mean() == Approx(pop_size_prior->get_mean()).epsilon(eps));
+        REQUIRE(leaf1_pop_size_summary.variance() == Approx(pop_size_prior->get_variance()).epsilon(eps));
+        REQUIRE(leaf2_pop_size_summary.mean() == Approx(pop_size_prior->get_mean()).epsilon(eps));
+        REQUIRE(leaf2_pop_size_summary.variance() == Approx(pop_size_prior->get_variance()).epsilon(eps));
+        REQUIRE(leaf3_pop_size_summary.mean() == Approx(pop_size_prior->get_mean()).epsilon(eps));
+        REQUIRE(leaf3_pop_size_summary.variance() == Approx(pop_size_prior->get_variance()).epsilon(eps));
+        REQUIRE(leaf4_pop_size_summary.mean() == Approx(pop_size_prior->get_mean()).epsilon(eps));
+        REQUIRE(leaf4_pop_size_summary.variance() == Approx(pop_size_prior->get_variance()).epsilon(eps));
 
-        /* REQUIRE(root_height_summary.mean() == Approx(root_height_prior->get_mean()).epsilon(eps)); */
-        /* REQUIRE(root_height_summary.variance() == Approx(root_height_prior->get_variance()).epsilon(eps)); */
-        /* REQUIRE(height_alpha_summary.mean() == Approx(height_alpha_prior->get_mean()).epsilon(eps * 2.0)); */
-        /* REQUIRE(height_alpha_summary.variance() == Approx(height_alpha_prior->get_variance()).epsilon(eps * 2.0)); */
-        /* REQUIRE(height_beta_summary.mean() == Approx(height_beta_prior->get_mean()).epsilon(eps * 2.0)); */
-        /* REQUIRE(height_beta_summary.variance() == Approx(height_beta_prior->get_variance()).epsilon(eps * 2.0)); */
+        REQUIRE(root_height_summary.mean() == Approx(root_height_prior->get_mean()).epsilon(eps));
+        REQUIRE(root_height_summary.variance() == Approx(root_height_prior->get_variance()).epsilon(eps));
+        REQUIRE(l_height_alpha_summary.mean() == Approx(height_alpha_prior->get_mean()).epsilon(eps * 2.0));
+        REQUIRE(l_height_alpha_summary.variance() == Approx(height_alpha_prior->get_variance()).epsilon(eps * 2.0));
+        REQUIRE(l_height_beta_summary.mean() == Approx(height_beta_prior->get_mean()).epsilon(eps * 2.0));
+        REQUIRE(l_height_beta_summary.variance() == Approx(height_beta_prior->get_variance()).epsilon(eps * 2.0));
 
-        /* /1* REQUIRE(internal_0_height_summary.mean() == Approx(internal_height_prior_sample.mean()).epsilon(eps)); *1/ */
-        /* /1* REQUIRE(internal_0_height_summary.variance() == Approx(internal_height_prior_sample.variance()).epsilon(eps)); *1/ */
-        /* /1* REQUIRE(internal_height_summary.mean() == Approx(internal_height_prior_sample.mean()).epsilon(eps)); *1/ */
-        /* /1* REQUIRE(internal_height_summary.variance() == Approx(internal_height_prior_sample.variance()).epsilon(eps)); *1/ */
+        REQUIRE(l_mu_rate_summary.mean() == Approx(mu_rate_prior->get_mean()).epsilon(eps));
+        REQUIRE(l_mu_rate_summary.variance() == Approx(mu_rate_prior->get_variance()).epsilon(eps));
+        REQUIRE(l_freq_summary.mean() == Approx(freq_prior->get_mean()).epsilon(eps));
+        REQUIRE(l_freq_summary.variance() == Approx(freq_prior->get_variance()).epsilon(eps));
 
-        /* for (auto s_f : split_freqs) { */
-        /*     REQUIRE(s_f.second == Approx(exp_freq).epsilon(eps)); */
-        /* } */
+        REQUIRE(internal_0_height_summary.mean() == Approx(internal_height_prior_sample.mean()).epsilon(eps));
+        REQUIRE(internal_0_height_summary.variance() == Approx(internal_height_prior_sample.variance()).epsilon(eps));
+        REQUIRE(internal_height_summary.mean() == Approx(internal_height_prior_sample.mean()).epsilon(eps));
+        REQUIRE(internal_height_summary.variance() == Approx(internal_height_prior_sample.variance()).epsilon(eps));
+
+        for (auto s_f : split_freqs) {
+            REQUIRE(s_f.second == Approx(exp_freq).epsilon(eps));
+        }
 
         /* REQUIRE(chi_sq_test_statistic < quantile_chi_sq_335_10); */
+
+        delete[] cfg_path;
     }
 }
