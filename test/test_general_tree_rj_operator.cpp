@@ -4912,6 +4912,8 @@ TEST_CASE("Testing SplitLumpNodesRevJumpSampler with BasePopulationTree, 5 leave
         REQUIRE(height_beta_summary.mean() == Approx(height_beta_prior->get_mean()).epsilon(eps * 2.0));
         REQUIRE(height_beta_summary.variance() == Approx(height_beta_prior->get_variance()).epsilon(eps * 2.0));
 
+        // Node heights collected by height index will not match beta prior
+        // when more than 3 tips
         /* REQUIRE(internal_0_height_summary.mean() == Approx(internal_height_prior_sample.mean()).epsilon(eps)); */
         /* REQUIRE(internal_0_height_summary.variance() == Approx(internal_height_prior_sample.variance()).epsilon(eps)); */
         /* REQUIRE(internal_height_summary.mean() == Approx(internal_height_prior_sample.mean()).epsilon(eps)); */
