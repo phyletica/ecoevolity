@@ -535,10 +535,11 @@ class BaseTree {
 
         typedef std::shared_ptr<NodeType> NodePtr;
 
+        template<class TreeType>
         static void get_trees(
                 std::istream & tree_stream,
                 const std::string & ncl_file_format,
-                std::vector< BaseTree<NodeType> > & trees,
+                std::vector<TreeType> & trees,
                 double ultrametricity_tolerance = 1e-6
                 ) {
             MultiFormatReader nexus_reader(-1, NxsReader::WARNINGS_TO_STDERR);
@@ -562,7 +563,7 @@ class BaseTree {
 
             for (unsigned int i = 0; i < num_trees; ++i) {
                 const NxsFullTreeDescription & tree_description = tree_block->GetFullTreeDescription(i);
-                BaseTree<NodeType> t;
+                TreeType t;
                 t.build_from_ncl_tree_description_(tree_description,
                         taxa_block,
                         ultrametricity_tolerance);
@@ -570,22 +571,24 @@ class BaseTree {
             }
             nexus_reader.DeleteBlocksFromFactories();
         }
-        static std::vector< BaseTree<NodeType> > get_trees(
+        template<class TreeType>
+        static std::vector<TreeType> get_trees(
                 std::istream & tree_stream,
                 const std::string & ncl_file_format,
                 double ultrametricity_tolerance = 1e-6
                 ) {
-            std::vector< BaseTree<NodeType> > trees;
+            std::vector<TreeType> trees;
             BaseTree::get_trees(tree_stream,
                     ncl_file_format,
                     trees,
                     ultrametricity_tolerance);
             return trees;
         }
+        template<class TreeType>
         static void get_trees(
                 const std::string & path,
                 const std::string & ncl_file_format,
-                std::vector< BaseTree<NodeType> > & trees,
+                std::vector<TreeType> & trees,
                 double ultrametricity_tolerance = 1e-6
                 ) {
             std::ifstream in_stream;
@@ -607,12 +610,13 @@ class BaseTree {
                 throw;
             }
         }
-        static std::vector< BaseTree<NodeType> > get_trees(
+        template<class TreeType>
+        static std::vector<TreeType> get_trees(
                 const std::string & path,
                 const std::string & ncl_file_format,
                 double ultrametricity_tolerance = 1e-6
                 ) {
-            std::vector< BaseTree<NodeType> > trees;
+            std::vector<TreeType> trees;
             BaseTree::get_trees(path,
                     ncl_file_format,
                     trees,
@@ -1319,6 +1323,11 @@ class BaseTree {
         std::shared_ptr<NodeType> get_root_ptr() const {return this->root_;}
 
         std::shared_ptr<NodeType> get_node(std::string label) const {
+            std::shared_ptr<NodeType> n = this->root_->get_node(label);
+            if (! n) {
+                throw EcoevolityError(
+                        "Node with label " + label + " not in tree");
+            }
             return this->root_->get_node(label);
         }
 
