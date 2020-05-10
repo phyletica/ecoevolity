@@ -44,7 +44,7 @@ TEST_CASE("Testing phycoeval cli with 5 leaves, full model, unconstrained sizes"
                 height_alpha_shape,
                 height_alpha_scale);
 
-        unsigned int chain_length = 10000;
+        unsigned int chain_length = 500000;
         unsigned int sample_frequency = 20;
         unsigned int nsamples = (chain_length / sample_frequency) + 1;
 
@@ -128,8 +128,11 @@ TEST_CASE("Testing phycoeval cli with 5 leaves, full model, unconstrained sizes"
         REQUIRE(path::exists(log_path));
         REQUIRE(path::exists(tree_path));
 
-        std::vector< BaseTree<PopulationNode> > trees;
-        BaseTree<PopulationNode>::get_trees(
+        /* std::vector< BaseTree<PopulationNode> > trees; */
+        std::vector< BasePopulationTree > trees;
+        /* BaseTree<PopulationNode>::get_trees( */
+        /* BasePopulationTree::get_trees( */
+        BaseTree<PopulationNode>::get_trees<BasePopulationTree>(
                 tree_path,
                 "nexus",
                 trees,
@@ -198,11 +201,11 @@ TEST_CASE("Testing phycoeval cli with 5 leaves, full model, unconstrained sizes"
                 pop_size_summary.add_sample(pop_size->get_value());
             }
             root_pop_size_summary.add_sample(tree.get_root_population_size());
-            leaf0_pop_size_summary.add_sample(tree.get_node("leaf0")->get_population_size());
-            leaf1_pop_size_summary.add_sample(tree.get_node("leaf1")->get_population_size());
-            leaf2_pop_size_summary.add_sample(tree.get_node("leaf2")->get_population_size());
-            leaf3_pop_size_summary.add_sample(tree.get_node("leaf3")->get_population_size());
-            leaf4_pop_size_summary.add_sample(tree.get_node("leaf4")->get_population_size());
+            leaf0_pop_size_summary.add_sample(tree.get_node("sp1")->get_population_size());
+            leaf1_pop_size_summary.add_sample(tree.get_node("sp2")->get_population_size());
+            leaf2_pop_size_summary.add_sample(tree.get_node("sp3")->get_population_size());
+            leaf3_pop_size_summary.add_sample(tree.get_node("sp4")->get_population_size());
+            leaf4_pop_size_summary.add_sample(tree.get_node("sp5")->get_population_size());
             root_height_summary.add_sample(tree.get_root_height());
             for (unsigned int height_idx = 0;
                     height_idx < (tree.get_number_of_node_heights() - 1);
@@ -245,39 +248,39 @@ TEST_CASE("Testing phycoeval cli with 5 leaves, full model, unconstrained sizes"
         double exp_count = nsamples/336.0;
         std::map< std::set< std::set<Split> >, double> bad_splits;
 
-        /* double prop_error_threshold = 0.2; */
-        /* unsigned int total_trees_sampled = 0; */
-        /* std::map< std::set< std::set<Split> >, double> split_freqs; */
-        /* double chi_sq_test_statistic = 0.0; */
-        /* std::cout << "Total tree topologies sampled: " << split_counts.size() << "\n"; */
-        /* for (auto s_c : split_counts) { */
-        /*     total_trees_sampled += s_c.second; */
-        /*     split_freqs[s_c.first] = s_c.second / (double)nsamples; */
-        /*     std::cout << "Tree:\n"; */
-        /*     for (auto splitset : s_c.first) { */
-        /*         unsigned int s_count = 0; */
-        /*         for (auto split : splitset) { */
-        /*             if (s_count > 0) { */
-        /*                 // Indent shared splits */
-        /*                 std::cout << "  "; */
-        /*             } */
-        /*             std::cout << "  " << split.as_string() << "\n"; */
-        /*             ++s_count; */
-        /*         } */
-        /*     } */
-        /*     double prop_error = ((double)s_c.second - exp_count) / exp_count; */
-        /*     std::cout << "  nsamples: " << s_c.second << "\n"; */
-        /*     std::cout << "  prop error: " << prop_error << "\n"; */
-        /*     if (fabs(prop_error) > prop_error_threshold) { */
-        /*         bad_splits[s_c.first] = prop_error; */
-        /*     } */
-        /*     double count_diff = s_c.second - exp_count; */
-        /*     chi_sq_test_statistic += (count_diff * count_diff) / exp_count; */
-        /* } */
+        double prop_error_threshold = 0.2;
+        unsigned int total_trees_sampled = 0;
+        std::map< std::set< std::set<Split> >, double> split_freqs;
+        double chi_sq_test_statistic = 0.0;
+        std::cout << "Total tree topologies sampled: " << split_counts.size() << "\n";
+        for (auto s_c : split_counts) {
+            total_trees_sampled += s_c.second;
+            split_freqs[s_c.first] = s_c.second / (double)nsamples;
+            /* std::cout << "Tree:\n"; */
+            /* for (auto splitset : s_c.first) { */
+            /*     unsigned int s_count = 0; */
+            /*     for (auto split : splitset) { */
+            /*         if (s_count > 0) { */
+            /*             // Indent shared splits */
+            /*             std::cout << "  "; */
+            /*         } */
+            /*         std::cout << "  " << split.as_string() << "\n"; */
+            /*         ++s_count; */
+            /*     } */
+            /* } */
+            /* double prop_error = ((double)s_c.second - exp_count) / exp_count; */
+            /* std::cout << "  nsamples: " << s_c.second << "\n"; */
+            /* std::cout << "  prop error: " << prop_error << "\n"; */
+            /* if (fabs(prop_error) > prop_error_threshold) { */
+            /*     bad_splits[s_c.first] = prop_error; */
+            /* } */
+            double count_diff = s_c.second - exp_count;
+            chi_sq_test_statistic += (count_diff * count_diff) / exp_count;
+        }
 
-        /* double quantile_chi_sq_335_10 = 368.6; */
-        /* std::cout << "Chi-square test statistic: " << chi_sq_test_statistic << "\n"; */
-        /* std::cout << "Chi-square(335) 0.9 quantile: " << quantile_chi_sq_335_10 << "\n"; */
+        double quantile_chi_sq_335_10 = 368.6;
+        std::cout << "Chi-square test statistic: " << chi_sq_test_statistic << "\n";
+        std::cout << "Chi-square(335) 0.9 quantile: " << quantile_chi_sq_335_10 << "\n";
 
         /* std::cout << "BAD SPLITS (proportional error > " << prop_error_threshold << ")\n"; */
         /* for (auto s_e : bad_splits) { */
@@ -336,24 +339,27 @@ TEST_CASE("Testing phycoeval cli with 5 leaves, full model, unconstrained sizes"
         REQUIRE(root_height_summary.variance() == Approx(root_height_prior->get_variance()).epsilon(eps));
         REQUIRE(l_height_alpha_summary.mean() == Approx(height_alpha_prior->get_mean()).epsilon(eps * 2.0));
         REQUIRE(l_height_alpha_summary.variance() == Approx(height_alpha_prior->get_variance()).epsilon(eps * 2.0));
-        REQUIRE(l_height_beta_summary.mean() == Approx(height_beta_prior->get_mean()).epsilon(eps * 2.0));
-        REQUIRE(l_height_beta_summary.variance() == Approx(height_beta_prior->get_variance()).epsilon(eps * 2.0));
+
+        REQUIRE(l_height_beta_summary.mean() == Approx(1.0));
+        REQUIRE(l_height_beta_summary.variance() == Approx(0.0));
 
         REQUIRE(l_mu_rate_summary.mean() == Approx(mu_rate_prior->get_mean()).epsilon(eps));
         REQUIRE(l_mu_rate_summary.variance() == Approx(mu_rate_prior->get_variance()).epsilon(eps));
         REQUIRE(l_freq_summary.mean() == Approx(freq_prior->get_mean()).epsilon(eps));
         REQUIRE(l_freq_summary.variance() == Approx(freq_prior->get_variance()).epsilon(eps));
 
-        REQUIRE(internal_0_height_summary.mean() == Approx(internal_height_prior_sample.mean()).epsilon(eps));
-        REQUIRE(internal_0_height_summary.variance() == Approx(internal_height_prior_sample.variance()).epsilon(eps));
-        REQUIRE(internal_height_summary.mean() == Approx(internal_height_prior_sample.mean()).epsilon(eps));
-        REQUIRE(internal_height_summary.variance() == Approx(internal_height_prior_sample.variance()).epsilon(eps));
+        // Node heights collected by height index will not match beta prior
+        // when more than 3 tips
+        // REQUIRE(internal_0_height_summary.mean() == Approx(internal_height_prior_sample.mean()).epsilon(eps));
+        // REQUIRE(internal_0_height_summary.variance() == Approx(internal_height_prior_sample.variance()).epsilon(eps));
+        // REQUIRE(internal_height_summary.mean() == Approx(internal_height_prior_sample.mean()).epsilon(eps));
+        // REQUIRE(internal_height_summary.variance() == Approx(internal_height_prior_sample.variance()).epsilon(eps));
 
         for (auto s_f : split_freqs) {
             REQUIRE(s_f.second == Approx(exp_freq).epsilon(eps));
         }
 
-        /* REQUIRE(chi_sq_test_statistic < quantile_chi_sq_335_10); */
+        REQUIRE(chi_sq_test_statistic < quantile_chi_sq_335_10);
 
         delete[] cfg_path;
     }
