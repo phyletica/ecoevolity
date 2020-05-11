@@ -301,7 +301,7 @@ int simphycoeval_main(int argc, char * argv[]) {
     if (options.is_set_by_user("prefix")) {
         output_prefix = options.get("prefix").get_str();
     }
-    output_prefix += "simcoevolity-";
+    output_prefix += "simphycoeval-";
 
     std::cerr << "Prior config path: " << prior_config_path << std::endl;
 
@@ -326,15 +326,6 @@ int simphycoeval_main(int argc, char * argv[]) {
         }
     }
 
-    std::string sim_settings_path = path::join(
-            output_dir,
-            output_prefix + "model-used-for-sims.yml");
-    check_simphy_output_path(sim_settings_path);
-    std::ofstream sim_settings_stream;
-    sim_settings_stream.open(sim_settings_path);
-    settings.write_settings(sim_settings_stream);
-    sim_settings_stream.close();
-
     std::cout << "Configuring model for simulations..." << std::endl;
     TreeType tree(
             settings,
@@ -351,6 +342,17 @@ int simphycoeval_main(int argc, char * argv[]) {
 
     GeneralTreeOperatorSchedule<BasePopulationTree> operator_schedule(
             settings.operator_settings, tree.get_leaf_node_count());
+
+    std::string sim_settings_path = path::join(
+            output_dir,
+            output_prefix + "model-used-for-sims.yml");
+    check_simphy_output_path(sim_settings_path);
+    std::ofstream sim_settings_stream;
+    sim_settings_stream.open(sim_settings_path);
+    write_settings(sim_settings_stream,
+            settings,
+            operator_schedule);
+    sim_settings_stream.close();
 
     std::vector< std::shared_ptr< GeneralTreeOperatorTemplate<TreeType> > > topology_operators;
     topology_operators = operator_schedule.get_operators(
@@ -397,10 +399,10 @@ int simphycoeval_main(int argc, char * argv[]) {
     // Prepare output files for if we are not simulating datasets
     std::string true_params_path = path::join(
             output_dir,
-            output_prefix + "true-parameters.yml");
+            output_prefix + "true-parameters.txt");
     std::string true_trees_path = path::join(
             output_dir,
-            output_prefix + "true-trees.yml");
+            output_prefix + "true-trees.phy");
     check_simphy_output_path(true_params_path);
     check_simphy_output_path(true_trees_path);
     std::ofstream true_params_stream;
@@ -446,7 +448,7 @@ int simphycoeval_main(int argc, char * argv[]) {
             std::string analysis_config_path = sim_prefix + rep_str + "-config.yml";
             check_simphy_output_path(analysis_config_path);
             std::string true_state_path = sim_prefix + rep_str + "-true-parameters.txt";
-            std::string true_tree_path = sim_prefix + rep_str + "-true-tree.txt";
+            std::string true_tree_path = sim_prefix + rep_str + "-true-tree.phy";
             std::string sim_alignment_path = sim_prefix + rep_str + "-" + sim_data_suffix;
             check_simphy_output_path(true_state_path);
             check_simphy_output_path(true_tree_path);
@@ -485,7 +487,8 @@ int simphycoeval_main(int argc, char * argv[]) {
             std::ofstream true_tree_stream;
             true_tree_stream.open(true_tree_path);
             true_tree_stream.precision(logging_precision);
-            true_tree_stream << tree.to_parentheses(true, logging_precision)
+            true_tree_stream << "[&R]"
+                             << tree.to_parentheses(true, logging_precision)
                              << ";";
             true_tree_stream.close();
 
@@ -505,7 +508,8 @@ int simphycoeval_main(int argc, char * argv[]) {
         }
         else {
             tree.log_state(true_params_stream, i + 1, logging_delimiter);
-            true_trees_stream << tree.to_parentheses(true, logging_precision)
+            true_trees_stream << "[&R]"
+                              << tree.to_parentheses(true, logging_precision)
                               << ";" << std::endl;
         }
     }
