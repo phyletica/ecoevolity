@@ -1448,13 +1448,13 @@ class PopulationTreeSettings {
         std::string config_path_ = "";
         unsigned int chain_length_ = 100000;
         unsigned int sample_frequency_ = 100;
-        std::string tree_log_path_ = "phycoevolity-tree-run-1.log";
+        std::string tree_log_path_ = "phycoevolity-trees-run-1.nex";
         std::string state_log_path_ = "phycoevolity-state-run-1.log";
         std::string operator_log_path_ = "phycoevolity-operator-run-1.log";
 
         void set_output_paths_to_config_directory() {
             std::pair<std::string, std::string> prefix_ext = path::splitext(this->config_path_);
-            this->tree_log_path_ = prefix_ext.first + "-tree-run-1.log";
+            this->tree_log_path_ = prefix_ext.first + "-trees-run-1.nex";
             this->state_log_path_ = prefix_ext.first + "-state-run-1.log";
             this->operator_log_path_ = prefix_ext.first + "-operator-run-1.log";
         }
