@@ -51,7 +51,7 @@ TEST_CASE("Testing phycoeval cli with 5 leaves, full model, unconstrained sizes"
         std::string tag = rng.random_string(10);
         std::string test_path = "data/tmp-config-" + tag + "-phyco.cfg";
         std::string log_path = "data/tmp-config-" + tag + "-phyco-state-run-1.log";
-        std::string tree_path = "data/tmp-config-" + tag + "-phyco-tree-run-1.log";
+        std::string tree_path = "data/tmp-config-" + tag + "-phyco-trees-run-1.nex";
         std::ofstream os;
         os.open(test_path);
         os << "data:\n";
@@ -128,10 +128,7 @@ TEST_CASE("Testing phycoeval cli with 5 leaves, full model, unconstrained sizes"
         REQUIRE(path::exists(log_path));
         REQUIRE(path::exists(tree_path));
 
-        /* std::vector< BaseTree<PopulationNode> > trees; */
         std::vector< BasePopulationTree > trees;
-        /* BaseTree<PopulationNode>::get_trees( */
-        /* BasePopulationTree::get_trees( */
         BaseTree<PopulationNode>::get_trees<BasePopulationTree>(
                 tree_path,
                 "nexus",

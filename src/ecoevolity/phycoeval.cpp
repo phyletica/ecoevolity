@@ -32,3 +32,44 @@ void write_phy_splash(std::ostream& out) {
         << string_util::banner('=') << "\n";
 }
 
+void update_log_paths(
+        std::string & tree_log_path,
+        std::string & state_log_path,
+        std::string & operator_log_path,
+        unsigned int max_number_of_attempts) {
+    unsigned int ntries = 0;
+    while (true) {
+        if (
+                (! path::exists(tree_log_path))
+                && (! path::exists(state_log_path))
+                && (! path::exists(operator_log_path))
+            ) {
+            return;
+        }
+        increment_log_path(tree_log_path);
+        increment_log_path(state_log_path);
+        increment_log_path(operator_log_path);
+        ++ntries;
+        if (ntries > max_number_of_attempts) {
+            throw EcoevolityError("Could not generate unique output files");
+        }
+    }
+}
+
+void increment_log_path(
+        std::string & log_path) {
+    std::vector<std::string> path_elements;
+    std::pair<std::string, std::string> prefix_ext;
+    std::string new_suffix;
+    int run_number;
+
+    prefix_ext = path::splitext(log_path);
+    path_elements = string_util::split(prefix_ext.first, '-');
+    run_number = std::stoi(path_elements.back());
+    path_elements.pop_back();
+    ++run_number;
+    
+    new_suffix = "-" + std::to_string(run_number) + prefix_ext.second;
+
+    log_path = string_util::join(path_elements, "-") + new_suffix;
+}
