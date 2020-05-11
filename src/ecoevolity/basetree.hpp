@@ -1742,7 +1742,7 @@ class BaseTree {
                 const unsigned int generation_index,
                 const bool include_comments = true,
                 const unsigned int precision = 12) const {
-            out << "    TREE gen" << generation_index << " = "
+            out << "    TREE gen" << generation_index << " = [&R] "
                 << this->to_parentheses(include_comments, precision)
                 << ";" << std::endl;
         }
@@ -1774,6 +1774,8 @@ class BaseTree {
                 double height = youngest_parent_height * beta_draw;
                 this->node_heights_.at(i)->set_value(height);
             }
+            this->sort_node_heights();
+            this->refresh_ordered_nodes();
         }
 
         void store_splits_by_height_index(
