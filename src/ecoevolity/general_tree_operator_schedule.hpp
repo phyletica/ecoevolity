@@ -141,7 +141,7 @@ class GeneralTreeOperatorSchedule {
                 const BaseGeneralTreeOperatorTemplate::OperatorTypeEnum op_type
                 ) const {
             std::vector< std::shared_ptr< GeneralTreeOperatorTemplate<TreeType> > > ops;
-            this->get_operators(op_type);
+            this->get_operators(op_type, ops);
             return ops;
         }
 
@@ -160,7 +160,7 @@ class GeneralTreeOperatorSchedule {
                 const BaseGeneralTreeOperatorTemplate::OperatorScopeEnum op_scope
                 ) const {
             std::vector< std::shared_ptr< GeneralTreeOperatorTemplate<TreeType> > > ops;
-            this->get_operators(op_scope);
+            this->get_operators(op_scope, ops);
             return ops;
         }
 
