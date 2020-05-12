@@ -924,10 +924,11 @@ class TreeModelSettings {
                 op_collection->untunable_operators.at("SplitLumpNodesRevJumpSampler").set_weight(0);
                 op_collection->untunable_operators.at("NeighborHeightNodeSwap").set_weight(0);
                 op_collection->untunable_operators.at("NeighborHeightNodePermute").set_weight(0);
-                op_collection->untunable_operators.at("NodeHeightSlideBumpSwapMover").set_weight(0);
-                op_collection->untunable_operators.at("NodeHeightSlideBumpSwapScaler").set_weight(0);
-                op_collection->untunable_operators.at("NodeHeightSlideBumpPermuteMover").set_weight(0);
-                op_collection->untunable_operators.at("NodeHeightSlideBumpPermuteScaler").set_weight(0);
+
+                op_collection->tunable_operators.at("NodeHeightSlideBumpSwapMover").set_weight(0);
+                op_collection->tunable_operators.at("NodeHeightSlideBumpSwapScaler").set_weight(0);
+                op_collection->tunable_operators.at("NodeHeightSlideBumpPermuteMover").set_weight(0);
+                op_collection->tunable_operators.at("NodeHeightSlideBumpPermuteScaler").set_weight(0);
             }
             this->tree_prior->update_operator_weights(op_collection);
         }
