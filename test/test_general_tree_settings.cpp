@@ -169,3 +169,152 @@ TEST_CASE("Testing PopulationTreeSettings with uniform_root_and_betas tree prior
         write_settings(std::cout, settings, op_schedule);
     }
 }
+
+
+TEST_CASE("Testing bifurcating-comb conflict", "[TreeModelSettings]") {
+    SECTION("Testing settings conflict") {
+        std::stringstream ss;
+        ss << "tree_space: bifurcating\n";
+        ss << "starting_tree: comb\n";
+
+        YAML::Node n;
+        n = YAML::Load(ss);
+        REQUIRE_THROWS_AS(TreeModelSettings(n, "dummy_path"),
+                EcoevolityYamlConfigError &);
+    }
+    SECTION("Testing working example") {
+        std::stringstream ss;
+        ss << "tree_space: bifurcating\n";
+        ss << "starting_tree: random\n";
+
+        YAML::Node n;
+        n = YAML::Load(ss);
+        TreeModelSettings settings(n, "dummy_path");
+        REQUIRE(settings.get_tree_space_string() == "bifurcating");
+    }
+}
+
+TEST_CASE("Testing fixed-comb conflict", "[TreeModelSettings]") {
+    SECTION("Testing settings conflict") {
+        std::stringstream ss;
+        ss << "tree_space: fixed\n";
+        ss << "starting_tree: comb\n";
+
+        YAML::Node n;
+        n = YAML::Load(ss);
+        REQUIRE_THROWS_AS(TreeModelSettings(n, "dummy_path"),
+                EcoevolityYamlConfigError &);
+    }
+    SECTION("Testing working example") {
+        std::stringstream ss;
+        ss << "tree_space: fixed\n";
+        ss << "starting_tree: \"[&R]((A:0.1,B:0.1):0.1,C:0.2):0.0\"\n";
+
+        YAML::Node n;
+        n = YAML::Load(ss);
+        TreeModelSettings settings(n, "dummy_path");
+        REQUIRE(settings.get_tree_space_string() == "fixed");
+    }
+}
+
+TEST_CASE("Testing fixed-random conflict", "[TreeModelSettings]") {
+    SECTION("Testing settings conflict") {
+        std::stringstream ss;
+        ss << "tree_space: fixed\n";
+        ss << "starting_tree: random\n";
+
+        YAML::Node n;
+        n = YAML::Load(ss);
+        REQUIRE_THROWS_AS(TreeModelSettings(n, "dummy_path"),
+                EcoevolityYamlConfigError &);
+    }
+}
+
+TEST_CASE("Testing conflict between random and fixed root height",
+        "[TreeModelSettings]") {
+    SECTION("Testing settings conflict") {
+        std::stringstream ss;
+        ss << "starting_tree: random\n";
+        ss << "tree_prior:\n";
+        ss << "    uniform_root_and_betas:\n";
+        ss << "        parameters:\n";
+        ss << "            root_height:\n";
+        ss << "                estimate: false\n";
+
+        YAML::Node n;
+        n = YAML::Load(ss);
+        REQUIRE_THROWS_AS(TreeModelSettings(n, "dummy_path"),
+                EcoevolityYamlConfigError &);
+    }
+    SECTION("Testing working example") {
+        std::stringstream ss;
+        ss << "starting_tree: \"[&R]((A:0.1,B:0.1):0.1,C:0.2):0.0\"\n";
+        ss << "tree_prior:\n";
+        ss << "    uniform_root_and_betas:\n";
+        ss << "        parameters:\n";
+        ss << "            root_height:\n";
+        ss << "                estimate: false\n";
+
+        YAML::Node n;
+        n = YAML::Load(ss);
+        TreeModelSettings settings(n, "dummy_path");
+        std::map<std::string, PositiveRealParameterSettings> parameters;
+        parameters = settings.tree_prior->get_parameter_settings();
+        PositiveRealParameterSettings root_ht = parameters.at("root_height");
+        REQUIRE(root_ht.is_fixed());
+        REQUIRE(std::isnan(root_ht.get_value()));
+    }
+}
+
+TEST_CASE("Testing conflict between root height provided and in starting tree",
+        "[TreeModelSettings]") {
+    SECTION("Testing settings conflict") {
+        std::stringstream ss;
+        ss << "starting_tree: \"[&R]((A:0.1,B:0.1):0.1,C:0.2):0.0\"\n";
+        ss << "tree_prior:\n";
+        ss << "    uniform_root_and_betas:\n";
+        ss << "        parameters:\n";
+        ss << "            root_height:\n";
+        ss << "                value: 0.3\n";
+
+        YAML::Node n;
+        n = YAML::Load(ss);
+        REQUIRE_THROWS_AS(TreeModelSettings(n, "dummy_path"),
+                EcoevolityYamlConfigError &);
+    }
+    SECTION("Testing working example") {
+        std::stringstream ss;
+        ss << "starting_tree: \"[&R]((A:0.1,B:0.1):0.1,C:0.2):0.0\"\n";
+        ss << "tree_prior:\n";
+        ss << "    uniform_root_and_betas:\n";
+        ss << "        parameters:\n";
+        ss << "            root_height:\n";
+        ss << "                estimate: true\n";
+
+        YAML::Node n;
+        n = YAML::Load(ss);
+        TreeModelSettings settings(n, "dummy_path");
+        std::map<std::string, PositiveRealParameterSettings> parameters;
+        parameters = settings.tree_prior->get_parameter_settings();
+        PositiveRealParameterSettings root_ht = parameters.at("root_height");
+        REQUIRE(! root_ht.is_fixed());
+        REQUIRE(std::isnan(root_ht.get_value()));
+    }
+    SECTION("Testing alt working example") {
+        std::stringstream ss;
+        ss << "starting_tree: random\n";
+        ss << "tree_prior:\n";
+        ss << "    uniform_root_and_betas:\n";
+        ss << "        parameters:\n";
+        ss << "            root_height:\n";
+        ss << "                value: 0.3\n";
+
+        YAML::Node n;
+        n = YAML::Load(ss);
+        TreeModelSettings settings(n, "dummy_path");
+        std::map<std::string, PositiveRealParameterSettings> parameters;
+        parameters = settings.tree_prior->get_parameter_settings();
+        PositiveRealParameterSettings root_ht = parameters.at("root_height");
+        REQUIRE(root_ht.get_value() == 0.3);
+    }
+}
