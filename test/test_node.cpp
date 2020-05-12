@@ -2,6 +2,7 @@
 
 #include "catch.hpp"
 #include "ecoevolity/node.hpp"
+#include "ecoevolity/rng.hpp"
 
 TEST_CASE("Testing constructors of Node", "[Node]") {
 
@@ -2419,7 +2420,8 @@ TEST_CASE("Test split root polytomy", "[Node]") {
         std::vector< std::shared_ptr<Node> > children_to_split = {leaf1, leaf2};
         std::shared_ptr<PositiveRealParameter> new_height = std::make_shared<PositiveRealParameter>(0.5);
 
-        root->split_children_from_polytomy(children_to_split, new_height);
+        RandomNumberGenerator rng(1234);
+        root->split_children_from_polytomy(rng, children_to_split, new_height);
 
         REQUIRE(root->get_node_count() == 6);
         REQUIRE(root->get_leaf_node_count() == 4);
@@ -2469,7 +2471,8 @@ TEST_CASE("Test split nonroot polytomy", "[Node]") {
         std::vector< std::shared_ptr<Node> > children_to_split = {leaf1, leaf2};
         std::shared_ptr<PositiveRealParameter> new_height = std::make_shared<PositiveRealParameter>(0.5);
 
-        root_child->split_children_from_polytomy(children_to_split, new_height);
+        RandomNumberGenerator rng(123456);
+        root_child->split_children_from_polytomy(rng, children_to_split, new_height);
 
         REQUIRE(root->get_node_count() == 8);
         REQUIRE(root->get_leaf_node_count() == 5);
