@@ -284,7 +284,7 @@ TEST_CASE("Testing SplitLumpNodesRevJumpSampler with 3 leaves, fixed root and op
         unsigned int count_02 = 0;
         unsigned int count_12 = 0;
 
-        unsigned int niterations = 1000000;
+        unsigned int niterations = 1200000;
         unsigned int sample_freq = 10;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
