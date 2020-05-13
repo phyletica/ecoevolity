@@ -118,6 +118,9 @@ class StartingTreeSettings {
         const std::string& get_tree_path() const {
             return this->path_;
         }
+        void set_tree_path(const std::string & path) {
+            this->path_ = path;
+        }
         const std::string& get_tree_string() const {
             return this->string_;
         }
