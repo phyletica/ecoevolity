@@ -206,6 +206,25 @@ class BaseTree {
             }
         }
 
+        void build_from_path_(const std::string & path,
+                const std::string & ncl_file_format) {
+            std::ifstream in_stream;
+            in_stream.open(path);
+            if (! in_stream.is_open()) {
+                throw EcoevolityParsingError(
+                        "Could not open tree file",
+                        path);
+            }
+            try {
+                this->build_from_stream_(in_stream, ncl_file_format);
+            }
+            catch(...) {
+                std::cerr << "ERROR: Problem parsing tree file path: "
+                        << path << "\n";
+                throw;
+            }
+        }
+
         void build_from_stream_(std::istream & tree_stream,
                 const std::string & ncl_file_format = "relaxedphyliptree",
                 double ultrametricity_tolerance = 1e-6) {
@@ -505,21 +524,7 @@ class BaseTree {
         }
         BaseTree(const std::string & path,
                 const std::string & ncl_file_format) : BaseTree() {
-            std::ifstream in_stream;
-            in_stream.open(path);
-            if (! in_stream.is_open()) {
-                throw EcoevolityParsingError(
-                        "Could not open tree file",
-                        path);
-            }
-            try {
-                this->build_from_stream_(in_stream, ncl_file_format);
-            }
-            catch(...) {
-                std::cerr << "ERROR: Problem parsing tree file path: "
-                        << path << "\n";
-                throw;
-            }
+            this->build_from_path_(path, ncl_file_format);
         }
         BaseTree(const std::string & newick_tree_string) : BaseTree() {
             std::istringstream tree_stream(newick_tree_string);
