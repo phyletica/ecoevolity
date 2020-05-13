@@ -147,6 +147,12 @@ int simphycoeval_main(int argc, char * argv[]) {
                   "option will override the \'--locus-size\' option, but can "
                   "be used in combination with the "
                   "\'--max-one-variable-site-per-locus\' option.");
+    parser.add_option("--fix-model")
+            .action("store_true")
+            .dest("fix_model")
+            .help("Constrain model to its starting state. All model parameters "
+                  "(e.g., the topology, node heights, etc.) are held constant "
+                  "at their initial values for all simulation replicates.");
     parser.add_option("--parameters-only")
             .action("store_true")
             .dest("parameters_only")
@@ -249,6 +255,7 @@ int simphycoeval_main(int argc, char * argv[]) {
     const bool strict_on_missing_sites = (! options.get("relax_missing_sites"));
     const bool strict_on_triallelic_sites = (! options.get("relax_triallelic_sites"));
     const bool simulate_sequences = (! options.get("parameters_only"));
+    const bool fix_model = options.get("fix_model");
 
     if (args.size() < 1) {
         throw EcoevolityError("Path to YAML-formatted config file is required");
@@ -435,7 +442,7 @@ int simphycoeval_main(int argc, char * argv[]) {
     std::cerr << "Starting simulations..." << std::endl;
     for (unsigned int i = 0; i < nreps; ++i) {
         std::cerr << "Simulating data set " << (i + 1) << " of " << nreps << "\n";
-        if (sampling_topology) {
+        if (sampling_topology && (! fix_model)) {
             for (unsigned int mcmc_i = 0;
                     mcmc_i < topo_mcmc_gens_per_rep;
                     ++mcmc_i) {
@@ -448,7 +455,9 @@ int simphycoeval_main(int argc, char * argv[]) {
                 }
             }
         }
-        tree.draw_from_prior(rng);
+        if (! fix_model) {
+            tree.draw_from_prior(rng);
+        }
 
         if (simulate_sequences) {
             std::string rep_str = string_util::pad_int(i, pad_width);
