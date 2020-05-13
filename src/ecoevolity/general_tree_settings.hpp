@@ -185,7 +185,7 @@ class GeneralTreeOperatorSettings {
             }
             if (operator_node.size() != 1) {
                 throw EcoevolityYamlConfigError(
-                        "operator node should only have a single key");
+                        "untunable operator node should only have a single key");
             }
             std::unordered_set<std::string> keys;
             for (YAML::const_iterator p = operator_node.begin();
@@ -270,10 +270,6 @@ class GeneralTreeTunableOperatorSettings : public GeneralTreeOperatorSettings {
                         "Expecting operator parameters to be a map, but found: " +
                         YamlCppUtils::get_node_type(operator_node));
                 throw EcoevolityYamlConfigError(message);
-            }
-            if (operator_node.size() != 1) {
-                throw EcoevolityYamlConfigError(
-                        "operator node should only have a single key");
             }
 
             std::unordered_set<std::string> keys;
@@ -397,13 +393,9 @@ class GeneralTreeOperatorSettingsCollection {
         void update_from_config(const YAML::Node& operator_node) {
             if (! operator_node.IsMap()) {
                 std::string message = (
-                        "Expecting operator parameters to be a map, but found: " +
+                        "Expecting operators to be a map, but found: " +
                         YamlCppUtils::get_node_type(operator_node));
                 throw EcoevolityYamlConfigError(message);
-            }
-            if (operator_node.size() != 1) {
-                throw EcoevolityYamlConfigError(
-                        "operator node should only have a single key");
             }
 
             std::unordered_set<std::string> keys;
@@ -413,7 +405,7 @@ class GeneralTreeOperatorSettingsCollection {
                 std::string name = p->first.as<std::string>();
                 if (keys.count(name) > 0) {
                     std::string message = (
-                            "Duplicate key in operator parameters: " +
+                            "Duplicate operator: " +
                             name);
                     throw EcoevolityYamlConfigError(message);
                 }
