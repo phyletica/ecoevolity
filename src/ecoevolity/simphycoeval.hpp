@@ -363,7 +363,7 @@ int simphycoeval_main(int argc, char * argv[]) {
     topology_operators = operator_schedule.get_operators(
         BaseGeneralTreeOperatorTemplate::OperatorScopeEnum::topology);
     bool sampling_topology = false;
-    if (topology_operators.size() > 0) {
+    if ((topology_operators.size() > 0) && (! fix_model)) {
         sampling_topology = true;
     }
 
@@ -405,6 +405,20 @@ int simphycoeval_main(int argc, char * argv[]) {
     std::string logging_delimiter = "\t";
 
     // Prepare prior settings for writting configs for simulated datasets
+    if (prior_settings.tree_model_settings.starting_tree_settings.get_tree_source() ==
+            StartingTreeSettings::Source::path) {
+        std::string starting_tree_path = settings.tree_model_settings.starting_tree_settings.get_tree_path();
+        std::string starting_tree_file_name = path::basename(starting_tree_path);
+        std::string new_starting_tree_path = path::join(
+                output_dir,
+                starting_tree_file_name);
+        if (! path::exists(new_starting_tree_path)) {
+            std::ifstream tree_in_stream(starting_tree_path, std::ios::binary);
+            std::ofstream tree_out_stream(new_starting_tree_path, std::ios::binary);
+            tree_out_stream << tree_in_stream.rdbuf();
+        }
+        prior_settings.tree_model_settings.starting_tree_settings.set_tree_path(starting_tree_file_name);
+    }
     prior_settings.data_settings.set_using_yaml_data(true);
     if (max_one_variable_site_per_locus) {
         prior_settings.data_settings.set_constant_sites_removed(true);
