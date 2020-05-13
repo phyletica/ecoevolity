@@ -688,13 +688,21 @@ void BasePopulationTree::set_tree_from_path(const std::string & path) {
                 "Could not open tree file",
                 path);
     }
+
     try {
         this->build_from_stream_(in_stream, "relaxedphyliptree");
     }
     catch(...) {
-        std::cerr << "ERROR: Problem parsing tree file path: "
-                << path << "\n";
-        throw;
+        try {
+            in_stream.clear();
+            in_stream.seekg(0);
+            this->build_from_stream_(in_stream, "nexus");
+        }
+        catch(...) {
+            std::cerr << "ERROR: Problem parsing tree file path: "
+                    << path << "\n";
+            throw;
+        }
     }
     this->update_leaf_label_indices();
 
