@@ -224,8 +224,6 @@ int simphycoeval_main(int argc, char * argv[]) {
         throw EcoevolityError(
                 "Number of topology MCMC generations per replicate cannot be negative");
     }
-    std::cerr << "Number of topology MCMC generations per replicate: "
-              << topo_mcmc_gens_per_rep << std::endl;
 
     const double singleton_sample_probability = options.get(
             "singleton_sample_probability");
@@ -360,6 +358,15 @@ int simphycoeval_main(int argc, char * argv[]) {
     bool sampling_topology = false;
     if (topology_operators.size() > 0) {
         sampling_topology = true;
+    }
+
+    if (sampling_topology) {
+        std::cerr << "Sampling topology: true" << std::endl;
+        std::cerr << "Number of topology MCMC generations per replicate: "
+                  << topo_mcmc_gens_per_rep << std::endl;
+    }
+    else {
+        std::cerr << "Sampling topology: false" << std::endl;
     }
 
     if (using_prior_config) {
