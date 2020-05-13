@@ -4442,7 +4442,6 @@ TEST_CASE("Testing SplitLumpNodesRevJumpSampler with BasePopulationTree, 5 leave
                         ++height_idx) {
                     internal_height_summary.add_sample(tree.get_height(height_idx) / tree.get_height_of_youngest_parent(height_idx));
                     if (height_idx == 0) {
-                        internal_0_height_summary.add_sample(tree.get_height(height_idx));
                         internal_0_height_summary.add_sample(tree.get_height(height_idx) / tree.get_height_of_youngest_parent(height_idx));
                     }
                 }
@@ -4789,7 +4788,6 @@ TEST_CASE("Testing SplitLumpNodesRevJumpSampler with BasePopulationTree, 5 leave
                         ++height_idx) {
                     internal_height_summary.add_sample(tree.get_height(height_idx) / tree.get_height_of_youngest_parent(height_idx));
                     if (height_idx == 0) {
-                        internal_0_height_summary.add_sample(tree.get_height(height_idx));
                         internal_0_height_summary.add_sample(tree.get_height(height_idx) / tree.get_height_of_youngest_parent(height_idx));
                     }
                 }
