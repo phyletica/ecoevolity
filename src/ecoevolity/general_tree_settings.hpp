@@ -227,11 +227,15 @@ class GeneralTreeTunableOperatorSettings : public GeneralTreeOperatorSettings {
     protected:
         double tuning_parameter_ = -1.0;
         bool auto_optimize_ = true;
-        unsigned int auto_optimize_delay_ = 1000;
+        unsigned int auto_optimize_delay_ = 50;
 
     public:
         GeneralTreeTunableOperatorSettings() : GeneralTreeOperatorSettings() { }
         GeneralTreeTunableOperatorSettings(double weight) : GeneralTreeOperatorSettings(weight) { }
+        GeneralTreeTunableOperatorSettings(double weight, double tuning_parameter)
+            : GeneralTreeOperatorSettings(weight) {
+                this->set_tuning_parameter(tuning_parameter);
+        }
         GeneralTreeTunableOperatorSettings(const GeneralTreeTunableOperatorSettings& other) :
                 GeneralTreeOperatorSettings(other) {
             this->tuning_parameter_ = other.tuning_parameter_;
@@ -347,18 +351,18 @@ class GeneralTreeOperatorSettingsCollection {
             // If not set in the config, negative weights will be updated to
             // default weight for the operator class and zero weights will
             // prevent operator from being created.
-            {"TreeScaler",                          GeneralTreeTunableOperatorSettings(-1)},
-            {"NodeHeightScaler",                    GeneralTreeTunableOperatorSettings(-1)},
-            {"NodeHeightMover",                     GeneralTreeTunableOperatorSettings(-1)},
-            {"NodeHeightSlideBumpScaler",           GeneralTreeTunableOperatorSettings(-1)},
-            {"NodeHeightSlideBumpPermuteScaler",    GeneralTreeTunableOperatorSettings(0)},
-            {"NodeHeightSlideBumpSwapScaler",       GeneralTreeTunableOperatorSettings(-1)},
-            {"NodeHeightSlideBumpMover",            GeneralTreeTunableOperatorSettings(0)},
-            {"NodeHeightSlideBumpPermuteMover",     GeneralTreeTunableOperatorSettings(0)},
-            {"NodeHeightSlideBumpSwapMover",        GeneralTreeTunableOperatorSettings(0)},
-            {"RootHeightScaler",                    GeneralTreeTunableOperatorSettings(-1)},
-            {"GlobalNodeHeightDirichletOperator",   GeneralTreeTunableOperatorSettings(-1)},
-            {"NodeHeightDirichletOperator",         GeneralTreeTunableOperatorSettings(-1)},
+            {"TreeScaler",                          GeneralTreeTunableOperatorSettings(-1, 0.015 )},
+            {"NodeHeightScaler",                    GeneralTreeTunableOperatorSettings(-1, 0.02  )},
+            {"NodeHeightMover",                     GeneralTreeTunableOperatorSettings(-1, 0.002 )},
+            {"NodeHeightSlideBumpScaler",           GeneralTreeTunableOperatorSettings(-1, 0.02  )},
+            {"NodeHeightSlideBumpPermuteScaler",    GeneralTreeTunableOperatorSettings(0,  0.02  )},
+            {"NodeHeightSlideBumpSwapScaler",       GeneralTreeTunableOperatorSettings(-1, 0.02  )},
+            {"NodeHeightSlideBumpMover",            GeneralTreeTunableOperatorSettings(0,  0.002 )},
+            {"NodeHeightSlideBumpPermuteMover",     GeneralTreeTunableOperatorSettings(0,  0.002 )},
+            {"NodeHeightSlideBumpSwapMover",        GeneralTreeTunableOperatorSettings(0,  0.002 )},
+            {"RootHeightScaler",                    GeneralTreeTunableOperatorSettings(-1, 0.02  )},
+            {"GlobalNodeHeightDirichletOperator",   GeneralTreeTunableOperatorSettings(-1, 0.0002)},
+            {"NodeHeightDirichletOperator",         GeneralTreeTunableOperatorSettings(-1, 0.001 )},
         };
 
         GeneralTreeOperatorSettingsCollection() { }
@@ -451,8 +455,8 @@ class BetaTreeOperatorSettingsCollection : public GeneralTreeOperatorSettingsCol
             // If not set in the config, negative weights will be updated to
             // default weight for the operator class and zero weights will
             // prevent operator from being created.
-            this->tunable_operators["NodeHeightPriorAlphaScaler"]  = GeneralTreeTunableOperatorSettings(-1);
-            this->tunable_operators["NodeHeightPriorAlphaMover"]   = GeneralTreeTunableOperatorSettings(0);
+            this->tunable_operators["NodeHeightPriorAlphaScaler"]  = GeneralTreeTunableOperatorSettings(-1, 0.5);
+            this->tunable_operators["NodeHeightPriorAlphaMover"]   = GeneralTreeTunableOperatorSettings(0, 0.1);
         }
         BetaTreeOperatorSettingsCollection& operator=(const BetaTreeOperatorSettingsCollection& other) {
             this->untunable_operators = other.untunable_operators;
@@ -470,18 +474,18 @@ class PopulationTreeOperatorSettingsCollection : public GeneralTreeOperatorSetti
             // If not set in the config, negative weights will be updated to
             // default weight for the operator class and zero weights will
             // prevent operator from being created.
-            this->tunable_operators["MuRateScaler"]                = GeneralTreeTunableOperatorSettings(-1);
-            this->tunable_operators["GlobalPopSizeScaler"]         = GeneralTreeTunableOperatorSettings(-1);
-            this->tunable_operators["PopSizeScaler"]               = GeneralTreeTunableOperatorSettings(-1);
-            this->tunable_operators["GlobalHeightSizeMixer"]       = GeneralTreeTunableOperatorSettings(-1);
-            this->tunable_operators["HeightSizeMixer"]             = GeneralTreeTunableOperatorSettings(-1);
-            this->tunable_operators["HeightSizeSlideBumpMixer"]    = GeneralTreeTunableOperatorSettings(0);
-            this->tunable_operators["RootHeightSizeMixer"]         = GeneralTreeTunableOperatorSettings(-1);
-            this->tunable_operators["GlobalHeightSizeRateScaler"]  = GeneralTreeTunableOperatorSettings(-1);
-            this->tunable_operators["GlobalHeightSizeScaler"]      = GeneralTreeTunableOperatorSettings(0);
-            this->tunable_operators["GlobalHeightRateScaler"]      = GeneralTreeTunableOperatorSettings(0);
-            this->tunable_operators["StateFreqMover"]              = GeneralTreeTunableOperatorSettings(-1);
-            this->tunable_operators["StateFreqDirichletOperator"]  = GeneralTreeTunableOperatorSettings(-1);
+            this->tunable_operators["MuRateScaler"]                = GeneralTreeTunableOperatorSettings(-1, 0.1);
+            this->tunable_operators["GlobalPopSizeScaler"]         = GeneralTreeTunableOperatorSettings(-1, 0.03);
+            this->tunable_operators["PopSizeScaler"]               = GeneralTreeTunableOperatorSettings(-1, 0.05);
+            this->tunable_operators["GlobalHeightSizeMixer"]       = GeneralTreeTunableOperatorSettings(-1, 0.03);
+            this->tunable_operators["HeightSizeMixer"]             = GeneralTreeTunableOperatorSettings(-1, 0.05);
+            this->tunable_operators["HeightSizeSlideBumpMixer"]    = GeneralTreeTunableOperatorSettings(0,  0.05);
+            this->tunable_operators["RootHeightSizeMixer"]         = GeneralTreeTunableOperatorSettings(-1, 0.05);
+            this->tunable_operators["GlobalHeightSizeRateScaler"]  = GeneralTreeTunableOperatorSettings(-1, 0.015);
+            this->tunable_operators["GlobalHeightSizeScaler"]      = GeneralTreeTunableOperatorSettings(0,  0.015);
+            this->tunable_operators["GlobalHeightRateScaler"]      = GeneralTreeTunableOperatorSettings(0,  0.1);
+            this->tunable_operators["StateFreqMover"]              = GeneralTreeTunableOperatorSettings(-1, 0.01);
+            this->tunable_operators["StateFreqDirichletOperator"]  = GeneralTreeTunableOperatorSettings(-1, 0.005);
         }
         PopulationTreeOperatorSettingsCollection& operator=(const PopulationTreeOperatorSettingsCollection& other) {
             this->untunable_operators = other.untunable_operators;
@@ -500,8 +504,8 @@ class BetaPopulationTreeOperatorSettingsCollection : public PopulationTreeOperat
             // If not set in the config, negative weights will be updated to
             // default weight for the operator class and zero weights will
             // prevent operator from being created.
-            this->tunable_operators["NodeHeightPriorAlphaScaler"]  = GeneralTreeTunableOperatorSettings(-1);
-            this->tunable_operators["NodeHeightPriorAlphaMover"]   = GeneralTreeTunableOperatorSettings(0);
+            this->tunable_operators["NodeHeightPriorAlphaScaler"]  = GeneralTreeTunableOperatorSettings(-1, 0.5);
+            this->tunable_operators["NodeHeightPriorAlphaMover"]   = GeneralTreeTunableOperatorSettings(0, 0.1);
         }
         BetaPopulationTreeOperatorSettingsCollection& operator=(const BetaPopulationTreeOperatorSettingsCollection& other) {
             this->untunable_operators = other.untunable_operators;
