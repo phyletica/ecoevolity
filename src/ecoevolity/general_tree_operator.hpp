@@ -191,12 +191,20 @@ class GeneralTreeOperatorInterface : public GeneralTreeOperatorTemplate<TreeType
 
         GeneralTreeOperatorInterface() : GeneralTreeOperatorTemplate<TreeType>() { }
         GeneralTreeOperatorInterface(double weight) : GeneralTreeOperatorTemplate<TreeType>(weight) { }
+        GeneralTreeOperatorInterface(
+                double weight,
+                double tuning_parameter
+                ) : GeneralTreeOperatorTemplate<TreeType>(weight) {
+            this->op_.set_coercable_parameter_value(tuning_parameter);
+        }
 
         void perform_move(
                 RandomNumberGenerator& rng,
                 TreeType * tree,
                 unsigned int nthreads = 1) {
             this->call_store_methods(tree);
+
+            // std::cout << "lnl before move: " << tree->get_log_likelihood_value() << "\n";
         
             double hastings_ratio = this->propose(rng, tree, nthreads);
 
@@ -212,11 +220,14 @@ class GeneralTreeOperatorInterface : public GeneralTreeOperatorTemplate<TreeType
                 if (this->auto_optimizing() && (! this->ignore_proposal_attempt_)) {
                     this->optimize(hastings_ratio);
                 }
+                // std::cout << "bad move; ignored: " << this->ignore_proposal_attempt_ << "\n";
                 this->ignore_proposal_attempt_ = false;
                 return;
             }
 
             tree->compute_log_likelihood_and_prior(true);
+
+            // std::cout << "lnl after comp: " << tree->get_log_likelihood_value() << "\n";
         
             double likelihood_ratio = 
                     tree->get_log_likelihood_value() -
@@ -251,6 +262,7 @@ class GeneralTreeOperatorInterface : public GeneralTreeOperatorTemplate<TreeType
                 this->optimize(acceptance_probability);
             }
             this->ignore_proposal_attempt_ = false;
+            // std::cout << "lnl at end: " << tree->get_log_likelihood_value() << "\n";
         }
 
         void operate(RandomNumberGenerator& rng,
@@ -277,8 +289,10 @@ class GeneralTreeOperatorInterface : public GeneralTreeOperatorTemplate<TreeType
                 unsigned int number_of_moves = 1,
                 unsigned int helper_op_number_of_moves = 1) {
             for (unsigned int i = 0; i < number_of_moves; ++i) {
+                // std::cout << "\ncalling: " << this->get_name() << "\n";
                 this->perform_move(rng, tree, nthreads);
                 for (auto helper_op : this->helper_ops) {
+                    // std::cout << "\nhelper call: " << helper_op->get_name() << "\n";
                     helper_op->operate(rng, tree, nthreads, helper_op_number_of_moves);
                 }
             }
@@ -809,6 +823,8 @@ class NodeHeightPriorAlphaScaler : public GeneralTreeOperatorInterface<TreeType,
     public:
         NodeHeightPriorAlphaScaler() : GeneralTreeOperatorInterface<TreeType, ScaleOp>() { }
         NodeHeightPriorAlphaScaler(double weight) : GeneralTreeOperatorInterface<TreeType, ScaleOp>(weight) { }
+        NodeHeightPriorAlphaScaler(double weight, double tuning_parameter)
+            : GeneralTreeOperatorInterface<TreeType, ScaleOp>(weight, tuning_parameter) { }
 
         std::string get_name() const {
             return "NodeHeightPriorAlphaScaler";
@@ -858,6 +874,8 @@ class NodeHeightPriorAlphaMover : public GeneralTreeOperatorInterface<TreeType, 
     public:
         NodeHeightPriorAlphaMover() : GeneralTreeOperatorInterface<TreeType, WindowOp>() { }
         NodeHeightPriorAlphaMover(double weight) : GeneralTreeOperatorInterface<TreeType, WindowOp>(weight) { }
+        NodeHeightPriorAlphaMover(double weight, double tuning_parameter)
+            : GeneralTreeOperatorInterface<TreeType, WindowOp>(weight, tuning_parameter) { }
 
         std::string get_name() const {
             return "NodeHeightPriorAlphaMover";
@@ -910,6 +928,8 @@ class NodeHeightPriorBetaScaler : public GeneralTreeOperatorInterface<TreeType, 
     public:
         NodeHeightPriorBetaScaler() : GeneralTreeOperatorInterface<TreeType, ScaleOp>() { }
         NodeHeightPriorBetaScaler(double weight) : GeneralTreeOperatorInterface<TreeType, ScaleOp>(weight) { }
+        NodeHeightPriorBetaScaler(double weight, double tuning_parameter)
+            : GeneralTreeOperatorInterface<TreeType, ScaleOp>(weight, tuning_parameter) { }
 
         std::string get_name() const {
             return "NodeHeightPriorBetaScaler";
@@ -959,6 +979,8 @@ class NodeHeightPriorBetaMover : public GeneralTreeOperatorInterface<TreeType, W
     public:
         NodeHeightPriorBetaMover() : GeneralTreeOperatorInterface<TreeType, WindowOp>() { }
         NodeHeightPriorBetaMover(double weight) : GeneralTreeOperatorInterface<TreeType, WindowOp>(weight) { }
+        NodeHeightPriorBetaMover(double weight, double tuning_parameter)
+            : GeneralTreeOperatorInterface<TreeType, WindowOp>(weight, tuning_parameter) { }
 
         std::string get_name() const {
             return "NodeHeightPriorBetaMover";
@@ -1012,6 +1034,8 @@ class TreeScaler : public GeneralTreeOperatorInterface<TreeType, ScaleOp> {
     public:
         TreeScaler() : GeneralTreeOperatorInterface<TreeType, ScaleOp>() { }
         TreeScaler(double weight) : GeneralTreeOperatorInterface<TreeType, ScaleOp>(weight) { }
+        TreeScaler(double weight, double tuning_parameter)
+            : GeneralTreeOperatorInterface<TreeType, ScaleOp>(weight, tuning_parameter) { }
 
         std::string get_name() const {
             return "TreeScaler";
@@ -1059,6 +1083,8 @@ class NodeHeightScaler : public GeneralTreeOperatorInterface<TreeType, ScaleOp> 
     public:
         NodeHeightScaler() : GeneralTreeOperatorInterface<TreeType, ScaleOp>() { }
         NodeHeightScaler(double weight) : GeneralTreeOperatorInterface<TreeType, ScaleOp>(weight) { }
+        NodeHeightScaler(double weight, double tuning_parameter)
+            : GeneralTreeOperatorInterface<TreeType, ScaleOp>(weight, tuning_parameter) { }
 
         std::string get_name() const {
             return "NodeHeightScaler";
@@ -1118,6 +1144,8 @@ class RootHeightScaler : public GeneralTreeOperatorInterface<TreeType, ScaleOp> 
     public:
         RootHeightScaler() : GeneralTreeOperatorInterface<TreeType, ScaleOp>() { }
         RootHeightScaler(double weight) : GeneralTreeOperatorInterface<TreeType, ScaleOp>(weight) { }
+        RootHeightScaler(double weight, double tuning_parameter)
+            : GeneralTreeOperatorInterface<TreeType, ScaleOp>(weight, tuning_parameter) { }
 
         std::string get_name() const {
             return "RootHeightScaler";
@@ -1173,6 +1201,8 @@ class GlobalNodeHeightDirichletOperator : public GeneralTreeOperatorInterface<Tr
     public:
         GlobalNodeHeightDirichletOperator() : GeneralTreeOperatorInterface<TreeType, DirichletOp>() { }
         GlobalNodeHeightDirichletOperator(double weight) : GeneralTreeOperatorInterface<TreeType, DirichletOp>(weight) { }
+        GlobalNodeHeightDirichletOperator(double weight, double tuning_parameter)
+            : GeneralTreeOperatorInterface<TreeType, DirichletOp>(weight, tuning_parameter) { }
 
         std::string get_name() const {
             return "GlobalNodeHeightDirichletOperator";
@@ -1252,6 +1282,7 @@ class GlobalNodeHeightDirichletOperator : public GeneralTreeOperatorInterface<Tr
                 last_rel_height = rel_ht;
             }
             tree->sort_node_heights();
+            tree->make_dirty();
             return ln_hastings;
         }
 };
@@ -1263,6 +1294,8 @@ class NodeHeightDirichletOperator : public GeneralTreeOperatorInterface<TreeType
     public:
         NodeHeightDirichletOperator() : GeneralTreeOperatorInterface<TreeType, DirichletOp>() { }
         NodeHeightDirichletOperator(double weight) : GeneralTreeOperatorInterface<TreeType, DirichletOp>(weight) { }
+        NodeHeightDirichletOperator(double weight, double tuning_parameter)
+            : GeneralTreeOperatorInterface<TreeType, DirichletOp>(weight, tuning_parameter) { }
 
         std::string get_name() const {
             return "NodeHeightDirichletOperator";
@@ -1398,6 +1431,8 @@ class NodeHeightMover : public GeneralTreeOperatorInterface<TreeType, WindowOp> 
     public:
         NodeHeightMover() : GeneralTreeOperatorInterface<TreeType, WindowOp>() { }
         NodeHeightMover(double weight) : GeneralTreeOperatorInterface<TreeType, WindowOp>(weight) { }
+        NodeHeightMover(double weight, double tuning_parameter)
+            : GeneralTreeOperatorInterface<TreeType, WindowOp>(weight, tuning_parameter) { }
 
         std::string get_name() const {
             return "NodeHeightMover";
@@ -1472,6 +1507,8 @@ class NodeHeightSlideBumpScaler : public GeneralTreeOperatorInterface<TreeType, 
     public:
         NodeHeightSlideBumpScaler() : GeneralTreeOperatorInterface<TreeType, ScaleOp>() { }
         NodeHeightSlideBumpScaler(double weight) : GeneralTreeOperatorInterface<TreeType, ScaleOp>(weight) { }
+        NodeHeightSlideBumpScaler(double weight, double tuning_parameter)
+            : GeneralTreeOperatorInterface<TreeType, ScaleOp>(weight, tuning_parameter) { }
 
         std::string get_name() const {
             return "NodeHeightSlideBumpScaler";
@@ -1560,6 +1597,8 @@ class NodeHeightSlideBumpPermuteScaler : public NodeHeightSlideBumpScaler<TreeTy
     public:
         NodeHeightSlideBumpPermuteScaler() : NodeHeightSlideBumpScaler<TreeType>() { }
         NodeHeightSlideBumpPermuteScaler(double weight) : NodeHeightSlideBumpScaler<TreeType>(weight) { }
+        NodeHeightSlideBumpPermuteScaler(double weight, double tuning_parameter)
+            : NodeHeightSlideBumpScaler<TreeType>(weight, tuning_parameter) { }
 
         std::string get_name() const {
             return "NodeHeightSlideBumpPermuteScaler";
@@ -1583,6 +1622,8 @@ class NodeHeightSlideBumpSwapScaler : public NodeHeightSlideBumpScaler<TreeType>
     public:
         NodeHeightSlideBumpSwapScaler() : NodeHeightSlideBumpScaler<TreeType>() { }
         NodeHeightSlideBumpSwapScaler(double weight) : NodeHeightSlideBumpScaler<TreeType>(weight) { }
+        NodeHeightSlideBumpSwapScaler(double weight, double tuning_parameter)
+            : NodeHeightSlideBumpScaler<TreeType>(weight, tuning_parameter) { }
 
         std::string get_name() const {
             return "NodeHeightSlideBumpSwapScaler";
@@ -1608,6 +1649,8 @@ class NodeHeightSlideBumpMover : public GeneralTreeOperatorInterface<TreeType, W
     public:
         NodeHeightSlideBumpMover() : GeneralTreeOperatorInterface<TreeType, WindowOp>() { }
         NodeHeightSlideBumpMover(double weight) : GeneralTreeOperatorInterface<TreeType, WindowOp>(weight) { }
+        NodeHeightSlideBumpMover(double weight, double tuning_parameter)
+            : GeneralTreeOperatorInterface<TreeType, WindowOp>(weight, tuning_parameter) { }
 
         std::string get_name() const {
             return "NodeHeightSlideBumpMover";
@@ -1696,6 +1739,8 @@ class NodeHeightSlideBumpPermuteMover : public NodeHeightSlideBumpMover<TreeType
     public:
         NodeHeightSlideBumpPermuteMover() : NodeHeightSlideBumpMover<TreeType>() { }
         NodeHeightSlideBumpPermuteMover(double weight) : NodeHeightSlideBumpMover<TreeType>(weight) { }
+        NodeHeightSlideBumpPermuteMover(double weight, double tuning_parameter)
+            : NodeHeightSlideBumpMover<TreeType>(weight, tuning_parameter) { }
 
         std::string get_name() const {
             return "NodeHeightSlideBumpPermuteMover";
@@ -1719,6 +1764,8 @@ class NodeHeightSlideBumpSwapMover : public NodeHeightSlideBumpMover<TreeType> {
     public:
         NodeHeightSlideBumpSwapMover() : NodeHeightSlideBumpMover<TreeType>() { }
         NodeHeightSlideBumpSwapMover(double weight) : NodeHeightSlideBumpMover<TreeType>(weight) { }
+        NodeHeightSlideBumpSwapMover(double weight, double tuning_parameter)
+            : NodeHeightSlideBumpMover<TreeType>(weight, tuning_parameter) { }
 
         std::string get_name() const {
             return "NodeHeightSlideBumpSwapMover";
@@ -2523,6 +2570,8 @@ class GlobalPopSizeScaler : public GeneralTreeOperatorInterface<BasePopulationTr
     public:
         GlobalPopSizeScaler() : GeneralTreeOperatorInterface<BasePopulationTree, ScaleOp>() { }
         GlobalPopSizeScaler(double weight) : GeneralTreeOperatorInterface<BasePopulationTree, ScaleOp>(weight) { }
+        GlobalPopSizeScaler(double weight, double tuning_parameter)
+            : GeneralTreeOperatorInterface<BasePopulationTree, ScaleOp>(weight, tuning_parameter) { }
 
         std::string get_name() const {
             return "GlobalPopSizeScaler";
@@ -2570,6 +2619,8 @@ class PopSizeScaler : public GeneralTreeOperatorInterface<BasePopulationTree, Sc
     public:
         PopSizeScaler() : GeneralTreeOperatorInterface<BasePopulationTree, ScaleOp>() { }
         PopSizeScaler(double weight) : GeneralTreeOperatorInterface<BasePopulationTree, ScaleOp>(weight) { }
+        PopSizeScaler(double weight, double tuning_parameter)
+            : GeneralTreeOperatorInterface<BasePopulationTree, ScaleOp>(weight, tuning_parameter) { }
 
         std::string get_name() const {
             return "PopSizeScaler";
@@ -2629,6 +2680,8 @@ class MuRateScaler : public GeneralTreeOperatorInterface<BasePopulationTree, Sca
     public:
         MuRateScaler() : GeneralTreeOperatorInterface<BasePopulationTree, ScaleOp>() { }
         MuRateScaler(double weight) : GeneralTreeOperatorInterface<BasePopulationTree, ScaleOp>(weight) { }
+        MuRateScaler(double weight, double tuning_parameter)
+            : GeneralTreeOperatorInterface<BasePopulationTree, ScaleOp>(weight, tuning_parameter) { }
 
         std::string get_name() const {
             return "MuRateScaler";
@@ -2680,6 +2733,8 @@ class GlobalHeightSizeMixer : public GeneralTreeOperatorInterface<BasePopulation
     public:
         GlobalHeightSizeMixer() : GeneralTreeOperatorInterface<BasePopulationTree, ScaleOp>() { }
         GlobalHeightSizeMixer(double weight) : GeneralTreeOperatorInterface<BasePopulationTree, ScaleOp>(weight) { }
+        GlobalHeightSizeMixer(double weight, double tuning_parameter)
+            : GeneralTreeOperatorInterface<BasePopulationTree, ScaleOp>(weight, tuning_parameter) { }
 
         std::string get_name() const {
             return "GlobalHeightSizeMixer";
@@ -2859,6 +2914,8 @@ class HeightSizeMixer : public GeneralTreeOperatorInterface<BasePopulationTree, 
     public:
         HeightSizeMixer() : GeneralTreeOperatorInterface<BasePopulationTree, ScaleOp>() { }
         HeightSizeMixer(double weight) : GeneralTreeOperatorInterface<BasePopulationTree, ScaleOp>(weight) { }
+        HeightSizeMixer(double weight, double tuning_parameter)
+            : GeneralTreeOperatorInterface<BasePopulationTree, ScaleOp>(weight, tuning_parameter) { }
 
         std::string get_name() const {
             return "HeightSizeMixer";
@@ -2988,6 +3045,8 @@ class RootHeightSizeMixer : public GeneralTreeOperatorInterface<BasePopulationTr
     public:
         RootHeightSizeMixer() : GeneralTreeOperatorInterface<BasePopulationTree, ScaleOp>() { }
         RootHeightSizeMixer(double weight) : GeneralTreeOperatorInterface<BasePopulationTree, ScaleOp>(weight) { }
+        RootHeightSizeMixer(double weight, double tuning_parameter)
+            : GeneralTreeOperatorInterface<BasePopulationTree, ScaleOp>(weight, tuning_parameter) { }
 
         std::string get_name() const {
             return "RootHeightSizeMixer";
@@ -3106,6 +3165,8 @@ class HeightSizeSlideBumpMixer : public GeneralTreeOperatorInterface<BasePopulat
     public:
         HeightSizeSlideBumpMixer() : GeneralTreeOperatorInterface<BasePopulationTree, ScaleOp>() { }
         HeightSizeSlideBumpMixer(double weight) : GeneralTreeOperatorInterface<BasePopulationTree, ScaleOp>(weight) { }
+        HeightSizeSlideBumpMixer(double weight, double tuning_parameter)
+            : GeneralTreeOperatorInterface<BasePopulationTree, ScaleOp>(weight, tuning_parameter) { }
 
         std::string get_name() const {
             return "HeightSizeSlideBumpMixer";
@@ -3208,6 +3269,8 @@ class GlobalHeightSizeRateScaler : public GeneralTreeOperatorInterface<BasePopul
     public:
         GlobalHeightSizeRateScaler() : GeneralTreeOperatorInterface<BasePopulationTree, ScaleOp>() { }
         GlobalHeightSizeRateScaler(double weight) : GeneralTreeOperatorInterface<BasePopulationTree, ScaleOp>(weight) { }
+        GlobalHeightSizeRateScaler(double weight, double tuning_parameter)
+            : GeneralTreeOperatorInterface<BasePopulationTree, ScaleOp>(weight, tuning_parameter) { }
 
         std::string get_name() const {
             return "GlobalHeightSizeRateScaler";
@@ -3269,6 +3332,8 @@ class GlobalHeightRateScaler : public GlobalHeightSizeRateScaler {
         GlobalHeightRateScaler(double weight) : GlobalHeightSizeRateScaler(weight) {
             this->scale_sizes_ = false;
         }
+        GlobalHeightRateScaler(double weight, double tuning_parameter)
+            : GlobalHeightSizeRateScaler(weight, tuning_parameter) { }
 
         std::string get_name() const {
             return "GlobalHeightRateScaler";
@@ -3296,6 +3361,8 @@ class GlobalHeightSizeScaler : public GlobalHeightSizeRateScaler {
         GlobalHeightSizeScaler(double weight) : GlobalHeightSizeRateScaler(weight) {
             this->scale_rate_ = false;
         }
+        GlobalHeightSizeScaler(double weight, double tuning_parameter)
+            : GlobalHeightSizeRateScaler(weight, tuning_parameter) { }
 
         std::string get_name() const {
             return "GlobalHeightSizeScaler";
@@ -3318,6 +3385,8 @@ class StateFreqMover : public GeneralTreeOperatorInterface<BasePopulationTree, W
     public:
         StateFreqMover() : GeneralTreeOperatorInterface<BasePopulationTree, WindowOp>() { }
         StateFreqMover(double weight) : GeneralTreeOperatorInterface<BasePopulationTree, WindowOp>(weight) { }
+        StateFreqMover(double weight, double tuning_parameter)
+            : GeneralTreeOperatorInterface<BasePopulationTree, WindowOp>(weight, tuning_parameter) { }
 
         std::string get_name() const {
             return "StateFreqMover";
@@ -3372,6 +3441,8 @@ class StateFreqDirichletOperator : public GeneralTreeOperatorInterface<BasePopul
     public:
         StateFreqDirichletOperator() : GeneralTreeOperatorInterface<BasePopulationTree, DirichletOp>() { }
         StateFreqDirichletOperator(double weight) : GeneralTreeOperatorInterface<BasePopulationTree, DirichletOp>(weight) { }
+        StateFreqDirichletOperator(double weight, double tuning_parameter)
+            : GeneralTreeOperatorInterface<BasePopulationTree, DirichletOp>(weight, tuning_parameter) { }
 
         std::string get_name() const {
             return "StateFreqDirichletOperator";
@@ -3426,6 +3497,8 @@ class StateFreqBetaOperator : public GeneralTreeOperatorInterface<BasePopulation
     public:
         StateFreqBetaOperator() : GeneralTreeOperatorInterface<BasePopulationTree, BetaOp>() { }
         StateFreqBetaOperator(double weight) : GeneralTreeOperatorInterface<BasePopulationTree, BetaOp>(weight) { }
+        StateFreqBetaOperator(double weight, double tuning_parameter)
+            : GeneralTreeOperatorInterface<BasePopulationTree, BetaOp>(weight, tuning_parameter) { }
 
         std::string get_name() const {
             return "StateFreqBetaOperator";
