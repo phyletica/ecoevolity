@@ -17,8 +17,8 @@
  * with Ecoevolity.  If not, see <http://www.gnu.org/licenses/>.
 ******************************************************************************/
 
-#ifndef DPPROBS_HPP
-#define DPPROBS_HPP
+#ifndef SWPROBS_HPP
+#define SWPROBS_HPP
 
 #include <limits>
 #include <time.h>
