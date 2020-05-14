@@ -335,7 +335,7 @@ int sumcoevolity_main(int argc, char * argv[]) {
         }
         if (settings.event_model_is_fixed()) {
             throw EcoevolityError("The model is fixed in the config file, so "
-                    "prior probabilities under the specified Dirichlet process "
+                    "prior probabilities under the specified model prior "
                     "settings will not be comparable to the posterior "
                     "probabilities.");
         }
@@ -343,7 +343,7 @@ int sumcoevolity_main(int argc, char * argv[]) {
         if (model_settings.get_weight() <= 0.0) {
             throw EcoevolityError("The model operator in the config file "
                     "was turned off (given no weight), so prior probabilities "
-                    "under the specified Dirichlet process settings will not "
+                    "under the specified model prior settings will not "
                     "be comparable to the posterior probabilities (because the "
                     "model was fixed in the analysis).");
         }
@@ -359,27 +359,51 @@ int sumcoevolity_main(int argc, char * argv[]) {
         bool discount_is_fixed = true;
 
         std::cerr << "Simulations settings:\n";
-        std::cerr << "\tmodel prior = "
-                  << settings.get_model_prior() << "\n";
         std::cerr << "\tseed = " << seed << "\n";
         double concentration = 1.0;
-        if (concentration_is_fixed) {
-            concentration = concentration_settings.get_value();
-            std::cerr << "\tconcentration = " << concentration << "\n";
-        }
-        else {
-            std::cerr << "\tconcentration ~ " << concentration_prior->to_string() << "\n";
-        }
-
-        if (settings.get_model_prior() == EcoevolityOptions::ModelPrior::pyp) {
-            if (discount_settings.is_fixed()) {
-                discount = discount_settings.get_value();
-                std::cerr << "\tdiscount = " << discount << "\n";
+        EcoevolityOptions::ModelPrior model_prior = settings.get_model_prior();
+        if ((model_prior == EcoevolityOptions::ModelPrior::dpp) ||
+                (model_prior == EcoevolityOptions::ModelPrior::pyp)) {
+            std::cerr << "\tmodel prior = ";
+            if (model_prior == EcoevolityOptions::ModelPrior::dpp) {
+                    std::cerr << "DP\n";
             }
             else {
-                discount_is_fixed = false;
-                std::cerr << "\tdiscount ~ " << discount_prior->to_string() << "\n";
+                    std::cerr << "PYP\n";
             }
+            if (concentration_is_fixed) {
+                concentration = concentration_settings.get_value();
+                std::cerr << "\tconcentration = " << concentration << "\n";
+            }
+            else {
+                std::cerr << "\tconcentration ~ " << concentration_prior->to_string() << "\n";
+            }
+            if (settings.get_model_prior() == EcoevolityOptions::ModelPrior::pyp) {
+                if (discount_settings.is_fixed()) {
+                    discount = discount_settings.get_value();
+                    std::cerr << "\tdiscount = " << discount << "\n";
+                }
+                else {
+                    discount_is_fixed = false;
+                    std::cerr << "\tdiscount ~ " << discount_prior->to_string() << "\n";
+                }
+            }
+        }
+        else if (model_prior == EcoevolityOptions::ModelPrior::uniform) {
+            std::cerr << "\tmodel prior = uniform\n";
+            if (concentration_is_fixed) {
+                concentration = concentration_settings.get_value();
+                std::cerr << "\tsplit_weight = " << concentration << "\n";
+            }
+            else {
+                std::cerr << "\tsplit_weight ~ " << concentration_prior->to_string() << "\n";
+            }
+        }
+        else if (model_prior == EcoevolityOptions::ModelPrior::fixed) {
+            throw EcoevolityError("The model appears to be fixed, so "
+                    "prior probabilities under the specified model prior "
+                    "settings will not be comparable to the posterior "
+                    "probabilities.");
         }
 
         for (unsigned int i = 0; i < nreps; ++i) {
@@ -401,7 +425,7 @@ int sumcoevolity_main(int argc, char * argv[]) {
             else {
                 std::ostringstream message;
                 message << "ERROR: simulations not supported for model prior \'"
-                        << settings.get_model_prior()
+                        << (int)settings.get_model_prior()
                         << "\'\n";
                 throw EcoevolityError(message.str());
             }
