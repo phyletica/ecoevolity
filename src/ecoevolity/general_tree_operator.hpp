@@ -1632,6 +1632,31 @@ class NodeHeightSlideBumpSwapScaler : public NodeHeightSlideBumpScaler<TreeType>
 
 
 template<class TreeType>
+class NodeHeightSlideBumpSwapAllScaler : public NodeHeightSlideBumpScaler<TreeType> {
+    protected:
+        bool call_tree_method_(
+                TreeType * tree,
+                RandomNumberGenerator& rng,
+                unsigned int height_index,
+                double height) {
+            return tree->slide_bump_swap_all_height(rng,
+                    height_index,
+                    height);
+        }
+
+    public:
+        NodeHeightSlideBumpSwapAllScaler() : NodeHeightSlideBumpScaler<TreeType>() { }
+        NodeHeightSlideBumpSwapAllScaler(double weight) : NodeHeightSlideBumpScaler<TreeType>(weight) { }
+        NodeHeightSlideBumpSwapAllScaler(double weight, double tuning_parameter)
+            : NodeHeightSlideBumpScaler<TreeType>(weight, tuning_parameter) { }
+
+        std::string get_name() const {
+            return "NodeHeightSlideBumpSwapAllScaler";
+        }
+};
+
+
+template<class TreeType>
 class NodeHeightSlideBumpMover : public GeneralTreeOperatorInterface<TreeType, WindowOp> {
     protected:
         virtual bool call_tree_method_(
@@ -1774,6 +1799,31 @@ class NodeHeightSlideBumpSwapMover : public NodeHeightSlideBumpMover<TreeType> {
 
 
 template<class TreeType>
+class NodeHeightSlideBumpSwapAllMover : public NodeHeightSlideBumpMover<TreeType> {
+    protected:
+        bool call_tree_method_(
+                TreeType * tree,
+                RandomNumberGenerator& rng,
+                unsigned int height_index,
+                double height) {
+            return tree->slide_bump_swap_all_height(rng,
+                    height_index,
+                    height);
+        }
+
+    public:
+        NodeHeightSlideBumpSwapAllMover() : NodeHeightSlideBumpMover<TreeType>() { }
+        NodeHeightSlideBumpSwapAllMover(double weight) : NodeHeightSlideBumpMover<TreeType>(weight) { }
+        NodeHeightSlideBumpSwapAllMover(double weight, double tuning_parameter)
+            : NodeHeightSlideBumpMover<TreeType>(weight, tuning_parameter) { }
+
+        std::string get_name() const {
+            return "NodeHeightSlideBumpSwapAllMover";
+        }
+};
+
+
+template<class TreeType>
 class NeighborHeightNodePermute : public GeneralTreeOperatorInterface<TreeType, Op> {
 
     public:
@@ -1876,6 +1926,40 @@ class NeighborHeightNodeSwap : public GeneralTreeOperatorInterface<TreeType, Op>
                     num_node_heights - 2);
             unsigned int parent_index = tree->get_index_of_youngest_parent(height_index);
             tree->collision_node_swap(rng,
+                    parent_index,
+                    height_index);
+            return 0.0;
+        }
+};
+
+template<class TreeType>
+class NeighborHeightNodeSwapAll : public NeighborHeightNodeSwap<TreeType> {
+
+    public:
+        NeighborHeightNodeSwapAll() : NeighborHeightNodeSwap<TreeType>() { }
+        NeighborHeightNodeSwapAll(double weight) : NeighborHeightNodeSwap<TreeType>(weight) { }
+
+        std::string get_name() const {
+            return "NeighborHeightNodeSwapAll";
+        }
+
+        /**
+         * @brief   Propose a new state.
+         *
+         * @return  Log of Hastings Ratio.
+         */
+        double propose(RandomNumberGenerator& rng,
+                TreeType * tree,
+                unsigned int nthreads = 1) {
+            if (! this->is_operable(tree)) {
+                this->ignore_proposal_attempt_ = true;
+                return -std::numeric_limits<double>::infinity();
+            }
+            unsigned int num_node_heights = tree->get_number_of_node_heights();
+            unsigned int height_index = rng.uniform_int(0,
+                    num_node_heights - 2);
+            unsigned int parent_index = tree->get_index_of_youngest_parent(height_index);
+            tree->collision_node_swap_all(rng,
                     parent_index,
                     height_index);
             return 0.0;
