@@ -1973,12 +1973,150 @@ TEST_CASE("Testing BaseTree::collision_node_permute with 3 leaves", "[BaseTree]"
         std::cout << "freq of (2,(0,1)): " << freq_2_10 << "\n";
 
         double eps = 0.005;
+        // We are no rejection sampling to avoid the 'unchanged' state
         // p(0 in pool) * p(0 drawn) = 0.5*0.5
-        REQUIRE(freq_0_12 == Approx(0.25).epsilon(eps));
+        REQUIRE(freq_0_12 == Approx(0.5).epsilon(eps));
         // p(1 in pool) * p(1 drawn) = 0.5*0.5
-        REQUIRE(freq_1_02 == Approx(0.25).epsilon(eps));
+        REQUIRE(freq_1_02 == Approx(0.5).epsilon(eps));
+        // This is no longer allowed
         // p(2 in pool) * p(1 drawn) = 1.0*0.5
-        REQUIRE(freq_2_10 == Approx(0.5).epsilon(eps));
+        REQUIRE(freq_2_10 == Approx(0.0));
+    }
+}
+
+TEST_CASE("Testing BaseTree::collision_node_permute with 6 leaves and 2 collisions", "[BaseTree]") {
+    SECTION("Testing collision_node_permute") {
+        unsigned int nsamples = 100000;
+        RandomNumberGenerator rng = RandomNumberGenerator(111);
+        unsigned int count_A_X = 0;
+        unsigned int count_A_Y = 0;
+        unsigned int count_A_Z = 0;
+        unsigned int count_B_X = 0;
+        unsigned int count_B_Y = 0;
+        unsigned int count_B_Z = 0;
+        unsigned int count_C_X = 0;
+        unsigned int count_C_Y = 0;
+        unsigned int count_C_Z = 0;
+        for (unsigned int i = 0; i < nsamples; ++i) {
+            std::shared_ptr<Node> root = std::make_shared<Node>("root", 1.0);
+            std::shared_ptr<Node> iABC = std::make_shared<Node>("iABC", 0.5);
+            std::shared_ptr<Node> iBC = std::make_shared<Node>("iBC", 0.25);
+            std::shared_ptr<Node> iXYZ = std::make_shared<Node>("iXYZ", 0.5);
+            std::shared_ptr<Node> iYZ = std::make_shared<Node>("iYZ", 0.25);
+            std::shared_ptr<Node> lA = std::make_shared<Node>("lA", 0.0);
+            lA->fix_node_height();
+            std::shared_ptr<Node> lB = std::make_shared<Node>("lB", 0.0);
+            lB->fix_node_height();
+            std::shared_ptr<Node> lC = std::make_shared<Node>("lC", 0.0);
+            lC->fix_node_height();
+            std::shared_ptr<Node> lX = std::make_shared<Node>("lX", 0.0);
+            lX->fix_node_height();
+            std::shared_ptr<Node> lY = std::make_shared<Node>("lY", 0.0);
+            lY->fix_node_height();
+            std::shared_ptr<Node> lZ = std::make_shared<Node>("lZ", 0.0);
+            lZ->fix_node_height();
+
+            iBC->set_height_parameter(iYZ->get_height_parameter());
+            iABC->set_height_parameter(iXYZ->get_height_parameter());
+
+            iBC->add_child(lB);
+            iBC->add_child(lC);
+            iABC->add_child(lA);
+            iABC->add_child(iBC);
+
+            iYZ->add_child(lY);
+            iYZ->add_child(lZ);
+            iXYZ->add_child(lX);
+            iXYZ->add_child(iYZ);
+
+            root->add_child(iABC);
+            root->add_child(iXYZ);
+
+            BaseTree<Node> tree(root);
+
+            tree.collision_node_permute(rng, 1, 0);
+
+            REQUIRE(tree.tree_is_valid());
+            REQUIRE(root->get_number_of_children() == 2);
+            REQUIRE(iABC->get_number_of_children() == 2);
+            REQUIRE(iXYZ->get_number_of_children() == 2);
+            if ((iABC->is_child(lA)) && (iXYZ->is_child(lX))) {
+                ++count_A_X;
+            }
+            if ((iABC->is_child(lA)) && (iXYZ->is_child(lY))) {
+                ++count_A_Y;
+            }
+            if ((iABC->is_child(lA)) && (iXYZ->is_child(lZ))) {
+                ++count_A_Z;
+            }
+            if ((iABC->is_child(lB)) && (iXYZ->is_child(lX))) {
+                ++count_B_X;
+            }
+            if ((iABC->is_child(lB)) && (iXYZ->is_child(lY))) {
+                ++count_B_Y;
+            }
+            if ((iABC->is_child(lB)) && (iXYZ->is_child(lZ))) {
+                ++count_B_Z;
+            }
+            if ((iABC->is_child(lC)) && (iXYZ->is_child(lX))) {
+                ++count_C_X;
+            }
+            if ((iABC->is_child(lC)) && (iXYZ->is_child(lY))) {
+                ++count_C_Y;
+            }
+            if ((iABC->is_child(lC)) && (iXYZ->is_child(lZ))) {
+                ++count_C_Z;
+            }
+        }
+        REQUIRE(count_A_X + count_A_Y + count_A_Z + count_B_X + count_B_Y + count_B_Z + count_C_X + count_C_Y + count_C_Z == nsamples);
+        REQUIRE(count_A_X == 0);
+        double freq_A_X = (count_A_X / (double)nsamples);
+        double freq_A_Y = (count_A_Y / (double)nsamples);
+        double freq_A_Z = (count_A_Z / (double)nsamples);
+        double freq_B_X = (count_B_X / (double)nsamples);
+        double freq_B_Y = (count_B_Y / (double)nsamples);
+        double freq_B_Z = (count_B_Z / (double)nsamples);
+        double freq_C_X = (count_C_X / (double)nsamples);
+        double freq_C_Y = (count_C_Y / (double)nsamples);
+        double freq_C_Z = (count_C_Z / (double)nsamples);
+        std::cout << "freq of AX: " << freq_A_X << "\n";
+        std::cout << "freq of AY: " << freq_A_Y << "\n";
+        std::cout << "freq of AZ: " << freq_A_Y << "\n";
+        std::cout << "freq of BX: " << freq_B_X << "\n";
+        std::cout << "freq of BY: " << freq_B_Y << "\n";
+        std::cout << "freq of BZ: " << freq_B_Y << "\n";
+        std::cout << "freq of CX: " << freq_B_X << "\n";
+        std::cout << "freq of CY: " << freq_B_Y << "\n";
+        std::cout << "freq of CZ: " << freq_B_Z << "\n";
+
+        double eps = 0.005;
+        REQUIRE(freq_A_X == Approx(0.0));
+        // p(A) X p(X)
+        // 1/2  X 1/2 = 1/4
+        // p(A) X p(Y)
+        // 1/2 x 1/4 / (1 -1/4) = 1/8 x 4/3 = 4/24
+        // p(A) X p(Z)
+        // 1/2 x 1/4 / (1 -1/4) = 1/8 x 4/3 = 4/24
+        // p(B) X p(X)
+        // 1/2 x 1/4 / (1 -1/4) = 1/8 x 4/3 = 4/24
+        // p(C) X p(X)
+        // 1/2 x 1/4 / (1 -1/4) = 1/8 x 4/3 = 4/24
+        // p(B) x p(Y)
+        // 1/4 x 1/4 / (1 - 1/4) = 1/16 x 4/3 = 4/48
+        // p(B) x p(Z)
+        // 1/4 x 1/4 / (1 - 1/4) = 1/16 x 4/3 = 4/48
+        // p(C) x p(Y)
+        // 1/4 x 1/4 / (1 - 1/4) = 1/16 x 4/3 = 4/48
+        // p(C) x p(Z)
+        // 1/4 x 1/4 / (1 - 1/4) = 1/16 x 4/3 = 4/48
+        REQUIRE(freq_A_Y == Approx(1.0/6.0).epsilon(eps));
+        REQUIRE(freq_A_Z == Approx(1.0/6.0).epsilon(eps));
+        REQUIRE(freq_B_X == Approx(1.0/6.0).epsilon(eps));
+        REQUIRE(freq_C_X == Approx(1.0/6.0).epsilon(eps));
+        REQUIRE(freq_B_Y == Approx(1.0/12.0).epsilon(eps));
+        REQUIRE(freq_B_Z == Approx(1.0/12.0).epsilon(eps));
+        REQUIRE(freq_C_Y == Approx(1.0/12.0).epsilon(eps));
+        REQUIRE(freq_C_Z == Approx(1.0/12.0).epsilon(eps));
     }
 }
 
@@ -2055,15 +2193,16 @@ TEST_CASE("Testing BaseTree::collision_node_permute 4 leaf polytomy", "[BaseTree
         // (p(1 and 2 in pool) * p(0 drawn)) = 0.5^2 * 0.5 = 0.125
         // (p(1 and 3 in pool) * p(0 drawn)) = 0.5^2 * 0.5 = 0.125
         // total = 0.5
-        REQUIRE(freq_01 == Approx(0.5).epsilon(eps));
+        // No longer allowing 'unchanged' state
+        REQUIRE(freq_01 == Approx(0.0));
         // p(0 and 2 in pool) * p(2 drawn) = 0.5^2*0.5
-        REQUIRE(freq_02 == Approx(0.125).epsilon(eps));
+        REQUIRE(freq_02 == Approx(0.25).epsilon(eps));
         // p(0 and 3 in pool) * p(3 drawn) = 0.5^2*0.5
-        REQUIRE(freq_03 == Approx(0.125).epsilon(eps));
+        REQUIRE(freq_03 == Approx(0.25).epsilon(eps));
         // p(1 and 2 in pool) * p(2 drawn) = 0.5^2*0.5
-        REQUIRE(freq_12 == Approx(0.125).epsilon(eps));
+        REQUIRE(freq_12 == Approx(0.25).epsilon(eps));
         // p(1 and 3 in pool) * p(3 drawn) = 0.5^5*0.5
-        REQUIRE(freq_13 == Approx(0.125).epsilon(eps));
+        REQUIRE(freq_13 == Approx(0.25).epsilon(eps));
     }
 }
 
@@ -2145,15 +2284,16 @@ TEST_CASE("Testing BaseTree::collision_node_permute 4 leaf 3 colliders", "[BaseT
         // (p(1 and 2 in pool) * p(1 drawn)) = 0.5^2 * 0.5 = 0.125
         // (p(1 and 3 in pool) * p(1 drawn)) = 0.5^2 * 0.5 = 0.125
         // total = 0.5
-        REQUIRE(freq_01 == Approx(0.5).epsilon(eps));
+        // No longer allowing unchanged stated
+        REQUIRE(freq_01 == Approx(0.0));
         // p(0 and 2 in pool) * p(2 drawn) = 0.5^2*0.5
-        REQUIRE(freq_02 == Approx(0.125).epsilon(eps));
+        REQUIRE(freq_02 == Approx(0.25).epsilon(eps));
         // p(0 and 3 in pool) * p(3 drawn) = 0.5^2*0.5
-        REQUIRE(freq_03 == Approx(0.125).epsilon(eps));
+        REQUIRE(freq_03 == Approx(0.25).epsilon(eps));
         // p(1 and 2 in pool) * p(2 drawn) = 0.5^2*0.5
-        REQUIRE(freq_12 == Approx(0.125).epsilon(eps));
+        REQUIRE(freq_12 == Approx(0.25).epsilon(eps));
         // p(1 and 3 in pool) * p(3 drawn) = 0.5^5*0.5
-        REQUIRE(freq_13 == Approx(0.125).epsilon(eps));
+        REQUIRE(freq_13 == Approx(0.25).epsilon(eps));
     }
 }
 
@@ -2276,20 +2416,27 @@ TEST_CASE("Testing BaseTree::collision_node_permute 6 leaf 4 colliders", "[BaseT
         // 1/2 and B with prob 1/2, but either way, it could sample A / B back
         // out of the pool again, so every possible pool is consistent with an
         // outcome of an unchanged bump node.
+        //
+        // However, we are now changing this so that we use rejection sampling
+        // to avoid ending up in the same state we started with. So, the
+        // possible ways to sample from the pool of N nodes is now N! - 1, and
+        // so each way of sampling the nodes in the pool now has probability
+        // 1 / (N! - 1)
         ///////////////////////////////////////////////////////////////////////
         //
         // p(pool) * p(draws) = 1.0 * (1/3!) = 1.0 * 1/6
         // All possible pools can lead to getting the same state back, so
         // p(pool) = 1.0
-        REQUIRE(freq_01_23_45 == Approx(1.0/6.0).epsilon(eps));
-        // p(pool) * p(draws) = (1/2)^3 * (1/3!) = 1/8 * 1/6 = 1/48
-        REQUIRE(freq_05_21_43 == Approx(1.0/48.0).epsilon(eps));
+        // BUT, we now reject this state
+        REQUIRE(freq_01_23_45 == Approx(0.0));
+        // p(pool) * p(draws) = (1/2)^3 * (1/(3!-1)) = 1/8 * 1/5 = 1/40
+        REQUIRE(freq_05_21_43 == Approx(1.0/40.0).epsilon(eps));
         // This swap is symmetric, so the 01 on clade can contribute either
         // leaf (prob = 1), and then the 45 has to contribute the corresponding
         // leaf for the swap (prob 1/2) [ or vice versa ]
-        // p(pool) * p(draws) = (1)(1)(1/2) * (1/3!) = 
-        // (1/2) * (1/3!) = 1/2 * 1/6 = 1/12
-        REQUIRE(freq_05_23_41 == Approx(1.0/12.0).epsilon(eps));
+        // p(pool) * p(draws) = (1)(1)(1/2) * (1/(3!-1)) = 
+        // (1/2) * (1/(3!-1)) = 1/2 * 1/5 = 1/10
+        REQUIRE(freq_05_23_41 == Approx(1.0/10.0).epsilon(eps));
     }
 }
 
@@ -2853,6 +3000,12 @@ TEST_CASE("Testing BaseTree::slide_bump_permute_height 9 leaf 4 colliders", "[Ba
         // 1/2 and B with prob 1/2, but either way, it could sample A / B back
         // out of the pool again, so every possible pool is consistent with an
         // outcome of an unchanged bump node.
+        //
+        // However, we are now changing this so that we use rejection sampling
+        // to avoid ending up in the same state we started with. So, the
+        // possible ways to sample from the pool of N nodes is now N! - 1, and
+        // so each way of sampling the nodes in the pool now has probability
+        // 1 / (N! - 1)
         ///////////////////////////////////////////////////////////////////////
         //
         // BUMP 1
@@ -2865,33 +3018,46 @@ TEST_CASE("Testing BaseTree::slide_bump_permute_height 9 leaf 4 colliders", "[Ba
         // All possible pools can lead to getting the same state back, so
         // p(pool) = 1.0
         // PROB of BOTH = 1/4 * 1/6 = 1/24
-        REQUIRE(freq_01_234_5678_9_10 == Approx(1.0/24.0).epsilon(eps*5));
+        // Now rejecting this state
+        REQUIRE(freq_01_234_5678_9_10 == Approx(0.0));
 
         // BUMP 1
         // p(pool) = p(1 in int 3 pool) * p(3 in int 3 pool) * p(5 in int 4 pool) * p(9 in int 4 pool)
         //         = (1/2) * (1/3) * (1/4) * 1 = 1/24
         // p(outcome) = p(pool) * p(draw) = 1/24 * ( (1/2!) * (1/2!) )
         //            = 1/24 * 1/4 = 1/96
+        //            = 1/96 / (1-1/4)  correcting for rejection!
+        //            = 1/96 * 4/3
+        //            = 4/288 = 1/72
         // BUMP 2
         // p(pool) = p(clade 03 in pool) * p(clade 9678 in pool) * p(10 in pool)
         //         = 1/2 * 1/2 * 1 = 1/4
         // p(draws) = 1/3! = 1/6
         // p(pool) * p(draws) = 1/4 * 1/6 = 1/24
-        // Prob of BOTH = 1/96 * 1/24 = 1/2304
-        REQUIRE(freq_10_214_03_5_9678 == Approx(1.0/2304.0).epsilon(eps));
+        //                    = 1/24 / (1-1/6)  correcting for rejection!
+        //                    = 1/24 * 6/5
+        //                    = 6/120 = 1/20
+        // Prob of BOTH = 1/72 * 1/20 = 1/1440
+        REQUIRE(freq_10_214_03_5_9678 == Approx(1.0/1440.0).epsilon(eps));
 
         // BUMP 1
         // p(pool) = p(1 in int 3 pool) * p(3 in int 3 pool) * p(5 in int 4 pool) * p(9 in int 4 pool)
         //         = (1/2) * (1/3) * (1/4) * 1 = 1/24
         // p(outcome) = p(pool) * p(draw) = 1/24 * ( (1/2!) * (1/2!) )
         //            = 1/24 * 1/4 = 1/96
+        //            = 1/96 / (1-1/4)  correcting for rejection!
+        //            = 1/96 * 4/3
+        //            = 4/288 = 1/72
         // BUMP 2
         // p(pool) = p(clade 03 or 214 in pool) * p(corresponding clade in pool) * p(10 in pool)
         //         = 1 * 1/2 * 1 = 1/2
         // p(draws) = 1/3! = 1/6
         // p(pool) * p(draws) = 1/2 * 1/6 = 1/12
-        // Prob of BOTH = 1/96 * 1/12 = 1/1152
-        REQUIRE(freq_03_5_9678_214_10 == Approx(1.0/1152.0).epsilon(eps));
+        //                    = 1/12 / (1-1/6)  correcting for rejection!
+        //                    = 1/12 * 6/5
+        //                    = 6/60 = 1/10
+        // Prob of BOTH = 1/72 * 1/10 = 1/720
+        REQUIRE(freq_03_5_9678_214_10 == Approx(1.0/720.0).epsilon(eps));
     }
 
     SECTION("Testing reverse slide_bump_permute_height") {
@@ -3081,21 +3247,27 @@ TEST_CASE("Testing BaseTree::slide_bump_permute_height 9 leaf 4 colliders", "[Ba
         // prob = 1/4
         // All possible pools can lead to getting the same state back, so p(pool) = 1.0
         // PROB of BOTH = 1/4 * 1/6 = 1/24
-        REQUIRE(freq_03_5_9678_214_10 == Approx(1.0/24.0).epsilon(eps*5));
+        double prob_no_change = 1.0/24.0;
+        REQUIRE(freq_03_5_9678_214_10 == Approx(0.0));
 
         // BUMP 1
         // p(pool) = p(clade 03 or 5 in pool) * p(corresponding clade in pool) * p(10 in pool)
         //         = 1 * 1/2 * 1 = 1/2
         // p(draws) = 1/3! = 1/6
         // p(pool) * p(draws) = 1/2 * 1/6 = 1/12
+        //                    = 1/12 / (1-1/6)  Correcting for rejection!
+        //                    = 1/12 * 6/5 = 6/60 = 1/10
         // BUMP 2
         // p(pool) = p(1 in pool) * p(3 in pool) * p(5 in pool) * p(9 in pool)
         //         = (1/3) * (1/2) * 1 * (1/4) = 1/24
         // p(draw) = 1/2! for both colliding nodes
         // p(outcome) = p(pool) * p(draw) = 1/24 * ( (1/2!) * (1/2!) )
         //            = 1/24 * 1/4 = 1/96
-        // Prob of BOTH = 1/96 * 1/12 = 1/1152
-        REQUIRE(freq_01_234_5678_9_10 == Approx(1.0/1152.0).epsilon(eps));
+        //            = 1/96 / (1-1/4)  Correcting for rejection!
+        //            = 1/96 * 4/3
+        //            = 4/288 = 1/72
+        // Prob of BOTH = 1/10 * 1/72 = 1/720
+        REQUIRE(freq_01_234_5678_9_10 == Approx(1.0/720.0).epsilon(eps));
     }
 }
 
