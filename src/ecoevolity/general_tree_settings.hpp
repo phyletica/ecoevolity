@@ -346,6 +346,7 @@ class GeneralTreeOperatorSettingsCollection {
             {"SplitLumpNodesRevJumpSampler",        GeneralTreeOperatorSettings(-1)},
             {"NeighborHeightNodePermute",           GeneralTreeOperatorSettings(-1)},
             {"NeighborHeightNodeSwap",              GeneralTreeOperatorSettings(-1)},
+            {"NeighborHeightNodeSwapAll",           GeneralTreeOperatorSettings(0)},
         };
         std::map<std::string, GeneralTreeTunableOperatorSettings> tunable_operators {
             // If not set in the config, negative weights will be updated to
@@ -922,6 +923,7 @@ class TreeModelSettings {
                 // Turn off topology changing moves
                 op_collection->untunable_operators.at("SplitLumpNodesRevJumpSampler").set_weight(0);
                 op_collection->untunable_operators.at("NeighborHeightNodeSwap").set_weight(0);
+                op_collection->untunable_operators.at("NeighborHeightNodeSwapAll").set_weight(0);
                 op_collection->untunable_operators.at("NeighborHeightNodePermute").set_weight(0);
 
                 op_collection->tunable_operators.at("NodeHeightSlideBumpSwapMover").set_weight(0);

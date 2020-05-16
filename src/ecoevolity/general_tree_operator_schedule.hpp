@@ -300,6 +300,11 @@ class GeneralTreeOperatorSchedule {
                                  NeighborHeightNodeSwap<TreeType>
                                       >();
             }
+            else if (op_name == "NeighborHeightNodeSwapAll") {
+                op = std::make_shared<
+                                 NeighborHeightNodeSwapAll<TreeType>
+                                      >();
+            }
             else {
                 throw EcoevolityError(
                         "GeneralTreeOperatorSchedule: Unrecognized untunable operator: " + op_name);
