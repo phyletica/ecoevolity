@@ -106,8 +106,8 @@ TEST_CASE("Testing simphycoeval cli with 5 leaves, full model, unconstrained siz
         char arg1[] = "--seed";
         char arg2[] = "1234";
         char arg3[] = "-n";
-        unsigned int nsamples = 12000;
-        char arg4[] = "12000";
+        unsigned int nsamples = 14000;
+        char arg4[] = "14000";
         char arg5[] = "--prefix";
         char arg6[] = "test-1-";
         char arg7[] = "-t";
