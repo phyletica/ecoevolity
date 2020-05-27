@@ -106,8 +106,8 @@ TEST_CASE("Testing simphycoeval cli with 5 leaves, full model, unconstrained siz
         char arg1[] = "--seed";
         char arg2[] = "1234";
         char arg3[] = "-n";
-        unsigned int nsamples = 14000;
-        char arg4[] = "14000";
+        unsigned int nsamples = 20000;
+        char arg4[] = "20000";
         char arg5[] = "--prefix";
         char arg6[] = "test-1-";
         char arg7[] = "-t";
@@ -348,7 +348,7 @@ TEST_CASE("Testing simphycoeval cli with 5 leaves, full model, unconstrained siz
         REQUIRE(root_height_summary.mean() == Approx(root_height_prior->get_mean()).epsilon(eps));
         REQUIRE(root_height_summary.variance() == Approx(root_height_prior->get_variance()).epsilon(eps));
         REQUIRE(l_height_alpha_summary.mean() == Approx(height_alpha_prior->get_mean()).epsilon(eps * 2.0));
-        REQUIRE(l_height_alpha_summary.variance() == Approx(height_alpha_prior->get_variance()).epsilon(eps * 2.0));
+        REQUIRE(l_height_alpha_summary.variance() == Approx(height_alpha_prior->get_variance()).epsilon(eps * 4.0));
 
         REQUIRE(l_height_beta_summary.mean() == Approx(1.0));
         REQUIRE(l_height_beta_summary.variance() == Approx(0.0));

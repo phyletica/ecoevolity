@@ -94,14 +94,15 @@ int simphycoeval_main(int argc, char * argv[]) {
                   "associated config files will be written. Default: "
                   "Use directory of YAML config file.");
     parser.add_option("-p", "--prior")
-            .action("store")
+            .action("append")
             .dest("prior")
             .set_default("")
             .help("The path to the configuration file that contains the "
                   "priors you would like to use when you analyse the "
                   "simulated datasets. By default, the same priors will "
                   "specified in your subsequent analyses as were used to "
-                  "simulate the datasets.");
+                  "simulate the datasets. This flag can be used multiple "
+                  "times to specify multiple prior configs.");
     parser.add_option("--singleton-sample-probability")
             .action("store")
             .type("double")
@@ -274,20 +275,38 @@ int simphycoeval_main(int argc, char * argv[]) {
     }
     std::cout << "Config path: " << config_path << std::endl;
 
-    std::string prior_config_path = config_path;
+    std::vector<std::string> prior_config_paths = { config_path };
+    unsigned int num_prior_configs = 1;
     bool using_prior_config = false;
     if (options.is_set_by_user("prior")) {
         using_prior_config = true;
-        prior_config_path = options.get("prior").get_str();
-        if (! path::exists(prior_config_path)) {
-            throw EcoevolityError("Config file \'" + prior_config_path +
-                    "\' does not exist");
-        }
-        if (! path::isfile(prior_config_path)) {
-            throw EcoevolityError("Config path \'" + prior_config_path +
-                    "\' is not a regular file");
+        prior_config_paths.clear();
+        num_prior_configs = 0;
+        for (auto val : options.all("prior")) {
+            /* std::string prior_cfg_path = val.get_str(); */
+            std::string prior_cfg_path = val;
+            if (! path::exists(prior_cfg_path)) {
+                throw EcoevolityError("Config file \'" + prior_cfg_path +
+                        "\' does not exist");
+            }
+            if (! path::isfile(prior_cfg_path)) {
+                throw EcoevolityError("Config path \'" + prior_cfg_path +
+                        "\' is not a regular file");
+            }
+            prior_config_paths.push_back(prior_cfg_path);
+            ++num_prior_configs;
         }
     }
+    ECOEVOLITY_ASSERT(prior_config_paths.size() == num_prior_configs);
+
+    std::vector<std::string> prior_config_prefixes;
+    prior_config_prefixes.reserve(num_prior_configs);
+    for (auto prior_cfg_path : prior_config_paths) {
+        std::string prior_cfg_name = path::basename(prior_cfg_path);
+        std::pair<std::string, std::string> cfgname_ext = path::splitext(prior_cfg_name);
+        prior_config_prefixes.push_back(cfgname_ext.first);
+    }
+    ECOEVOLITY_ASSERT(prior_config_prefixes.size() == num_prior_configs);
 
     std::string output_dir = path::dirname(config_path);
     if (options.is_set_by_user("output_directory")) {
@@ -308,7 +327,10 @@ int simphycoeval_main(int argc, char * argv[]) {
     }
     output_prefix += "simphycoeval-";
 
-    std::cerr << "Prior config path: " << prior_config_path << std::endl;
+    std::cerr << "Prior config paths:" << std::endl;
+    for (auto path : prior_config_paths) {
+        std::cout << "  " << path << std::endl;
+    }
 
     std::cout << "Parsing config file..." << std::endl;
     PopulationTreeSettings settings(config_path);
@@ -319,15 +341,24 @@ int simphycoeval_main(int argc, char * argv[]) {
                 "using the \'--max-one-variable-site-per-locus\' option.");
     }
 
-    PopulationTreeSettings prior_settings(prior_config_path);
+    std::vector<PopulationTreeSettings> prior_settings_vector;
+    prior_settings_vector.reserve(num_prior_configs);
+    for (auto path : prior_config_paths) {
+        prior_settings_vector.push_back( PopulationTreeSettings(path) );
+    }
+    ECOEVOLITY_ASSERT(prior_settings_vector.size() == prior_config_paths.size());
 
     if (using_prior_config) {
-        if (settings.data_settings.get_path() !=
-                prior_settings.data_settings.get_path()) {
-            throw EcoevolityError(
-                    "The data file specified in \'" + config_path +
-                    "\' and \'" + prior_config_path +
-                    "\' do not match");
+        for (unsigned int i = 0; i < prior_config_paths.size(); ++i) {
+            std::string prior_cfg_path = prior_config_paths.at(i);
+            PopulationTreeSettings prior_settings = prior_settings_vector.at(i);
+            if (settings.data_settings.get_path() !=
+                    prior_settings.data_settings.get_path()) {
+                throw EcoevolityError(
+                        "The data file specified in \'" + config_path +
+                        "\' and \'" + prior_cfg_path +
+                        "\' do not match");
+            }
         }
     }
 
@@ -379,13 +410,15 @@ int simphycoeval_main(int argc, char * argv[]) {
     if (using_prior_config) {
         // Not used but creating instance to vet settings
         std::cerr << "Vetting model for analyses of simulated data sets..." << std::endl;
-        TreeType prior_tree_model(
-                prior_settings,
-                rng,
-                strict_on_constant_sites,
-                strict_on_missing_sites,
-                strict_on_triallelic_sites,
-                use_charsets);
+        for (auto prior_settings : prior_settings_vector) {
+            TreeType prior_tree_model(
+                    prior_settings,
+                    rng,
+                    strict_on_constant_sites,
+                    strict_on_missing_sites,
+                    strict_on_triallelic_sites,
+                    use_charsets);
+        }
     }
 
     if (use_charsets) {
@@ -405,23 +438,25 @@ int simphycoeval_main(int argc, char * argv[]) {
     std::string logging_delimiter = "\t";
 
     // Prepare prior settings for writting configs for simulated datasets
-    if (prior_settings.tree_model_settings.starting_tree_settings.get_tree_source() ==
-            StartingTreeSettings::Source::path) {
-        std::string starting_tree_path = settings.tree_model_settings.starting_tree_settings.get_tree_path();
-        std::string starting_tree_file_name = path::basename(starting_tree_path);
-        std::string new_starting_tree_path = path::join(
-                output_dir,
-                starting_tree_file_name);
-        if (! path::exists(new_starting_tree_path)) {
-            std::ifstream tree_in_stream(starting_tree_path, std::ios::binary);
-            std::ofstream tree_out_stream(new_starting_tree_path, std::ios::binary);
-            tree_out_stream << tree_in_stream.rdbuf();
+    for (auto prior_settings : prior_settings_vector) {
+        if (prior_settings.tree_model_settings.starting_tree_settings.get_tree_source() ==
+                StartingTreeSettings::Source::path) {
+            std::string starting_tree_path = settings.tree_model_settings.starting_tree_settings.get_tree_path();
+            std::string starting_tree_file_name = path::basename(starting_tree_path);
+            std::string new_starting_tree_path = path::join(
+                    output_dir,
+                    starting_tree_file_name);
+            if (! path::exists(new_starting_tree_path)) {
+                std::ifstream tree_in_stream(starting_tree_path, std::ios::binary);
+                std::ofstream tree_out_stream(new_starting_tree_path, std::ios::binary);
+                tree_out_stream << tree_in_stream.rdbuf();
+            }
+            prior_settings.tree_model_settings.starting_tree_settings.set_tree_path(starting_tree_file_name);
         }
-        prior_settings.tree_model_settings.starting_tree_settings.set_tree_path(starting_tree_file_name);
-    }
-    prior_settings.data_settings.set_using_yaml_data(true);
-    if (max_one_variable_site_per_locus) {
-        prior_settings.data_settings.set_constant_sites_removed(true);
+        prior_settings.data_settings.set_using_yaml_data(true);
+        if (max_one_variable_site_per_locus) {
+            prior_settings.data_settings.set_constant_sites_removed(true);
+        }
     }
 
     // Prepare output files for if we are not simulating datasets
@@ -475,8 +510,6 @@ int simphycoeval_main(int argc, char * argv[]) {
 
         if (simulate_sequences) {
             std::string rep_str = string_util::pad_int(i, pad_width);
-            std::string analysis_config_path = sim_prefix + rep_str + "-config.yml";
-            check_simphy_output_path(analysis_config_path);
             std::string true_state_path = sim_prefix + rep_str + "-true-parameters.txt";
             std::string true_tree_path = sim_prefix + rep_str + "-true-tree.phy";
             std::string sim_alignment_path = sim_prefix + rep_str + "-" + sim_data_suffix;
@@ -527,14 +560,26 @@ int simphycoeval_main(int argc, char * argv[]) {
             sim_alignment.write_yaml(sim_alignment_stream);
             sim_alignment_stream.close();
 
-            prior_settings.data_settings.set_path(path::basename(sim_alignment_path));
+            for (unsigned int prior_i = 0; prior_i < num_prior_configs; ++prior_i) {
+                PopulationTreeSettings prior_settings = prior_settings_vector.at(prior_i);
 
-            std::ofstream analysis_settings_stream;
-            analysis_settings_stream.open(analysis_config_path);
-            write_settings(analysis_settings_stream,
-                    prior_settings,
-                    operator_schedule);
-            analysis_settings_stream.close();
+                prior_settings.data_settings.set_path(path::basename(sim_alignment_path));
+
+                std::string analysis_config_path = (
+                        sim_prefix +
+                        rep_str +
+                        "-" +
+                        prior_config_prefixes.at(prior_i) +
+                        "-config.yml");
+                check_simphy_output_path(analysis_config_path);
+
+                std::ofstream analysis_settings_stream;
+                analysis_settings_stream.open(analysis_config_path);
+                write_settings(analysis_settings_stream,
+                        prior_settings,
+                        operator_schedule);
+                analysis_settings_stream.close();
+            }
         }
         else {
             tree.log_state(true_params_stream, i + 1, logging_delimiter);
