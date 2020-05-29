@@ -175,8 +175,8 @@ int simphycoeval_main(int argc, char * argv[]) {
             .action("store_true")
             .dest("relax_constant_sites")
             .help("By default, if you specify \'constant_sites_removed = true\' "
-                  "and constant sites are found, simphycoevolity throws an error. "
-                  "With this option, simphycoevolity will automatically ignore the "
+                  "and constant sites are found, simphycoeval throws an error. "
+                  "With this option, simphycoeval will automatically ignore the "
                   "constant sites and only issue a warning (and correct for "
                   "constant sites in the likelihood calculation). Please make sure "
                   "you understand what you are doing when you use this option."
@@ -185,16 +185,16 @@ int simphycoeval_main(int argc, char * argv[]) {
             .action("store_true")
             .dest("relax_missing_sites")
             .help("By default, if a column is found for which there is no data "
-                  "for at least one population, simphycoevolity throws an error. "
-                  "With this option, simphycoevolity will automatically ignore such "
+                  "for at least one population, simphycoeval throws an error. "
+                  "With this option, simphycoeval will automatically ignore such "
                   "sites and only issue a warning."
                 );
     parser.add_option("--relax-triallelic-sites")
             .action("store_true")
             .dest("relax_triallelic_sites")
             .help("By default, if a DNA site is found for which there is more "
-                  "than two nucleotide states, simphycoevolity throws an error. "
-                  "With this option, simphycoevolity will automatically recode such "
+                  "than two nucleotide states, simphycoeval throws an error. "
+                  "With this option, simphycoeval will automatically recode such "
                   "sites as biallelic and only issue a warning. These sites "
                   "are recoded by assigning state 0 to the first nucleotide "
                   "found and state 1 to all others. If you do not wish to "
