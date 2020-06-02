@@ -205,8 +205,16 @@ class GeneralTreeOperatorInterface : public GeneralTreeOperatorTemplate<TreeType
             this->call_store_methods(tree);
 
             // std::cout << "lnl before move: " << tree->get_log_likelihood_value() << "\n";
+            // std::cout << "Calling propose on " << this->get_name() << "\n";
         
             double hastings_ratio = this->propose(rng, tree, nthreads);
+
+            // Debug check for any negative branch lengths
+            // std::string t = tree->to_parentheses(false);
+            // if (t.find(":-") != std::string::npos) {
+            //     std::cerr << t << "\n";
+            //     throw EcoevolityError("neg branch length!");
+            // }
 
             // If the Hasting's ratio is zero (i.e., the log is -inf), we can
             // reject before going any further and wasting computation on the
@@ -1240,31 +1248,12 @@ class GlobalNodeHeightDirichletOperator : public GeneralTreeOperatorInterface<Tr
                 this->ignore_proposal_attempt_ = true;
                 return -std::numeric_limits<double>::infinity();
             }
-            unsigned int num_heights = tree->get_number_of_node_heights();
-            unsigned int max_height_index = num_heights - 2;
-            unsigned int height_index = rng.uniform_positive_int(
-                    max_height_index);
-            std::vector<unsigned int> indices_to_move = tree->get_indices_of_intervening_nodes(
-                    height_index, -1.0);
-            indices_to_move.push_back(height_index);
-            unsigned int current_index = height_index;
-            while (true) {
-                unsigned int next_index = tree->get_index_of_youngest_parent(current_index);
-                if (next_index == num_heights - 1) {
-                    // We have hit the root
-                    indices_to_move.push_back(next_index);
-                    break;
-                }
-                indices_to_move.push_back(next_index);
-                current_index = next_index;
-            }
-            std::sort(indices_to_move.begin(), indices_to_move.end());
-            unsigned int nheights = indices_to_move.size();
+            unsigned int nheights = tree->get_number_of_node_heights();
             double root_height = tree->get_root_height();
             std::vector<double> rel_height_gaps(nheights);
             double last_rel_height = 0.0;
             for (unsigned int i = 0; i < nheights; ++i) {
-                double rel_ht = tree->get_height(indices_to_move.at(i)) / root_height;
+                double rel_ht = tree->get_height(i) / root_height;
                 rel_height_gaps.at(i) = rel_ht - last_rel_height;
                 last_rel_height = rel_ht;
             }
@@ -1277,8 +1266,7 @@ class GlobalNodeHeightDirichletOperator : public GeneralTreeOperatorInterface<Tr
             for (unsigned int i = 0; i < nheights - 1; ++i) {
                 double rel_ht = rel_height_gaps.at(i) + last_rel_height;
                 double abs_value = rel_ht * root_height;
-                unsigned int ht_idx = indices_to_move.at(i);
-                tree->node_heights_.at(ht_idx)->set_value(abs_value);
+                tree->node_heights_.at(i)->set_value(abs_value);
                 last_rel_height = rel_ht;
             }
             tree->sort_node_heights();
