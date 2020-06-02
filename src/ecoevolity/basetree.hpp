@@ -162,13 +162,13 @@ class BaseTree {
                             this->node_heights_.at(next_height_idx)->get_value()
                             );
                     if (collisions_swap_nodes == 1) {
-                        this->collision_node_permute(rng, next_height_idx, current_idx);
+                        this->slide_collision_node_permute(rng, next_height_idx, current_idx);
                     }
                     else if (collisions_swap_nodes == 2) {
-                        this->collision_node_swap(rng, next_height_idx, current_idx);
+                        this->slide_collision_node_swap(rng, next_height_idx, current_idx);
                     }
                     else if (collisions_swap_nodes == 3) {
-                        this->collision_node_swap_all(rng, next_height_idx, current_idx);
+                        this->slide_collision_node_swap_all(rng, next_height_idx, current_idx);
                     }
                     current_idx = next_height_idx;
                 }
@@ -200,13 +200,13 @@ class BaseTree {
                         this->node_heights_.at(next_height_idx)->get_value()
                         );
                 if (collisions_swap_nodes == 1) {
-                    this->collision_node_permute(rng, current_idx, next_height_idx);
+                    this->slide_collision_node_permute(rng, current_idx, next_height_idx);
                 }
                 else if (collisions_swap_nodes == 2) {
-                    this->collision_node_swap(rng, current_idx, next_height_idx);
+                    this->slide_collision_node_swap(rng, current_idx, next_height_idx);
                 }
                 else if (collisions_swap_nodes == 3) {
-                    this->collision_node_swap_all(rng, current_idx, next_height_idx);
+                    this->slide_collision_node_swap_all(rng, current_idx, next_height_idx);
                 }
                 current_idx = next_height_idx;
             }
@@ -1069,7 +1069,7 @@ class BaseTree {
             return collision_parents;
         }
 
-        void collision_node_permute(
+        void slide_collision_node_permute(
                 RandomNumberGenerator & rng,
                 const unsigned int older_height_index,
                 const unsigned int younger_height_index,
@@ -1079,7 +1079,7 @@ class BaseTree {
                     younger_height_index);
             if (collision_parents.size() < 1) {
                 std::ostringstream message;
-                message << "ERROR: collision_node_permute: "
+                message << "ERROR: slide_collision_node_permute: "
                         << "Height " << older_height_index
                         << " has no parents of " << younger_height_index;
                 throw EcoevolityError(message.str());
@@ -1171,7 +1171,120 @@ class BaseTree {
             this->root_->resize_splits(this->get_leaf_node_count());
         }
 
-        void collision_node_swap_all(
+        void collision_node_permute(
+                RandomNumberGenerator & rng,
+                const unsigned int older_height_index,
+                const unsigned int younger_height_index,
+                const bool refresh_node_ordering = true) {
+            std::vector< std::shared_ptr<NodeType> > collision_parents = this->get_collision_parents(
+                    older_height_index,
+                    younger_height_index);
+            if (collision_parents.size() < 1) {
+                std::ostringstream message;
+                message << "ERROR: collision_node_permute: "
+                        << "Height " << older_height_index
+                        << " has no parents of " << younger_height_index;
+                throw EcoevolityError(message.str());
+            }
+            bool change_happened = false;
+            while (! change_happened) {
+                std::map< std::shared_ptr<NodeType>, std::shared_ptr<NodeType> > parent_swap_node_map;
+                for (auto parent_nd : collision_parents) {
+                    std::vector< std::shared_ptr<NodeType> > swap_node_pool;
+                    std::vector< std::shared_ptr<NodeType> > child_colliding_nodes;
+                    std::vector< std::shared_ptr<NodeType> > child_non_colliding_nodes;
+                    std::shared_ptr<NodeType> non_colliding_node_parent;
+                    for (auto child_nd : parent_nd->get_all_children()) {
+                        // Each colliding child contributes one random grandchild to
+                        // the swap pool
+                        if ((! child_nd->is_leaf()) &&
+                                (this->get_node_height_index(child_nd->get_height_parameter()) ==
+                                 younger_height_index)) {
+                            ECOEVOLITY_ASSERT(child_nd->has_children());
+                            child_colliding_nodes.push_back(child_nd);
+                            unsigned int random_child_index = rng.uniform_positive_int(child_nd->get_number_of_children() - 1);
+                            swap_node_pool.push_back(child_nd->get_child(random_child_index));
+                            parent_swap_node_map[child_nd] = child_nd->get_child(random_child_index);
+                        }
+                        else {
+                            child_non_colliding_nodes.push_back(child_nd);
+                        }
+                    }
+                    // If parent node in collision has non-colliding descendants,
+                    // it contributes one of these descendants (randomly) to the
+                    // swap pool
+                    if (child_non_colliding_nodes.size() > 0) {
+                        unsigned int random_child_index = rng.uniform_positive_int(child_non_colliding_nodes.size() - 1);
+                        std::shared_ptr<NodeType> candidate_swap_node = child_non_colliding_nodes.at(random_child_index);
+                        // Unlike for the slide_collision_node_permute, we have to make
+                        // sure the node we add to the swap pool is younger than the
+                        // younger height. We keep randomly grabbing children down the
+                        // tree until this is true
+                        while (candidate_swap_node->get_height() > this->get_height(younger_height_index)) {
+                            random_child_index = rng.uniform_positive_int(candidate_swap_node->get_number_of_children() - 1);
+                            candidate_swap_node = candidate_swap_node->get_child(random_child_index);
+                        }
+                        swap_node_pool.push_back(candidate_swap_node);
+                        non_colliding_node_parent = candidate_swap_node->get_parent();
+                        parent_swap_node_map[non_colliding_node_parent] = candidate_swap_node;
+                    }
+
+                    // Randomize the swap pool
+                    std::shuffle(std::begin(swap_node_pool), std::end(swap_node_pool), rng.engine_);
+
+                    std::shared_ptr<NodeType> random_swap_node;
+                    // If the parent contributed a non-colliding child to the swap
+                    // pool, randomly assign it a new child from the swap pool
+                    if (child_non_colliding_nodes.size() > 0) {
+                        std::shared_ptr<NodeType> random_swap_node = swap_node_pool.back();
+                        swap_node_pool.pop_back();
+                        random_swap_node->remove_parent();
+                        random_swap_node->add_parent(non_colliding_node_parent);
+                    }
+                    for (auto child_colliding_nd : child_colliding_nodes) {
+                        random_swap_node = swap_node_pool.back();
+                        swap_node_pool.pop_back();
+                        random_swap_node->remove_parent();
+                        random_swap_node->add_parent(child_colliding_nd);
+                    }
+                    ECOEVOLITY_ASSERT(swap_node_pool.size() == 0);
+                }
+                // The most probable outcome is for the swap nodes to be
+                // reassigned back to their original parents (because this is
+                // always possible for every set of nodes in the swap pool).
+                // To avoid returning with no change having occurred, we'll
+                // use rejection sampling until we get a change.
+                //
+                // The simplest example is the case of:
+                //   ((A,B),C)
+                // C will always be added to the swap pool along with A (prob
+                // 1/2) or B (prob 1/2). So the probability of all three
+                // possible outcomes are:
+                //   ((A,C),B)  p(B added to pool) X p(root draws B) = 1/2 * 1/2 = 1/4
+                //   ((B,C),A)  p(A added to pool) X p(root draws A) = 1/2 * 1/2 = 1/4
+                //   ((A,B),C)  p(A OR B added to pool) X p(root draws C) = 1 * 1/2 = 1/2
+                //
+                // NOTE: this simplest example is also the maximum probability
+                // of ending up in the unchanged state. Since in the worst case
+                // scenario has a prob of no change of only 1/2, rejection
+                // sampling is a pretty cheap way of handling this.
+                //
+                // ALSO NOTE: in this simplest example this is equivalent to a
+                // NNI move
+                for (auto parent_child : parent_swap_node_map) {
+                    if (! parent_child.first->is_child(parent_child.second)) {
+                        change_happened = true;
+                        break;
+                    }
+                }
+            }
+            if (refresh_node_ordering) {
+                this->refresh_ordered_nodes();
+            }
+            this->root_->resize_splits(this->get_leaf_node_count());
+        }
+
+        void slide_collision_node_swap_all(
                 RandomNumberGenerator & rng,
                 const unsigned int older_height_index,
                 const unsigned int younger_height_index,
@@ -1181,7 +1294,7 @@ class BaseTree {
                     younger_height_index);
             if (collision_parents.size() < 1) {
                 std::ostringstream message;
-                message << "ERROR: collision_node_swap_all: "
+                message << "ERROR: slide_collision_node_swap_all: "
                         << "Height " << older_height_index
                         << " has no parents of " << younger_height_index;
                 throw EcoevolityError(message.str());
@@ -1233,6 +1346,139 @@ class BaseTree {
             this->root_->resize_splits(this->get_leaf_node_count());
         }
 
+        void collision_node_swap_all(
+                RandomNumberGenerator & rng,
+                const unsigned int older_height_index,
+                const unsigned int younger_height_index,
+                const bool refresh_node_ordering =  true) {
+            std::vector< std::shared_ptr<NodeType> > collision_parents = this->get_collision_parents(
+                    older_height_index,
+                    younger_height_index);
+            if (collision_parents.size() < 1) {
+                std::ostringstream message;
+                message << "ERROR: collision_node_swap_all: "
+                        << "Height " << older_height_index
+                        << " has no parents of " << younger_height_index;
+                throw EcoevolityError(message.str());
+            }
+            for (auto parent_nd : collision_parents) {
+                std::vector< std::shared_ptr<NodeType> > swap_node_pool;
+                std::vector< std::shared_ptr<NodeType> > child_colliding_nodes;
+                std::vector< std::shared_ptr<NodeType> > child_non_colliding_nodes;
+                for (auto child_nd : parent_nd->get_all_children()) {
+                    // Each colliding child contributes one random grandchild to
+                    // the swap pool
+                    if ((! child_nd->is_leaf()) &&
+                            (this->get_node_height_index(child_nd->get_height_parameter()) ==
+                             younger_height_index)) {
+                        ECOEVOLITY_ASSERT(child_nd->has_children());
+                        child_colliding_nodes.push_back(child_nd);
+                        unsigned int random_child_index = rng.uniform_positive_int(child_nd->get_number_of_children() - 1);
+                        swap_node_pool.push_back(child_nd->get_child(random_child_index));
+                    }
+                    else {
+                        child_non_colliding_nodes.push_back(child_nd);
+                    }
+                }
+                // If parent node in collision has non-colliding descendants,
+                // it contributes one of these descendants (randomly) to the
+                // swap pool
+                if (child_non_colliding_nodes.size() > 0) {
+                    unsigned int random_child_index = rng.uniform_positive_int(child_non_colliding_nodes.size() - 1);
+                    std::shared_ptr<NodeType> candidate_swap_node = child_non_colliding_nodes.at(random_child_index);
+                    // Unlike for the slide_collision_node_swap, we have to make
+                    // sure the node we add to the swap pool is younger than the
+                    // younger height. We keep randomly grabbing children down the
+                    // tree until this is true
+                    while (candidate_swap_node->get_height() > this->get_height(younger_height_index)) {
+                        random_child_index = rng.uniform_positive_int(candidate_swap_node->get_number_of_children() - 1);
+                        candidate_swap_node = candidate_swap_node->get_child(random_child_index);
+                    }
+                    swap_node_pool.push_back(candidate_swap_node);
+                }
+
+                // Randomly pick two nodes to swap
+                std::vector<unsigned int> indices_of_nodes_to_swap = rng.random_subset_indices(
+                        swap_node_pool.size(),
+                        2);
+                ECOEVOLITY_ASSERT(indices_of_nodes_to_swap.size() == 2);
+                std::shared_ptr<NodeType> swap_node1 = swap_node_pool.at(indices_of_nodes_to_swap.at(0));
+                std::shared_ptr<NodeType> swap_node2 = swap_node_pool.at(indices_of_nodes_to_swap.at(1));
+                std::shared_ptr<NodeType> parent1 = swap_node1->get_parent();
+                std::shared_ptr<NodeType> parent2 = swap_node2->get_parent();
+                swap_node1->remove_parent();
+                swap_node2->remove_parent();
+                swap_node1->add_parent(parent2);
+                swap_node2->add_parent(parent1);
+            }
+            if (refresh_node_ordering) {
+                this->refresh_ordered_nodes();
+            }
+            this->root_->resize_splits(this->get_leaf_node_count());
+        }
+
+        void slide_collision_node_swap(
+                RandomNumberGenerator & rng,
+                const unsigned int older_height_index,
+                const unsigned int younger_height_index,
+                const bool refresh_node_ordering =  true) {
+            std::vector< std::shared_ptr<NodeType> > collision_parents = this->get_collision_parents(
+                    older_height_index,
+                    younger_height_index);
+            if (collision_parents.size() < 1) {
+                std::ostringstream message;
+                message << "ERROR: slide_collision_node_swap: "
+                        << "Height " << older_height_index
+                        << " has no parents of " << younger_height_index;
+                throw EcoevolityError(message.str());
+            }
+            unsigned int random_parent_index = rng.uniform_positive_int(collision_parents.size() - 1);
+            std::shared_ptr<NodeType> parent_nd = collision_parents.at(random_parent_index);
+            std::vector< std::shared_ptr<NodeType> > swap_node_pool;
+            std::vector< std::shared_ptr<NodeType> > child_colliding_nodes;
+            std::vector< std::shared_ptr<NodeType> > child_non_colliding_nodes;
+            for (auto child_nd : parent_nd->get_all_children()) {
+                // Each colliding child contributes one random grandchild to
+                // the swap pool
+                if ((! child_nd->is_leaf()) &&
+                        (this->get_node_height_index(child_nd->get_height_parameter()) ==
+                         younger_height_index)) {
+                    ECOEVOLITY_ASSERT(child_nd->has_children());
+                    child_colliding_nodes.push_back(child_nd);
+                    unsigned int random_child_index = rng.uniform_positive_int(child_nd->get_number_of_children() - 1);
+                    swap_node_pool.push_back(child_nd->get_child(random_child_index));
+                }
+                else {
+                    child_non_colliding_nodes.push_back(child_nd);
+                }
+            }
+            // If parent node in collision has non-colliding descendants,
+            // it contributes one of these descendants (randomly) to the
+            // swap pool
+            if (child_non_colliding_nodes.size() > 0) {
+                unsigned int random_child_index = rng.uniform_positive_int(child_non_colliding_nodes.size() - 1);
+                swap_node_pool.push_back(child_non_colliding_nodes.at(random_child_index));
+            }
+
+            // Randomly pick two nodes to swap
+            std::vector<unsigned int> indices_of_nodes_to_swap = rng.random_subset_indices(
+                    swap_node_pool.size(),
+                    2);
+            ECOEVOLITY_ASSERT(indices_of_nodes_to_swap.size() == 2);
+            std::shared_ptr<NodeType> swap_node1 = swap_node_pool.at(indices_of_nodes_to_swap.at(0));
+            std::shared_ptr<NodeType> swap_node2 = swap_node_pool.at(indices_of_nodes_to_swap.at(1));
+            std::shared_ptr<NodeType> parent1 = swap_node1->get_parent();
+            std::shared_ptr<NodeType> parent2 = swap_node2->get_parent();
+            swap_node1->remove_parent();
+            swap_node2->remove_parent();
+            swap_node1->add_parent(parent2);
+            swap_node2->add_parent(parent1);
+            if (refresh_node_ordering) {
+                this->refresh_ordered_nodes();
+            }
+            this->root_->resize_splits(this->get_leaf_node_count());
+        }
+
         void collision_node_swap(
                 RandomNumberGenerator & rng,
                 const unsigned int older_height_index,
@@ -1273,7 +1519,16 @@ class BaseTree {
             // swap pool
             if (child_non_colliding_nodes.size() > 0) {
                 unsigned int random_child_index = rng.uniform_positive_int(child_non_colliding_nodes.size() - 1);
-                swap_node_pool.push_back(child_non_colliding_nodes.at(random_child_index));
+                std::shared_ptr<NodeType> candidate_swap_node = child_non_colliding_nodes.at(random_child_index);
+                // Unlike for the slide_collision_node_swap, we have to make
+                // sure the node we add to the swap pool is younger than the
+                // younger height. We keep randomly grabbing children down the
+                // tree until this is true
+                while (candidate_swap_node->get_height() > this->get_height(younger_height_index)) {
+                    random_child_index = rng.uniform_positive_int(candidate_swap_node->get_number_of_children() - 1);
+                    candidate_swap_node = candidate_swap_node->get_child(random_child_index);
+                }
+                swap_node_pool.push_back(candidate_swap_node);
             }
 
             // Randomly pick two nodes to swap
