@@ -1740,7 +1740,7 @@ double BasePopulationTree::compute_log_likelihood(
             // would be inf or NAN (not -inf)
             log_likelihood = -std::numeric_limits<double>::infinity();
             double root_height = this->get_node_height_in_subs_per_site(this->get_root());
-            std::vector<double> pop_sizes = this->get_population_sizes();
+            std::vector< std::shared_ptr<PositiveRealParameter> > pop_sizes = this->get_pointers_to_population_sizes();
             std::ostringstream message;
             message << "\n"
                     << "\n#######################################################################\n"
@@ -1755,15 +1755,16 @@ double BasePopulationTree::compute_log_likelihood(
                     <<   "per site is:\n    "
                     <<   root_height * this->get_mutation_rate() << "\n"
                     <<   "The current population sizes (scaled by the mutation rate) are:\n    "
-                    <<   pop_sizes.at(0) * this->get_mutation_rate();
+                    <<   pop_sizes.at(0)->get_value() * this->get_mutation_rate();
             for (unsigned int i = 1; i < pop_sizes.size(); ++i) {
-                message << " " << pop_sizes.at(i) * this->get_mutation_rate();
+                message << " " << pop_sizes.at(i)->get_value() * this->get_mutation_rate();
             }
             message << "\n"
                     << "This state will be rejected by the Metropolis-Hastings algorithm,\n"
                     << "however, the MCMC exploring such parameter space could indicate a\n"
                     << "larger problem, such as a prior specified in the wrong units\n"
                     << "#######################################################################\n\n";
+            // message << this->to_parentheses(false) << "\n";
             std::cerr << message.str();
             // throw EcoevolityError(message.str());
         }
