@@ -6111,6 +6111,144 @@ TEST_CASE("Testing GlobalNodeHeightDirichletOperator with 5 leaf balanced and op
         double eps = 0.001;
         REQUIRE(internal_0_height_summary.mean() == Approx(prior.get_mean()).epsilon(eps));
         REQUIRE(internal_0_height_summary.variance() == Approx(prior.get_variance()).epsilon(eps));
+        // Because internal nodes 1 and 2 are sister, this operator cannot
+        // sample their heights from the target prior distribution; because it
+        // must maintain the order of the node heights
+        REQUIRE(internal_1_height_summary.mean() < prior.get_mean());
+        REQUIRE(internal_1_height_summary.variance() < prior.get_variance());
+        REQUIRE(internal_2_height_summary.mean() > prior.get_mean());
+        REQUIRE(internal_2_height_summary.variance() < prior.get_variance());
+    }
+}
+
+TEST_CASE("Testing GlobalNodeHeightDirichletOperator with 5 leaf balanced, optimizing, with help",
+        "[GlobalNodeHeightDirichletOperator]") {
+
+    SECTION("Testing 5 leaf balanced optimizing with help") {
+        RandomNumberGenerator rng = RandomNumberGenerator(416542642);
+
+        double root_height_shape = 10.0;
+        double root_height_scale = 0.05;
+        std::shared_ptr<ContinuousProbabilityDistribution> root_height_prior = std::make_shared<GammaDistribution>(
+                root_height_shape,
+                root_height_scale);
+
+        std::shared_ptr<Node> root = std::make_shared<Node>(8, "root", 0.5);
+        std::shared_ptr<Node> internal2 = std::make_shared<Node>(7, "internal2", 0.4);
+        std::shared_ptr<Node> internal1 = std::make_shared<Node>(6, "internal1", 0.3);
+        std::shared_ptr<Node> internal0 = std::make_shared<Node>(5, "internal0", 0.2);
+        std::shared_ptr<Node> leaf0 = std::make_shared<Node>(0, "leaf0", 0.0);
+        std::shared_ptr<Node> leaf1 = std::make_shared<Node>(1, "leaf1", 0.0);
+        std::shared_ptr<Node> leaf2 = std::make_shared<Node>(2, "leaf2", 0.0);
+        std::shared_ptr<Node> leaf3 = std::make_shared<Node>(3, "leaf3", 0.0);
+        std::shared_ptr<Node> leaf4 = std::make_shared<Node>(4, "leaf4", 0.0);
+
+        internal0->add_child(leaf0);
+        internal0->add_child(leaf1);
+        internal1->add_child(internal0);
+        internal1->add_child(leaf2);
+        internal2->add_child(leaf3);
+        internal2->add_child(leaf4);
+        root->add_child(internal1);
+        root->add_child(internal2);
+
+        BaseTree<Node> tree(root);
+        tree.set_root_node_height_prior(root_height_prior);
+
+        tree.estimate_alpha_of_node_height_beta_prior();
+        tree.estimate_beta_of_node_height_beta_prior();
+        tree.set_alpha_of_node_height_beta_prior(4.0);
+        tree.set_beta_of_node_height_beta_prior(3.0);
+        tree.fix_alpha_of_node_height_beta_prior();
+        tree.fix_beta_of_node_height_beta_prior();
+
+        tree.ignore_data();
+        tree.estimate_root_height();
+
+        GlobalNodeHeightDirichletOperator< BaseTree<Node> > op;
+        op.turn_on_auto_optimize();
+        op.set_auto_optimize_delay(100);
+
+        NodeHeightScaler< BaseTree<Node> > op2;
+        op2.turn_on_auto_optimize();
+        op2.set_auto_optimize_delay(100);
+
+        REQUIRE(op.auto_optimizing());
+        REQUIRE(op.get_auto_optimize_delay() == 100);
+
+        // Initialize prior probs
+        tree.compute_log_likelihood_and_prior(true);
+
+        SampleSummarizer<double> internal_0_height_summary;
+        SampleSummarizer<double> internal_1_height_summary;
+        SampleSummarizer<double> internal_2_height_summary;
+        std::vector<double> internal_0_height_samples;
+        std::vector<double> internal_1_height_samples;
+        std::vector<double> internal_2_height_samples;
+
+        // burnin
+        unsigned int burnin = 1000;
+        for (unsigned int i = 0; i < burnin; ++i) {
+            op.operate(rng, &tree, 1, 1);
+            op2.operate(rng, &tree, 1, 1);
+        }
+
+        unsigned int niterations = 1000000;
+        unsigned int sample_freq = 10;
+        unsigned int nsamples = niterations / sample_freq;
+        std::shared_ptr<Node> node;
+        for (unsigned int i = 0; i < niterations; ++i) {
+            op.operate(rng, &tree, 1, 1);
+            op2.operate(rng, &tree, 1, 1);
+            if ((i + 1) % sample_freq == 0) {
+                node = tree.get_node("internal0");
+                internal_0_height_summary.add_sample(node->get_height() / node->get_parent()->get_height());
+                internal_0_height_samples.push_back(node->get_height() / node->get_parent()->get_height());
+                REQUIRE(node->get_parent()->has_parent());
+                REQUIRE(node->get_parent()->get_label() == "internal1");
+                node = tree.get_node("internal1");
+                internal_1_height_summary.add_sample(node->get_height() / node->get_parent()->get_height());
+                internal_1_height_samples.push_back(node->get_height() / node->get_parent()->get_height());
+                REQUIRE(node->get_parent()->is_root());
+                REQUIRE(node->get_parent()->get_label() == "root");
+                node = tree.get_node("internal2");
+                internal_2_height_summary.add_sample(node->get_height() / node->get_parent()->get_height());
+                internal_2_height_samples.push_back(node->get_height() / node->get_parent()->get_height());
+                REQUIRE(node->get_parent()->is_root());
+                REQUIRE(node->get_parent()->get_label() == "root");
+                REQUIRE(tree.get_root_height() == 0.5);
+            }
+        }
+        std::cout << op.header_string();
+        std::cout << op.to_string();
+        double ess_0 = effective_sample_size<double>(internal_0_height_samples);
+        double ess_1 = effective_sample_size<double>(internal_1_height_samples);
+        double ess_2 = effective_sample_size<double>(internal_2_height_samples);
+        std::cout << "ESS 0: " << ess_0 << "\n";
+        std::cout << "ESS 1: " << ess_1 << "\n";
+        std::cout << "ESS 2: " << ess_2 << "\n";
+        
+        BetaDistribution prior(4.0, 3.0);
+
+        std::cout << "Expected mean: " << prior.get_mean() << "\n";
+        std::cout << "Expected var: " << prior.get_variance() << "\n";
+        std::cout << "Internal 0 mean: " << internal_0_height_summary.mean() << "\n";
+        std::cout << "Internal 0 var: "  << internal_0_height_summary.variance() << "\n";
+        std::cout << "Internal 1 mean: " << internal_1_height_summary.mean() << "\n";
+        std::cout << "Internal 1 var: "  << internal_1_height_summary.variance() << "\n";
+        std::cout << "Internal 2 mean: " << internal_2_height_summary.mean() << "\n";
+        std::cout << "Internal 2 var: "  << internal_2_height_summary.variance() << "\n";
+
+        REQUIRE(op.get_number_of_attempts() == niterations + burnin);
+        REQUIRE(op.get_number_of_attempts_for_correction() == (niterations + burnin - 100));
+
+        REQUIRE(internal_0_height_summary.sample_size() == nsamples);
+        REQUIRE(internal_1_height_summary.sample_size() == nsamples);
+        REQUIRE(internal_2_height_summary.sample_size() == nsamples);
+
+        double eps = 0.001;
+        REQUIRE(internal_0_height_summary.mean() == Approx(prior.get_mean()).epsilon(eps));
+        REQUIRE(internal_0_height_summary.variance() == Approx(prior.get_variance()).epsilon(eps));
         REQUIRE(internal_1_height_summary.mean() == Approx(prior.get_mean()).epsilon(eps));
         REQUIRE(internal_1_height_summary.variance() == Approx(prior.get_variance()).epsilon(eps));
         REQUIRE(internal_2_height_summary.mean() == Approx(prior.get_mean()).epsilon(eps));
