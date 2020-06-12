@@ -551,6 +551,7 @@ class BaseTree {
                 std::istream & tree_stream,
                 const std::string & ncl_file_format,
                 std::vector<TreeType> & trees,
+                unsigned int skip = 0,
                 double ultrametricity_tolerance = 1e-6
                 ) {
             MultiFormatReader nexus_reader(-1, NxsReader::WARNINGS_TO_STDERR);
@@ -572,7 +573,7 @@ class BaseTree {
             unsigned int num_trees = tree_block->GetNumTrees();
             ECOEVOLITY_ASSERT(num_trees > 0);
 
-            for (unsigned int i = 0; i < num_trees; ++i) {
+            for (unsigned int i = skip; i < num_trees; ++i) {
                 const NxsFullTreeDescription & tree_description = tree_block->GetFullTreeDescription(i);
                 TreeType t;
                 t.build_from_ncl_tree_description_(tree_description,
@@ -586,12 +587,14 @@ class BaseTree {
         static std::vector<TreeType> get_trees(
                 std::istream & tree_stream,
                 const std::string & ncl_file_format,
+                unsigned int skip = 0,
                 double ultrametricity_tolerance = 1e-6
                 ) {
             std::vector<TreeType> trees;
             BaseTree::get_trees(tree_stream,
                     ncl_file_format,
                     trees,
+                    skip,
                     ultrametricity_tolerance);
             return trees;
         }
@@ -600,6 +603,7 @@ class BaseTree {
                 const std::string & path,
                 const std::string & ncl_file_format,
                 std::vector<TreeType> & trees,
+                unsigned int skip = 0,
                 double ultrametricity_tolerance = 1e-6
                 ) {
             std::ifstream in_stream;
@@ -613,6 +617,7 @@ class BaseTree {
                 BaseTree::get_trees(in_stream,
                         ncl_file_format,
                         trees,
+                        skip,
                         ultrametricity_tolerance);
             }
             catch(...) {
@@ -625,12 +630,45 @@ class BaseTree {
         static std::vector<TreeType> get_trees(
                 const std::string & path,
                 const std::string & ncl_file_format,
+                unsigned int skip = 0,
                 double ultrametricity_tolerance = 1e-6
                 ) {
             std::vector<TreeType> trees;
             BaseTree::get_trees(path,
                     ncl_file_format,
                     trees,
+                    skip,
+                    ultrametricity_tolerance);
+            return trees;
+        }
+        template<class TreeType>
+        static void get_trees(
+                const std::vector<std::string> & paths,
+                const std::string & ncl_file_format,
+                std::vector<TreeType> & trees,
+                unsigned int skip = 0,
+                double ultrametricity_tolerance = 1e-6
+                ) {
+            for (auto path : paths) {
+                BaseTree::get_trees(path,
+                        ncl_file_format,
+                        trees,
+                        skip,
+                        ultrametricity_tolerance);
+            }
+        }
+        template<class TreeType>
+        static std::vector<TreeType> get_trees(
+                const std::vector<std::string> & paths,
+                const std::string & ncl_file_format,
+                unsigned int skip = 0,
+                double ultrametricity_tolerance = 1e-6
+                ) {
+            std::vector<TreeType> trees;
+            BaseTree::get_trees(paths,
+                    ncl_file_format,
+                    trees,
+                    skip,
                     ultrametricity_tolerance);
             return trees;
         }
@@ -2205,6 +2243,17 @@ class BaseTree {
             std::set< std::set<Split> > split_set;
             this->store_splits(split_set, resize_splits);
             return split_set;
+        }
+
+        void store_splits_and_heights(
+                std::set< std::set<Split> > & split_set,
+                std::map<std::set<Split>, double> heights,
+                bool resize_splits = false) const {
+            std::map< unsigned int, std::set<Split> > split_map = this->get_splits_by_height_index(resize_splits);
+            for (auto item : split_map) {
+                split_set.insert(item.second);
+                heights[item.second] = this->get_height(item.first);
+            }
         }
 
         double get_alpha_of_node_height_beta_prior() const {
