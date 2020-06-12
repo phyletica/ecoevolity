@@ -38,7 +38,7 @@ void check_simphy_output_path(const std::string& path) {
         message << "ERROR: The simphycoeval output file \'"
                 << path
                 << "\' already exists!\n"
-                << "Please use a different output file or clear out previous "
+                << "Please use a different output directory or clear out previous "
                 << "simulations\n";
         throw EcoevolityError(message.str());
     }
