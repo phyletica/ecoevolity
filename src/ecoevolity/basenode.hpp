@@ -180,13 +180,16 @@ class BaseNode : public std::enable_shared_from_this<DerivedNodeT> {
 
         //Methods
 
+        virtual void get_parameter_map(
+                std::map<std::string, double> & parameter_map) const { }
+
         /**
          * Method to populate non-height related data (e.g., pop size) from
          * node comments in the form of a map.  Nothing to do for BaseNode, but
          * this is intended for derived classes to override
          */
         virtual void extract_data_from_node_comments(
-                std::map<std::string, std::string> comment_map) { }
+                const std::map<std::string, std::string> & comment_map) { }
 
         unsigned int degree() const {
             unsigned int d = children_.size();
