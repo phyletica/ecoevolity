@@ -2245,11 +2245,36 @@ class BaseTree {
             return split_set;
         }
 
-        void store_splits_and_heights(
+        void store_splits_heights_parameters(
                 std::set< std::set<Split> > & split_set,
                 std::map<std::set<Split>, double> heights,
+                std::map<Split, std::map<std::string, double> > parameters,
                 bool resize_splits = false) const {
-            std::map< unsigned int, std::set<Split> > split_map = this->get_splits_by_height_index(resize_splits);
+            std::map< unsigned int, std::set<Split> > split_map;
+            if (resize_splits) {
+                this->root_->resize_splits(this->get_leaf_node_count());
+            }
+            for (auto node = this->pre_ordered_nodes_.rbegin();
+                    node != this->pre_ordered_nodes_.rend();
+                    ++node) {
+                if (! (*node)->is_leaf()) {
+                    // add this internal node's split to split set
+                    unsigned int height_idx = this->get_node_height_index((*node)->get_height_parameter());
+                    split_map[height_idx].insert((*node)->split_);
+                    std::map<std::string, double> parameter_map;
+                    (*node)->get_parameter_map(parameter_map);
+                    if (parameters.size() > 0) {
+                        parameters[(*node)->split_] = parameter_map;
+                    }
+                }
+                else {
+                    // Set bit for this leaf node's index
+                    (*node)->split_.set_leaf_bit((*node)->get_index());
+                }
+                if ((*node)->has_parent()) {
+                    (*node)->get_parent()->split_.add_split((*node)->split_);
+                }
+            }
             for (auto item : split_map) {
                 split_set.insert(item.second);
                 heights[item.second] = this->get_height(item.first);
