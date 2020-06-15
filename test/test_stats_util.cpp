@@ -1,5 +1,6 @@
 #include "catch.hpp"
 #include "ecoevolity/stats_util.hpp"
+#include "ecoevolity/rng.hpp"
 
 TEST_CASE("Testing double SampleSummarizer", "[stats_util]") {
 
@@ -313,5 +314,149 @@ TEST_CASE("Testing potential_scale_reduction_factor double, equal chains",
         // <https://github.com/pymc-devs/pymc/blob/master/pymc/diagnostics.py>
         double e_pymc = 0.89442719099991586;
         REQUIRE(psrf == Approx(e_pymc));
+    }
+}
+
+TEST_CASE("Testing median with one double",
+        "[stats_util]") {
+    SECTION("Testing median with one double") {
+        std::vector<double> samples {1.3};
+        double m = get_median<double>(samples);
+        REQUIRE(m == samples.at(0));
+    }
+}
+
+TEST_CASE("Testing median with four doubles",
+        "[stats_util]") {
+    SECTION("Testing median with four doubles") {
+        std::vector<double> samples {1.2, 0.1, 23.4, 1.3};
+        double m = get_median<double>(samples);
+        REQUIRE(m == Approx(1.25));
+    }
+}
+
+TEST_CASE("Testing median with five doubles",
+        "[stats_util]") {
+    SECTION("Testing median with five doubles") {
+        std::vector<double> samples {1.2, 0.1, 1.4, 23.1, 1.3};
+        double m = get_median<double>(samples);
+        REQUIRE(m == Approx(1.3));
+    }
+}
+
+TEST_CASE("Testing median with one int",
+        "[stats_util]") {
+    SECTION("Testing median with one int") {
+        std::vector<int> samples {13};
+        double m = get_median<int>(samples);
+        REQUIRE(m == samples.at(0));
+    }
+}
+
+TEST_CASE("Testing median with four ints",
+        "[stats_util]") {
+    SECTION("Testing median with four doubles") {
+        std::vector<int> samples {12, 1, 234, 13};
+        double m = get_median<int>(samples);
+        REQUIRE(m == Approx(12.5));
+    }
+}
+
+TEST_CASE("Testing median with five ints",
+        "[stats_util]") {
+    SECTION("Testing median with five ints") {
+        std::vector<int> samples {12, 1, 14, 231, 13};
+        double m = get_median<int>(samples);
+        REQUIRE(m == Approx(13));
+    }
+}
+
+TEST_CASE("Testing HPD interval, quantile, percentile, and summary") {
+    RandomNumberGenerator rng = RandomNumberGenerator(123);
+    unsigned int nsamples = 1000000;
+    std::vector<double> normal_samples(nsamples);
+    std::vector<double> exponential_samples(nsamples);
+    for (unsigned int i = 0; i < nsamples; ++i) {
+        normal_samples.at(i) = rng.normal(0.0, 1.0);
+        exponential_samples.at(i) = rng.gamma(1.0, 1.0);
+    }
+
+    SECTION("Testing standard normal HPD") {
+        double eps = 0.002;
+        std::pair<double, double> hpdi = get_hpd_interval<double>(normal_samples, 0.95);
+        REQUIRE(hpdi.first == Approx(-1.96).epsilon(eps));
+        REQUIRE(hpdi.second == Approx(1.96).epsilon(eps));
+    }
+
+    SECTION("Testing normal quantiles") {
+        double eps = 0.002;
+        std::pair<double, double> quants = quantiles_95<double>(normal_samples);
+        double q025 = quantile<double>(normal_samples, 0.025);
+        double q975 = quantile<double>(normal_samples, 0.975);
+        REQUIRE(quants.first == Approx(q025));
+        REQUIRE(quants.second == Approx(q975));
+        REQUIRE(q025 == Approx(-1.96).epsilon(eps));
+        REQUIRE(q975 == Approx(1.96).epsilon(eps));
+    }
+
+    SECTION("Testing exponential HPD") {
+        double eps = 0.002;
+        std::pair<double, double> hpdi = get_hpd_interval<double>(exponential_samples, 0.95);
+        REQUIRE(hpdi.first == Approx(0.0).epsilon(eps));
+        REQUIRE(hpdi.second == Approx(2.9957).epsilon(eps));
+    }
+
+    SECTION("Testing exponential quantiles") {
+        double eps = 0.002;
+        std::pair<double, double> quants = quantiles_95<double>(exponential_samples);
+        double q025 = quantile<double>(exponential_samples, 0.025);
+        double q975 = quantile<double>(exponential_samples, 0.975);
+        REQUIRE(quants.first == Approx(q025));
+        REQUIRE(quants.second == Approx(q975));
+        REQUIRE(q025 == Approx(0.0253).epsilon(eps));
+        REQUIRE(q975 == Approx(3.6889).epsilon(eps));
+    }
+
+    SECTION("Testing standard normal percentile") {
+        double eps = 0.002;
+        double r = percentile<double>(normal_samples, -1.96);
+        REQUIRE(r == Approx(0.025).epsilon(eps));
+        r = percentile<double>(normal_samples, 1.96);
+        REQUIRE(r == Approx(0.975).epsilon(eps));
+    }
+
+    SECTION("Testing exponential percentile") {
+        double eps = 0.002;
+        double r = percentile<double>(exponential_samples, 0.0253);
+        REQUIRE(r == Approx(0.025).epsilon(eps));
+        r = percentile<double>(exponential_samples, 3.6889);
+        REQUIRE(r == Approx(0.975).epsilon(eps));
+    }
+
+    SECTION("Testing standard normal SampleSummary") {
+        double expected_min = std::numeric_limits<double>::max();
+        double expected_max = -std::numeric_limits<double>::max();
+        for (auto x : normal_samples) {
+            if (x > expected_max) {
+                expected_max = x;
+            }
+            if (x < expected_min) {
+                expected_min = x;
+            }
+        }
+        double eps = 0.002;
+        SampleSummary<double> ss(normal_samples);
+        REQUIRE(ss.sample_size() == normal_samples.size());
+        REQUIRE(ss.min() == expected_min);
+        REQUIRE(ss.max() == expected_max);
+        REQUIRE(ss.mean() == Approx(0.0).epsilon(eps));
+        REQUIRE(ss.median() == Approx(0.0).epsilon(eps));
+        REQUIRE(ss.variance() == Approx(1.0).epsilon(eps));
+        REQUIRE(ss.std_dev() == Approx(1.0).epsilon(eps));
+        REQUIRE(ss.std_error() == Approx(1.0 / std::sqrt(normal_samples.size())).epsilon(eps));
+        REQUIRE(ss.hpdi_95().first == Approx(-1.96).epsilon(eps));
+        REQUIRE(ss.hpdi_95().second == Approx(1.96).epsilon(eps));
+        REQUIRE(ss.qi_95().first == Approx(-1.96).epsilon(eps));
+        REQUIRE(ss.qi_95().second == Approx(1.96).epsilon(eps));
     }
 }
