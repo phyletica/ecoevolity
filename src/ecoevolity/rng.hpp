@@ -37,6 +37,7 @@ class RandomNumberGenerator {
         std::uniform_int_distribution<long> uniform_int_rng_;
         std::uniform_int_distribution<unsigned long> uniform_positive_int_rng_;
         std::gamma_distribution<double> gamma_rng_;
+        std::normal_distribution<double> normal_rng_;
 
         RandomNumberGenerator() {
             this->set_seed_from_time();
@@ -94,6 +95,19 @@ class RandomNumberGenerator {
                     this->engine_,
                     typename decltype(this->uniform_positive_int_rng_)::param_type(
                             0, b));
+        }
+
+        inline double normal() {
+            return this->normal_rng_(
+                    this->engine_,
+                    typename decltype(this->normal_rng_)::param_type(
+                            0.0, 1.0));
+        }
+        inline double normal(double mean, double stddev) {
+            return this->normal_rng_(
+                    this->engine_,
+                    typename decltype(this->normal_rng_)::param_type(
+                            mean, stddev));
         }
 
         inline double gamma() {
