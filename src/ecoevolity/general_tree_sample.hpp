@@ -1,0 +1,329 @@
+/******************************************************************************
+ * Copyright (C) 2015-2016 Jamie R. Oaks.
+ *
+ * This file is part of Ecoevolity.
+ *
+ * Ecoevolity is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free
+ * Software Foundation, either version 3 of the License, or (at your option)
+ * any later version.
+ *
+ * Ecoevolity is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+ * more details.
+ *
+ * You should have received a copy of the GNU General Public License along
+ * with Ecoevolity.  If not, see <http://www.gnu.org/licenses/>.
+******************************************************************************/
+
+#ifndef ECOEVOLITY_GENERAL_TREE_SAMPLE_HPP
+#define ECOEVOLITY_GENERAL_TREE_SAMPLE_HPP
+
+#include <iostream>
+#include <sstream>
+#include <cmath>
+#include <limits>
+#include <memory>
+
+#include "basetree.hpp"
+#include "tree.hpp"
+#include "assert.hpp"
+#include "math_util.hpp"
+
+class BaseSamples {
+    public:
+        unsigned int n = 0;
+        std::vector<unsigned int> source_indices;
+        std::vector<unsigned int> tree_indices;
+
+        bool operator< (const BaseSamples & other) const {
+            return this->n < other.n;
+        }
+        bool operator> (const BaseSamples & other) const {
+            return this->n > other.n;
+        }
+        static bool sort_by_n(
+                const std::shared_ptr<BaseSamples> & s1,
+                const std::shared_ptr<BaseSamples> & s2) {
+            return s1->n < s2->n;
+        }
+        static bool reverse_sort_by_n(
+                const std::shared_ptr<BaseSamples> & s1,
+                const std::shared_ptr<BaseSamples> & s2) {
+            return s1->n > s2->n;
+        }
+}
+
+class TopologySamples : public BaseSamples {
+    public:
+        std::set< std::set<Split> > split_set;
+        std::map<std::set<Split>, std::vector<double> > heights;
+
+        void add_sample(
+                const std::map<std::set<Split>, double> & height_map,
+                unsigned int tree_index,
+                unsigned int source_index) { 
+            this->tree_indices.push_back(tree_index);
+            this->source_indices.push_back(source_index);
+            std::set< std::set<Split> > s_set;
+            for (auto splits_height : heights) {
+                s_set.insert(splits_height.first);
+                this->heights[splits_height.first].push_back(
+                        splits_height.second);
+            }
+            if (this->n == 0) {
+                this->split_set = s_set;
+            }
+            else {
+                ECOEVOLITY_ASSERT(s_set == this->split_set);
+            }
+            ++this->n;
+        }
+};
+
+class HeightSamples : public BaseSamples {
+    public:
+        std::set<Split> split_set;
+        std::vector<double> heights;
+
+        void add_sample(
+                const std::set<Split> & set_of_splits,
+                double height,
+                unsigned int tree_index,
+                unsigned int source_index) {
+            this->tree_indices.push_back(tree_index);
+            this->source_indices.push_back(source_index);
+            if (this->n == 0) {
+                this->split_set = set_of_splits;
+            }
+            else {
+                ECOEVOLITY_ASSERT(set_of_splits == this->split_set);
+            }
+            this->heights.push_back(height);
+            ++this->n;
+        }
+};
+
+class SplitSamples : public BaseSamples {
+    public:
+        Split split;
+        std::map<std::string, std::vector<double> > parameters;
+
+        void add_sample(
+                const Split & s,
+                const std::map<std::string, double> & p,
+                unsigned int tree_index,
+                unsigned int source_index) {
+            this->tree_indices.push_back(tree_index);
+            this->source_indices.push_back(source_index);
+            if (this->n == 0) {
+                this->split = s;
+            }
+            else {
+                ECOEVOLITY_ASSERT(s == this->split);
+            }
+            for (auto pname_value : p) {
+                this->parameters[pname_value.first].push_back(pname_value.second);
+            }
+            ++this->n;
+        }
+};
+
+template<class TreeType>
+class TreeSample {
+    protected:
+        std::vector< std::shared_ptr<TopologySamples> > topologies_;
+        std::vector< std::shared_ptr<HeightSamples> > heights_;
+        std::vector< std::shared_ptr<SplitSamples> > splits_;
+        std::map< std::set< std::set<Split> >, std::shared_ptr<TopologySamples> > topologies_map_;
+        std::map< std::set<Split>,             std::shared_ptr<HeightSamples>   > heights_map_;
+        std::map< Split,                       std::shared_ptr<SplitSamples>    > splits_map_;
+        std::map< std::string, std::vector<double> > root_parameters_;
+        std::map< std::map< std::string, std::vector<double> > > leaf_parameters_;
+        std::vector<std::string> source_paths_;
+        std::vector<unsigned int> source_sample_sizes_;
+        unsigned int sample_size_ = 0;
+
+    public:
+
+        TreeSample() { }
+        TreeSample(
+                const std::vector<std::string> & paths,
+                const std::string & ncl_file_format,
+                unsigned int skip = 0,
+                double ultrametricity_tolerance = 1e-6) {
+            for (auto path : paths) {
+                this->add_trees(path, ncl_file_format, skip,
+                        ultrametricity_tolerance);
+            }
+        }
+
+        void add_trees(
+                const std::string & path,
+                const std::string & ncl_file_format,
+                unsigned int skip = 0,
+                double ultrametricity_tolerance = 1e-6) {
+            this->source_paths_.push_back(path);
+            std::vector<TreeType> & trees,
+            BaseTree::get_trees(path,
+                    ncl_file_format,
+                    trees,
+                    skip,
+                    ultrametricity_tolerance);
+            this->add_trees(trees);
+        }
+
+        void add_trees(
+                std::istream & tree_stream,
+                const std::string & ncl_file_format,
+                unsigned int skip = 0,
+                double ultrametricity_tolerance = 1e-6) {
+            std::vector<TreeType> & trees,
+            BaseTree::get_trees(tree_stream,
+                    ncl_file_format,
+                    trees,
+                    skip,
+                    ultrametricity_tolerance);
+            this->add_trees(trees);
+        }
+
+        void add_trees(
+                const std::vector<TreeType> & trees) {
+            this->source_sample_sizes_.push_back(0);
+            std::set< std::set<Split> > split_set;
+            std::map<std::set<Split>, double> heights;
+            std::map<Split, std::map<std::string, double> > parameters;
+            std::map<std::string, double> parameter_map;
+            std::vector< std::shared_ptr<DerivedNodeT> > leaves;
+            unsigned int source_index = this->source_sample_sizes_.size();
+            for (auto tree : trees) {
+                unsigned int tree_index = this->sample_size_;
+                split_set.clear();
+                heights.clear();
+                parameters.clear();
+                tree.store_splits_heights_parameters(
+                        split_set,
+                        heights,
+                        parameters,
+                        false);
+                if (this->topologies_map_.count(split_set) > 0) {
+                    this->topologies_map_[split_set]->add_sample(
+                            heights,
+                            tree_index,
+                            source_index);
+                }
+                else {
+                    std::shared_ptr<TopologySamples> ts;
+                    ts->add_sample(heights, tree_index, source_index);
+                    this->topologies_.push_back(ts);
+                    this->topologies_map_[split_set] = ts;
+                }
+                for (auto splits_height : heights) {
+                    if (this->heights_map_.count(splits_height.first) > 0) {
+                        this->heights[splits_height.first]->add_sample(
+                                splits_height.first,
+                                splits_height.second,
+                                tree_index,
+                                source_index);
+                    }
+                    else {
+                        std::shared_ptr<HeightSamples> hs;
+                        hs->add_sample(
+                                splits_height.first,
+                                splits_height.second,
+                                tree_index,
+                                source_index);
+                        this->heights_.push_back(hs);
+                        this->heights_map_[splits_height.first] = hs;
+                    }
+                }
+                for (auto split_pmap : parameters) {
+                    if (this->splits_map_.count(split_pmap.first) > 0) {
+                        this->splits[split_pmap.first]->add_sample(
+                                split_pmap.first,
+                                split_pmap.second,
+                                tree_index,
+                                source_index);
+                    }
+                    else {
+                        std::shared_ptr<SplitSamples> ss;
+                        ss->add_sample(
+                                split_pmap.first,
+                                split_pmap.second,
+                                tree_index,
+                                source_index);
+                        this->splits_.push_back(ss);
+                        this->splits_map_[split_pmap.first] = ss;
+                    }
+                }
+
+                parameter_map.clear();
+                tree.get_root().get_parameter_map(parameter_map);
+                for (auto pname_value : parameter_map) {
+                    this->root_parameters_[pname_value.first].push_back(
+                            pname_value.second);
+                }
+                leaves.clear();
+                tree.get_leaves(leaves);
+                for (auto leaf : leaves) {
+                    parameter_map.clear();
+                    leaf->get_parameter_map(parameter_map);
+                    for (auto pname_value : parameter_map) {
+                        this->leaf_parameters_[leaf->get_label()][pname_value.first].push_back(
+                                pname_value.second);
+                    }
+                }
+                ++this->sample_size_;
+                ++this->source_sample_sizes_.back();
+            }
+            unsigned int source_total = 0;
+            for (unsigned int n : this->source_sample_sizes_) {
+                source_total += n;
+            }
+            ECOEVOLITY_ASSERT(source_total == this->sample_size_);
+            std::sort(this->topologies_.begin(), this->topologies_.end(),
+                    BaseSamples::reverse_sort_by_n);
+            std::sort(this->heights_.begin(), this->heights_.end(),
+                    BaseSamples::reverse_sort_by_n);
+            std::sort(this->splits_.begin(), this->splits_.end(),
+                    BaseSamples::reverse_sort_by_n);
+        }
+        unsigned int get_number_of_sources() const {
+            return this->source_sample_sizes_.size();
+        }
+
+        double get_average_std_dev_of_split_freqs(
+                double credible_set_cutoff = 0.9) const {
+            if (this->get_number_of_sources() < 2) {
+                throw EcoevolityError("Calculating the ASDSF requires multiple chains");
+            }
+            double cumulative_freq = 0.0;
+            SampleSummarizer<double> std_devs_of_split_freqs;
+            for (auto ss : this->splits_) {
+                if (cumulative_freq > credible_set_cutoff) {
+                    break;
+                }
+                cumulative_freq += ss.n / (double)this->sample_size_;
+                std::vector<unsigned int> split_counts(this->get_number_of_sources(), 0);
+                SampleSummarizer<double> split_freqs;
+                for (unsigned int source_idx = 0;
+                        i < this->get_number_of_sources();
+                        ++ source_idx) {
+                    ++split_counts.at(source_idx);
+                }
+                unsigned int total = 0;
+                for (unsigned int source_idx = 0;
+                        i < this->get_number_of_sources();
+                        ++ source_idx) {
+                    split_freqs.add_sample(split_counts.at(source_idx) / (double)this->sample_size_);
+                    total += split_counts.at(source_idx);
+                }
+                ECOEVOLITY_ASSERT(total == this->sample_size_);
+                std_devs_of_split_freqs.add_sample(split_freqs.std_dev());
+            }
+            return std_devs_of_split_freqs.mean();
+        }
+};
+
+#endif
