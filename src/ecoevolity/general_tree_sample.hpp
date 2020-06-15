@@ -31,102 +31,121 @@
 #include "assert.hpp"
 #include "math_util.hpp"
 
-class BaseSamples {
-    public:
-        unsigned int n = 0;
-        std::vector<unsigned int> source_indices;
-        std::vector<unsigned int> tree_indices;
 
+class BaseSamples {
+    protected:
+        unsigned int n_ = 0;
+        std::vector<unsigned int> source_indices_;
+        std::vector<unsigned int> tree_indices_;
+
+        void tally_sample_(
+                unsigned int tree_index,
+                unsigned int source_index) {
+            this->tree_indices_.push_back(tree_index);
+            this->source_indices_.push_back(source_index);
+            ++this->n_;
+        }
+
+    public:
         bool operator< (const BaseSamples & other) const {
-            return this->n < other.n;
+            return this->n_ < other.n_;
         }
         bool operator> (const BaseSamples & other) const {
-            return this->n > other.n;
+            return this->n_ > other.n_;
         }
         static bool sort_by_n(
                 const std::shared_ptr<BaseSamples> & s1,
                 const std::shared_ptr<BaseSamples> & s2) {
-            return s1->n < s2->n;
+            return s1->n_ < s2->n_;
         }
         static bool reverse_sort_by_n(
                 const std::shared_ptr<BaseSamples> & s1,
                 const std::shared_ptr<BaseSamples> & s2) {
-            return s1->n > s2->n;
+            return s1->n_ > s2->n_;
+        }
+
+        unsigned int get_sample_size() const {
+            return this->n_;
+        }
+
+        const std::vector<unsigned int> & get_source_indices() const {
+            return this->source_indices_;
+        }
+
+        const std::vector<unsigned int> & get_tree_indices() const {
+            return this->tree_indices_;
         }
 }
 
 class TopologySamples : public BaseSamples {
-    public:
-        std::set< std::set<Split> > split_set;
-        std::map<std::set<Split>, std::vector<double> > heights;
+    protected:
+        std::set< std::set<Split> > split_set_;
+        std::map<std::set<Split>, std::vector<double> > heights_;
 
+    public:
         void add_sample(
                 const std::map<std::set<Split>, double> & height_map,
                 unsigned int tree_index,
                 unsigned int source_index) { 
-            this->tree_indices.push_back(tree_index);
-            this->source_indices.push_back(source_index);
             std::set< std::set<Split> > s_set;
             for (auto splits_height : heights) {
                 s_set.insert(splits_height.first);
-                this->heights[splits_height.first].push_back(
+                this->heights_[splits_height.first].push_back(
                         splits_height.second);
             }
-            if (this->n == 0) {
-                this->split_set = s_set;
+            if (this->n_ == 0) {
+                this->split_set_ = s_set;
             }
             else {
-                ECOEVOLITY_ASSERT(s_set == this->split_set);
+                ECOEVOLITY_ASSERT(s_set == this->split_set_);
             }
-            ++this->n;
+            this->tally_sample_(tree_index, source_index);
         }
 };
 
 class HeightSamples : public BaseSamples {
-    public:
-        std::set<Split> split_set;
-        std::vector<double> heights;
+    protected:
+        std::set<Split> split_set_;
+        std::vector<double> heights_;
 
+    public:
         void add_sample(
                 const std::set<Split> & set_of_splits,
                 double height,
                 unsigned int tree_index,
                 unsigned int source_index) {
-            this->tree_indices.push_back(tree_index);
-            this->source_indices.push_back(source_index);
-            if (this->n == 0) {
-                this->split_set = set_of_splits;
+            if (this->n_ == 0) {
+                this->split_set_ = set_of_splits;
             }
             else {
-                ECOEVOLITY_ASSERT(set_of_splits == this->split_set);
+                ECOEVOLITY_ASSERT(set_of_splits == this->split_set_);
             }
-            this->heights.push_back(height);
-            ++this->n;
+            this->heights_.push_back(height);
+            this->tally_sample_(tree_index, source_index);
         }
 };
 
 class SplitSamples : public BaseSamples {
-    public:
-        Split split;
-        std::map<std::string, std::vector<double> > parameters;
+    protected:
+        Split split_;
+        std::map<std::string, std::vector<double> > parameters_;
 
+    public:
         void add_sample(
                 const Split & s,
                 const std::map<std::string, double> & p,
                 unsigned int tree_index,
                 unsigned int source_index) {
-            this->tree_indices.push_back(tree_index);
-            this->source_indices.push_back(source_index);
             if (this->n == 0) {
-                this->split = s;
+                this->split_ = s;
             }
             else {
-                ECOEVOLITY_ASSERT(s == this->split);
+                ECOEVOLITY_ASSERT(s == this->split_);
             }
             for (auto pname_value : p) {
-                this->parameters[pname_value.first].push_back(pname_value.second);
+                this->parameters_[pname_value.first].push_back(pname_value.second);
             }
-            ++this->n;
+            this->tally_sample_(tree_index, source_index);
         }
 };
 
@@ -144,6 +163,15 @@ class TreeSample {
         std::vector<std::string> source_paths_;
         std::vector<unsigned int> source_sample_sizes_;
         unsigned int sample_size_ = 0;
+
+        void reverse_sort_samples_by_freq_() {
+            std::sort(this->topologies_.begin(), this->topologies_.end(),
+                    BaseSamples::reverse_sort_by_n);
+            std::sort(this->heights_.begin(), this->heights_.end(),
+                    BaseSamples::reverse_sort_by_n);
+            std::sort(this->splits_.begin(), this->splits_.end(),
+                    BaseSamples::reverse_sort_by_n);
+        }
 
     public:
 
@@ -282,13 +310,9 @@ class TreeSample {
                 source_total += n;
             }
             ECOEVOLITY_ASSERT(source_total == this->sample_size_);
-            std::sort(this->topologies_.begin(), this->topologies_.end(),
-                    BaseSamples::reverse_sort_by_n);
-            std::sort(this->heights_.begin(), this->heights_.end(),
-                    BaseSamples::reverse_sort_by_n);
-            std::sort(this->splits_.begin(), this->splits_.end(),
-                    BaseSamples::reverse_sort_by_n);
+            this->reverse_sort_samples_by_freq_();
         }
+
         unsigned int get_number_of_sources() const {
             return this->source_sample_sizes_.size();
         }
@@ -304,12 +328,10 @@ class TreeSample {
                 if (cumulative_freq > credible_set_cutoff) {
                     break;
                 }
-                cumulative_freq += ss.n / (double)this->sample_size_;
+                cumulative_freq += ss->get_sample_size() / (double)this->sample_size_;
                 std::vector<unsigned int> split_counts(this->get_number_of_sources(), 0);
                 SampleSummarizer<double> split_freqs;
-                for (unsigned int source_idx = 0;
-                        i < this->get_number_of_sources();
-                        ++ source_idx) {
+                for (auto source_idx : ss->get_source_indices) {
                     ++split_counts.at(source_idx);
                 }
                 unsigned int total = 0;
