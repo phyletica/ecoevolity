@@ -205,4 +205,48 @@ inline double effective_sample_size(
     return ess;
 }
 
+/**
+ * Calculate the potential scale reduction factor.
+ *
+ * Returns the square root of Equation 1.1 in:
+ *
+ * Brooks, Stephen P. and Andrew Gelman. 1998. General Methods for Monitoring
+ * Convergence of Iterative Simulations. Journal of Computational and
+ * Graphical Statistics, Volume7, Number 4, Pages 434-455.
+ */
+template <typename T>
+inline double potential_scale_reduction_factor(
+        std::vector< std::vector<T> > chains) {
+    unsigned int nchains = chains.size();
+    ECOEVOLITY_ASSERT(nchains > 1);
+    unsigned int nsamples = chains.at(0).size();
+    std::vector<SampleSummarizer<T>> sample_summaries(nchains);
+    for (unsigned int chain_idx = 0; chain_idx < chains.size(); ++chain_idx) {
+        for (unsigned int sample_idx = 0;
+                sample_idx < chains.at(chain_idx).size();
+                ++sample_idx) {
+            sample_summaries.at(chain_idx).add_sample(
+                    chains.at(chain_idx).at(sample_idx));
+        }
+        ECOEVOLITY_ASSERT(sample_summaries.at(chain_idx).sample_size() == nsamples);
+    }
+    ECOEVOLITY_ASSERT(sample_summaries.size() == nchains);
+
+    SampleSummarizer<double> summary_of_variances;
+    SampleSummarizer<double> summary_of_means;
+    for (auto ss : sample_summaries) {
+        summary_of_variances.add_sample(ss.variance());
+        summary_of_means.add_sample(ss.mean());
+    }
+    double within_chain_var = summary_of_variances.mean();
+    double between_chain_var = summary_of_means.variance();
+    double pooled_var_term1 = (1.0 - (1.0 / (double)nsamples)) * within_chain_var;
+    double pooled_var = pooled_var_term1 + between_chain_var;
+    double pooled_posterior_var = pooled_var + (between_chain_var / nchains);
+    if (within_chain_var == 0.0) {
+        return std::numeric_limits<double>::infinity();
+    }
+    return std::sqrt(pooled_posterior_var / within_chain_var);
+}
+
 #endif

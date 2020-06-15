@@ -286,3 +286,32 @@ TEST_CASE("Testing effective_sample_size", "[stats_util]") {
         REQUIRE(ess == Approx(100.0));
     }
 }
+
+TEST_CASE("Testing potential_scale_reduction_factor double", "[stats_util]") {
+    SECTION("Testing potential_scale_reduction_factor<double>") {
+        std::vector< std::vector<double> > chains {
+            {1.1, 1.3, 1.2, 1.6, 1.5},
+            {1.2, 1.7, 1.5, 1.9, 1.6}};
+        double psrf = potential_scale_reduction_factor<double>(chains);
+        // expectation calculated with commit aa83c8cc8584ba2d
+        // of pymc.diagnostics.gelman_rubin
+        // <https://github.com/pymc-devs/pymc/blob/master/pymc/diagnostics.py>
+        double e_pymc = 1.2591483413222384;
+        REQUIRE(psrf == Approx(e_pymc));
+    }
+}
+
+TEST_CASE("Testing potential_scale_reduction_factor double, equal chains",
+        "[stats_util]") {
+    SECTION("Testing potential_scale_reduction_factor<double>, equal cains") {
+        std::vector< std::vector<double> > chains {
+            {1.1, 1.3, 1.2, 1.6, 1.5},
+            {1.1, 1.3, 1.2, 1.6, 1.5}};
+        double psrf = potential_scale_reduction_factor<double>(chains);
+        // expectation calculated with commit aa83c8cc8584ba2d
+        // of pymc.diagnostics.gelman_rubin
+        // <https://github.com/pymc-devs/pymc/blob/master/pymc/diagnostics.py>
+        double e_pymc = 0.89442719099991586;
+        REQUIRE(psrf == Approx(e_pymc));
+    }
+}
