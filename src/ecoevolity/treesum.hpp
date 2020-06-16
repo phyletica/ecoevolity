@@ -17,8 +17,8 @@
  * with Ecoevolity.  If not, see <http://www.gnu.org/licenses/>.
 ******************************************************************************/
 
-#ifndef ECOEVOLITY_GENERAL_TREE_SAMPLE_HPP
-#define ECOEVOLITY_GENERAL_TREE_SAMPLE_HPP
+#ifndef ECOEVOLITY_TREESUM_HPP
+#define ECOEVOLITY_TREESUM_HPP
 
 #include <iostream>
 #include <sstream>
@@ -31,6 +31,8 @@
 #include "assert.hpp"
 #include "math_util.hpp"
 
+
+namespace treesum {
 
 class BaseSamples {
     protected:
@@ -158,10 +160,12 @@ class TreeSample {
         std::map< std::set< std::set<Split> >, std::shared_ptr<TopologySamples> > topologies_map_;
         std::map< std::set<Split>,             std::shared_ptr<HeightSamples>   > heights_map_;
         std::map< Split,                       std::shared_ptr<SplitSamples>    > splits_map_;
-        std::map< std::string, std::vector<double> > root_parameters_;
-        std::map< std::map< std::string, std::vector<double> > > leaf_parameters_;
+        std::vector<double> tree_lengths_;
         std::vector<std::string> source_paths_;
         std::vector<unsigned int> source_sample_sizes_;
+        Split root_split_;
+        std::vector<Split> leaf_splits_;
+        std::vector<std::string> leaf_labels_;
         unsigned int sample_size_ = 0;
 
         void reverse_sort_samples_by_freq_() {
@@ -171,6 +175,31 @@ class TreeSample {
                     BaseSamples::reverse_sort_by_n);
             std::sort(this->splits_.begin(), this->splits_.end(),
                     BaseSamples::reverse_sort_by_n);
+        }
+
+        void this->update_splits_and_labels_(const TreeType & tree) {
+            unsigned int nleaves = tree.get_leaf_node_count();
+            ECOEVOLITY_ASSERT(nleaves > 0);
+            tree.get_leaf_labels(this->leaf_labels_);
+            ECOEVOLITY_ASSERT(this->leaf_labels_.size() == nleaves);
+            // Leaf labels are sorted for every tree is parsed by
+            // BaseTree::get_trees.  Sorting here to make sure order is
+            // consistent with sampled trees (parsed by BaseTree)
+            std::sort(std::begin(this->leaf_labels_), std::end(this->leaf_labels_));
+            std::set<std::string> leaf_label_set(
+                    std::begin(this->leaf_labels_),
+                    std::end(this->leaf_labels_));
+            ECOEVOLITY_ASSERT(leaf_label_set.size() == nleaves);
+            this->root_split_.resize(nleaves);
+            for (unsigned int i = 0; i < nleaves; ++i) {
+                this->root_split_.set_leaf_bit(i);
+                Split leaf_split;
+                leaf_split.resize(nleaves);
+                leaf_split.set_leaf_bit(i);
+                // Because leaf_labels_ are sorted, the leaf_splits_ will be in
+                // order to match leaf_labels_
+                this->leaf_splits_.push_back(leaf_split);
+            }
         }
 
     public:
@@ -226,6 +255,9 @@ class TreeSample {
             std::vector< std::shared_ptr<DerivedNodeT> > leaves;
             unsigned int source_index = this->source_sample_sizes_.size();
             for (auto tree : trees) {
+                if (this->sample_size_ == 0) {
+                    this->update_splits_and_labels_(tree);
+                }
                 unsigned int tree_index = this->sample_size_;
                 split_set.clear();
                 heights.clear();
@@ -285,23 +317,7 @@ class TreeSample {
                         this->splits_map_[split_pmap.first] = ss;
                     }
                 }
-
-                parameter_map.clear();
-                tree.get_root().get_parameter_map(parameter_map);
-                for (auto pname_value : parameter_map) {
-                    this->root_parameters_[pname_value.first].push_back(
-                            pname_value.second);
-                }
-                leaves.clear();
-                tree.get_leaves(leaves);
-                for (auto leaf : leaves) {
-                    parameter_map.clear();
-                    leaf->get_parameter_map(parameter_map);
-                    for (auto pname_value : parameter_map) {
-                        this->leaf_parameters_[leaf->get_label()][pname_value.first].push_back(
-                                pname_value.second);
-                    }
-                }
+                this->tree_lengths_.push_back(tree.get_tree_length());
                 ++this->sample_size_;
                 ++this->source_sample_sizes_.back();
             }
@@ -315,6 +331,10 @@ class TreeSample {
 
         unsigned int get_number_of_sources() const {
             return this->source_sample_sizes_.size();
+        }
+
+        unsigned int get_number_of_leaves() const {
+            return this->leaf_splits_.size();
         }
 
         double get_average_std_dev_of_split_freqs(
@@ -347,5 +367,7 @@ class TreeSample {
             return std_devs_of_split_freqs.mean();
         }
 };
+
+} // treesum
 
 #endif
