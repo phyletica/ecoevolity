@@ -181,7 +181,10 @@ class BaseNode : public std::enable_shared_from_this<DerivedNodeT> {
         //Methods
 
         virtual void get_parameter_map(
-                std::map<std::string, double> & parameter_map) const { }
+                std::map<std::string, double> & parameter_map) const {
+            parameter_map["height"] = this->get_height();
+            parameter_map["length"] = this->get_length();
+        }
 
         /**
          * Method to populate non-height related data (e.g., pop size) from
@@ -831,6 +834,20 @@ class BaseNode : public std::enable_shared_from_this<DerivedNodeT> {
             std::vector<std::string> leaf_labels;
             leaf_labels.reserve(this->get_leaf_node_count());
             this->get_leaf_labels(leaf_labels);
+            return leaf_labels;
+        }
+
+        void get_leaf_label_set(std::set<std::string>& leaf_labels) const {
+            if (this->is_leaf()) {
+                leaf_labels.insert(this->get_label());
+            }
+            for (auto child_iter: this->children_) {
+                child_iter->get_leaf_label_set(leaf_labels);
+            }
+        }
+        std::set<std::string> get_leaf_label_set() const {
+            std::set<std::string> leaf_labels;
+            this->get_leaf_label_set(leaf_labels);
             return leaf_labels;
         }
 
