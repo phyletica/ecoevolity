@@ -1857,6 +1857,10 @@ class BaseTree {
             return this->root_->get_height();
         }
 
+        double get_tree_length() const {
+            return this->root_->get_clade_length();
+        }
+
         void scale_tree(double multiplier) {
             ECOEVOLITY_ASSERT(multiplier >= 0.0);
             ECOEVOLITY_ASSERT(! this->root_height_is_fixed());
@@ -2168,6 +2172,7 @@ class BaseTree {
         }
         void write_nexus_taxa_block(std::ostream& out) const {
             std::vector<std::string> leaf_labels = this->root_->get_leaf_labels();
+            std::sort(std::begin(leaf_labels), std::end(leaf_labels));
             out << "BEGIN TAXA;\n"
                 << "    DIMENSIONS NTAX=" << leaf_labels.size() << ";\n"
                 << "    TAXLABELS\n";
@@ -2176,6 +2181,19 @@ class BaseTree {
             }
             out << "    ;\n"
                 << "END;" << std::endl;
+        }
+
+        void get_leaf_labels(std::vector<std::string> & leaf_labels) const {
+            this->root_->get_leaf_labels(leaf_labels);
+        }
+        std::vector<std::string> get_leaf_labels() const {
+            return this->root_->get_leaf_labels();
+        }
+        void get_leaf_label_set(std::set<std::string> & leaf_labels) const {
+            this->root_->get_leaf_label_set(leaf_labels);
+        }
+        std::set<std::string> get_leaf_label_set() const {
+            return this->root_->get_leaf_label_set();
         }
 
         virtual void draw_from_prior(RandomNumberGenerator& rng) {
@@ -2199,8 +2217,10 @@ class BaseTree {
         }
 
         void store_splits_by_height_index(
-                std::map< unsigned int, std::set<Split> > & split_map,
-                bool resize_splits = false) const {
+                std::map< int, std::set<Split> > & split_map,
+                const bool resize_splits = false,
+                const bool include_root = true,
+                const bool include_leaves = false) const {
             if (resize_splits) {
                 this->root_->resize_splits(this->get_leaf_node_count());
             }
@@ -2209,12 +2229,18 @@ class BaseTree {
                     ++node) {
                 if (! (*node)->is_leaf()) { 
                     // add this internal node's split to split set
-                    unsigned int height_idx = this->get_node_height_index((*node)->get_height_parameter());
-                    split_map[height_idx].insert((*node)->split_);
+                    if (include_root || (! (*node)->is_root)) {
+                        int height_idx = (int)this->get_node_height_index(
+                                (*node)->get_height_parameter());
+                        split_map[height_idx].insert((*node)->split_);
+                    }
                 }
                 else {
                     // Set bit for this leaf node's index
                     (*node)->split_.set_leaf_bit((*node)->get_index());
+                    if (include_leaves) {
+                        split_map[-1].insert((*node)->split_);
+                    }
                 }
                 if ((*node)->has_parent()) {
                     (*node)->get_parent()->split_.add_split((*node)->split_);
@@ -2223,33 +2249,86 @@ class BaseTree {
         }
 
         std::map< unsigned int, std::set<Split> > get_splits_by_height_index(
-                bool resize_splits = false) const {
+                const bool resize_splits = false,
+                const bool include_root = true,
+                const bool include_leaves = false) const {
             std::map< unsigned int, std::set<Split> > split_map;
-            this->store_splits_by_height_index(split_map, resize_splits);
+            this->store_splits_by_height_index(split_map,
+                    resize_splits,
+                    include_root,
+                    include_leaves);
             return split_map;
         }
 
         void store_splits(
                 std::set< std::set<Split> > & split_set,
-                bool resize_splits = false) const {
-            std::map< unsigned int, std::set<Split> > split_map = this->get_splits_by_height_index(resize_splits);
+                const bool resize_splits = false,
+                const bool include_root = false,
+                const bool include_leaves = false) const {
+            std::map< unsigned int, std::set<Split> > split_map = this->get_splits_by_height_index(
+                    resize_splits,
+                    include_root,
+                    include_leaves);
             for (auto item : split_map) {
-                split_set.insert(item.second);
+                if (item.first == -1) {
+                    // If we have a leaf we want to store each leaf in its own
+                    // set so that it doesn't look like a shared divergence
+                    // time (i.e., multiple splits in a set)
+                    for (auto leaf_split : item.second) {
+                        std::set<Split> leaf_set {leaf_split};
+                        split_set.insert(leaf_set);
+                    }
+                }
+                else {
+                    split_set.insert(item.second);
+                }
             }
         }
 
         std::set< std::set<Split> > get_splits(
-                bool resize_splits = false) const {
+                const bool resize_splits = false,
+                const bool include_root = false,
+                const bool include_leaves = false) const {
             std::set< std::set<Split> > split_set;
-            this->store_splits(split_set, resize_splits);
+            this->store_splits(split_set,
+                    resize_splits,
+                    include_root,
+                    include_leaves);
             return split_set;
+        }
+
+        void store_split_length_map(
+                std::map<Split, double> & split_length_map,
+                const bool resize_splits = false) const {
+            if (resize_splits) {
+                this->root_->resize_splits(this->get_leaf_node_count());
+            }
+            for (auto node = this->pre_ordered_nodes_.rbegin();
+                    node != this->pre_ordered_nodes_.rend();
+                    ++node) {
+                if ((*node)->is_leaf()) {
+                    // Set bit for this leaf node's index
+                    (*node)->split_.set_leaf_bit((*node)->get_index());
+                }
+                split_length_map[(*node)->split_] = (*node)->get_length();
+                if ((*node)->has_parent()) {
+                    (*node)->get_parent()->split_.add_split((*node)->split_);
+                }
+            }
+        }
+
+        std::map<Split, double> get_split_length_map(
+                const bool resize_splits = false) const {
+            std::map<Split, double> split_length_map;
+            this->get_split_length_map(split_length_map, resize_splits);
+            return split_length_map;
         }
 
         void store_splits_heights_parameters(
                 std::set< std::set<Split> > & split_set,
-                std::map<std::set<Split>, double> heights,
-                std::map<Split, std::map<std::string, double> > parameters,
-                bool resize_splits = false) const {
+                std::map<std::set<Split>, double> & heights,
+                std::map<Split, std::map<std::string, double> > & parameters,
+                const bool resize_splits = false) const {
             std::map< unsigned int, std::set<Split> > split_map;
             if (resize_splits) {
                 this->root_->resize_splits(this->get_leaf_node_count());
@@ -2261,16 +2340,14 @@ class BaseTree {
                     // add this internal node's split to split set
                     unsigned int height_idx = this->get_node_height_index((*node)->get_height_parameter());
                     split_map[height_idx].insert((*node)->split_);
-                    std::map<std::string, double> parameter_map;
-                    (*node)->get_parameter_map(parameter_map);
-                    if (parameters.size() > 0) {
-                        parameters[(*node)->split_] = parameter_map;
-                    }
                 }
                 else {
                     // Set bit for this leaf node's index
                     (*node)->split_.set_leaf_bit((*node)->get_index());
                 }
+                std::map<std::string, double> parameter_map;
+                (*node)->get_parameter_map(parameter_map);
+                parameters[(*node)->split_] = parameter_map;
                 if ((*node)->has_parent()) {
                     (*node)->get_parent()->split_.add_split((*node)->split_);
                 }
