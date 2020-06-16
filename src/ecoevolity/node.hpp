@@ -363,6 +363,7 @@ class PopulationNode: public BaseNode<PopulationNode>{
 
         void get_parameter_map(
                 std::map<std::string, double> & parameter_map) const {
+            BaseNode::get_parameter_map(parameter_map);
             parameter_map["pop_size"] = this->get_population_size();
         }
 
