@@ -23,13 +23,10 @@
 #include <iostream>
 #include <sstream>
 #include <cmath>
-#include <limits>
-#include <memory>
 
 #include "basetree.hpp"
-#include "tree.hpp"
 #include "assert.hpp"
-#include "math_util.hpp"
+#include "treecomp.hpp"
 
 
 namespace treesum {
@@ -151,8 +148,11 @@ class SplitSamples : public BaseSamples {
         }
 };
 
-template<class TreeType>
+template<class NodeType>
 class TreeSample {
+    public:
+        typedef BaseTree<NodeType> tree_type;
+
     protected:
         std::vector< std::shared_ptr<TopologySamples> > topologies_;
         std::vector< std::shared_ptr<HeightSamples> > heights_;
@@ -167,6 +167,9 @@ class TreeSample {
         std::vector<Split> leaf_splits_;
         std::vector<std::string> leaf_labels_;
         unsigned int sample_size_ = 0;
+        bool target_tree_provided_ = false;
+        tree_type target_tree_;
+        std::vector<double> target_euclidean_distances_;
 
         void reverse_sort_samples_by_freq_() {
             std::sort(this->topologies_.begin(), this->topologies_.end(),
@@ -177,7 +180,7 @@ class TreeSample {
                     BaseSamples::reverse_sort_by_n);
         }
 
-        void this->update_splits_and_labels_(const TreeType & tree) {
+        void this->update_splits_and_labels_(const tree_type & tree) {
             unsigned int nleaves = tree.get_leaf_node_count();
             ECOEVOLITY_ASSERT(nleaves > 0);
             tree.get_leaf_labels(this->leaf_labels_);
@@ -215,6 +218,18 @@ class TreeSample {
                         ultrametricity_tolerance);
             }
         }
+        TreeSample(
+                const std::string & target_tree_path,
+                const std::vector<std::string> & paths,
+                const std::string & ncl_file_format,
+                unsigned int skip = 0,
+                double ultrametricity_tolerance = 1e-6) {
+            this->set_target_tree(target_tree_path, ncl_file_format);
+            for (auto path : paths) {
+                this->add_trees(path, ncl_file_format, skip,
+                        ultrametricity_tolerance);
+            }
+        }
 
         void add_trees(
                 const std::string & path,
@@ -222,7 +237,7 @@ class TreeSample {
                 unsigned int skip = 0,
                 double ultrametricity_tolerance = 1e-6) {
             this->source_paths_.push_back(path);
-            std::vector<TreeType> & trees,
+            std::vector<tree_type> & trees,
             BaseTree::get_trees(path,
                     ncl_file_format,
                     trees,
@@ -236,7 +251,7 @@ class TreeSample {
                 const std::string & ncl_file_format,
                 unsigned int skip = 0,
                 double ultrametricity_tolerance = 1e-6) {
-            std::vector<TreeType> & trees,
+            std::vector<tree_type> & trees,
             BaseTree::get_trees(tree_stream,
                     ncl_file_format,
                     trees,
@@ -246,7 +261,7 @@ class TreeSample {
         }
 
         void add_trees(
-                const std::vector<TreeType> & trees) {
+                const std::vector<tree_type> & trees) {
             this->source_sample_sizes_.push_back(0);
             std::set< std::set<Split> > split_set;
             std::map<std::set<Split>, double> heights;
@@ -317,6 +332,14 @@ class TreeSample {
                         this->splits_map_[split_pmap.first] = ss;
                     }
                 }
+                if (this->target_tree_provided_) {
+                    this->target_euclidean_distances_.push_back(
+                            treecomp::euclidean_distance<tree_type>(
+                                this->target_tree_,
+                                tree,
+                                false)
+                            );
+                }
                 this->tree_lengths_.push_back(tree.get_tree_length());
                 ++this->sample_size_;
                 ++this->source_sample_sizes_.back();
@@ -327,6 +350,26 @@ class TreeSample {
             }
             ECOEVOLITY_ASSERT(source_total == this->sample_size_);
             this->reverse_sort_samples_by_freq_();
+        }
+
+        void set_target_tree(
+                std::istream & tree_stream,
+                const std::string & ncl_file_format) {
+            this->target_tree_ = tree_type(tree_stream, ncl_file_format);
+            this->target_tree_provided_ = true;
+        }
+
+        void set_target_tree(
+                std::istream & tree_path,
+                const std::string & ncl_file_format) {
+            this->target_tree_ = tree_type(tree_path, ncl_file_format);
+            this->target_tree_provided_ = true;
+        }
+
+        void set_target_tree(
+                const std::string & newick_tree_string) {
+            this->target_tree_ = tree_type(newick_tree_string);
+            this->target_tree_provided_ = true;
         }
 
         unsigned int get_number_of_sources() const {
