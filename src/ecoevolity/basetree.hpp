@@ -493,6 +493,15 @@ class BaseTree {
                     height);
             if (using_height_comments) {
                 if (indices_to_heights.count(height_index) > 0) {
+                    // Sanity check to make sure height indices are consistent
+                    // across tree
+                    if (height != indices_to_heights[height_index]->get_value()) {
+                        std::ostringstream message;
+                        message << "ERROR: create_internal_node_: "
+                                << "Height index " << height_index
+                                << " has multiple heights in tree";
+                        throw EcoevolityError(message.str());
+                    }
                     node->set_height_parameter(indices_to_heights[height_index]);
                 }
                 else {
@@ -2320,7 +2329,7 @@ class BaseTree {
         std::map<Split, double> get_split_length_map(
                 const bool resize_splits = false) const {
             std::map<Split, double> split_length_map;
-            this->get_split_length_map(split_length_map, resize_splits);
+            this->store_split_length_map(split_length_map, resize_splits);
             return split_length_map;
         }
 
