@@ -20,7 +20,11 @@
 #ifndef ECOEVOLITY_TREECOMP_HPP
 #define ECOEVOLITY_TREECOMP_HPP
 
+#include <iostream>
 #include <cmath>
+#include <map>
+
+#include "split.hpp"
 
 
 namespace treecomp {
