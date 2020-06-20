@@ -24,8 +24,9 @@
 #include <sstream>
 #include <cmath>
 
-#include "basetree.hpp"
 #include "assert.hpp"
+#include "stats_util.hpp"
+#include "basetree.hpp"
 #include "treecomp.hpp"
 
 
@@ -74,7 +75,7 @@ class BaseSamples {
         const std::vector<unsigned int> & get_tree_indices() const {
             return this->tree_indices_;
         }
-}
+};
 
 class TopologySamples : public BaseSamples {
     protected:
@@ -87,7 +88,7 @@ class TopologySamples : public BaseSamples {
                 unsigned int tree_index,
                 unsigned int source_index) { 
             std::set< std::set<Split> > s_set;
-            for (auto splits_height : heights) {
+            for (auto splits_height : height_map) {
                 s_set.insert(splits_height.first);
                 this->heights_[splits_height.first].push_back(
                         splits_height.second);
@@ -135,7 +136,7 @@ class SplitSamples : public BaseSamples {
                 const std::map<std::string, double> & p,
                 unsigned int tree_index,
                 unsigned int source_index) {
-            if (this->n == 0) {
+            if (this->n_ == 0) {
                 this->split_ = s;
             }
             else {
@@ -180,7 +181,7 @@ class TreeSample {
                     BaseSamples::reverse_sort_by_n);
         }
 
-        void this->update_splits_and_labels_(const tree_type & tree) {
+        void update_splits_and_labels_(const tree_type & tree) {
             unsigned int nleaves = tree.get_leaf_node_count();
             ECOEVOLITY_ASSERT(nleaves > 0);
             tree.get_leaf_labels(this->leaf_labels_);
@@ -237,8 +238,9 @@ class TreeSample {
                 unsigned int skip = 0,
                 double ultrametricity_tolerance = 1e-6) {
             this->source_paths_.push_back(path);
-            std::vector<tree_type> & trees,
-            BaseTree::get_trees(path,
+            std::vector<tree_type> trees;
+            get_trees<tree_type>(
+                    path,
                     ncl_file_format,
                     trees,
                     skip,
@@ -251,8 +253,9 @@ class TreeSample {
                 const std::string & ncl_file_format,
                 unsigned int skip = 0,
                 double ultrametricity_tolerance = 1e-6) {
-            std::vector<tree_type> & trees,
-            BaseTree::get_trees(tree_stream,
+            std::vector<tree_type> trees;
+            get_trees<tree_type>(
+                    tree_stream,
                     ncl_file_format,
                     trees,
                     skip,
@@ -267,7 +270,7 @@ class TreeSample {
             std::map<std::set<Split>, double> heights;
             std::map<Split, std::map<std::string, double> > parameters;
             std::map<std::string, double> parameter_map;
-            std::vector< std::shared_ptr<DerivedNodeT> > leaves;
+            std::vector< std::shared_ptr<NodeType> > leaves;
             unsigned int source_index = this->source_sample_sizes_.size();
             for (auto tree : trees) {
                 if (this->sample_size_ == 0) {
@@ -360,7 +363,7 @@ class TreeSample {
         }
 
         void set_target_tree(
-                std::istream & tree_path,
+                const std::string & tree_path,
                 const std::string & ncl_file_format) {
             this->target_tree_ = tree_type(tree_path, ncl_file_format);
             this->target_tree_provided_ = true;
@@ -394,12 +397,12 @@ class TreeSample {
                 cumulative_freq += ss->get_sample_size() / (double)this->sample_size_;
                 std::vector<unsigned int> split_counts(this->get_number_of_sources(), 0);
                 SampleSummarizer<double> split_freqs;
-                for (auto source_idx : ss->get_source_indices) {
+                for (auto source_idx : ss->get_source_indices()) {
                     ++split_counts.at(source_idx);
                 }
                 unsigned int total = 0;
                 for (unsigned int source_idx = 0;
-                        i < this->get_number_of_sources();
+                        source_idx < this->get_number_of_sources();
                         ++ source_idx) {
                     split_freqs.add_sample(split_counts.at(source_idx) / (double)this->sample_size_);
                     total += split_counts.at(source_idx);
