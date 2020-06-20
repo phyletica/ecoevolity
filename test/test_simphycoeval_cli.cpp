@@ -143,10 +143,11 @@ TEST_CASE("Testing simphycoeval cli with 5 leaves, full model, unconstrained siz
         REQUIRE(path::exists(tree_path));
 
         std::vector< BasePopulationTree > trees;
-        BaseTree<PopulationNode>::get_trees<BasePopulationTree>(
+        get_trees<BasePopulationTree>(
                 tree_path,
                 "relaxedphyliptree",
                 trees,
+                0,
                 1e-6);
 
         REQUIRE(trees.size() == nsamples);
@@ -473,10 +474,11 @@ TEST_CASE("Testing simphycoeval cli with 3 leaves, constrained model",
         REQUIRE(path::exists(tree_path));
 
         std::vector< BasePopulationTree > trees;
-        BaseTree<PopulationNode>::get_trees<BasePopulationTree>(
+        get_trees<BasePopulationTree>(
                 tree_path,
                 "relaxedphyliptree",
                 trees,
+                0,
                 1e-6);
 
         REQUIRE(trees.size() == nsamples);
@@ -691,10 +693,11 @@ TEST_CASE("Testing simphycoeval cli with 3 leaves, fully constrained model",
         REQUIRE(path::exists(tree_path));
 
         std::vector< BasePopulationTree > trees;
-        BaseTree<PopulationNode>::get_trees<BasePopulationTree>(
+        get_trees<BasePopulationTree>(
                 tree_path,
                 "relaxedphyliptree",
                 trees,
+                0,
                 1e-6);
 
         REQUIRE(trees.size() == nsamples);
