@@ -1,0 +1,18 @@
+#NEXUS
+BEGIN TAXA;
+    DIMENSIONS NTAX=5;
+    TAXLABELS
+        sp1
+        sp2
+        sp3
+        sp4
+        sp5
+    ;
+END;
+
+BEGIN TREES;
+    TREE t1 = [&R] (sp1[&height=0,pop_size=0.5]:0.1,sp2[&height=0,pop_size=0.4]:0.1,sp3[&height=0,pop_size=0.5]:0.1,sp4[&height=0,pop_size=0.3]:0.1,sp5[&height=0,pop_size=0.3]:0.1)[&height_index=1,height=0.1,pop_size=0.4]:0.0;
+    TREE t2 = [&R] (sp1[&height=0,pop_size=0.5]:0.1,sp2[&height=0,pop_size=0.4]:0.1,sp3[&height=0,pop_size=0.5]:0.1,sp4[&height=0,pop_size=0.3]:0.1,sp5[&height=0,pop_size=0.3]:0.1)[&height_index=1,height=0.1,pop_size=0.4]:0.0;
+    TREE t3 = [&R] (sp1[&height=0,pop_size=0.5]:0.1,sp2[&height=0,pop_size=0.4]:0.1,sp3[&height=0,pop_size=0.5]:0.1,sp4[&height=0,pop_size=0.3]:0.1,sp5[&height=0,pop_size=0.3]:0.1)[&height_index=1,height=0.1,pop_size=0.4]:0.0;
+    TREE t4 = [&R] (sp3[&height=0,pop_size=0.5]:0.1,sp1[&height=0,pop_size=0.5]:0.1,sp2[&height=0,pop_size=0.4]:0.1,sp4[&height=0,pop_size=0.3]:0.1,sp5[&height=0,pop_size=0.3]:0.1)[&height_index=1,height=0.1,pop_size=0.4]:0.0;
+END;

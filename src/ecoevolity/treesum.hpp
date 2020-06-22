@@ -89,7 +89,14 @@ class TopologySamples : public BaseSamples {
                 unsigned int source_index) { 
             std::set< std::set<Split> > s_set;
             for (auto splits_height : height_map) {
+                std::cout << "inserting split set\n";
                 s_set.insert(splits_height.first);
+                if (this->heights_.count(splits_height.first) < 1) {
+                    std::cout << "new split set; creating empty heights vector\n";
+                    std::vector<double> hts;
+                    this->heights_[splits_height.first] = hts;
+                }
+                std::cout << "pushing back height\n";
                 this->heights_[splits_height.first].push_back(
                         splits_height.second);
             }
@@ -265,6 +272,7 @@ class TreeSample {
 
         void add_trees(
                 const std::vector<tree_type> & trees) {
+            std::cout << "Entering add_trees\n";
             this->source_sample_sizes_.push_back(0);
             std::set< std::set<Split> > split_set;
             std::map<std::set<Split>, double> heights;
@@ -280,32 +288,41 @@ class TreeSample {
                 split_set.clear();
                 heights.clear();
                 parameters.clear();
+                std::cout << "Calling store_splits_heights_parameters\n";
                 tree.store_splits_heights_parameters(
                         split_set,
                         heights,
                         parameters,
                         false);
+                std::cout << "store_splits_heights_parameters returned\n";
                 if (this->topologies_map_.count(split_set) > 0) {
+                    std::cout << "Adding sample to existing topology\n";
                     this->topologies_map_[split_set]->add_sample(
                             heights,
                             tree_index,
                             source_index);
                 }
                 else {
+                    std::cout << "Creating new topology sample\n";
                     std::shared_ptr<TopologySamples> ts;
+                    std::cout << "ts->add_sample\n";
                     ts->add_sample(heights, tree_index, source_index);
+                    std::cout << "topologies_.push_back(ts)\n";
                     this->topologies_.push_back(ts);
+                    std::cout << "topologies_map_[split_set] = ts\n";
                     this->topologies_map_[split_set] = ts;
                 }
                 for (auto splits_height : heights) {
                     if (this->heights_map_.count(splits_height.first) > 0) {
-                        this->heights[splits_height.first]->add_sample(
+                        std::cout << "Adding sample to existing height\n";
+                        this->heights_map_[splits_height.first]->add_sample(
                                 splits_height.first,
                                 splits_height.second,
                                 tree_index,
                                 source_index);
                     }
                     else {
+                        std::cout << "Creating new height sample\n";
                         std::shared_ptr<HeightSamples> hs;
                         hs->add_sample(
                                 splits_height.first,
@@ -318,13 +335,15 @@ class TreeSample {
                 }
                 for (auto split_pmap : parameters) {
                     if (this->splits_map_.count(split_pmap.first) > 0) {
-                        this->splits[split_pmap.first]->add_sample(
+                        std::cout << "Adding sample to existing split\n";
+                        this->splits_map_[split_pmap.first]->add_sample(
                                 split_pmap.first,
                                 split_pmap.second,
                                 tree_index,
                                 source_index);
                     }
                     else {
+                        std::cout << "Creating new split sample\n";
                         std::shared_ptr<SplitSamples> ss;
                         ss->add_sample(
                                 split_pmap.first,
@@ -336,6 +355,7 @@ class TreeSample {
                     }
                 }
                 if (this->target_tree_provided_) {
+                    std::cout << "Adding euclidean distance\n";
                     this->target_euclidean_distances_.push_back(
                             treecomp::euclidean_distance<tree_type>(
                                 this->target_tree_,
@@ -343,6 +363,7 @@ class TreeSample {
                                 false)
                             );
                 }
+                std::cout << "Adding tree length\n";
                 this->tree_lengths_.push_back(tree.get_tree_length());
                 ++this->sample_size_;
                 ++this->source_sample_sizes_.back();
@@ -353,6 +374,7 @@ class TreeSample {
             }
             ECOEVOLITY_ASSERT(source_total == this->sample_size_);
             this->reverse_sort_samples_by_freq_();
+            std::cout << "Exiting add_trees\n\n";
         }
 
         void set_target_tree(
