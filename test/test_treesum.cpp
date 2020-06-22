@@ -14,28 +14,6 @@ TEST_CASE("Testing bare BaseSample", "[treesum]") {
     }
 }
 
-        /* TreeSample( */
-        /*         const std::vector<std::string> & paths, */
-        /*         const std::string & ncl_file_format, */
-        /*         unsigned int skip = 0, */
-        /*         double ultrametricity_tolerance = 1e-6) { */
-        /*     for (auto path : paths) { */
-        /*         this->add_trees(path, ncl_file_format, skip, */
-        /*                 ultrametricity_tolerance); */
-        /*     } */
-        /* } */
-        /* TreeSample( */
-        /*         const std::string & target_tree_path, */
-        /*         const std::vector<std::string> & paths, */
-        /*         const std::string & ncl_file_format, */
-        /*         unsigned int skip = 0, */
-        /*         double ultrametricity_tolerance = 1e-6) { */
-        /*     this->set_target_tree(target_tree_path, ncl_file_format); */
-        /*     for (auto path : paths) { */
-        /*         this->add_trees(path, ncl_file_format, skip, */
-        /*                 ultrametricity_tolerance); */
-        /*     } */
-        /* } */
 TEST_CASE("Bad label in source tree", "[treesum]") {
     SECTION("Bad label in source tree") {
         std::vector<std::string> source_tree_paths {
@@ -62,3 +40,9 @@ TEST_CASE("Bad label in source tree", "[treesum]") {
         /* ts.add_trees(source_tree_paths.at(5), "nexus"); */
     }
 }
+
+// Test extra tip in source tree
+// Test missing tip in source tree
+// Test bad label in target tree
+// Test extra tip in target tree
+// Test mssing tip in target tree
