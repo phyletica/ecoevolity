@@ -314,10 +314,14 @@ BasePopulationTree::BasePopulationTree(
             ++i) {
         expected_internal_pop_indices.push_back(i);
     }
-    ECOEVOLITY_ASSERT(std::is_permutation(
+    ECOEVOLITY_ASSERT((leaf_pop_indices.size() == expected_leaf_pop_indices.size())
+            &&
+            std::is_permutation(
                 leaf_pop_indices.begin(), leaf_pop_indices.end(),
                 expected_leaf_pop_indices.begin()));
-    ECOEVOLITY_ASSERT(std::is_permutation(
+    ECOEVOLITY_ASSERT((internal_pop_indices.size() == expected_internal_pop_indices.size())
+            &&
+            std::is_permutation(
                 internal_pop_indices.begin(), internal_pop_indices.end(),
                 expected_internal_pop_indices.begin()));
     BiallelicData bd(pop_labels,
@@ -743,7 +747,8 @@ void BasePopulationTree::check_if_leaf_labels_match_data() const {
     // Make sure labels on tree match the data
     std::vector<std::string> leaf_labels = this->root_->get_leaf_labels();
     std::vector<std::string> pop_labels = this->data_.get_population_labels();
-    if (! std::is_permutation(pop_labels.begin(), pop_labels.end(), leaf_labels.begin())) {
+    if ((pop_labels.size() != leaf_labels.size()) ||
+            (! std::is_permutation(pop_labels.begin(), pop_labels.end(), leaf_labels.begin()))) {
         std::ostringstream message;
         message << "Tip labels in provided tree do not match labels in data file";
         throw EcoevolityError(message.str());
