@@ -14,5 +14,5 @@ BEGIN TREES;
     TREE t2 = [&R] ((sp1[&height=0,pop_size=0.4]:0.4,sp2[&height=0,pop_size=0.5]:0.4)[&height_index=0,height=0.4,pop_size=0.6]:0.1,sp3[&height=0,pop_size=0.4]:0.5,sp4[&height=0,pop_size=0.5]:0.5)[&height_index=1,height=0.5,pop_size=0.6]:0.0;
     TREE t3 = [&R] ((sp1[&height=0,pop_size=0.4]:0.4,sp2[&height=0,pop_size=0.5]:0.4)[&height_index=0,height=0.4,pop_size=0.6]:0.1,sp3[&height=0,pop_size=0.4]:0.5,sp4[&height=0,pop_size=0.5]:0.5)[&height_index=1,height=0.5,pop_size=0.6]:0.0;
     TREE t4 = [&R] ((sp2[&height=0,pop_size=0.4]:0.3,sp1[&height=0,pop_size=0.5]:0.3)[&height_index=0,height=0.3,pop_size=0.6]:0.1,sp4[&height=0,pop_size=0.4]:0.4,sp3[&height=0,pop_size=0.5]:0.4)[&height_index=1,height=0.4,pop_size=0.4]:0.0;
-    TREE t4 = [&R] ((sp2[&height=0,pop_size=0.1]:0.1,sp1[&height=0,pop_size=0.2]:0.1)[&height_index=0,height=0.1,pop_size=0.2]:0.2,sp4[&height=0,pop_size=0.1]:0.3,sp3[&height=0,pop_size=0.3]:0.3)[&height_index=1,height=0.3,pop_size=0.1]:0.0;
+    TREE t5 = [&R] ((sp2[&height=0,pop_size=0.1]:0.1,sp1[&height=0,pop_size=0.2]:0.1)[&height_index=0,height=0.1,pop_size=0.2]:0.2,sp4[&height=0,pop_size=0.1]:0.3,sp3[&height=0,pop_size=0.3]:0.3)[&height_index=1,height=0.3,pop_size=0.1]:0.0;
 END;

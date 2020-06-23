@@ -147,6 +147,15 @@ class SplitSamples : public BaseSamples {
             }
             this->tally_sample_(tree_index, source_index);
         }
+
+        const Split & get_split() const {
+            return this->split_;
+        }
+        std::string get_split_as_string(
+                const char unset_char = '0',
+                const char set_char = '1') const {
+            return this->split_.as_string(unset_char, set_char);
+        }
 };
 
 template<class NodeType>
@@ -158,12 +167,14 @@ class TreeSample {
         std::vector< std::shared_ptr<TopologySamples> > topologies_;
         std::vector< std::shared_ptr<HeightSamples> > heights_;
         std::vector< std::shared_ptr<SplitSamples> > splits_;
+        std::vector< std::shared_ptr<SplitSamples> > non_trivial_splits_;
         std::map< std::set< std::set<Split> >, std::shared_ptr<TopologySamples> > topologies_map_;
         std::map< std::set<Split>,             std::shared_ptr<HeightSamples>   > heights_map_;
         std::map< Split,                       std::shared_ptr<SplitSamples>    > splits_map_;
         std::vector<double> tree_lengths_;
         std::vector<std::string> source_paths_;
         std::vector<unsigned int> source_sample_sizes_;
+        std::set<Split> trivial_splits_;
         Split root_split_;
         std::vector<Split> leaf_splits_;
         std::vector<std::string> leaf_labels_;
@@ -178,6 +189,8 @@ class TreeSample {
             std::sort(this->heights_.begin(), this->heights_.end(),
                     BaseSamples::reverse_sort_by_n);
             std::sort(this->splits_.begin(), this->splits_.end(),
+                    BaseSamples::reverse_sort_by_n);
+            std::sort(this->non_trivial_splits_.begin(), this->non_trivial_splits_.end(),
                     BaseSamples::reverse_sort_by_n);
         }
 
@@ -203,7 +216,9 @@ class TreeSample {
                 // Because leaf_labels_ are sorted, the leaf_splits_ will be in
                 // order to match leaf_labels_
                 this->leaf_splits_.push_back(leaf_split);
+                this->trivial_splits_.insert(leaf_split);
             }
+            this->trivial_splits_.insert(this->root_split_);
         }
 
         void check_leaf_labels_(const tree_type & tree) {
@@ -357,6 +372,9 @@ class TreeSample {
                                 source_index);
                         this->splits_.push_back(ss);
                         this->splits_map_[split_pmap.first] = ss;
+                        if (this->trivial_splits_.count(ss->get_split()) < 1) {
+                            this->non_trivial_splits_.push_back(ss);
+                        }
                     }
                 }
                 if (this->target_tree_provided_) {
@@ -408,6 +426,27 @@ class TreeSample {
 
         unsigned int get_number_of_leaves() const {
             return this->leaf_splits_.size();
+        }
+
+        unsigned int get_sample_size() const {
+            return this->sample_size_;
+        }
+
+        const std::vector<unsigned int> & get_source_sample_sizes() const {
+            return this->source_sample_sizes_;
+        }
+
+        const std::vector< std::shared_ptr<TopologySamples> > & get_topologies() const {
+            return this->topologies_;
+        }
+        const std::vector< std::shared_ptr<HeightSamples> > & get_heights() const {
+            return this->heights_;
+        }
+        const std::vector< std::shared_ptr<SplitSamples> > & get_splits() const {
+            return this->splits_;
+        }
+        const std::vector< std::shared_ptr<SplitSamples> > & get_non_trivial_splits() const {
+            return this->non_trivial_splits_;
         }
 
         double get_average_std_dev_of_split_freqs(
