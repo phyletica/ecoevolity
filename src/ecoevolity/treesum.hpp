@@ -206,6 +206,25 @@ class TreeSample {
             }
         }
 
+        void check_leaf_labels_(const tree_type & tree) {
+            std::vector<std::string> l = tree.get_leaf_labels();
+            if (
+                    (l.size() != this->leaf_labels_.size()) ||
+                    (! std::is_permutation(std::begin(l), std::end(l), std::begin(this->leaf_labels_)))
+               ){
+                throw EcoevolityError("Tip labels in trees do not match");
+            }
+        }
+
+        void check_target_tree_() {
+            if (this->sample_size_ < 1) {
+                this->update_splits_and_labels_(this->target_tree_);
+            }
+            else {
+                this->check_leaf_labels_(this->target_tree_);
+            }
+        }
+
     public:
 
         TreeSample() { }
@@ -273,9 +292,14 @@ class TreeSample {
             std::vector< std::shared_ptr<NodeType> > leaves;
             unsigned int source_index = this->source_sample_sizes_.size();
             for (auto tree : trees) {
-                if (this->sample_size_ == 0) {
+                if ((this->sample_size_ < 1) && (this->leaf_labels_.size() < 1)) {
                     this->update_splits_and_labels_(tree);
                 }
+                /* else { */
+                /*     this->check_leaf_labels_(tree); */
+                /* } */
+                this->check_leaf_labels_(tree);
+
                 unsigned int tree_index = this->sample_size_;
                 split_set.clear();
                 heights.clear();
@@ -360,6 +384,7 @@ class TreeSample {
                 const std::string & ncl_file_format) {
             this->target_tree_ = tree_type(tree_stream, ncl_file_format);
             this->target_tree_provided_ = true;
+            this->check_target_tree_();
         }
 
         void set_target_tree(
@@ -367,12 +392,14 @@ class TreeSample {
                 const std::string & ncl_file_format) {
             this->target_tree_ = tree_type(tree_path, ncl_file_format);
             this->target_tree_provided_ = true;
+            this->check_target_tree_();
         }
 
         void set_target_tree(
                 const std::string & newick_tree_string) {
             this->target_tree_ = tree_type(newick_tree_string);
             this->target_tree_provided_ = true;
+            this->check_target_tree_();
         }
 
         unsigned int get_number_of_sources() const {
