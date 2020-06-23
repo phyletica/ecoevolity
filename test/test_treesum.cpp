@@ -37,7 +37,7 @@ TEST_CASE("Bad label in source tree", "[treesum]") {
         ts.add_trees(source_tree_paths.at(6), "nexus");
         ts.add_trees(source_tree_paths.at(7), "nexus");
         // Should get error for mismatching tip label
-        /* ts.add_trees(source_tree_paths.at(5), "nexus"); */
+        ts.add_trees(source_tree_paths.at(5), "nexus");
     }
 }
 
