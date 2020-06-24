@@ -406,5 +406,92 @@ TEST_CASE("Basic testing", "[treesum]") {
         }
         REQUIRE(non_trivial_split_counts == expected_non_trivial_split_counts);
         REQUIRE(non_trivial_split_count_map == expected_non_trivial_split_count_map);
+
+        std::set<std::string> s_12;
+        s_12.insert("1100");
+        std::set<std::string> s_34;
+        s_34.insert("0011");
+        std::set<std::string> s_13;
+        s_13.insert("1010");
+        std::set<std::string> s_24;
+        s_24.insert("0101");
+        std::set<std::string> s_14;
+        s_14.insert("1001");
+        std::set<std::string> s_23;
+        s_23.insert("0110");
+        std::set<std::string> s_123;
+        s_123.insert("1110");
+        std::set<std::string> s_234;
+        s_234.insert("0111");
+        std::set<std::string> s_14_23;
+        s_14_23.insert("1001");
+        s_14_23.insert("0110");
+        std::set<std::string> s_r;
+        s_r.insert("1111");
+        
+        std::set< std::set<std::string> > t_12_34;
+        t_12_34.insert(s_12);
+        t_12_34.insert(s_34);
+        t_12_34.insert(s_r);
+        
+        std::set< std::set<std::string> > t_12;
+        t_12.insert(s_12);
+        t_12.insert(s_r);
+        
+        std::set< std::set<std::string> > t_13_24;
+        t_13_24.insert(s_13);
+        t_13_24.insert(s_24);
+        t_13_24.insert(s_r);
+        
+        std::set< std::set<std::string> > t_14_23_shared;
+        t_14_23_shared.insert(s_14_23);
+        t_14_23_shared.insert(s_r);
+        
+        std::set< std::set<std::string> > t_34;
+        t_34.insert(s_34);
+        t_34.insert(s_r);
+        
+        std::set< std::set<std::string> > t_comb;
+        t_comb.insert(s_r);
+        
+        std::set< std::set<std::string> > t_ladder_1234;
+        t_ladder_1234.insert(s_12);
+        t_ladder_1234.insert(s_123);
+        t_ladder_1234.insert(s_r);
+        
+        std::set< std::set<std::string> > t_ladder_4321;
+        t_ladder_4321.insert(s_34);
+        t_ladder_4321.insert(s_234);
+        t_ladder_4321.insert(s_r);
+        
+        std::map< std::set< std::set<std::string> >, unsigned int> expected_topo_count_map;
+        expected_topo_count_map[t_14_23_shared] = 4;
+        expected_topo_count_map[t_12] = 3;
+        expected_topo_count_map[t_34] = 2;
+        expected_topo_count_map[t_12_34] = 2;
+        expected_topo_count_map[t_13_24] = 2;
+        expected_topo_count_map[t_comb] = 2;
+        expected_topo_count_map[t_ladder_1234] = 2;
+        expected_topo_count_map[t_ladder_4321] = 1;
+        
+        std::vector<unsigned int> expected_topo_counts = {4,3,2,2,2,2,2,1};
+
+        std::map< std::set< std::set<std::string> >, unsigned int> topo_count_map;
+        std::vector<unsigned int> topo_counts;
+        for (auto t : ts.get_topologies()) {
+            std::set< std::set<std::string> > tree;
+            for (auto s_set : t->get_split_set()) {
+                std::set<std::string> splits;
+                for (auto split : s_set) {
+                    splits.insert(split.as_string());
+                }
+                tree.insert(splits);
+            }
+            REQUIRE(topo_count_map.count(tree) == 0);
+            topo_count_map[tree] = t->get_sample_size();
+            topo_counts.push_back(t->get_sample_size());
+        }
+        REQUIRE(topo_count_map == expected_topo_count_map);
+        REQUIRE(topo_counts == expected_topo_counts);
     }
 }

@@ -101,6 +101,10 @@ class TopologySamples : public BaseSamples {
             }
             this->tally_sample_(tree_index, source_index);
         }
+
+        const std::set< std::set<Split> > & get_split_set() const {
+            return this->split_set_;
+        }
 };
 
 class HeightSamples : public BaseSamples {
