@@ -2325,6 +2325,7 @@ TEST_CASE("Test Node getters", "[Node]") {
 
         std::vector< std::shared_ptr<Node> > expected_mapped_nodes = {root_child1, root_child2};
         std::vector< std::shared_ptr<Node> > mapped_nodes = root->get_mapped_nodes(int_ht);
+        REQUIRE(mapped_nodes.size() == expected_mapped_nodes.size());
         REQUIRE(std::is_permutation(
                     mapped_nodes.begin(), mapped_nodes.end(),
                     expected_mapped_nodes.begin()));
@@ -2346,6 +2347,7 @@ TEST_CASE("Test Node getters", "[Node]") {
 
         expected_mapped_nodes = {root_child1, root_child2};
         mapped_nodes = root->get_mapped_nodes(int_ht);
+        REQUIRE(mapped_nodes.size() == expected_mapped_nodes.size());
         REQUIRE(std::is_permutation(
                     mapped_nodes.begin(), mapped_nodes.end(),
                     expected_mapped_nodes.begin()));
@@ -2393,6 +2395,7 @@ TEST_CASE("Test Node getters", "[Node]") {
 
         expected_mapped_nodes = {root, root_child2};
         mapped_nodes = root->get_polytomy_nodes();
+        REQUIRE(mapped_nodes.size() == expected_mapped_nodes.size());
         REQUIRE(std::is_permutation(
                     mapped_nodes.begin(), mapped_nodes.end(),
                     expected_mapped_nodes.begin()));

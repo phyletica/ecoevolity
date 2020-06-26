@@ -1951,6 +1951,7 @@ TEST_CASE("Testing BaseTree::collision_node_permute with 3 leaves", "[BaseTree]"
             REQUIRE(leaf2->is_leaf());
             std::vector< std::shared_ptr<Node> > expected_leaves {leaf0, leaf1, leaf2};
             std::vector< std::shared_ptr<Node> > leaves = root->get_leaves();
+            REQUIRE(leaves.size() == expected_leaves.size());
             REQUIRE(std::is_permutation(
                         leaves.begin(), leaves.end(),
                         expected_leaves.begin()));
@@ -2156,6 +2157,7 @@ TEST_CASE("Testing BaseTree::collision_node_permute 4 leaf polytomy", "[BaseTree
             REQUIRE(internal0->get_number_of_children() == 2);
             std::vector< std::shared_ptr<Node> > expected_leaves {leaf0, leaf1, leaf2, leaf3};
             std::vector< std::shared_ptr<Node> > leaves = root->get_leaves();
+            REQUIRE(leaves.size() == expected_leaves.size());
             REQUIRE(std::is_permutation(
                         leaves.begin(), leaves.end(),
                         expected_leaves.begin()));
@@ -2247,6 +2249,7 @@ TEST_CASE("Testing BaseTree::collision_node_permute 4 leaf 3 colliders", "[BaseT
             REQUIRE(internal1->get_number_of_children() == 2);
             std::vector< std::shared_ptr<Node> > expected_leaves {leaf0, leaf1, leaf2, leaf3};
             std::vector< std::shared_ptr<Node> > leaves = root->get_leaves();
+            REQUIRE(leaves.size() == expected_leaves.size());
             REQUIRE(std::is_permutation(
                         leaves.begin(), leaves.end(),
                         expected_leaves.begin()));
@@ -2346,6 +2349,7 @@ TEST_CASE("Testing BaseTree::collision_node_permute 6 leaf 4 colliders", "[BaseT
             REQUIRE(internal2->get_number_of_children() == 2);
             std::vector< std::shared_ptr<Node> > expected_leaves {leaf0, leaf1, leaf2, leaf3, leaf4, leaf5};
             std::vector< std::shared_ptr<Node> > leaves = root->get_leaves();
+            REQUIRE(leaves.size() == expected_leaves.size());
             REQUIRE(std::is_permutation(
                         leaves.begin(), leaves.end(),
                         expected_leaves.begin()));
@@ -2474,6 +2478,7 @@ TEST_CASE("Testing BaseTree::collision_node_swap with 3 leaves", "[xBaseTree]") 
             REQUIRE(leaf2->is_leaf());
             std::vector< std::shared_ptr<Node> > expected_leaves {leaf0, leaf1, leaf2};
             std::vector< std::shared_ptr<Node> > leaves = root->get_leaves();
+            REQUIRE(leaves.size() == expected_leaves.size());
             REQUIRE(std::is_permutation(
                         leaves.begin(), leaves.end(),
                         expected_leaves.begin()));
@@ -2534,6 +2539,7 @@ TEST_CASE("Testing BaseTree::collision_node_swap_all with 3 leaves", "[xBaseTree
             REQUIRE(leaf2->is_leaf());
             std::vector< std::shared_ptr<Node> > expected_leaves {leaf0, leaf1, leaf2};
             std::vector< std::shared_ptr<Node> > leaves = root->get_leaves();
+            REQUIRE(leaves.size() == expected_leaves.size());
             REQUIRE(std::is_permutation(
                         leaves.begin(), leaves.end(),
                         expected_leaves.begin()));
@@ -2596,6 +2602,7 @@ TEST_CASE("Testing BaseTree::collision_node_swap 4 leaf polytomy", "[xBaseTree]"
             REQUIRE(internal0->get_number_of_children() == 2);
             std::vector< std::shared_ptr<Node> > expected_leaves {leaf0, leaf1, leaf2, leaf3};
             std::vector< std::shared_ptr<Node> > leaves = root->get_leaves();
+            REQUIRE(leaves.size() == expected_leaves.size());
             REQUIRE(std::is_permutation(
                         leaves.begin(), leaves.end(),
                         expected_leaves.begin()));
@@ -2670,6 +2677,7 @@ TEST_CASE("Testing BaseTree::collision_node_swap_all 4 leaf polytomy", "[xBaseTr
             REQUIRE(internal0->get_number_of_children() == 2);
             std::vector< std::shared_ptr<Node> > expected_leaves {leaf0, leaf1, leaf2, leaf3};
             std::vector< std::shared_ptr<Node> > leaves = root->get_leaves();
+            REQUIRE(leaves.size() == expected_leaves.size());
             REQUIRE(std::is_permutation(
                         leaves.begin(), leaves.end(),
                         expected_leaves.begin()));
@@ -2749,6 +2757,7 @@ TEST_CASE("Testing BaseTree::collision_node_swap 4 leaf 3 colliders", "[xBaseTre
             REQUIRE(internal1->get_number_of_children() == 2);
             std::vector< std::shared_ptr<Node> > expected_leaves {leaf0, leaf1, leaf2, leaf3};
             std::vector< std::shared_ptr<Node> > leaves = root->get_leaves();
+            REQUIRE(leaves.size() == expected_leaves.size());
             REQUIRE(std::is_permutation(
                         leaves.begin(), leaves.end(),
                         expected_leaves.begin()));
@@ -2828,6 +2837,7 @@ TEST_CASE("Testing BaseTree::collision_node_swap_all 4 leaf 3 colliders", "[xBas
             REQUIRE(internal1->get_number_of_children() == 2);
             std::vector< std::shared_ptr<Node> > expected_leaves {leaf0, leaf1, leaf2, leaf3};
             std::vector< std::shared_ptr<Node> > leaves = root->get_leaves();
+            REQUIRE(leaves.size() == expected_leaves.size());
             REQUIRE(std::is_permutation(
                         leaves.begin(), leaves.end(),
                         expected_leaves.begin()));
@@ -2917,6 +2927,7 @@ TEST_CASE("Testing BaseTree::collision_node_swap 6 leaf 4 colliders", "[xBaseTre
             REQUIRE(internal2->get_number_of_children() == 2);
             std::vector< std::shared_ptr<Node> > expected_leaves {leaf0, leaf1, leaf2, leaf3, leaf4, leaf5};
             std::vector< std::shared_ptr<Node> > leaves = root->get_leaves();
+            REQUIRE(leaves.size() == expected_leaves.size());
             REQUIRE(std::is_permutation(
                         leaves.begin(), leaves.end(),
                         expected_leaves.begin()));
@@ -3068,6 +3079,7 @@ TEST_CASE("Testing BaseTree::collision_node_swap_all 6 leaf 4 colliders", "[xBas
             REQUIRE(internal2->get_number_of_children() == 2);
             std::vector< std::shared_ptr<Node> > expected_leaves {leaf0, leaf1, leaf2, leaf3, leaf4, leaf5};
             std::vector< std::shared_ptr<Node> > leaves = root->get_leaves();
+            REQUIRE(leaves.size() == expected_leaves.size());
             REQUIRE(std::is_permutation(
                         leaves.begin(), leaves.end(),
                         expected_leaves.begin()));
@@ -3252,6 +3264,7 @@ TEST_CASE("Testing BaseTree::slide_bump_permute_height 9 leaf 4 colliders", "[Ba
             REQUIRE(internal4->get_number_of_children() == 2);
             std::vector< std::shared_ptr<Node> > expected_leaves {leaf0, leaf1, leaf2, leaf3, leaf4, leaf5, leaf6, leaf7, leaf8, leaf9, leaf10};
             std::vector< std::shared_ptr<Node> > leaves = root->get_leaves();
+            REQUIRE(leaves.size() == expected_leaves.size());
             REQUIRE(std::is_permutation(
                         leaves.begin(), leaves.end(),
                         expected_leaves.begin()));
@@ -3507,6 +3520,7 @@ TEST_CASE("Testing BaseTree::slide_bump_permute_height 9 leaf 4 colliders", "[Ba
             REQUIRE(internal4->get_number_of_children() == 2);
             std::vector< std::shared_ptr<Node> > expected_leaves {leaf0, leaf1, leaf2, leaf3, leaf4, leaf5, leaf6, leaf7, leaf8, leaf9, leaf10};
             std::vector< std::shared_ptr<Node> > leaves = root->get_leaves();
+            REQUIRE(leaves.size() == expected_leaves.size());
             REQUIRE(std::is_permutation(
                         leaves.begin(), leaves.end(),
                         expected_leaves.begin()));
@@ -3720,6 +3734,7 @@ TEST_CASE("Testing BaseTree::slide_bump_swap_height 9 leaf 4 colliders", "[xBase
             REQUIRE(internal4->get_number_of_children() == 2);
             std::vector< std::shared_ptr<Node> > expected_leaves {leaf0, leaf1, leaf2, leaf3, leaf4, leaf5, leaf6, leaf7, leaf8, leaf9, leaf10};
             std::vector< std::shared_ptr<Node> > leaves = root->get_leaves();
+            REQUIRE(leaves.size() == expected_leaves.size());
             REQUIRE(std::is_permutation(
                         leaves.begin(), leaves.end(),
                         expected_leaves.begin()));
@@ -3934,6 +3949,7 @@ TEST_CASE("Testing BaseTree::slide_bump_swap_height 9 leaf 4 colliders", "[xBase
             REQUIRE(internal4->get_number_of_children() == 2);
             std::vector< std::shared_ptr<Node> > expected_leaves {leaf0, leaf1, leaf2, leaf3, leaf4, leaf5, leaf6, leaf7, leaf8, leaf9, leaf10};
             std::vector< std::shared_ptr<Node> > leaves = root->get_leaves();
+            REQUIRE(leaves.size() == expected_leaves.size());
             REQUIRE(std::is_permutation(
                         leaves.begin(), leaves.end(),
                         expected_leaves.begin()));
@@ -4100,6 +4116,7 @@ TEST_CASE("Testing BaseTree::slide_bump_swap_all_height 9 leaf 4 colliders", "[x
             REQUIRE(internal4->get_number_of_children() == 2);
             std::vector< std::shared_ptr<Node> > expected_leaves {leaf0, leaf1, leaf2, leaf3, leaf4, leaf5, leaf6, leaf7, leaf8, leaf9, leaf10};
             std::vector< std::shared_ptr<Node> > leaves = root->get_leaves();
+            REQUIRE(leaves.size() == expected_leaves.size());
             REQUIRE(std::is_permutation(
                         leaves.begin(), leaves.end(),
                         expected_leaves.begin()));
@@ -4322,6 +4339,7 @@ TEST_CASE("Testing BaseTree::slide_bump_swap_all_height 9 leaf 4 colliders", "[x
             REQUIRE(internal4->get_number_of_children() == 2);
             std::vector< std::shared_ptr<Node> > expected_leaves {leaf0, leaf1, leaf2, leaf3, leaf4, leaf5, leaf6, leaf7, leaf8, leaf9, leaf10};
             std::vector< std::shared_ptr<Node> > leaves = root->get_leaves();
+            REQUIRE(leaves.size() == expected_leaves.size());
             REQUIRE(std::is_permutation(
                         leaves.begin(), leaves.end(),
                         expected_leaves.begin()));
