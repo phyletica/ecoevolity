@@ -407,65 +407,125 @@ TEST_CASE("Basic testing", "[treesum]") {
         REQUIRE(non_trivial_split_counts == expected_non_trivial_split_counts);
         REQUIRE(non_trivial_split_count_map == expected_non_trivial_split_count_map);
 
-        std::set<std::string> s_12;
-        s_12.insert("1100");
-        std::set<std::string> s_34;
-        s_34.insert("0011");
-        std::set<std::string> s_13;
-        s_13.insert("1010");
-        std::set<std::string> s_24;
-        s_24.insert("0101");
-        std::set<std::string> s_14;
-        s_14.insert("1001");
-        std::set<std::string> s_23;
-        s_23.insert("0110");
-        std::set<std::string> s_123;
-        s_123.insert("1110");
-        std::set<std::string> s_234;
-        s_234.insert("0111");
-        std::set<std::string> s_14_23;
-        s_14_23.insert("1001");
-        s_14_23.insert("0110");
-        std::set<std::string> s_r;
-        s_r.insert("1111");
+        Split split_12;
+        split_12.resize(4);
+        split_12.set_leaf_bit(0);
+        split_12.set_leaf_bit(1);
+
+        Split split_34;
+        split_34.resize(4);
+        split_34.set_leaf_bit(2);
+        split_34.set_leaf_bit(3);
+
+        Split split_13;
+        split_13.resize(4);
+        split_13.set_leaf_bit(0);
+        split_13.set_leaf_bit(2);
+
+        Split split_24;
+        split_24.resize(4);
+        split_24.set_leaf_bit(1);
+        split_24.set_leaf_bit(3);
+
+        Split split_14;
+        split_14.resize(4);
+        split_14.set_leaf_bit(0);
+        split_14.set_leaf_bit(3);
+
+        Split split_23;
+        split_23.resize(4);
+        split_23.set_leaf_bit(1);
+        split_23.set_leaf_bit(2);
+
+        Split split_123;
+        split_123.resize(4);
+        split_123.set_leaf_bit(0);
+        split_123.set_leaf_bit(1);
+        split_123.set_leaf_bit(2);
+
+        Split split_234;
+        split_234.resize(4);
+        split_234.set_leaf_bit(1);
+        split_234.set_leaf_bit(2);
+        split_234.set_leaf_bit(3);
+
+        Split split_r;
+        split_r.resize(4);
+        split_r.set_leaf_bit(0);
+        split_r.set_leaf_bit(1);
+        split_r.set_leaf_bit(2);
+        split_r.set_leaf_bit(3);
+
+        std::set<Split> s_12;
+        // s_12.insert("1100");
+        s_12.insert(split_12);
+        std::set<Split> s_34;
+        // s_34.insert("0011");
+        s_34.insert(split_34);
+        std::set<Split> s_13;
+        // s_13.insert("1010");
+        s_13.insert(split_13);
+        std::set<Split> s_24;
+        // s_24.insert("0101");
+        s_24.insert(split_24);
+        std::set<Split> s_14;
+        // s_14.insert("1001");
+        s_14.insert(split_14);
+        std::set<Split> s_23;
+        // s_23.insert("0110");
+        s_23.insert(split_23);
+        std::set<Split> s_123;
+        // s_123.insert("1110");
+        s_123.insert(split_123);
+        std::set<Split> s_234;
+        // s_234.insert("0111");
+        s_234.insert(split_234);
+        std::set<Split> s_14_23;
+        // s_14_23.insert("1001");
+        // s_14_23.insert("0110");
+        s_14_23.insert(split_14);
+        s_14_23.insert(split_23);
+        std::set<Split> s_r;
+        // s_r.insert("1111");
+        s_r.insert(split_r);
         
-        std::set< std::set<std::string> > t_12_34;
+        std::set< std::set<Split> > t_12_34;
         t_12_34.insert(s_12);
         t_12_34.insert(s_34);
         t_12_34.insert(s_r);
         
-        std::set< std::set<std::string> > t_12;
+        std::set< std::set<Split> > t_12;
         t_12.insert(s_12);
         t_12.insert(s_r);
         
-        std::set< std::set<std::string> > t_13_24;
+        std::set< std::set<Split> > t_13_24;
         t_13_24.insert(s_13);
         t_13_24.insert(s_24);
         t_13_24.insert(s_r);
         
-        std::set< std::set<std::string> > t_14_23_shared;
+        std::set< std::set<Split> > t_14_23_shared;
         t_14_23_shared.insert(s_14_23);
         t_14_23_shared.insert(s_r);
         
-        std::set< std::set<std::string> > t_34;
+        std::set< std::set<Split> > t_34;
         t_34.insert(s_34);
         t_34.insert(s_r);
         
-        std::set< std::set<std::string> > t_comb;
+        std::set< std::set<Split> > t_comb;
         t_comb.insert(s_r);
         
-        std::set< std::set<std::string> > t_ladder_1234;
+        std::set< std::set<Split> > t_ladder_1234;
         t_ladder_1234.insert(s_12);
         t_ladder_1234.insert(s_123);
         t_ladder_1234.insert(s_r);
         
-        std::set< std::set<std::string> > t_ladder_4321;
+        std::set< std::set<Split> > t_ladder_4321;
         t_ladder_4321.insert(s_34);
         t_ladder_4321.insert(s_234);
         t_ladder_4321.insert(s_r);
         
         // topology counts
-        std::map< std::set< std::set<std::string> >, unsigned int> expected_topo_count_map;
+        std::map< std::set< std::set<Split> >, unsigned int> expected_topo_count_map;
         expected_topo_count_map[t_14_23_shared] = 4;
         expected_topo_count_map[t_12] = 3;
         expected_topo_count_map[t_34] = 2;
@@ -477,14 +537,14 @@ TEST_CASE("Basic testing", "[treesum]") {
         
         std::vector<unsigned int> expected_topo_counts = {4,3,2,2,2,2,2,1};
 
-        std::map< std::set< std::set<std::string> >, unsigned int> topo_count_map;
+        std::map< std::set< std::set<Split> >, unsigned int> topo_count_map;
         std::vector<unsigned int> topo_counts;
         for (auto t : ts.get_topologies()) {
-            std::set< std::set<std::string> > tree;
+            std::set< std::set<Split> > tree;
             for (auto s_set : t->get_split_set()) {
-                std::set<std::string> splits;
+                std::set<Split> splits;
                 for (auto split : s_set) {
-                    splits.insert(split.as_string());
+                    splits.insert(split);
                 }
                 tree.insert(splits);
             }
@@ -496,7 +556,7 @@ TEST_CASE("Basic testing", "[treesum]") {
         REQUIRE(topo_counts == expected_topo_counts);
 
         // Height counts
-        std::map< std::set<std::string> , unsigned int> expected_height_count_map;
+        std::map< std::set<Split> , unsigned int> expected_height_count_map;
         expected_height_count_map[s_r] = 18;
         expected_height_count_map[s_12] = 7;
         expected_height_count_map[s_34] = 5;
@@ -508,12 +568,12 @@ TEST_CASE("Basic testing", "[treesum]") {
 
         std::vector<unsigned int> expected_height_counts = {18,7,5,4,2,2,2,1};
 
-        std::map< std::set<std::string>, unsigned int> height_count_map;
+        std::map< std::set<Split>, unsigned int> height_count_map;
         std::vector<unsigned int> height_counts;
         for (auto h : ts.get_heights()) {
-            std::set< std::string > split_set;
+            std::set< Split > split_set;
             for (auto s : h->get_split_set()) {
-                split_set.insert(s.as_string());
+                split_set.insert(s);
             }
             REQUIRE(height_count_map.count(split_set) == 0);
             height_count_map[split_set] = h->get_sample_size();
@@ -521,5 +581,8 @@ TEST_CASE("Basic testing", "[treesum]") {
         }
         REQUIRE(height_count_map == expected_height_count_map);
         REQUIRE(height_counts == expected_height_counts);
+
+
+
     }
 }

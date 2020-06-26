@@ -105,6 +105,14 @@ class TopologySamples : public BaseSamples {
         const std::set< std::set<Split> > & get_split_set() const {
             return this->split_set_;
         }
+
+        const std::map< std::set<Split>, std::vector<double> > & get_height_map() const {
+            return this->heights_;
+        }
+
+        const std::vector<double> & get_heights(const std::set<Split> & split_set) const {
+            return this->heights_.at(split_set);
+        }
 };
 
 class HeightSamples : public BaseSamples {
@@ -130,6 +138,10 @@ class HeightSamples : public BaseSamples {
 
         const std::set<Split> & get_split_set() const {
             return this->split_set_;
+        }
+
+        const std::vector<double> & get_heights() const {
+            return this->heights_;
         }
 };
 
@@ -163,6 +175,15 @@ class SplitSamples : public BaseSamples {
                 const char unset_char = '0',
                 const char set_char = '1') const {
             return this->split_.as_string(unset_char, set_char);
+        }
+
+        const std::map<std::string, std::vector<double> > & get_parameter_map() const {
+            return this->parameters_;
+        }
+
+        const std::vector<double> & get_values(
+                const std::string & parameter_name) const {
+            return this->parameters_.at(parameter_name);
         }
 };
 
@@ -455,6 +476,31 @@ class TreeSample {
         }
         const std::vector< std::shared_ptr<SplitSamples> > & get_non_trivial_splits() const {
             return this->non_trivial_splits_;
+        }
+
+        std::shared_ptr<TopologySamples> get_topology(
+                const std::set< std::set<Split> > & topology
+                ) const {
+            if (this->topologies_map_.count(topology) < 1) {
+                return nullptr;
+            }
+            return this->topologies_map_.at(topology);
+        }
+        std::shared_ptr<HeightSamples> get_height(
+                const std::set<Split> & split_set 
+                ) const {
+            if (this->heights_map_.count(split_set) < 1) {
+                return nullptr;
+            }
+            return this->heights_map_.at(split_set);
+        }
+        std::shared_ptr<SplitSamples> get_split(
+                const Split & split
+                ) const {
+            if (this->splits_map_.count(split) < 1) {
+                return nullptr;
+            }
+            return this->splits_map_.at(split);
         }
 
         double get_average_std_dev_of_split_freqs(
