@@ -127,6 +127,10 @@ class HeightSamples : public BaseSamples {
             this->heights_.push_back(height);
             this->tally_sample_(tree_index, source_index);
         }
+
+        const std::set<Split> & get_split_set() const {
+            return this->split_set_;
+        }
 };
 
 class SplitSamples : public BaseSamples {

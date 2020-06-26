@@ -464,6 +464,7 @@ TEST_CASE("Basic testing", "[treesum]") {
         t_ladder_4321.insert(s_234);
         t_ladder_4321.insert(s_r);
         
+        // topology counts
         std::map< std::set< std::set<std::string> >, unsigned int> expected_topo_count_map;
         expected_topo_count_map[t_14_23_shared] = 4;
         expected_topo_count_map[t_12] = 3;
@@ -493,5 +494,32 @@ TEST_CASE("Basic testing", "[treesum]") {
         }
         REQUIRE(topo_count_map == expected_topo_count_map);
         REQUIRE(topo_counts == expected_topo_counts);
+
+        // Height counts
+        std::map< std::set<std::string> , unsigned int> expected_height_count_map;
+        expected_height_count_map[s_r] = 18;
+        expected_height_count_map[s_12] = 7;
+        expected_height_count_map[s_34] = 5;
+        expected_height_count_map[s_14_23] = 4;
+        expected_height_count_map[s_13] = 2;
+        expected_height_count_map[s_24] = 2;
+        expected_height_count_map[s_123] = 2;
+        expected_height_count_map[s_234] = 1;
+
+        std::vector<unsigned int> expected_height_counts = {18,7,5,4,2,2,2,1};
+
+        std::map< std::set<std::string>, unsigned int> height_count_map;
+        std::vector<unsigned int> height_counts;
+        for (auto h : ts.get_heights()) {
+            std::set< std::string > split_set;
+            for (auto s : h->get_split_set()) {
+                split_set.insert(s.as_string());
+            }
+            REQUIRE(height_count_map.count(split_set) == 0);
+            height_count_map[split_set] = h->get_sample_size();
+            height_counts.push_back(h->get_sample_size());
+        }
+        REQUIRE(height_count_map == expected_height_count_map);
+        REQUIRE(height_counts == expected_height_counts);
     }
 }
