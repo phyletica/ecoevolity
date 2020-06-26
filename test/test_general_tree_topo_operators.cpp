@@ -831,13 +831,13 @@ TEST_CASE("Testing NodeHeightSlideBumpSwapMover with 6 leaves",
     SECTION("Testing 6 leaves") {
         RandomNumberGenerator rng = RandomNumberGenerator(78745872);
 
-        double root_height_shape = 50.0;
+        double root_height_shape = 100.0;
         double root_height_scale = 0.01;
         std::shared_ptr<ContinuousProbabilityDistribution> root_height_prior = std::make_shared<GammaDistribution>(
                 root_height_shape,
                 root_height_scale);
 
-        double root_ht = 0.5;
+        double root_ht = 1.0;
         std::shared_ptr<Node> root = std::make_shared<Node>(10, "root", root_ht);
         std::shared_ptr<Node> internal0 = std::make_shared<Node>(6, "internal0", 0.1);
         std::shared_ptr<Node> internal1 = std::make_shared<Node>(7, "internal1", 0.2);
@@ -871,25 +871,36 @@ TEST_CASE("Testing NodeHeightSlideBumpSwapMover with 6 leaves",
         // distribution on their own. Having one proposal window width for all
         // the node heights in the tree does not work well given the prior on
         // node heights.
-        NodeHeightSlideBumpSwapMover< BaseTree<Node> > op;
+        NodeHeightSlideBumpSwapAllMover< BaseTree<Node> > op;
         op.set_operate_on_root(true);
         op.turn_off_auto_optimize();
-        op.set_coercable_parameter_value(0.75);
-        NodeHeightSlideBumpSwapMover< BaseTree<Node> > op2;
+        op.set_coercable_parameter_value(1.2);
+        NodeHeightSlideBumpSwapAllMover< BaseTree<Node> > op2;
         op2.set_operate_on_root(true);
         op2.turn_off_auto_optimize();
-        op2.set_coercable_parameter_value(0.05);
-        NodeHeightSlideBumpSwapMover< BaseTree<Node> > op3;
+        op2.set_coercable_parameter_value(1.0);
+        NodeHeightSlideBumpSwapAllMover< BaseTree<Node> > op3;
         op3.set_operate_on_root(true);
-        op3.turn_on_auto_optimize();
-        op3.set_auto_optimize_delay(100);
-        NodeHeightScaler< BaseTree<Node> > op4;
-        op4.turn_on_auto_optimize();
-        op4.set_auto_optimize_delay(100);
-        unsigned int num_height_moves = 2;
-        RootHeightScaler < BaseTree<Node> > op5;
-        op5.turn_on_auto_optimize();
-        op5.set_auto_optimize_delay(100);
+        op3.turn_off_auto_optimize();
+        op3.set_coercable_parameter_value(0.75);
+        NodeHeightSlideBumpSwapAllMover< BaseTree<Node> > op4;
+        op4.set_operate_on_root(true);
+        op4.turn_off_auto_optimize();
+        op4.set_coercable_parameter_value(0.05);
+        NodeHeightSlideBumpSwapAllMover< BaseTree<Node> > op5;
+        op5.set_operate_on_root(true);
+        op5.turn_off_auto_optimize();
+        op5.set_coercable_parameter_value(0.02);
+        NodeHeightSlideBumpSwapAllMover< BaseTree<Node> > op6;
+        op6.set_operate_on_root(true);
+        op6.turn_on_auto_optimize();
+        op6.set_auto_optimize_delay(100);
+        NodeHeightScaler< BaseTree<Node> > op7;
+        op7.turn_on_auto_optimize();
+        op7.set_auto_optimize_delay(100);
+        RootHeightScaler < BaseTree<Node> > op8;
+        op8.turn_on_auto_optimize();
+        op8.set_auto_optimize_delay(100);
 
         // Initialize prior probs
         tree.compute_log_likelihood_and_prior(true);
@@ -904,12 +915,28 @@ TEST_CASE("Testing NodeHeightSlideBumpSwapMover with 6 leaves",
         unsigned int report_freq = 10000;
         for (unsigned int i = 0; i < niterations; ++i) {
             op.operate(rng, &tree, 1);
-            op4.operate(rng, &tree, 1);
+            op7.operate(rng, &tree, 1);
+            op8.operate(rng, &tree, 1);
+
             op2.operate(rng, &tree, 1);
-            op4.operate(rng, &tree, 1);
+            op7.operate(rng, &tree, 1);
+            op8.operate(rng, &tree, 1);
+
             op3.operate(rng, &tree, 1);
+            op7.operate(rng, &tree, 1);
+            op8.operate(rng, &tree, 1);
+
             op4.operate(rng, &tree, 1);
+            op7.operate(rng, &tree, 1);
+            op8.operate(rng, &tree, 1);
+
             op5.operate(rng, &tree, 1);
+            op7.operate(rng, &tree, 1);
+            op8.operate(rng, &tree, 1);
+
+            op6.operate(rng, &tree, 1);
+            op7.operate(rng, &tree, 1);
+            op8.operate(rng, &tree, 1);
             if ((i + 1) % sample_freq == 0) {
                 std::set< std::set<Split> > splits = tree.get_splits(false);
                 if (split_counts.count(splits) > 0) {
@@ -934,6 +961,12 @@ TEST_CASE("Testing NodeHeightSlideBumpSwapMover with 6 leaves",
         std::cout << op4.to_string();
         std::cout << op5.header_string();
         std::cout << op5.to_string();
+        std::cout << op6.header_string();
+        std::cout << op6.to_string();
+        std::cout << op7.header_string();
+        std::cout << op7.to_string();
+        std::cout << op8.header_string();
+        std::cout << op8.to_string();
 
         REQUIRE(op.get_number_of_attempts() == niterations);
 
@@ -1008,7 +1041,7 @@ TEST_CASE("Testing NodeHeightSlideBumpSwapAllMover with 6 leaves",
                 root_height_shape,
                 root_height_scale);
 
-        double root_ht = 0.5;
+        double root_ht = 1.0;
         std::shared_ptr<Node> root = std::make_shared<Node>(10, "root", root_ht);
         std::shared_ptr<Node> internal0 = std::make_shared<Node>(6, "internal0", 0.1);
         std::shared_ptr<Node> internal1 = std::make_shared<Node>(7, "internal1", 0.2);
@@ -1212,7 +1245,7 @@ TEST_CASE("Testing NodeHeightSlideBumpPermuteMover with 6 leaves",
                 root_height_shape,
                 root_height_scale);
 
-        double root_ht = 0.5;
+        double root_ht = 1.0;
         std::shared_ptr<Node> root = std::make_shared<Node>(10, "root", root_ht);
         std::shared_ptr<Node> internal0 = std::make_shared<Node>(6, "internal0", 0.1);
         std::shared_ptr<Node> internal1 = std::make_shared<Node>(7, "internal1", 0.2);
