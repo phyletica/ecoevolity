@@ -275,6 +275,15 @@ TEST_CASE("Missing label in target tree", "[treesum]") {
 }
 
 
+        std::vector<double> expected_12_lengths = {
+            0.2,
+            0.1,
+            0.1,
+            0.1,
+            0.2,
+            0.1,
+            0.1,
+        };
 // 12-34
 // TREE t3 = [&R] ((sp1[&height=0,pop_size=0.1]:0.1,sp2[&height=0,pop_size=0.2]:0.1)[&height_index=0,height=0.1,pop_size=0.3]:0.2,(sp3[&height=0,pop_size=0.1]:0.2,sp4[&height=0,pop_size=0.2]:0.2)[&height_index=1,height=0.2,pop_size=0.3]:0.1)[&height_index=2,height=0.3,pop_size=0.3]:0.0;
 // TREE t4 = [&R] ((sp4[&height=0,pop_size=0.1]:0.1,sp3[&height=0,pop_size=0.2]:0.1)[&height_index=0,height=0.1,pop_size=0.3]:0.2,(sp2[&height=0,pop_size=0.1]:0.2,sp1[&height=0,pop_size=0.2]:0.2)[&height_index=1,height=0.2,pop_size=0.3]:0.1)[&height_index=2,height=0.3,pop_size=0.3]:0.0;
@@ -610,6 +619,36 @@ TEST_CASE("Basic testing", "[treesum]") {
                     std::end(root_heights),
                     std::begin(expected_root_heights)));
 
+
+        std::vector<double> expected_shared_heights = {
+            0.3,
+            0.4,
+            0.2,
+            0.5,
+        };
+        std::vector<double> shared_heights = ts.get_height(s_14_23)->get_heights();
+        REQUIRE(expected_shared_heights.size() == shared_heights.size());
+        REQUIRE(std::is_permutation(
+                    std::begin(shared_heights),
+                    std::end(shared_heights),
+                    std::begin(expected_shared_heights)));
+
+        std::vector<double> expected_12_heights = {
+            0.1,
+            0.2,
+            0.4,
+            0.3,
+            0.1,
+            0.1,
+            0.2
+        };
+        std::vector<double> s_12_heights = ts.get_height(s_12)->get_heights();
+        REQUIRE(expected_12_heights.size() == s_12_heights.size());
+        REQUIRE(std::is_permutation(
+                    std::begin(s_12_heights),
+                    std::end(s_12_heights),
+                    std::begin(expected_12_heights)));
+
         std::vector<double> t_14_23_shared_expected_root_heights = {
             0.4,
             0.6,
@@ -636,5 +675,111 @@ TEST_CASE("Basic testing", "[treesum]") {
                     std::begin(t_14_23_shared_shared_heights),
                     std::end(t_14_23_shared_shared_heights),
                     std::begin(t_14_23_shared_expected_shared_heights)));
+
+
+        // Split parameters
+        root_heights = ts.get_split(split_r)->get_values("height");
+        REQUIRE(expected_root_heights.size() == root_heights.size());
+        REQUIRE(std::is_permutation(
+                    std::begin(root_heights),
+                    std::end(root_heights),
+                    std::begin(expected_root_heights)));
+
+        std::vector<double> expected_root_lengths = {
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+        };
+
+        std::vector<double> root_lengths = ts.get_split(split_r)->get_values("length");
+        REQUIRE(expected_root_lengths.size() == root_lengths.size());
+        REQUIRE(std::is_permutation(
+                    std::begin(root_lengths),
+                    std::end(root_lengths),
+                    std::begin(expected_root_lengths)));
+
+        std::vector<double> expected_root_sizes = {
+            0.3,
+            0.3,
+            0.6,
+            0.4,
+            0.1,
+            0.1,
+            0.3,
+            0.1,
+            0.2,
+            0.1,
+            0.6,
+            0.6,
+            0.4,
+            0.4,
+            0.4,
+            0.2,
+            0.5,
+            0.2
+        };
+
+        std::vector<double> root_sizes = ts.get_split(split_r)->get_values("pop_size");
+        REQUIRE(expected_root_sizes.size() == root_sizes.size());
+        REQUIRE(std::is_permutation(
+                    std::begin(root_sizes),
+                    std::end(root_sizes),
+                    std::begin(expected_root_sizes)));
+
+
+        s_12_heights = ts.get_split(split_12)->get_values("height");
+        REQUIRE(expected_12_heights.size() == s_12_heights.size());
+        REQUIRE(std::is_permutation(
+                    std::begin(s_12_heights),
+                    std::end(s_12_heights),
+                    std::begin(expected_12_heights)));
+
+        std::vector<double> expected_12_lengths = {
+            0.2,
+            0.1,
+            0.1,
+            0.1,
+            0.2,
+            0.1,
+            0.1,
+        };
+        std::vector<double> s_12_lengths = ts.get_split(split_12)->get_values("length");
+        REQUIRE(expected_12_lengths.size() == s_12_lengths.size());
+        // Lengths require calcs (not just parsing), so floats won't exactly
+        // match
+        for (unsigned int i = 0; i < s_12_lengths.size(); ++i) {
+            REQUIRE(s_12_lengths.at(i) == Approx(expected_12_lengths.at(i)));
+        }
+
+        std::vector<double> expected_12_sizes = {
+            0.3,
+            0.3,
+            0.6,
+            0.6,
+            0.2,
+            0.1,
+            0.3,
+        };
+        std::vector<double> s_12_sizes = ts.get_split(split_12)->get_values("pop_size");
+        REQUIRE(expected_12_sizes.size() == s_12_sizes.size());
+        REQUIRE(std::is_permutation(
+                    std::begin(s_12_sizes),
+                    std::end(s_12_sizes),
+                    std::begin(expected_12_sizes)));
     }
 }

@@ -510,7 +510,7 @@ class TreeSample {
             }
             double cumulative_freq = 0.0;
             SampleSummarizer<double> std_devs_of_split_freqs;
-            for (auto ss : this->splits_) {
+            for (auto ss : this->non_trivial_splits_) {
                 if (cumulative_freq > credible_set_cutoff) {
                     break;
                 }
