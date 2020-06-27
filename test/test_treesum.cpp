@@ -274,6 +274,7 @@ TEST_CASE("Missing label in target tree", "[treesum]") {
     }
 }
 
+
 // 12-34
 // TREE t3 = [&R] ((sp1[&height=0,pop_size=0.1]:0.1,sp2[&height=0,pop_size=0.2]:0.1)[&height_index=0,height=0.1,pop_size=0.3]:0.2,(sp3[&height=0,pop_size=0.1]:0.2,sp4[&height=0,pop_size=0.2]:0.2)[&height_index=1,height=0.2,pop_size=0.3]:0.1)[&height_index=2,height=0.3,pop_size=0.3]:0.0;
 // TREE t4 = [&R] ((sp4[&height=0,pop_size=0.1]:0.1,sp3[&height=0,pop_size=0.2]:0.1)[&height_index=0,height=0.1,pop_size=0.3]:0.2,(sp2[&height=0,pop_size=0.1]:0.2,sp1[&height=0,pop_size=0.2]:0.2)[&height_index=1,height=0.2,pop_size=0.3]:0.1)[&height_index=2,height=0.3,pop_size=0.3]:0.0;
@@ -582,7 +583,58 @@ TEST_CASE("Basic testing", "[treesum]") {
         REQUIRE(height_count_map == expected_height_count_map);
         REQUIRE(height_counts == expected_height_counts);
 
+        std::vector<double> expected_root_heights = {
+            0.3,
+            0.3,
+            0.5,
+            0.4,
+            0.3,
+            0.3,
+            0.3,
+            0.4,
+            0.6,
+            0.6,
+            0.7,
+            0.5,
+            0.4,
+            0.1,
+            0.1,
+            0.3,
+            0.4,
+            0.3
+        };
+        std::vector<double> root_heights = ts.get_height(s_r)->get_heights();
+        REQUIRE(expected_root_heights.size() == root_heights.size());
+        REQUIRE(std::is_permutation(
+                    std::begin(root_heights),
+                    std::end(root_heights),
+                    std::begin(expected_root_heights)));
 
+        std::vector<double> t_14_23_shared_expected_root_heights = {
+            0.4,
+            0.6,
+            0.6,
+            0.7,
+        };
+        std::vector<double> t_14_23_shared_expected_shared_heights = {
+            0.3,
+            0.4,
+            0.2,
+            0.5,
+        };
 
+        std::vector<double> t_14_23_shared_root_heights = ts.get_topology(t_14_23_shared)->get_heights(s_r);
+        std::vector<double> t_14_23_shared_shared_heights = ts.get_topology(t_14_23_shared)->get_heights(s_14_23);
+
+        REQUIRE(t_14_23_shared_expected_root_heights.size() == t_14_23_shared_root_heights.size());
+        REQUIRE(std::is_permutation(
+                    std::begin(t_14_23_shared_root_heights),
+                    std::end(t_14_23_shared_root_heights),
+                    std::begin(t_14_23_shared_expected_root_heights)));
+        REQUIRE(t_14_23_shared_expected_shared_heights.size() == t_14_23_shared_shared_heights.size());
+        REQUIRE(std::is_permutation(
+                    std::begin(t_14_23_shared_shared_heights),
+                    std::end(t_14_23_shared_shared_heights),
+                    std::begin(t_14_23_shared_expected_shared_heights)));
     }
 }
