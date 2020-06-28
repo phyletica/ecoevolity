@@ -814,5 +814,52 @@ TEST_CASE("Basic testing", "[treesum]") {
                     std::begin(s_12_sizes),
                     std::end(s_12_sizes),
                     std::begin(expected_12_sizes)));
+
+        // split_12  : 7
+        // split_34  : 5
+        // split_14  : 4
+        // split_23  : 4
+        // split_13  : 2
+        // split_24  : 2
+        // split_123 : 2
+        // split_234 : 1
+        std::vector<double> split_12_source_freqs {
+            1.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0}; // 7/18
+        std::vector<double> split_34_source_freqs {
+            1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0}; // 5/18
+        std::vector<double> split_14_source_freqs {
+            0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0}; // 4/18
+        std::vector<double> split_23_source_freqs {
+            0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0}; // 4/18
+        SampleSummarizer<double> split_12_source_freq_summary;
+        for (auto x : split_12_source_freqs) {
+            split_12_source_freq_summary.add_sample(x);
+        }
+        SampleSummarizer<double> split_34_source_freq_summary;
+        for (auto x : split_34_source_freqs) {
+            split_34_source_freq_summary.add_sample(x);
+        }
+        SampleSummarizer<double> split_14_source_freq_summary;
+        for (auto x : split_14_source_freqs) {
+            split_14_source_freq_summary.add_sample(x);
+        }
+        SampleSummarizer<double> split_23_source_freq_summary;
+        for (auto x : split_23_source_freqs) {
+            split_23_source_freq_summary.add_sample(x);
+        }
+        SampleSummarizer<double> split_freq_stdevs;
+
+        double asdsf = ts.get_average_std_dev_of_split_freqs(6.0/18.0);
+        split_freq_stdevs.add_sample(split_12_source_freq_summary.std_dev());
+        REQUIRE(asdsf == Approx(split_freq_stdevs.mean()));
+
+        asdsf = ts.get_average_std_dev_of_split_freqs(5.0/18.0);
+        split_freq_stdevs.add_sample(split_34_source_freq_summary.std_dev());
+        REQUIRE(asdsf == Approx(split_freq_stdevs.mean()));
+
+        asdsf = ts.get_average_std_dev_of_split_freqs(3.0/18.0);
+        split_freq_stdevs.add_sample(split_14_source_freq_summary.std_dev());
+        split_freq_stdevs.add_sample(split_23_source_freq_summary.std_dev());
+        REQUIRE(asdsf == Approx(split_freq_stdevs.mean()));
     }
 }

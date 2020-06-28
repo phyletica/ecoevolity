@@ -328,13 +328,13 @@ class TreeSample {
 
         void add_trees(
                 const std::vector<tree_type> & trees) {
-            this->source_sample_sizes_.push_back(0);
             std::set< std::set<Split> > split_set;
             std::map<std::set<Split>, double> heights;
             std::map<Split, std::map<std::string, double> > parameters;
             std::map<std::string, double> parameter_map;
             std::vector< std::shared_ptr<NodeType> > leaves;
             unsigned int source_index = this->source_sample_sizes_.size();
+            this->source_sample_sizes_.push_back(0);
             for (auto tree : trees) {
                 if ((this->sample_size_ < 1) && (this->leaf_labels_.size() < 1)) {
                     this->update_splits_and_labels_(tree);
@@ -465,6 +465,10 @@ class TreeSample {
             return this->source_sample_sizes_;
         }
 
+        unsigned int get_source_sample_size(unsigned int source_index) const {
+            return this->source_sample_sizes_.at(source_index);
+        }
+
         const std::vector< std::shared_ptr<TopologySamples> > & get_topologies() const {
             return this->topologies_;
         }
@@ -546,30 +550,27 @@ class TreeSample {
         }
 
         double get_average_std_dev_of_split_freqs(
-                double credible_set_cutoff = 0.9) const {
+                double min_frequency = 0.1) const {
             if (this->get_number_of_sources() < 2) {
                 throw EcoevolityError("Calculating the ASDSF requires multiple chains");
             }
-            double cumulative_freq = 0.0;
             SampleSummarizer<double> std_devs_of_split_freqs;
             for (auto ss : this->non_trivial_splits_) {
-                if (cumulative_freq > credible_set_cutoff) {
+                if (this->get_split_frequency(ss->get_split()) < min_frequency) {
                     break;
                 }
-                cumulative_freq += ss->get_sample_size() / (double)this->sample_size_;
                 std::vector<unsigned int> split_counts(this->get_number_of_sources(), 0);
                 SampleSummarizer<double> split_freqs;
                 for (auto source_idx : ss->get_source_indices()) {
                     ++split_counts.at(source_idx);
                 }
-                unsigned int total = 0;
                 for (unsigned int source_idx = 0;
                         source_idx < this->get_number_of_sources();
-                        ++ source_idx) {
-                    split_freqs.add_sample(split_counts.at(source_idx) / (double)this->sample_size_);
-                    total += split_counts.at(source_idx);
+                        ++source_idx) {
+                    split_freqs.add_sample(
+                            split_counts.at(source_idx) /
+                            (double)this->get_source_sample_size(source_idx));
                 }
-                ECOEVOLITY_ASSERT(total == this->sample_size_);
                 std_devs_of_split_freqs.add_sample(split_freqs.std_dev());
             }
             return std_devs_of_split_freqs.mean();
