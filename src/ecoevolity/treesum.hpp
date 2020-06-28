@@ -503,6 +503,48 @@ class TreeSample {
             return this->splits_map_.at(split);
         }
 
+        unsigned int get_topology_count(
+                const std::set< std::set<Split> > & topology
+                ) const {
+            if (this->topologies_map_.count(topology) < 1) {
+                return 0;
+            }
+            return this->topologies_map_.at(topology)->get_sample_size();
+        }
+        double get_topology_frequency(
+                const std::set< std::set<Split> > & topology
+                ) const {
+            return this->get_topology_count(topology) / (double)this->sample_size_;
+        }
+
+        unsigned int get_height_count(
+                const std::set<Split> & split_set
+                ) const {
+            if (this->heights_map_.count(split_set) < 1) {
+                return 0;
+            }
+            return this->heights_map_.at(split_set)->get_sample_size();
+        }
+        double get_height_frequency(
+                const std::set<Split> & split_set
+                ) const {
+            return this->get_height_count(split_set) / (double)this->sample_size_;
+        }
+
+        unsigned int get_split_count(
+                const Split & split
+                ) const {
+            if (this->splits_map_.count(split) < 1) {
+                return 0;
+            }
+            return this->splits_map_.at(split)->get_sample_size();
+        }
+        double get_split_frequency(
+                const Split & split
+                ) const {
+            return this->get_split_count(split) / (double)this->sample_size_;
+        }
+
         double get_average_std_dev_of_split_freqs(
                 double credible_set_cutoff = 0.9) const {
             if (this->get_number_of_sources() < 2) {

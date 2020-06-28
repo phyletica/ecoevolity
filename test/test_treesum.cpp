@@ -345,77 +345,22 @@ TEST_CASE("Basic testing", "[treesum]") {
         };
         REQUIRE(ts.get_source_sample_sizes() == expected_source_sample_sizes);
 
-        std::map< std::string, unsigned int > expected_split_count_map {
-            {"1000" , 18},
-            {"0100" , 18},
-            {"0010" , 18},
-            {"0001" , 18},
-            {"1111" , 18},
-            {"1100" ,  7},
-            {"0011" ,  5},
-            {"1001" ,  4},
-            {"0110" ,  4},
-            {"1010" ,  2},
-            {"0101" ,  2},
-            {"1110" ,  2},
-            {"0111" ,  1}
-        };
-        std::vector<unsigned int> expected_split_counts {
-            18,
-            18,
-            18,
-            18,
-            18,
-             7,
-             5,
-             4,
-             4,
-             2,
-             2,
-             2,
-             1,
-        };
 
-        std::map< std::string, unsigned int > split_count_map;
-        std::vector<unsigned int > split_counts;
-        for (auto s : ts.get_splits()) {
-            REQUIRE(split_count_map.count(s->get_split_as_string()) == 0);
-            split_count_map[s->get_split_as_string()] = s->get_sample_size();
-            split_counts.push_back(s->get_sample_size());
-        }
-        REQUIRE(split_counts == expected_split_counts);
-        REQUIRE(split_count_map == expected_split_count_map);
+        Split split_1;
+        split_1.resize(4);
+        split_1.set_leaf_bit(0);
 
-        std::map< std::string, unsigned int > expected_non_trivial_split_count_map {
-            {"1100" ,  7},
-            {"0011" ,  5},
-            {"1001" ,  4},
-            {"0110" ,  4},
-            {"1010" ,  2},
-            {"0101" ,  2},
-            {"1110" ,  2},
-            {"0111" ,  1}
-        };
-        std::vector<unsigned int> expected_non_trivial_split_counts {
-             7,
-             5,
-             4,
-             4,
-             2,
-             2,
-             2,
-             1,
-        };
+        Split split_2;
+        split_2.resize(4);
+        split_2.set_leaf_bit(1);
 
-        std::map< std::string, unsigned int > non_trivial_split_count_map;
-        std::vector<unsigned int > non_trivial_split_counts;
-        for (auto s : ts.get_non_trivial_splits()) {
-            REQUIRE(non_trivial_split_count_map.count(s->get_split_as_string()) == 0);
-            non_trivial_split_count_map[s->get_split_as_string()] = s->get_sample_size();
-            non_trivial_split_counts.push_back(s->get_sample_size());
-        }
-        REQUIRE(non_trivial_split_counts == expected_non_trivial_split_counts);
-        REQUIRE(non_trivial_split_count_map == expected_non_trivial_split_count_map);
+        Split split_3;
+        split_3.resize(4);
+        split_3.set_leaf_bit(2);
+
+        Split split_4;
+        split_4.resize(4);
+        split_4.set_leaf_bit(3);
 
         Split split_12;
         split_12.resize(4);
@@ -533,6 +478,84 @@ TEST_CASE("Basic testing", "[treesum]") {
         t_ladder_4321.insert(s_34);
         t_ladder_4321.insert(s_234);
         t_ladder_4321.insert(s_r);
+
+        // Split counts
+        std::map< Split, unsigned int > expected_split_count_map {
+            {split_1,   18},
+            {split_2,   18},
+            {split_3,   18},
+            {split_4,   18},
+            {split_r,   18},
+            {split_12,   7},
+            {split_34,   5},
+            {split_14,   4},
+            {split_23,   4},
+            {split_13,   2},
+            {split_24,   2},
+            {split_123,  2},
+            {split_234,  1}
+        };
+        std::vector<unsigned int> expected_split_counts {
+            18,
+            18,
+            18,
+            18,
+            18,
+             7,
+             5,
+             4,
+             4,
+             2,
+             2,
+             2,
+             1,
+        };
+
+        for (auto key_count : expected_split_count_map) {
+            REQUIRE(ts.get_split_count(key_count.first) == key_count.second);
+            REQUIRE(ts.get_split_frequency(key_count.first) == key_count.second / 18.0);
+        }
+
+        std::map< Split, unsigned int > split_count_map;
+        std::vector<unsigned int > split_counts;
+        for (auto s : ts.get_splits()) {
+            REQUIRE(split_count_map.count(s->get_split()) == 0);
+            split_count_map[s->get_split()] = s->get_sample_size();
+            split_counts.push_back(s->get_sample_size());
+        }
+        REQUIRE(split_counts == expected_split_counts);
+        REQUIRE(split_count_map == expected_split_count_map);
+
+        std::map< Split, unsigned int > expected_non_trivial_split_count_map {
+            {split_12,   7},
+            {split_34,   5},
+            {split_14,   4},
+            {split_23,   4},
+            {split_13,   2},
+            {split_24,   2},
+            {split_123,  2},
+            {split_234,  1}
+        };
+        std::vector<unsigned int> expected_non_trivial_split_counts {
+             7,
+             5,
+             4,
+             4,
+             2,
+             2,
+             2,
+             1,
+        };
+
+        std::map< Split, unsigned int > non_trivial_split_count_map;
+        std::vector<unsigned int > non_trivial_split_counts;
+        for (auto s : ts.get_non_trivial_splits()) {
+            REQUIRE(non_trivial_split_count_map.count(s->get_split()) == 0);
+            non_trivial_split_count_map[s->get_split()] = s->get_sample_size();
+            non_trivial_split_counts.push_back(s->get_sample_size());
+        }
+        REQUIRE(non_trivial_split_counts == expected_non_trivial_split_counts);
+        REQUIRE(non_trivial_split_count_map == expected_non_trivial_split_count_map);
         
         // topology counts
         std::map< std::set< std::set<Split> >, unsigned int> expected_topo_count_map;
@@ -544,6 +567,11 @@ TEST_CASE("Basic testing", "[treesum]") {
         expected_topo_count_map[t_comb] = 2;
         expected_topo_count_map[t_ladder_1234] = 2;
         expected_topo_count_map[t_ladder_4321] = 1;
+
+        for (auto key_count : expected_topo_count_map) {
+            REQUIRE(ts.get_topology_count(key_count.first) == key_count.second);
+            REQUIRE(ts.get_topology_frequency(key_count.first) == Approx(key_count.second / 18.0));
+        }
         
         std::vector<unsigned int> expected_topo_counts = {4,3,2,2,2,2,2,1};
 
@@ -575,6 +603,11 @@ TEST_CASE("Basic testing", "[treesum]") {
         expected_height_count_map[s_24] = 2;
         expected_height_count_map[s_123] = 2;
         expected_height_count_map[s_234] = 1;
+
+        for (auto key_count : expected_height_count_map) {
+            REQUIRE(ts.get_height_count(key_count.first) == key_count.second);
+            REQUIRE(ts.get_height_frequency(key_count.first) == Approx(key_count.second / 18.0));
+        }
 
         std::vector<unsigned int> expected_height_counts = {18,7,5,4,2,2,2,1};
 
