@@ -72,6 +72,10 @@ class Split {
         void set_leaf_bit(const unsigned int leaf_index);
         void add_split(const Split & other);
 
+        void get_leaf_indices(
+                std::vector<unsigned int> & leaf_indices) const;
+        std::vector<unsigned int> get_leaf_indices() const;
+
         bool is_equivalent(const Split & other,
                 const bool strict_root = true) const;
         bool is_compatible(const Split & other) const;
@@ -178,6 +182,21 @@ inline void Split::add_split(const Split & other) {
     for (unsigned int i = 0; i < nunits; ++i) {
         this->bits_.at(i) |= other.bits_.at(i);
     }
+}
+
+inline void Split::get_leaf_indices(std::vector<unsigned int> & leaf_indices) const {
+    leaf_indices.clear();
+    for (unsigned int i = 0; i < this->size(); ++i) {
+        if (this->get_leaf_bit(i)) {
+            leaf_indices.push_back(i);
+        }
+    }
+}
+
+inline std::vector<unsigned int> Split::get_leaf_indices() const {
+    std::vector<unsigned int> leaf_indices;
+    this->get_leaf_indices(leaf_indices);
+    return leaf_indices;
 }
 
 inline std::string Split::as_string(
