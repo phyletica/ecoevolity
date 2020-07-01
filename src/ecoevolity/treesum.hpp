@@ -285,12 +285,15 @@ class TreeSample {
             out << margin << p_name << "mean: " << summary.mean() << "\n"
                 << margin << p_name << "median: " << summary.median() << "\n"
                 << margin << p_name << "std_dev: " << summary.std_dev() << "\n"
-                << margin << p_name << "min: " << summary.min() << "\n"
-                << margin << p_name << "max: " << summary.max() << "\n"
-                << margin << p_name << "eti_95_lower: " << summary.qi_95().first << "\n"
-                << margin << p_name << "eti_95_upper: " << summary.qi_95().second << "\n"
-                << margin << p_name << "hpdi_95_lower: " << summary.hpdi_95().first << "\n"
-                << margin << p_name << "hpdi_95_upper: " << summary.hpdi_95().second
+                << margin << p_name << "range: ["
+                                    << summary.min() << ", "
+                                    << summary.max() << "]\n"
+                << margin << p_name << "eti_95: ["
+                                    << summary.qi_95().first << ", "
+                                    << summary.qi_95().second << "]\n"
+                << margin << p_name << "hpdi_95: ["
+                                    << summary.hpdi_95().first << ", "
+                                    << summary.hpdi_95().second << "]"
                 << std::endl;
         }
 
@@ -645,11 +648,11 @@ class TreeSample {
             out.precision(precision);
             if (include_leaf_indices) {
                 std::vector<unsigned int> leaf_indices = split.get_leaf_indices();
-                out << margin << "leaves: " << leaf_indices.at(0);
+                out << margin << "leaf_indices: [" << leaf_indices.at(0);
                 for (unsigned int i = 1; i < leaf_indices.size(); ++i) {
                     out << ", " << leaf_indices.at(i);
                 }
-                out << "\n";
+                out << "]\n";
             }
             out << margin << "count: " << this->get_split_count(split) << "\n"
                 << margin << "frequency: " << this->get_split_frequency(split) << "\n";
@@ -695,11 +698,11 @@ class TreeSample {
                 << margin << "splits:\n";
             for (auto split : split_set) {
                 std::vector<unsigned int> leaf_indices = split.get_leaf_indices();
-                out << margin << indent << "- leaves: " << leaf_indices.at(0);
+                out << margin << indent << "- leaf_indices: [" << leaf_indices.at(0);
                 for (unsigned int i = 1; i < leaf_indices.size(); ++i) {
                     out << ", " << leaf_indices.at(i);
                 }
-                out << "\n";
+                out << "]\n";
             }
             out << margin << "count: " << this->get_height_count(split_set) << "\n"
                 << margin << "frequency: " << this->get_height_frequency(split_set) << "\n";
@@ -740,21 +743,23 @@ class TreeSample {
             out.precision(precision);
             out << margin << "number_of_heights: " << split_set.size() << "\n"
                 << margin << "heights:\n";
+            std::string h_margin = margin + indent + "  ";
             for (auto s_set : split_set) {
-                out << margin << indent << "- splits:\n";
+                out << margin << indent << "- number_of_nodes: " << s_set.size() << "\n";
+                out << h_margin << "splits:\n";
                 for (auto split : s_set) {
                     std::vector<unsigned int> leaf_indices = split.get_leaf_indices();
-                    out << margin << indent << indent << "- leaves: " << leaf_indices.at(0);
+                    out << h_margin << indent << "- leaf_indices: [" << leaf_indices.at(0);
                     for (unsigned int i = 1; i < leaf_indices.size(); ++i) {
                         out << ", " << leaf_indices.at(i);
                     }
-                    out << "\n";
+                    out << "]\n";
                 }
-                this->_write_summary_of_values(
+                this->_write_summary_of_values<double>(
                         this->get_topology(split_set)->get_heights(s_set),
                         out,
                         "",
-                        margin + indent,
+                        h_margin,
                         precision);
             }
             double freq = this->get_topology_frequency(split_set);

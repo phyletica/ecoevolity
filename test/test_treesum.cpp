@@ -861,5 +861,106 @@ TEST_CASE("Basic testing", "[treesum]") {
         split_freq_stdevs.add_sample(split_14_source_freq_summary.std_dev());
         split_freq_stdevs.add_sample(split_23_source_freq_summary.std_dev());
         REQUIRE(asdsf == Approx(split_freq_stdevs.mean()));
+
+        std::stringstream ss;
+        ts.write_summary_of_split(split_12,
+                ss,
+                true,
+                "",
+                2);
+        std::stringstream ess;
+        ess << "leaf_indices: [0, 1]\n"
+            << "count: 7\n"
+            << "frequency: 0.39\n"
+            << "height_mean: 0.2\n"
+            << "height_median: 0.2\n"
+            << "height_std_dev: 0.12\n"
+            << "height_range: [0.1, 0.4]\n"
+            << "height_eti_95: [0.1, 0.38]\n"
+            << "height_hpdi_95: [0.1, 0.4]\n"
+            << "length_mean: 0.13\n"
+            << "length_median: 0.1\n"
+            << "length_std_dev: 0.049\n"
+            << "length_range: [0.1, 0.2]\n"
+            << "length_eti_95: [0.1, 0.2]\n"
+            << "length_hpdi_95: [0.1, 0.2]\n"
+            << "pop_size_mean: 0.34\n"
+            << "pop_size_median: 0.3\n"
+            << "pop_size_std_dev: 0.19\n"
+            << "pop_size_range: [0.1, 0.6]\n"
+            << "pop_size_eti_95: [0.12, 0.6]\n"
+            << "pop_size_hpdi_95: [0.1, 0.6]\n";
+        REQUIRE(ss.str() == ess.str());
+
+        std::stringstream hs;
+        ts.write_summary_of_height(s_14_23,
+                hs,
+                "",
+                2);
+        std::stringstream ehs;
+        ehs << "number_of_nodes: 2\n"
+            << "splits:\n"
+            << "    - leaf_indices: [1, 2]\n"
+            << "    - leaf_indices: [0, 3]\n"
+            << "count: 4\n"
+            << "frequency: 0.22\n"
+            << "mean: 0.35\n"
+            << "median: 0.35\n"
+            << "std_dev: 0.13\n"
+            << "range: [0.2, 0.5]\n"
+            << "eti_95: [0.21, 0.49]\n"
+            << "hpdi_95: [0.2, 0.5]\n";
+        REQUIRE(hs.str() == ehs.str());
+
+        std::stringstream rhs;
+        ts.write_summary_of_height(s_r,
+                rhs,
+                "",
+                2);
+        std::stringstream erhs;
+        erhs << "number_of_nodes: 1\n"
+            << "splits:\n"
+            << "    - leaf_indices: [0, 1, 2, 3]\n"
+            << "count: 18\n"
+            << "frequency: 1\n"
+            << "mean: 0.38\n"
+            << "median: 0.35\n"
+            << "std_dev: 0.16\n"
+            << "range: [0.1, 0.7]\n"
+            << "eti_95: [0.1, 0.66]\n"
+            << "hpdi_95: [0.1, 0.7]\n";
+        REQUIRE(rhs.str() == erhs.str());
+
+        std::stringstream tree_stream;
+        ts.write_summary_of_topology(t_12,
+                tree_stream,
+                0.0,
+                "",
+                2);
+        std::stringstream ets;
+        ets << "number_of_heights: 2\n"
+            << "heights:\n"
+            << "    - number_of_nodes: 1\n"
+            << "      splits:\n"
+            << "          - leaf_indices: [0, 1]\n"
+            << "      mean: 0.27\n"
+            << "      median: 0.3\n"
+            << "      std_dev: 0.15\n"
+            << "      range: [0.1, 0.4]\n"
+            << "      eti_95: [0.11, 0.4]\n"
+            << "      hpdi_95: [0.1, 0.4]\n"
+            << "    - number_of_nodes: 1\n"
+            << "      splits:\n"
+            << "          - leaf_indices: [0, 1, 2, 3]\n"
+            << "      mean: 0.4\n"
+            << "      median: 0.4\n"
+            << "      std_dev: 0.1\n"
+            << "      range: [0.3, 0.5]\n"
+            << "      eti_95: [0.3, 0.49]\n"
+            << "      hpdi_95: [0.3, 0.5]\n"
+            << "count: 3\n"
+            << "frequency: 0.17\n"
+            << "cumulative_frequency: 0.17\n";
+        REQUIRE(tree_stream.str() == ets.str());
     }
 }
