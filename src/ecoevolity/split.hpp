@@ -80,6 +80,8 @@ class Split {
                 const bool strict_root = true) const;
         bool is_compatible(const Split & other) const;
         bool conflicts_with(const Split & other) const;
+        bool is_proper_subset_of(const Split & other) const;
+        bool is_proper_superset_of(const Split & other) const;
 
         std::string as_string(const char unset_char = '0',
                 const char set_char = '1') const;
@@ -286,6 +288,40 @@ inline bool Split::is_compatible(const Split & other) const {
 
 inline bool Split::conflicts_with(const Split & other) const {
     return (! this->is_compatible(other));
+}
+
+inline bool Split::is_proper_subset_of(const Split & other) const {
+    if (this->is_equivalent(other, true)) {
+        // Proper excludes equivalent sets
+        return false;
+    }
+    for (unsigned int i = 0; i < this->bits_.size(); ++i) {
+        split_unit_t a = this->bits_.at(i);
+        split_unit_t b = other.bits_.at(i);
+        split_unit_t a_and_b = (a & b);
+        if (a != a_and_b) {
+            // other does not contain this
+            return false;
+        }
+    }
+    return true;
+}
+
+inline bool Split::is_proper_superset_of(const Split & other) const {
+    if (this->is_equivalent(other, true)) {
+        // Proper excludes equivalent sets
+        return false;
+    }
+    for (unsigned int i = 0; i < this->bits_.size(); ++i) {
+        split_unit_t a = this->bits_.at(i);
+        split_unit_t b = other.bits_.at(i);
+        split_unit_t a_and_b = (a & b);
+        if (b != a_and_b) {
+            // this does not contain other
+            return false;
+        }
+    }
+    return true;
 }
 
 #endif

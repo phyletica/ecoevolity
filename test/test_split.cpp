@@ -74,6 +74,33 @@ TEST_CASE("Testing 2 leaves", "[split]") {
         REQUIRE(! ss10.conflicts_with(s10));
 
         REQUIRE(ss10.as_string('-', '*') == "*-");
+
+        REQUIRE(! s10.is_proper_subset_of(s01));
+        REQUIRE(! s10.is_proper_superset_of(s01));
+        REQUIRE(! s01.is_proper_subset_of(s10));
+        REQUIRE(! s01.is_proper_superset_of(s10));
+
+        REQUIRE(s10.is_proper_subset_of(s11));
+        REQUIRE(s11.is_proper_superset_of(s10));
+        REQUIRE(s01.is_proper_subset_of(s11));
+        REQUIRE(s11.is_proper_superset_of(s01));
+
+        REQUIRE(! s10.is_proper_superset_of(s11));
+        REQUIRE(! s11.is_proper_subset_of(s10));
+        REQUIRE(! s01.is_proper_superset_of(s11));
+        REQUIRE(! s11.is_proper_subset_of(s01));
+
+        // Wolfram tells me this is so; an empty set is proper subset of any
+        // nonempty set
+        REQUIRE(s00.is_proper_subset_of(s11));
+        REQUIRE(s11.is_proper_superset_of(s00));
+
+        // "proper" disqualifies equivalent sets from being considered
+        // sub/supersets of each other
+        REQUIRE(! ss10.is_proper_subset_of(s10));
+        REQUIRE(! ss10.is_proper_superset_of(s10));
+        REQUIRE(! s10.is_proper_subset_of(ss10));
+        REQUIRE(! s10.is_proper_superset_of(ss10));
     }
 }
 
