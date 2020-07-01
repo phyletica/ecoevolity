@@ -94,6 +94,10 @@ TEST_CASE("Testing 2 leaves", "[split]") {
         // nonempty set
         REQUIRE(s00.is_proper_subset_of(s11));
         REQUIRE(s11.is_proper_superset_of(s00));
+        REQUIRE(s00.is_proper_subset_of(s01));
+        REQUIRE(s01.is_proper_superset_of(s00));
+        REQUIRE(s00.is_proper_subset_of(s10));
+        REQUIRE(s10.is_proper_superset_of(s00));
 
         // "proper" disqualifies equivalent sets from being considered
         // sub/supersets of each other
@@ -101,6 +105,92 @@ TEST_CASE("Testing 2 leaves", "[split]") {
         REQUIRE(! ss10.is_proper_superset_of(s10));
         REQUIRE(! s10.is_proper_subset_of(ss10));
         REQUIRE(! s10.is_proper_superset_of(ss10));
+    }
+}
+
+TEST_CASE("Testing split sorting", "[split]") {
+    SECTION("Testing sorting") {
+        Split
+        s1000;
+        s1000.resize(4);
+        s1000.set_leaf_bit(0);
+        Split
+        s0100;
+        s0100.resize(4);
+        s0100.set_leaf_bit(1);
+        Split
+        s0010;
+        s0010.resize(4);
+        s0010.set_leaf_bit(2);
+        Split
+        s0001;
+        s0001.resize(4);
+        s0001.set_leaf_bit(3);
+
+        Split
+        s1100;
+        s1100.resize(4);
+        s1100.set_leaf_bit(0);
+        s1100.set_leaf_bit(1);
+        Split
+        s1110;
+        s1110.resize(4);
+        s1110.set_leaf_bit(0);
+        s1110.set_leaf_bit(1);
+        s1110.set_leaf_bit(2);
+        Split
+        s1111;
+        s1111.resize(4);
+        s1111.set_leaf_bit(0);
+        s1111.set_leaf_bit(1);
+        s1111.set_leaf_bit(2);
+        s1111.set_leaf_bit(3);
+
+        Split
+        s0011;
+        s0011.resize(4);
+        s0011.set_leaf_bit(2);
+        s0011.set_leaf_bit(3);
+        Split
+        s0111;
+        s0111.resize(4);
+        s0111.set_leaf_bit(1);
+        s0111.set_leaf_bit(2);
+        s0111.set_leaf_bit(3);
+
+        std::vector<Split> splits {
+            s1000,
+            s0100,
+            s1100,
+            s0010,
+            s1110,
+            s0001,
+            s1111
+        };
+        std::vector<Split> sorted_splits = splits;
+        std::sort(std::begin(sorted_splits), std::end(sorted_splits));
+        std::cout << "Sorted:\n";
+        for (auto s : sorted_splits) {
+            std::cout << s.as_string() << "\n";
+        }
+        REQUIRE(splits == sorted_splits);
+
+        splits = {
+            s1000,
+            s0100,
+            s0010,
+            s0001,
+            s0011,
+            s0111,
+            s1111
+        };
+        sorted_splits = splits;
+        std::sort(std::begin(sorted_splits), std::end(sorted_splits));
+        std::cout << "Sorted:\n";
+        for (auto s : sorted_splits) {
+            std::cout << s.as_string() << "\n";
+        }
+        REQUIRE(splits == sorted_splits);
     }
 }
 
