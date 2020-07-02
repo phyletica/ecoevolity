@@ -899,7 +899,7 @@ TEST_CASE("Basic testing", "[treesum]") {
                 2);
         std::stringstream ehs;
         ehs << "number_of_nodes: 2\n"
-            << "splits:\n"
+            << "clades:\n"
             << "    - leaf_indices: [1, 2]\n"
             << "    - leaf_indices: [0, 3]\n"
             << "count: 4\n"
@@ -919,7 +919,7 @@ TEST_CASE("Basic testing", "[treesum]") {
                 2);
         std::stringstream erhs;
         erhs << "number_of_nodes: 1\n"
-            << "splits:\n"
+            << "clades:\n"
             << "    - leaf_indices: [0, 1, 2, 3]\n"
             << "count: 18\n"
             << "frequency: 1\n"
@@ -938,10 +938,13 @@ TEST_CASE("Basic testing", "[treesum]") {
                 "",
                 2);
         std::stringstream ets;
-        ets << "number_of_heights: 2\n"
+        ets << "count: 3\n"
+            << "frequency: 0.17\n"
+            << "cumulative_frequency: 0.17\n"
+            << "number_of_heights: 2\n"
             << "heights:\n"
             << "    - number_of_nodes: 1\n"
-            << "      splits:\n"
+            << "      clades:\n"
             << "          - leaf_indices: [0, 1]\n"
             << "      mean: 0.27\n"
             << "      median: 0.3\n"
@@ -950,17 +953,77 @@ TEST_CASE("Basic testing", "[treesum]") {
             << "      eti_95: [0.11, 0.4]\n"
             << "      hpdi_95: [0.1, 0.4]\n"
             << "    - number_of_nodes: 1\n"
-            << "      splits:\n"
+            << "      clades:\n"
             << "          - leaf_indices: [0, 1, 2, 3]\n"
             << "      mean: 0.4\n"
             << "      median: 0.4\n"
             << "      std_dev: 0.1\n"
             << "      range: [0.3, 0.5]\n"
             << "      eti_95: [0.3, 0.49]\n"
-            << "      hpdi_95: [0.3, 0.5]\n"
-            << "count: 3\n"
-            << "frequency: 0.17\n"
-            << "cumulative_frequency: 0.17\n";
+            << "      hpdi_95: [0.3, 0.5]\n";
         REQUIRE(tree_stream.str() == ets.str());
+
+        // ts.write_summary(std::cout, false, "", 2);
+
+        std::stringstream sumstream;
+        ts.write_summary(sumstream, false, "", 2);
+        YAML::Node summary;
+        try {
+            summary = YAML::Load(sumstream);
+        }
+        catch (...) {
+            REQUIRE(0 == 1);
+        }
+        REQUIRE(summary["clades"]["root"]["count"].as<int>() == 18);
+        REQUIRE(summary["clades"]["leaves"][0]["count"].as<int>() == 18);
+        REQUIRE(summary["clades"]["leaves"][3]["count"].as<int>() == 18);
+        REQUIRE(summary["clades"]["nontrivial_clades"][0]["count"].as<int>() == 7);
+        REQUIRE(summary["clades"]["nontrivial_clades"][0]["frequency"].as<double>() == 0.39);
+        REQUIRE(summary["clades"]["nontrivial_clades"][0]["height_mean"].as<double>() == 0.2);
+        REQUIRE(summary["clades"]["nontrivial_clades"][0]["height_std_dev"].as<double>() == 0.12);
+        REQUIRE(summary["clades"]["nontrivial_clades"][0]["length_mean"].as<double>() == 0.13);
+        REQUIRE(summary["clades"]["nontrivial_clades"][0]["length_std_dev"].as<double>() == 0.049);
+        REQUIRE(summary["clades"]["nontrivial_clades"][0]["height_eti_95"][0].as<double>() == 0.1);
+        REQUIRE(summary["clades"]["nontrivial_clades"][0]["height_eti_95"][1].as<double>() == 0.38);
+        REQUIRE(summary["clades"]["nontrivial_clades"][0]["pop_size_mean"].as<double>() == 0.34);
+        REQUIRE(summary["clades"]["nontrivial_clades"][0]["pop_size_eti_95"][0].as<double>() == 0.12);
+        REQUIRE(summary["clades"]["nontrivial_clades"][0]["pop_size_eti_95"][1].as<double>() == 0.6);
+        REQUIRE(summary["heights"][2]["count"].as<int>() == 4);
+        REQUIRE(summary["heights"][2]["number_of_nodes"].as<int>() == 2);
+        REQUIRE(summary["heights"][2]["frequency"].as<double>() == 0.22);
+        REQUIRE(summary["heights"][2]["mean"].as<double>() == 0.35);
+        REQUIRE(summary["heights"][2]["std_dev"].as<double>() == 0.13);
+        REQUIRE(summary["heights"][2]["eti_95"][0].as<double>() == 0.21);
+        REQUIRE(summary["heights"][2]["eti_95"][1].as<double>() == 0.49);
+        REQUIRE(summary["heights"][2]["clades"][0]["leaf_indices"][0].as<int>() == 1);
+        REQUIRE(summary["heights"][2]["clades"][0]["leaf_indices"][1].as<int>() == 2);
+        REQUIRE(summary["heights"][2]["clades"][1]["leaf_indices"][0].as<int>() == 0);
+        REQUIRE(summary["heights"][2]["clades"][1]["leaf_indices"][1].as<int>() == 3);
+        REQUIRE(summary["topologies"][1]["count"].as<int>() == 3);
+        REQUIRE(summary["topologies"][1]["number_of_heights"].as<int>() == 2);
+        REQUIRE(summary["topologies"][1]["frequency"].as<double>() == 0.17);
+        REQUIRE(summary["topologies"][1]["cumulative_frequency"].as<double>() == 0.39);
+        REQUIRE(summary["topologies"][1]["heights"][0]["number_of_nodes"].as<int>() == 1);
+        REQUIRE(summary["topologies"][1]["heights"][1]["number_of_nodes"].as<int>() == 1);
+        REQUIRE(summary["topologies"][1]["heights"][0]["clades"][0]["leaf_indices"][0].as<int>() == 0);
+        REQUIRE(summary["topologies"][1]["heights"][0]["clades"][0]["leaf_indices"][1].as<int>() == 1);
+        REQUIRE(summary["topologies"][1]["heights"][1]["clades"][0]["leaf_indices"][0].as<int>() == 0);
+        REQUIRE(summary["topologies"][1]["heights"][1]["clades"][0]["leaf_indices"][1].as<int>() == 1);
+        REQUIRE(summary["topologies"][1]["heights"][1]["clades"][0]["leaf_indices"][2].as<int>() == 2);
+        REQUIRE(summary["topologies"][1]["heights"][1]["clades"][0]["leaf_indices"][3].as<int>() == 3);
+        REQUIRE(summary["topologies"][1]["heights"][0]["mean"].as<double>() == 0.27);
+        REQUIRE(summary["topologies"][1]["heights"][1]["mean"].as<double>() == 0.4);
+        REQUIRE(summary["topologies"][1]["heights"][0]["std_dev"].as<double>() == 0.15);
+        REQUIRE(summary["topologies"][1]["heights"][1]["std_dev"].as<double>() == 0.1);
+        REQUIRE(summary["topologies"][1]["heights"][0]["eti_95"][0].as<double>() == 0.11);
+        REQUIRE(summary["topologies"][1]["heights"][1]["eti_95"][0].as<double>() == 0.3);
+        REQUIRE(summary["topologies"][1]["heights"][0]["eti_95"][1].as<double>() == 0.4);
+        REQUIRE(summary["topologies"][1]["heights"][1]["eti_95"][1].as<double>() == 0.49);
+        REQUIRE(summary["topologies"][1]["heights"][0]["hpdi_95"][0].as<double>() == 0.1);
+        REQUIRE(summary["topologies"][1]["heights"][1]["hpdi_95"][0].as<double>() == 0.3);
+        REQUIRE(summary["topologies"][1]["heights"][0]["hpdi_95"][1].as<double>() == 0.4);
+        REQUIRE(summary["topologies"][1]["heights"][1]["hpdi_95"][1].as<double>() == 0.5);
+        REQUIRE(summary["summary_of_map_trees"][0]["count"].as<int>() == 4);
+        REQUIRE(summary["summary_of_map_trees"][0]["frequency"].as<double>() == 0.22);
     }
 }
