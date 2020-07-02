@@ -271,7 +271,7 @@ class TreeSample {
 
         template <typename T>
         void _write_summary_of_values(
-                const std::vector<double> & values,
+                const std::vector<T> & values,
                 std::ostream & out,
                 const std::string & parameter_name = "",
                 const std::string & margin = "",
@@ -295,6 +295,48 @@ class TreeSample {
                                     << summary.hpdi_95().first << ", "
                                     << summary.hpdi_95().second << "]"
                 << std::endl;
+        }
+
+        template <typename T>
+        void _write_node_annotations(
+                const std::vector<T> & values,
+                std::ostream & out,
+                const std::string & parameter_name,
+                const unsigned int precision = 12) const {
+            out.precision(precision);
+            std::string p_name = parameter_name;
+            if (parameter_name != "") {
+                p_name += "_";
+            }
+            if (values.size() < 1) {
+                double nan = std::numeric_limits<double>::quiet_NaN();
+                out << p_name << "mean=" << nan << ","
+                    << p_name << "median=" << nan << ","
+                    << p_name << "std_dev=" << nan << ","
+                    << p_name << "range={"
+                              << nan << ","
+                              << nan << "},"
+                    << p_name << "eti_95={"
+                              << nan << ","
+                              << nan << "}\n"
+                    << p_name << "hpdi_95={"
+                              << nan << ","
+                              << nan << "}";
+                return;
+            }
+            SampleSummary<T> summary(values);
+            out << p_name << "mean=" << summary.mean() << ","
+                << p_name << "median=" << summary.median() << ","
+                << p_name << "std_dev=" << summary.std_dev() << ","
+                << p_name << "range={"
+                          << summary.min() << ","
+                          << summary.max() << "},"
+                << p_name << "eti_95={"
+                          << summary.qi_95().first << ","
+                          << summary.qi_95().second << "}\n"
+                << p_name << "hpdi_95={"
+                          << summary.hpdi_95().first << ","
+                          << summary.hpdi_95().second << "}";
         }
 
     public:
@@ -452,6 +494,86 @@ class TreeSample {
             }
             ECOEVOLITY_ASSERT(source_total == this->sample_size_);
             this->reverse_sort_samples_by_freq_();
+        }
+
+        static bool sort_height_keys(
+                const std::set<Split> & split_set1,
+                const std::set<Split> & split_set2) {
+            bool s1_in_s2 = false;
+            bool s2_in s1 = false;
+            for (auto s1 : split_set1) {
+                for (auto s2 : split_set2) {
+                    if (s1.is_subset_of(s2)) {
+                        s1_in_s2 = true;
+                    }
+                    if (s2.is_subset_of(s1)) {
+                        s2_in_s1 = true;
+                    }
+                }
+            }
+            ECOEVOLITY_ASSERT(! (s1_in_s2 && s2_in_s1));
+            if (s1_in_s2) {
+                return true;
+            }
+            if (s2_in_s1) {
+                return false;
+            }
+            // They are not nested, so we need to use heights
+            if (this->heights_map_.count(split_set1) < 1) {
+                return true;
+            }
+            if (this->heights_map_.count(split_set2) < 1) {
+                return false;
+            }
+            SampleSummarizer<double> s1_sum();
+            SampleSummarizer<double> s2_sum();
+            for (auto h : this->get_height(split_set1)->get_heights()) {
+                s1_sum.add_sample(h);
+            }
+            for (auto h : this->get_height(split_set2)->get_heights()) {
+                s2_sum.add_sample(h);
+            }
+            return s1_sum.mean() < s2_sum.mean();
+        }
+
+        static bool reverse_sort_height_keys(
+                const std::set<Split> & split_set1,
+                const std::set<Split> & split_set2) {
+            bool s1_in_s2 = false;
+            bool s2_in s1 = false;
+            for (auto s1 : split_set1) {
+                for (auto s2 : split_set2) {
+                    if (s1.is_subset_of(s2)) {
+                        s1_in_s2 = true;
+                    }
+                    if (s2.is_subset_of(s1)) {
+                        s2_in_s1 = true;
+                    }
+                }
+            }
+            ECOEVOLITY_ASSERT(! (s1_in_s2 && s2_in_s1));
+            if (s1_in_s2) {
+                return false;
+            }
+            if (s2_in_s1) {
+                return true;
+            }
+            // They are not nested, so we need to use heights
+            if (this->heights_map_.count(split_set1) < 1) {
+                return false;
+            }
+            if (this->heights_map_.count(split_set2) < 1) {
+                return true;
+            }
+            SampleSummarizer<double> s1_sum();
+            SampleSummarizer<double> s2_sum();
+            for (auto h : this->get_height(split_set1)->get_heights()) {
+                s1_sum.add_sample(h);
+            }
+            for (auto h : this->get_height(split_set2)->get_heights()) {
+                s2_sum.add_sample(h);
+            }
+            return s1_sum.mean() > s2_sum.mean();
         }
 
         void set_target_tree(
@@ -768,6 +890,124 @@ class TreeSample {
                 << margin << "cumulative_frequency: " << freq + cumulative_freq
                 << std::endl;
             return freq + cumulative_freq;
+        }
+
+        std::string to_parentheses(const std::set< std::set<Split> > & split_set,
+                const bool use_median_heights = false,
+                const unsigned int precision = 12) const {
+            std::vector<std::string> parameter_keys;
+            const std::map<std::string, std::vector<double> > & split_parameter_map;
+            split_parameter_map = this->get_split(this->root_split_)->get_parameter_map();
+            std::ostringstream root_label;
+            root_label << "[&height_index=" << split_set.size() - 1 << ",";
+            bool first_pass = true
+            for (auto p_values : split_parameter_map) {
+                if (! first_pass) {
+                    root_label << ","
+                }
+                first_pass = false;
+                this->_write_node_annotations<double>(p_values.second,
+                        root_label,
+                        p_values.first,
+                        precision);
+                parameter_keys.push_back(p_values.first);
+            }
+            SampleSummary<double> root_height_summary(split_parameter_map["height"]);
+            double root_height = root_height_summary.mean();
+            if (use_median_heights) {
+                root_height = root_height_summary.median();
+            }
+            std::shared_ptr<Node> root_node = std::make_shared<Node>(
+                    root_label.str(), root_height);
+
+            std::vector< std::shared_ptr<Node> > leaf_nodes;
+            for (unsigned int i = 0; i < this->leaf_splits_.size(); ++i) {
+                std::ostringstream label;
+                label << this->leaf_labels_.at(i) << "[&"
+                unsigned int leaf_index = this->leaf_splits_.at(i).get_leaf_indices().at(0);
+                ECOEVOLITY_ASSERT(leaf_index == i);
+                split_parameter_map = this->get_split(this->leaf_splits_.at(i))->get_parameter_map();
+                SampleSummary<double> leaf_height_summary(split_parameter_map["height"]);
+                double leaf_height = leaf_height_summary.mean();
+                if (use_median_heights) {
+                    leaf_height = leaf_height_summary.median();
+                }
+                first_pass = true
+                for (auto p_values : split_parameter_map) {
+                    if (! first_pass) {
+                        label << ","
+                    }
+                    first_pass = false;
+                    this->_write_node_annotations<double>(p_values.second,
+                            label,
+                            p_values.first,
+                            precision);
+                }
+                std::shared_ptr leaf_nd = std::make_shared<Node>(
+                            leaf_index, label.str(), height);
+                leaf_nodes.push_back(leaf_nd);
+                root_node->add_child(leaf_nd);
+            }
+
+            std::vector< std::set<Split> > height_keys(std::begin(split_set),
+                    std::end(split_set));
+            std::sort(std::begin(height_keys), std::end(height_keys),
+                    TreeSample::reverse_sort_height_keys);
+            ECOEVOLITY_ASSERT((height_keys.at(0).size() == 1)
+                    && (height_keys.at(0).count(this->root_split_) > 0));
+            int height_idx = height_keys.size() - 2;
+            for (unsigned int key_idx = 1; key_idx < height_keys.size(); ++key_idx) {
+                std::shared_ptr<HeightSamples> height_sample = this->get_height(height_keys.at(key_idx));
+                std::vector<double> node_heights;
+                double node_height = std::numeric_limits<double>::quiet_NaN();
+                if (height_sample) {
+                    node_heights = height_sample->get_heights();
+                    SampleSummary<double> node_height_summary(node_heights);
+                    node_height = node_height_summary.mean();
+                    if (use_median_heights) {
+                        node_height = node_height_summary.median();
+                    }
+                }
+                for (auto split : height_keys.at(key_idx)) {
+                    std::ostringstream node_label;
+                    node_label << "[&height_index=" << height_idx << ",";
+                    this->_write_node_annotations<double>(node_heights,
+                            node_label,
+                            "height",
+                            precision);
+                    split_parameter_map.clear();
+                    for (auto param_key : parameter_keys) {
+                        split_parameter_map[param_key] = {};
+                    }
+                    std::shared_ptr<SplitSamples> split_sample = this->get_split(split);
+                    if (split_sample) {
+                        split_parameter_map = split_sample->get_parameter_map();
+                    }
+                    for (auto p_values : split_parameter_map) {
+                        if (p_values.first == "height") {
+                            continue;
+                        }
+                        node_label << ","
+                        first_pass = false;
+                        this->_write_node_annotations<double>(p_values.second,
+                                node_label,
+                                p_values.first,
+                                precision);
+                    }
+                    std::shared_ptr<Node> new_node = std::make_shared<Node>(
+                            node_label.str(), node_height);
+                    std::vector<unsigned int> leaf_indices = split.get_leaf_indices();
+                    std::shared_ptr<Node> grand_parent_node = leaf_nodes.at(leaf_indices.at(0))->get_parent();
+                    for (auto leaf_idx : leaf_indices) {
+                        ECOEVOLITY_ASSERT(leaf_nodes.at(leaf_idx)->get_parent() == grand_parent_node);
+                        leaf_nodes.at(leaf_idx)->remove_parent();
+                        leaf_nodes.at(leaf_idx)->add_parent(new_node);
+                        grand_parent_node->add_child(new_node);
+                    }
+                }
+                --height_idx;
+            }
+            return root_node->to_parentheses(precision, true);
         }
 };
 

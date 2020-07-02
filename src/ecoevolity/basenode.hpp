@@ -913,7 +913,8 @@ class BaseNode : public std::enable_shared_from_this<DerivedNodeT> {
             return d;
         }
 
-        std::string to_parentheses(unsigned int precision = 12) const {
+        std::string to_parentheses(unsigned int precision = 12,
+                const bool label_internal_nodes = false) const {
             std::ostringstream s;
             s.precision(precision);
             if (this->is_leaf()) {
@@ -930,6 +931,9 @@ class BaseNode : public std::enable_shared_from_this<DerivedNodeT> {
                     ++child_idx;
                 }
                 s << ")";
+                if (label_internal_nodes) {
+                    s << this->get_label();
+                }
             }
             s << ":" << this->get_length();
             return s.str();
