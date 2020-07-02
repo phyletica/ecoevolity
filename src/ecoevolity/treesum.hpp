@@ -210,7 +210,9 @@ class TreeSample {
         unsigned int sample_size_ = 0;
         bool target_tree_provided_ = false;
         tree_type target_tree_;
+        std::set< std::set<Split> > target_topology_;
         std::vector<double> target_euclidean_distances_;
+        std::set<std::string> constrained_node_parameters_;
 
         void reverse_sort_samples_by_freq_() {
             std::sort(this->topologies_.begin(), this->topologies_.end(),
@@ -221,6 +223,24 @@ class TreeSample {
                     BaseSamples::reverse_sort_by_n);
             std::sort(this->non_trivial_splits_.begin(), this->non_trivial_splits_.end(),
                     BaseSamples::reverse_sort_by_n);
+        }
+
+        void update_constrained_node_parameters_() {
+            this->constrained_node_parameters_.clear();
+            const std::map< std::string, std::vector > & root_parameters =
+                this->get_split(this->root_split_)->get_parameter_map();
+            const std::map< std::string, std::vector > & leaf_parameters =
+                this->get_split(this->leaf_splits_.at(0))->get_parameter_map();
+            for (auto pname_v : root_parameters) {
+                ECOEVOLITY_ASSERT(root_parameters.at(pname_v.first).size() ==
+                    leaf_parameters.at(pname_v.first).size());
+                // If the root and first leaf share the same sampled values, we
+                // are going to assume this parameter is constrained across the
+                // tree
+                if (root_parameters.at(pname_v.first) == leaf_parameters.at(pname_v.first)) {
+                    this->constrained_node_parameters_.insert(pname_v.first);
+                }
+            }
         }
 
         void update_splits_and_labels_(const tree_type & tree) {
@@ -310,7 +330,8 @@ class TreeSample {
             }
             if (values.size() < 1) {
                 double nan = std::numeric_limits<double>::quiet_NaN();
-                out << p_name << "mean=" << nan << ","
+                out << p_name << "n=" << 0 << ","
+                    << p_name << "mean=" << nan << ","
                     << p_name << "median=" << nan << ","
                     << p_name << "std_dev=" << nan << ","
                     << p_name << "range={"
@@ -325,7 +346,8 @@ class TreeSample {
                 return;
             }
             SampleSummary<T> summary(values);
-            out << p_name << "mean=" << summary.mean() << ","
+            out << p_name << "n=" << summary.sample_size() << ","
+                << p_name << "mean=" << summary.mean() << ","
                 << p_name << "median=" << summary.median() << ","
                 << p_name << "std_dev=" << summary.std_dev() << ","
                 << p_name << "range={"
@@ -494,6 +516,7 @@ class TreeSample {
             }
             ECOEVOLITY_ASSERT(source_total == this->sample_size_);
             this->reverse_sort_samples_by_freq_();
+            this->update_constrained_node_parameters_();
         }
 
         static bool sort_height_keys(
@@ -580,6 +603,11 @@ class TreeSample {
                 std::istream & tree_stream,
                 const std::string & ncl_file_format) {
             this->target_tree_ = tree_type(tree_stream, ncl_file_format);
+            this->target_topology_.clear();
+            this->target_tree_.store_splits(this->target_topology_,
+                    false,  // resize_splits
+                    true,   // include root
+                    false); // include leaves
             this->target_tree_provided_ = true;
             this->check_target_tree_();
         }
@@ -588,6 +616,11 @@ class TreeSample {
                 const std::string & tree_path,
                 const std::string & ncl_file_format) {
             this->target_tree_ = tree_type(tree_path, ncl_file_format);
+            this->target_topology_.clear();
+            this->target_tree_.store_splits(this->target_topology_,
+                    false,  // resize_splits
+                    true,   // include root
+                    false); // include leaves
             this->target_tree_provided_ = true;
             this->check_target_tree_();
         }
@@ -595,6 +628,11 @@ class TreeSample {
         void set_target_tree(
                 const std::string & newick_tree_string) {
             this->target_tree_ = tree_type(newick_tree_string);
+            this->target_topology_.clear();
+            this->target_tree_.store_splits(this->target_topology_,
+                    false,  // resize_splits
+                    true,   // include root
+                    false); // include leaves
             this->target_tree_provided_ = true;
             this->check_target_tree_();
         }
@@ -734,15 +772,15 @@ class TreeSample {
 
             std::string item_margin = margin + indent + indent;
 
-            out << margin << "splits:\n";
-            out << margin << indent << "root_split:\n";
+            out << margin << "clades:\n";
+            out << margin << indent << "root:\n";
             this->write_summary_of_split(this->root_split_,
                     out,
                     false,
                     item_margin,
                     precision);
             item_margin += "  ";
-            out << margin << indent << "leaf_splits:\n";
+            out << margin << indent << "leaves:\n";
             for (auto s : this->leaf_splits_) {
                 out << margin << indent << indent << "-\n";
                 this->write_summary_of_split(s,
@@ -751,7 +789,7 @@ class TreeSample {
                         item_margin,
                         precision);
             }
-            out << margin << indent << "nontrivial_splits:\n";
+            out << margin << indent << "nontrivial_clades:\n";
             for (auto split_samples : this->get_non_trivial_splits()) {
                 out << margin << indent << indent << "-\n";
                 this->write_summary_of_split(split_samples->get_split(),
@@ -775,6 +813,11 @@ class TreeSample {
                     out << ", " << leaf_indices.at(i);
                 }
                 out << "]\n";
+            }
+            if (this->splits_map_.count(split) < 1) {
+                out << margin << "count: 0\n"
+                    << margin << "frequency: 0\n";
+                return;
             }
             out << margin << "count: " << this->get_split_count(split) << "\n"
                 << margin << "frequency: " << this->get_split_frequency(split) << "\n";
@@ -817,7 +860,7 @@ class TreeSample {
             out.precision(precision);
 
             out << margin << "number_of_nodes: " << split_set.size() << "\n"
-                << margin << "splits:\n";
+                << margin << "clades:\n";
             for (auto split : split_set) {
                 std::vector<unsigned int> leaf_indices = split.get_leaf_indices();
                 out << margin << indent << "- leaf_indices: [" << leaf_indices.at(0);
@@ -825,6 +868,11 @@ class TreeSample {
                     out << ", " << leaf_indices.at(i);
                 }
                 out << "]\n";
+            }
+            if (this->heights_map_.count(split_set) < 1) {
+                out << margin << "count: 0\n"
+                    << margin << "frequency: 0\n";
+                return
             }
             out << margin << "count: " << this->get_height_count(split_set) << "\n"
                 << margin << "frequency: " << this->get_height_frequency(split_set) << "\n";
@@ -845,10 +893,10 @@ class TreeSample {
             double cumulative_freq = 0.0;
             std::string topo_margin = margin + "  ";
             out << margin << "topologies:\n";
-            for (auto height_samples : this->get_heights()) {
+            for (auto topo_samples : this->get_topologies()) {
                 out << margin << indent << "-\n";
                 cumulative_freq += this->write_summary_of_topology(
-                        height_samples->get_split_set(),
+                        topo_samples->get_split_set(),
                         out,
                         cumulative_freq,
                         topo_margin,
@@ -868,7 +916,7 @@ class TreeSample {
             std::string h_margin = margin + indent + "  ";
             for (auto s_set : split_set) {
                 out << margin << indent << "- number_of_nodes: " << s_set.size() << "\n";
-                out << h_margin << "splits:\n";
+                out << h_margin << "clades:\n";
                 for (auto split : s_set) {
                     std::vector<unsigned int> leaf_indices = split.get_leaf_indices();
                     out << h_margin << indent << "- leaf_indices: [" << leaf_indices.at(0);
@@ -892,25 +940,95 @@ class TreeSample {
             return freq + cumulative_freq;
         }
 
+        void write_summary_of_target_tree(
+                std::ostream & out,
+                const bool use_median_heights = false,
+                const std::string & margin = "",
+                const unsigned int precision = 12) const {
+            if (! this->target_tree_provided_) {
+                return;
+            }
+            const std::set< std::set<Split> > & split_set = this->target_topology_;
+            std::string indent = string_util::get_indent(1);
+            out.precision(precision);
+            out << margin << "number_of_heights: " << split_set.size() << "\n";
+            if (this->topologies_.count(split_set) < 1) {
+                out << margin << "count: 0"
+                    << margin << "frequency: 0";
+            }
+            else {
+                out << margin << "count: " << this->get_topology_count(split_set) << "\n"
+                    << margin << "frequency: " << this->get_topology_frequency(split_set) << "\n";
+            }
+            out << margin << "newick: " << this->to_parentheses(split_set,
+                    use_median_heights,
+                    precision) << "\n";
+            std::string h_margin = margin + indent + "  ";
+            out << margin << "heights:\n";
+            for (auto s_set : split_set) {
+                out << margin << indent << "-\n";
+                this->write_summary_of_height(s_set, out, h_margin, precision);
+            }
+            out << margin << "clades:\n";
+            for (auto s_set : split_set) {
+                for (auto split : s_set) {
+                    out << margin << indent << "-\n";
+                    this->write_summary_of_split(split, out, true, h_margin,
+                            precision);
+                }
+            }
+        }
+
+        void write_summary_of_map_trees(std::ostream & out,
+                const bool use_median_heights = false,
+                const std::string & margin = "",
+                const unsigned int precision = 12) const {
+            unsigned int map_count = this->topologies_.at(0)->get_sample_size();
+            for (auto topo_samples : this->topologies_) {
+                if (topo_samples->get_sample_size() < map_count) {
+                    break;
+                }
+                out << margin << "- count: " << topo_samples->get_sample_size()
+                    << margin << "  frequency: " << (topo_samples->get_sample_size() /
+                            (double)this->get_sample_size())
+                    << margin << "  newick: " << this->to_parentheses(
+                            topo_samples->get_split_set(),
+                            use_median_heights,
+                            precision) << "\n";
+            }
+        }
+
         std::string to_parentheses(const std::set< std::set<Split> > & split_set,
                 const bool use_median_heights = false,
                 const unsigned int precision = 12) const {
+            std::map<std::string, std::vector<double> > constrained_params;
+            for (auto param : this->constrained_node_parameters_) {
+                constrained_params[param] = this->get_split(this->root_split_)->get_values(param);
+            }
             std::vector<std::string> parameter_keys;
             const std::map<std::string, std::vector<double> > & split_parameter_map;
             split_parameter_map = this->get_split(this->root_split_)->get_parameter_map();
             std::ostringstream root_label;
-            root_label << "[&height_index=" << split_set.size() - 1 << ",";
-            bool first_pass = true
+            root_label << "[&height_index=" << split_set.size() - 1;
             for (auto p_values : split_parameter_map) {
-                if (! first_pass) {
-                    root_label << ","
-                }
-                first_pass = false;
-                this->_write_node_annotations<double>(p_values.second,
-                        root_label,
-                        p_values.first,
-                        precision);
                 parameter_keys.push_back(p_values.first);
+                root_label << ","
+                if (p_values.first == "height") {
+                    this->_write_node_annotations<double>(p_values.second,
+                            root_label,
+                            "index_height",
+                            precision);
+                    this->_write_node_annotations<double>(p_values.second,
+                            root_label,
+                            "clade_height",
+                            precision);
+                }
+                else {
+                    this->_write_node_annotations<double>(p_values.second,
+                            root_label,
+                            p_values.first,
+                            precision);
+                }
             }
             SampleSummary<double> root_height_summary(split_parameter_map["height"]);
             double root_height = root_height_summary.mean();
@@ -923,7 +1041,7 @@ class TreeSample {
             std::vector< std::shared_ptr<Node> > leaf_nodes;
             for (unsigned int i = 0; i < this->leaf_splits_.size(); ++i) {
                 std::ostringstream label;
-                label << this->leaf_labels_.at(i) << "[&"
+                label << this->leaf_labels_.at(i) << "[&";
                 unsigned int leaf_index = this->leaf_splits_.at(i).get_leaf_indices().at(0);
                 ECOEVOLITY_ASSERT(leaf_index == i);
                 split_parameter_map = this->get_split(this->leaf_splits_.at(i))->get_parameter_map();
@@ -938,10 +1056,22 @@ class TreeSample {
                         label << ","
                     }
                     first_pass = false;
-                    this->_write_node_annotations<double>(p_values.second,
-                            label,
-                            p_values.first,
-                            precision);
+                    if (p_values.first == "height") {
+                        this->_write_node_annotations<double>(p_values.second,
+                                label,
+                                "index_height",
+                                precision);
+                        this->_write_node_annotations<double>(p_values.second,
+                                label,
+                                "clade_height",
+                                precision);
+                    }
+                    else {
+                        this->_write_node_annotations<double>(p_values.second,
+                                label,
+                                p_values.first,
+                                precision);
+                    }
                 }
                 std::shared_ptr leaf_nd = std::make_shared<Node>(
                             leaf_index, label.str(), height);
@@ -958,22 +1088,26 @@ class TreeSample {
             int height_idx = height_keys.size() - 2;
             for (unsigned int key_idx = 1; key_idx < height_keys.size(); ++key_idx) {
                 std::shared_ptr<HeightSamples> height_sample = this->get_height(height_keys.at(key_idx));
-                std::vector<double> node_heights;
-                double node_height = std::numeric_limits<double>::quiet_NaN();
+                std::vector<double> index_heights;
+                double index_height = std::numeric_limits<double>::quiet_NaN();
                 if (height_sample) {
-                    node_heights = height_sample->get_heights();
-                    SampleSummary<double> node_height_summary(node_heights);
-                    node_height = node_height_summary.mean();
+                    index_heights = height_sample->get_heights();
+                    SampleSummary<double> index_height_summary(index_heights);
+                    index_height = index_height_summary.mean();
                     if (use_median_heights) {
-                        node_height = node_height_summary.median();
+                        index_height = index_height_summary.median();
                     }
                 }
                 for (auto split : height_keys.at(key_idx)) {
                     std::ostringstream node_label;
-                    node_label << "[&height_index=" << height_idx << ",";
-                    this->_write_node_annotations<double>(node_heights,
+                    node_label << "[&height_index=" << height_idx
+                        // << ",index_n=" << this->get_height_count(height_keys.at(key_idx))
+                        << ",index_freq=" << this->get_height_frequency(height_keys.at(key_idx))
+                        // << ",clade_n=" << this->get_split_count(split)
+                        << ",clade_freq=" << this->get_split_frequency(split);
+                    this->_write_node_annotations<double>(index_heights,
                             node_label,
-                            "height",
+                            "index_height",
                             precision);
                     split_parameter_map.clear();
                     for (auto param_key : parameter_keys) {
@@ -984,18 +1118,29 @@ class TreeSample {
                         split_parameter_map = split_sample->get_parameter_map();
                     }
                     for (auto p_values : split_parameter_map) {
-                        if (p_values.first == "height") {
-                            continue;
-                        }
                         node_label << ","
-                        first_pass = false;
-                        this->_write_node_annotations<double>(p_values.second,
-                                node_label,
-                                p_values.first,
-                                precision);
+                        if (p_values.first == "height") {
+                            this->_write_node_annotations<double>(p_values.second,
+                                    node_label,
+                                    "clade_height",
+                                    precision);
+                        }
+                        else if (constrained_params.count(p_values.first) > 0) {
+                            this->_write_node_annotations<double>(
+                                    constrained_params.at(p_values.first),
+                                    node_label,
+                                    p_values.first,
+                                    precision);
+                        }
+                        else {
+                            this->_write_node_annotations<double>(p_values.second,
+                                    node_label,
+                                    p_values.first,
+                                    precision);
+                        }
                     }
                     std::shared_ptr<Node> new_node = std::make_shared<Node>(
-                            node_label.str(), node_height);
+                            node_label.str(), index_height);
                     std::vector<unsigned int> leaf_indices = split.get_leaf_indices();
                     std::shared_ptr<Node> grand_parent_node = leaf_nodes.at(leaf_indices.at(0))->get_parent();
                     for (auto leaf_idx : leaf_indices) {
@@ -1008,6 +1153,29 @@ class TreeSample {
                 --height_idx;
             }
             return root_node->to_parentheses(precision, true);
+        }
+
+        void write_summary(std::ostream & out,
+                const bool use_median_heights = false,
+                const std::string & margin = "",
+                const unsigned int precision = 12) const {
+            std::string indent = string_util::get_indent(1);
+            out.precision(precision);
+            out << "summary_of_map_trees:\n";
+            this->write_summary_of_map_trees(out,
+                    use_median_heights,
+                    indent,
+                    precision);
+            if (this->target_tree_provided_) {
+                out << "summary_of_target_tree:\n";
+                this->write_summary_of_target_tree(out,
+                    use_median_heights,
+                    indent,
+                    precision);
+            }
+            this->write_summary_of_topologies(out, "", precision);
+            this->write_summary_of_heights(out, "", precision);
+            this->write_summary_of_splits(out, "", precision);
         }
 };
 
