@@ -927,7 +927,8 @@ class BaseNode : public std::enable_shared_from_this<DerivedNodeT> {
                     if (child_idx > 0) {
                         s << ",";
                     }
-                    s << child_iter->to_parentheses(precision);
+                    s << child_iter->to_parentheses(precision,
+                            label_internal_nodes);
                     ++child_idx;
                 }
                 s << ")";
