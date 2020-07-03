@@ -78,6 +78,29 @@ class BaseSamples {
         }
 };
 
+class NumberOfHeightsSamples : public BaseSamples {
+    protected:
+        unsigned int number_of_heights_;
+
+    public:
+        void add_sample(
+                const unsigned int number_of_heights,
+                unsigned int tree_index,
+                unsigned int source_index) { 
+            if (this->n_ == 0) {
+                this->number_of_heights_ = number_of_heights;
+            }
+            else {
+                ECOEVOLITY_ASSERT(number_of_heights == this->number_of_heights_);
+            }
+            this->tally_sample_(tree_index, source_index);
+        }
+
+        unsigned int get_number_of_heights() const {
+            return this->number_of_heights_;
+        }
+};
+
 class TopologySamples : public BaseSamples {
     protected:
         std::set< std::set<Split> > split_set_;
@@ -287,9 +310,11 @@ class TreeSample {
         std::vector< std::shared_ptr<HeightSamples> > heights_;
         std::vector< std::shared_ptr<SplitSamples> > splits_;
         std::vector< std::shared_ptr<SplitSamples> > non_trivial_splits_;
+        std::vector< std::shared_ptr<NumberOfHeightsSamples> > num_heights_;
         std::map< std::set< std::set<Split> >, std::shared_ptr<TopologySamples> > topologies_map_;
         std::map< std::set<Split>,             std::shared_ptr<HeightSamples>   > heights_map_;
         std::map< Split,                       std::shared_ptr<SplitSamples>    > splits_map_;
+        std::map< unsigned int,                std::shared_ptr<NumberOfHeightsSamples> > num_heights_map_;
         std::vector<double> tree_lengths_;
         std::vector<std::string> source_paths_;
         std::vector<unsigned int> source_sample_sizes_;
@@ -312,6 +337,8 @@ class TreeSample {
             std::sort(this->splits_.begin(), this->splits_.end(),
                     BaseSamples::reverse_sort_by_n);
             std::sort(this->non_trivial_splits_.begin(), this->non_trivial_splits_.end(),
+                    BaseSamples::reverse_sort_by_n);
+            std::sort(this->num_heights_.begin(), this->num_heights_.end(),
                     BaseSamples::reverse_sort_by_n);
         }
 
@@ -535,6 +562,19 @@ class TreeSample {
                         heights,
                         parameters,
                         false);
+                unsigned int nheights = heights.size();
+                if (this->num_heights_map_.count(nheights) > 0) {
+                    this->num_heights_map_[nheights]->add_sample(
+                            nheights,
+                            tree_index,
+                            source_index);
+                }
+                else {
+                    std::shared_ptr<NumberOfHeightsSamples> nhs = std::make_shared<NumberOfHeightsSamples>();
+                    nhs->add_sample(nheights, tree_index, source_index);
+                    this->num_heights_.push_back(nhs);
+                    this->num_heights_map_[nheights] = nhs;
+                }
                 if (this->topologies_map_.count(split_set) > 0) {
                     this->topologies_map_[split_set]->add_sample(
                             heights,
@@ -679,6 +719,9 @@ class TreeSample {
         const std::vector< std::shared_ptr<SplitSamples> > & get_non_trivial_splits() const {
             return this->non_trivial_splits_;
         }
+        const std::vector< std::shared_ptr<NumberOfHeightsSamples> > & get_all_numbers_of_heights() const {
+            return this->num_heights_;
+        }
 
         std::shared_ptr<TopologySamples> get_topology(
                 const std::set< std::set<Split> > & topology
@@ -703,6 +746,14 @@ class TreeSample {
                 return nullptr;
             }
             return this->splits_map_.at(split);
+        }
+        std::shared_ptr<NumberOfHeightsSamples> get_number_of_heights(
+                const unsigned int number_of_heights
+                ) const {
+            if (this->num_heights_map_.count(number_of_heights) < 1) {
+                return nullptr;
+            }
+            return this->num_heights_map_.at(number_of_heights);
         }
 
         unsigned int get_topology_count(
@@ -745,6 +796,58 @@ class TreeSample {
                 const Split & split
                 ) const {
             return this->get_split_count(split) / (double)this->sample_size_;
+        }
+
+        unsigned int get_number_of_heights_count(
+                const unsigned int number_of_heights
+                ) const {
+            if (this->num_heights_map_.count(number_of_heights) < 1) {
+                return 0;
+            }
+            return this->num_heights_map_.at(number_of_heights)->get_sample_size();
+        }
+        double get_number_of_heights_frequency(
+                const unsigned int number_of_heights
+                ) const {
+            return this->get_number_of_heights_count(number_of_heights) / (double)this->sample_size_;
+        }
+
+        double get_topology_credibility_level(
+                const std::set< std::set<Split> > & topology
+                ) const {
+            unsigned int topo_count = this->get_topology_count(topology);
+            if (topo_count < 1) {
+                return 0.0;
+            }
+            double total_prob = 0.0;
+            for (auto topo_sample : this->get_topologies()) {
+                if (topo_count == topo_sample->get_sample_size()) {
+                    return 1.0 - total_prob;
+                }
+                total_prob += this->get_topology_frequency(
+                        topo_sample->get_split_set());
+            }
+            ECOEVOLITY_ASSERT(fabs(total_prob - 1.0) < 1e-6);
+            return 0.0;
+        }
+
+        double get_number_of_heights_credibility_level(
+                const unsigned int number_of_heights
+                ) const {
+            unsigned int count = this->get_number_of_heights_count(number_of_heights);
+            if (count < 1) {
+                return 0.0;
+            }
+            double total_prob = 0.0;
+            for (auto nh_sample : this->get_all_numbers_of_heights()) {
+                if (count == nh_sample->get_sample_size()) {
+                    return 1.0 - total_prob;
+                }
+                total_prob += this->get_number_of_heights_frequency(
+                        nh_sample->get_number_of_heights());
+            }
+            ECOEVOLITY_ASSERT(fabs(total_prob - 1.0) < 1e-6);
+            return 0.0;
         }
 
         double get_average_std_dev_of_split_freqs(
@@ -1209,6 +1312,67 @@ class TreeSample {
             this->write_summary_of_topologies(out, "", precision);
             this->write_summary_of_heights(out, "", precision);
             this->write_summary_of_splits(out, "", precision);
+        }
+
+        void write_to_nexus(
+                std::vector< std::set< std::set<Split> > >::const_iterator split_sets_start,
+                std::vector< std::set< std::set<Split> > >::const_iterator split_sets_end,
+                std::ostream & out,
+                const bool use_median_heights = false,
+                const unsigned int precision = 12) const {
+            out<< "#NEXUS\n\n"
+                << "BEGIN TAXA;\n"
+                << "    DIMENSIONS NTAX=" << this->leaf_labels_.size() << ";\n"
+                << "    TAXLABELS\n";
+            for (auto label : this->leaf_labels_) {
+                out << "        " << label << "\n";
+            }
+            out << "    ;\n"
+                << "END;\n\n"
+                << "BEGIN TREES;\n";
+            unsigned int tree_idx = 0;
+            while (split_sets_start != split_sets_end) {
+                out << "    TREE tree" << ++tree_idx << " = [&R] "
+                    << this->to_parentheses(*(split_sets_start++),
+                            use_median_heights,
+                            precision)
+                    << ";\n";
+            }
+            out << "END;" << std::endl;
+        }
+
+        void write_target_tree_to_nexus(
+                std::ostream & out,
+                const bool use_median_heights = false,
+                const unsigned int precision = 12) const {
+            std::vector< std::set< std::set<Split > > > target_tree_vec = {
+                this->target_topology_};
+            this->write_to_nexus(
+                    target_tree_vec.begin(),
+                    target_tree_vec.end(),
+                    out,
+                    use_median_heights,
+                    precision);
+        }
+
+        void write_map_trees_to_nexus(
+                std::ostream & out,
+                const bool use_median_heights = false,
+                const unsigned int precision = 12) const {
+            std::vector< std::set< std::set<Split > > > split_sets;
+            unsigned int map_count = this->topologies_.at(0)->get_sample_size();
+            for (auto topo_samples : this->topologies_) {
+                if (topo_samples->get_sample_size() < map_count) {
+                    break;
+                }
+                split_sets.push_back(topo_samples->get_split_set());
+            }
+            this->write_to_nexus(
+                    split_sets.begin(),
+                    split_sets.end(),
+                    out,
+                    use_median_heights,
+                    precision);
         }
 };
 

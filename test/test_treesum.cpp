@@ -479,6 +479,10 @@ TEST_CASE("Basic testing", "[treesum]") {
         t_ladder_4321.insert(s_234);
         t_ladder_4321.insert(s_r);
 
+        std::set< std::set<Split> > t_13_missing;
+        t_13_24.insert(s_13);
+        t_13_24.insert(s_r);
+
         // Split counts
         std::map< Split, unsigned int > expected_split_count_map {
             {split_1,   18},
@@ -556,6 +560,38 @@ TEST_CASE("Basic testing", "[treesum]") {
         }
         REQUIRE(non_trivial_split_counts == expected_non_trivial_split_counts);
         REQUIRE(non_trivial_split_count_map == expected_non_trivial_split_count_map);
+
+        // num heights counts
+        std::map< unsigned int, unsigned int> expected_nheights_count_map;
+        expected_nheights_count_map[2] = 9;
+        expected_nheights_count_map[3] = 7;
+        expected_nheights_count_map[1] = 2;
+
+        for (auto key_count : expected_nheights_count_map) {
+            // std::cout << "key: " << key_count.first << "\n";
+            // std::cout << "count: " << ts.get_number_of_heights_count(key_count.first) << "\n";
+            // std::cout << "freq: " << ts.get_number_of_heights_frequency(key_count.first) << "\n";
+            REQUIRE(ts.get_number_of_heights_count(key_count.first) == key_count.second);
+            REQUIRE(ts.get_number_of_heights_frequency(key_count.first) == Approx(key_count.second / 18.0));
+        }
+        
+        std::vector<unsigned int> expected_nheights_counts = {9, 7, 2};
+
+        REQUIRE(ts.get_number_of_heights_credibility_level(2) == 1.0);
+        REQUIRE(ts.get_number_of_heights_credibility_level(3) == Approx(9.0/18.0));
+        REQUIRE(ts.get_number_of_heights_credibility_level(1) == Approx(2.0/18.0));
+        REQUIRE(ts.get_number_of_heights_credibility_level(4) == 0.0);
+
+        std::map< unsigned int, unsigned int> nheights_count_map;
+        std::vector<unsigned int> nheights_counts;
+        for (auto nh : ts.get_all_numbers_of_heights()) {
+            unsigned int number_of_hts = nh->get_number_of_heights();
+            REQUIRE(nheights_count_map.count(number_of_hts) == 0);
+            nheights_count_map[number_of_hts] = nh->get_sample_size();
+            nheights_counts.push_back(nh->get_sample_size());
+        }
+        REQUIRE(nheights_count_map == expected_nheights_count_map);
+        REQUIRE(nheights_counts == expected_nheights_counts);
         
         // topology counts
         std::map< std::set< std::set<Split> >, unsigned int> expected_topo_count_map;
@@ -574,6 +610,16 @@ TEST_CASE("Basic testing", "[treesum]") {
         }
         
         std::vector<unsigned int> expected_topo_counts = {4,3,2,2,2,2,2,1};
+
+        REQUIRE(ts.get_topology_credibility_level(t_14_23_shared) == 1.0);
+        REQUIRE(ts.get_topology_credibility_level(t_12) == Approx(14.0/18.0));
+        REQUIRE(ts.get_topology_credibility_level(t_34) == Approx(11.0/18.0));
+        REQUIRE(ts.get_topology_credibility_level(t_12_34) == Approx(11.0/18.0));
+        REQUIRE(ts.get_topology_credibility_level(t_13_24) == Approx(11.0/18.0));
+        REQUIRE(ts.get_topology_credibility_level(t_comb) == Approx(11.0/18.0));
+        REQUIRE(ts.get_topology_credibility_level(t_ladder_1234) == Approx(11.0/18.0));
+        REQUIRE(ts.get_topology_credibility_level(t_ladder_4321) == Approx(1.0/18.0));
+        REQUIRE(ts.get_topology_credibility_level(t_13_missing) == 0.0);
 
         std::map< std::set< std::set<Split> >, unsigned int> topo_count_map;
         std::vector<unsigned int> topo_counts;
@@ -1025,5 +1071,8 @@ TEST_CASE("Basic testing", "[treesum]") {
         REQUIRE(summary["topologies"][1]["heights"][1]["hpdi_95"][1].as<double>() == 0.5);
         REQUIRE(summary["summary_of_map_trees"][0]["count"].as<int>() == 4);
         REQUIRE(summary["summary_of_map_trees"][0]["frequency"].as<double>() == 0.22);
+
+        // ts.write_map_trees_to_nexus(std::cout);
+        // ts.write_target_tree_to_nexus(std::cout);
     }
 }
