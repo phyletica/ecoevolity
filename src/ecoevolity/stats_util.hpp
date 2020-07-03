@@ -205,6 +205,23 @@ inline double effective_sample_size(
     }
     return ess;
 }
+template <typename T>
+inline double effective_sample_size(
+        const std::vector< std::vector<T> > & samples,
+        const bool limit_to_number_of_samples = true) {
+    unsigned int nvals = 0;
+    for (auto vec : samples) {
+        nvals += vec.size();
+    }
+    std::vector<T> s;
+    s.reserve(nvals);
+    for (auto vec : samples) {
+        for (auto val : vec) {
+            s.push_back(val);
+        }
+    }
+    return effective_sample_size(s, limit_to_number_of_samples);
+}
 
 /**
  * Calculate the potential scale reduction factor.
@@ -401,8 +418,7 @@ class SampleSummary {
             }
         }
 
-    public:
-        SampleSummary(const std::vector<T> & samples) {
+        void _init(const std::vector<T> & samples) {
             SampleSummarizer<T> ss;
             for (auto x : samples) {
                 ss.add_sample(x);
@@ -415,6 +431,25 @@ class SampleSummary {
             this->max_ = ss.max();
             this->hpdi_95_ = get_hpd_interval<T>(samples, 0.95);
             this->qi_95_ = quantiles_95<T>(samples);
+        }
+
+    public:
+        SampleSummary(const std::vector<T> & samples) {
+            this->_init(samples);
+        }
+        SampleSummary(const std::vector< std::vector<T> > & samples) {
+            unsigned int nvals = 0;
+            for (auto vec : samples) {
+                nvals += vec.size();
+            }
+            std::vector<T> s;
+            s.reserve(nvals);
+            for (auto vec : samples) {
+                for (auto val : vec) {
+                    s.push_back(val);
+                }
+            }
+            this->_init(s);
         }
 
         unsigned int sample_size() const {

@@ -1009,6 +1009,30 @@ TEST_CASE("Basic testing", "[treesum]") {
             << "      hpdi_95: [0.3, 0.5]\n";
         REQUIRE(tree_stream.str() == ets.str());
 
+        std::stringstream nohs;
+        ts.write_summary_of_all_numbers_of_heights(
+                nohs,
+                "",
+                2);
+        std::stringstream enohs;
+        enohs << "numbers_of_heights:\n"
+              << "    -\n"
+              << "      number_of_heights: 2\n"
+              << "      count: 9\n"
+              << "      frequency: 0.5\n"
+              << "      cumulative_frequency: 0.5\n"
+              << "    -\n"
+              << "      number_of_heights: 3\n"
+              << "      count: 7\n"
+              << "      frequency: 0.39\n"
+              << "      cumulative_frequency: 0.89\n"
+              << "    -\n"
+              << "      number_of_heights: 1\n"
+              << "      count: 2\n"
+              << "      frequency: 0.11\n"
+              << "      cumulative_frequency: 1\n";
+        REQUIRE(nohs.str() == enohs.str());
+
         // ts.write_summary(std::cout, false, "", 2);
 
         std::stringstream sumstream;

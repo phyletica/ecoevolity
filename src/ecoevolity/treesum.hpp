@@ -415,11 +415,14 @@ class TreeSample {
                 const unsigned int precision = 12) const {
             out.precision(precision);
             SampleSummary<T> summary(values);
+            double ess = effective_sample_size<T>(values, true);
             std::string p_name = parameter_name;
             if (parameter_name != "") {
                 p_name += "_";
             }
-            out << margin << p_name << "mean: " << summary.mean() << "\n"
+            out << margin << p_name << "n: " << summary.sample_size() << "\n"
+                << margin << p_name << "ess: " << ess << "\n"
+                << margin << p_name << "mean: " << summary.mean() << "\n"
                 << margin << p_name << "median: " << summary.median() << "\n"
                 << margin << p_name << "std_dev: " << summary.std_dev() << "\n"
                 << margin << p_name << "range: ["
@@ -432,6 +435,34 @@ class TreeSample {
                                     << summary.hpdi_95().first << ", "
                                     << summary.hpdi_95().second << "]"
                 << std::endl;
+        }
+
+        template <typename T>
+        void _write_summary_of_values(
+                const std::vector< std::vector<T> > & values,
+                std::ostream & out,
+                const std::string & parameter_name = "",
+                const std::string & margin = "",
+                const unsigned int precision = 12) const {
+            out.precision(precision);
+            std::string p_name = parameter_name;
+            if (parameter_name != "") {
+                p_name += "_";
+            }
+            unsigned int nvals = 0;
+            for (auto vec : samples) {
+                nvals += vec.size();
+            }
+            std::vector<T> s;
+            s.reserve(nvals);
+            for (auto vec : samples) {
+                for (auto val : vec) {
+                    s.push_back(val);
+                }
+            }
+            this->_write_summary_of_values(s, out, parameter_name, margin, precision);
+            double psrf = potential_scale_reduction_factor<T>(values);
+            out << margin << p_name << "psrf: " << ess << std::endl;
         }
 
         template <typename T>
@@ -448,6 +479,7 @@ class TreeSample {
             if (values.size() < 1) {
                 double nan = std::numeric_limits<double>::quiet_NaN();
                 out << p_name << "n=" << 0 << ","
+                    << p_name << "ess=" << 0 << ","
                     << p_name << "mean=" << nan << ","
                     << p_name << "median=" << nan << ","
                     << p_name << "std_dev=" << nan << ","
@@ -463,7 +495,9 @@ class TreeSample {
                 return;
             }
             SampleSummary<T> summary(values);
+            double ess = effective_sample_size<T>(values, true);
             out << p_name << "n=" << summary.sample_size() << ","
+                << p_name << "ess=" << ess << ","
                 << p_name << "mean=" << summary.mean() << ","
                 << p_name << "median=" << summary.median() << ","
                 << p_name << "std_dev=" << summary.std_dev() << ","
@@ -927,14 +961,8 @@ class TreeSample {
                 }
                 out << "]\n";
             }
-            if (this->splits_map_.count(split) < 1) {
-                out << margin << "count: 0\n"
-                    << margin << "frequency: 0\n";
-            }
-            else {
-                out << margin << "count: " << this->get_split_count(split) << "\n"
-                    << margin << "frequency: " << this->get_split_frequency(split) << "\n";
-            }
+            out << margin << "count: " << this->get_split_count(split) << "\n"
+                << margin << "frequency: " << this->get_split_frequency(split) << "\n";
             for (auto param_vals : this->get_split(split)->get_parameter_map()) {
                 this->_write_summary_of_values<double>(
                         param_vals.second,
@@ -983,14 +1011,8 @@ class TreeSample {
                 }
                 out << "]\n";
             }
-            if (this->heights_map_.count(split_set) < 1) {
-                out << margin << "count: 0\n"
-                    << margin << "frequency: 0\n";
-            }
-            else {
-                out << margin << "count: " << this->get_height_count(split_set) << "\n"
-                    << margin << "frequency: " << this->get_height_frequency(split_set) << "\n";
-            }
+            out << margin << "count: " << this->get_height_count(split_set) << "\n"
+                << margin << "frequency: " << this->get_height_frequency(split_set) << "\n";
             this->_write_summary_of_values<double>(
                     this->get_height(split_set)->get_heights(),
                     out,
@@ -1054,6 +1076,42 @@ class TreeSample {
             return freq + cumulative_freq;
         }
 
+        void write_summary_of_all_numbers_of_heights(std::ostream & out,
+                const std::string & margin = "",
+                const unsigned int precision = 12) const {
+            std::string indent = string_util::get_indent(1);
+            out.precision(precision);
+
+            double cumulative_freq = 0.0;
+            std::string nh_margin = margin + indent + "  ";
+            out << margin << "numbers_of_heights:\n";
+            for (auto nh_samples : this->get_all_numbers_of_heights()) {
+                out << margin << indent << "-\n";
+                cumulative_freq += this->write_summary_of_number_of_heights(
+                        nh_samples->get_number_of_heights(),
+                        out,
+                        cumulative_freq,
+                        nh_margin,
+                        precision);
+            }
+        }
+
+        double write_summary_of_number_of_heights(
+                const unsigned int number_of_heights,
+                std::ostream & out,
+                const double cumulative_freq = 0.0,
+                const std::string & margin = "",
+                const unsigned int precision = 12) const {
+            std::string indent = string_util::get_indent(1);
+            out.precision(precision);
+            double freq = this->get_number_of_heights_frequency(number_of_heights);
+            out << margin << "number_of_heights: " << number_of_heights << "\n"
+                << margin << "count: " << this->get_number_of_heights_count(number_of_heights) << "\n"
+                << margin << "frequency: " << freq << "\n"
+                << margin << "cumulative_frequency: " << freq + cumulative_freq << std::endl;
+            return freq;
+        }
+
         void write_summary_of_target_tree(
                 std::ostream & out,
                 const bool use_median_heights = false,
@@ -1065,16 +1123,14 @@ class TreeSample {
             const std::set< std::set<Split> > & split_set = this->target_topology_;
             std::string indent = string_util::get_indent(1);
             out.precision(precision);
-            out << margin << "number_of_heights: " << split_set.size() << "\n";
-            if (this->topologies_map_.count(split_set) < 1) {
-                out << margin << "count: 0\n"
-                    << margin << "frequency: 0\n";
-            }
-            else {
-                out << margin << "count: " << this->get_topology_count(split_set) << "\n"
-                    << margin << "frequency: " << this->get_topology_frequency(split_set) << "\n";
-            }
-            out << margin << "newick: " << this->to_parentheses(split_set,
+            out << margin << "count: " << this->get_topology_count(split_set) << "\n"
+                << margin << "frequency: " << this->get_topology_frequency(split_set) << "\n"
+                << margin << "credibility_level: " << this->get_topology_credibility_level(split_set) << "\n"
+                << margin << "number_of_heights: " << split_set.size() << "\n"
+                << margin << "number_of_heights_count: " << this->get_number_of_heights_count(split_set.size()) << "\n"
+                << margin << "number_of_heights_frequency: " << this->get_number_of_heights_frequency(split_set.size()) << "\n"
+                << margin << "number_of_heights_credibility_level: " << this->get_number_of_heights_credibility_level(split_set.size()) << "\n"
+                << margin << "newick: " << this->to_parentheses(split_set,
                     use_median_heights,
                     precision) << "\n";
             std::string h_margin = margin + indent + "  ";
@@ -1090,6 +1146,15 @@ class TreeSample {
                     this->write_summary_of_split(split, out, true, h_margin,
                             precision);
                 }
+            }
+            if (this->target_euclidean_distances_.size() > 0) {
+                out << margin << "euclidean_distance:\n";
+                this->_write_summary_of_values<double>(
+                        this->target_euclidean_distances_,
+                        out,
+                        "",
+                        margin + indent,
+                        precision);
             }
         }
 
