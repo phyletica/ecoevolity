@@ -14,7 +14,7 @@ TEST_CASE("Testing 3 leaves", "[treeio]") {
             REQUIRE(heights.at(i) == Approx(expected_heights.at(i)));
         }
 
-        std::map< unsigned int, std::set<Split> > splits = tree.get_splits_by_height_index(false);
+        std::map< int, std::set<Split> > splits = tree.get_splits_by_height_index(false);
 
 
         std::shared_ptr<Node> root = std::make_shared<Node>(4, "root", 0.3);
@@ -33,14 +33,14 @@ TEST_CASE("Testing 3 leaves", "[treeio]") {
         root->add_child(spc);
         BaseTree<Node> expected_tree(root);
 
-        std::map< unsigned int, std::set<Split> > expected_splits = expected_tree.get_splits_by_height_index(false);
+        std::map< int, std::set<Split> > expected_splits = expected_tree.get_splits_by_height_index(false);
 
         REQUIRE(splits == expected_splits);
 
         // Changing positions of a and b should not matter
         newick_tree_str = "((spb[&length=0.1,height=0.0,pop_size=0.001]:0.1,spa[&length=0.1,height=0.0,pop_size=0.002]:0.1)[&length=0.2,support=1.0,height=0.1,height_index=0,pop_size=0.003]:0.2,spc[&length=0.3,height=0.0,pop_size=0.004]:0.3)[&height=0.3,height_index=1,support=1.0,pop_size=0.005];";
         BaseTree<Node> tree2(newick_tree_str);
-        std::map< unsigned int, std::set<Split> > splits2 = tree2.get_splits_by_height_index(false);
+        std::map< int, std::set<Split> > splits2 = tree2.get_splits_by_height_index(false);
         REQUIRE(splits2 == expected_splits);
         heights = tree2.get_node_heights();
         REQUIRE(expected_heights.size() == heights.size());
@@ -51,7 +51,7 @@ TEST_CASE("Testing 3 leaves", "[treeio]") {
         // Changing positions of c and a + b should not matter
         newick_tree_str = "(spc[&length=0.3,height=0.0,pop_size=0.004]:0.3,(spb[&length=0.1,height=0.0,pop_size=0.001]:0.1,spa[&length=0.1,height=0.0,pop_size=0.002]:0.1)[&length=0.2,support=1.0,height=0.1,height_index=0,pop_size=0.003]:0.2)[&height=0.3,height_index=1,support=1.0,pop_size=0.005];";
         BaseTree<Node> tree3(newick_tree_str);
-        std::map< unsigned int, std::set<Split> > splits3 = tree3.get_splits_by_height_index(false);
+        std::map< int, std::set<Split> > splits3 = tree3.get_splits_by_height_index(false);
         REQUIRE(splits3 == expected_splits);
         heights = tree3.get_node_heights();
         REQUIRE(expected_heights.size() == heights.size());
@@ -62,7 +62,7 @@ TEST_CASE("Testing 3 leaves", "[treeio]") {
         // Changing positions of a and c should matter
         newick_tree_str = "((spc[&length=0.1,height=0.0,pop_size=0.001]:0.1,spb[&length=0.1,height=0.0,pop_size=0.002]:0.1)[&length=0.2,support=1.0,height=0.1,height_index=0,pop_size=0.003]:0.2,spa[&length=0.3,height=0.0,pop_size=0.004]:0.3)[&height=0.3,height_index=1,support=1.0,pop_size=0.005];";
         BaseTree<Node> tree4(newick_tree_str);
-        std::map< unsigned int, std::set<Split> > splits4 = tree4.get_splits_by_height_index(false);
+        std::map< int, std::set<Split> > splits4 = tree4.get_splits_by_height_index(false);
         REQUIRE(splits4 != expected_splits);
         heights = tree4.get_node_heights();
         REQUIRE(expected_heights.size() == heights.size());
@@ -88,8 +88,8 @@ TEST_CASE("Testing 3 leaves round trip", "[treeio]") {
             REQUIRE(round_trip_heights.at(i) == Approx(expected_heights.at(i)));
         }
 
-        std::map< unsigned int, std::set<Split> > splits = tree.get_splits_by_height_index(false);
-        std::map< unsigned int, std::set<Split> > round_trip_splits = round_trip_tree.get_splits_by_height_index(false);
+        std::map< int, std::set<Split> > splits = tree.get_splits_by_height_index(false);
+        std::map< int, std::set<Split> > round_trip_splits = round_trip_tree.get_splits_by_height_index(false);
 
 
         std::shared_ptr<Node> root = std::make_shared<Node>(4, "root", 0.3);
@@ -108,7 +108,7 @@ TEST_CASE("Testing 3 leaves round trip", "[treeio]") {
         root->add_child(spc);
         BaseTree<Node> expected_tree(root);
 
-        std::map< unsigned int, std::set<Split> > expected_splits = expected_tree.get_splits_by_height_index(false);
+        std::map< int, std::set<Split> > expected_splits = expected_tree.get_splits_by_height_index(false);
 
         REQUIRE(splits == expected_splits);
         REQUIRE(round_trip_splits == expected_splits);
@@ -126,7 +126,7 @@ TEST_CASE("Testing 3 leaves with no comments", "[treeio]") {
         for (unsigned int i = 0; i < heights.size(); ++ i) {
             REQUIRE(heights.at(i) == Approx(expected_heights.at(i)));
         }
-        std::map< unsigned int, std::set<Split> > splits = tree.get_splits_by_height_index(false);
+        std::map< int, std::set<Split> > splits = tree.get_splits_by_height_index(false);
 
 
         std::shared_ptr<Node> root = std::make_shared<Node>(4, "root", 0.3);
@@ -145,14 +145,14 @@ TEST_CASE("Testing 3 leaves with no comments", "[treeio]") {
         root->add_child(spc);
         BaseTree<Node> expected_tree(root);
 
-        std::map< unsigned int, std::set<Split> > expected_splits = expected_tree.get_splits_by_height_index(false);
+        std::map< int, std::set<Split> > expected_splits = expected_tree.get_splits_by_height_index(false);
 
         REQUIRE(splits == expected_splits);
 
         // Changing positions of a and b should not matter
         newick_tree_str = "((spb:0.1,spa:0.1):0.2,spc:0.3);";
         BaseTree<Node> tree2(newick_tree_str);
-        std::map< unsigned int, std::set<Split> > splits2 = tree2.get_splits_by_height_index(false);
+        std::map< int, std::set<Split> > splits2 = tree2.get_splits_by_height_index(false);
         REQUIRE(splits2 == expected_splits);
         heights = tree2.get_node_heights();
         REQUIRE(expected_heights.size() == heights.size());
@@ -163,7 +163,7 @@ TEST_CASE("Testing 3 leaves with no comments", "[treeio]") {
         // Changing positions of c and a + b should not matter
         newick_tree_str = "(spc:0.3,(spb:0.1,spa:0.1):0.2);";
         BaseTree<Node> tree3(newick_tree_str);
-        std::map< unsigned int, std::set<Split> > splits3 = tree3.get_splits_by_height_index(false);
+        std::map< int, std::set<Split> > splits3 = tree3.get_splits_by_height_index(false);
         REQUIRE(splits3 == expected_splits);
         heights = tree3.get_node_heights();
         REQUIRE(expected_heights.size() == heights.size());
@@ -174,7 +174,7 @@ TEST_CASE("Testing 3 leaves with no comments", "[treeio]") {
         // Changing positions of a and c should matter
         newick_tree_str = "((spc:0.1,spb:0.1):0.2,spa:0.3);";
         BaseTree<Node> tree4(newick_tree_str);
-        std::map< unsigned int, std::set<Split> > splits4 = tree4.get_splits_by_height_index(false);
+        std::map< int, std::set<Split> > splits4 = tree4.get_splits_by_height_index(false);
         REQUIRE(splits4 != expected_splits);
         heights = tree4.get_node_heights();
         REQUIRE(expected_heights.size() == heights.size());
@@ -199,8 +199,8 @@ TEST_CASE("Testing 3 leaves with no comments round trip", "[treeio]") {
             REQUIRE(heights.at(i) == Approx(expected_heights.at(i)));
             REQUIRE(round_trip_heights.at(i) == Approx(expected_heights.at(i)));
         }
-        std::map< unsigned int, std::set<Split> > splits = tree.get_splits_by_height_index(false);
-        std::map< unsigned int, std::set<Split> > round_trip_splits = round_trip_tree.get_splits_by_height_index(false);
+        std::map< int, std::set<Split> > splits = tree.get_splits_by_height_index(false);
+        std::map< int, std::set<Split> > round_trip_splits = round_trip_tree.get_splits_by_height_index(false);
 
 
         std::shared_ptr<Node> root = std::make_shared<Node>(4, "root", 0.3);
@@ -219,7 +219,7 @@ TEST_CASE("Testing 3 leaves with no comments round trip", "[treeio]") {
         root->add_child(spc);
         BaseTree<Node> expected_tree(root);
 
-        std::map< unsigned int, std::set<Split> > expected_splits = expected_tree.get_splits_by_height_index(false);
+        std::map< int, std::set<Split> > expected_splits = expected_tree.get_splits_by_height_index(false);
 
         REQUIRE(splits == expected_splits);
         REQUIRE(round_trip_splits == expected_splits);
@@ -236,7 +236,7 @@ TEST_CASE("Testing 3 leaves with different expected leaf indices that should not
         for (unsigned int i = 0; i < heights.size(); ++ i) {
             REQUIRE(heights.at(i) == Approx(expected_heights.at(i)));
         }
-        std::map< unsigned int, std::set<Split> > splits = tree.get_splits_by_height_index(false);
+        std::map< int, std::set<Split> > splits = tree.get_splits_by_height_index(false);
 
 
         std::shared_ptr<Node> root = std::make_shared<Node>(4, "root", 0.3);
@@ -255,7 +255,7 @@ TEST_CASE("Testing 3 leaves with different expected leaf indices that should not
         root->add_child(spc);
         BaseTree<Node> expected_tree(root);
 
-        std::map< unsigned int, std::set<Split> > expected_splits = expected_tree.get_splits_by_height_index(false);
+        std::map< int, std::set<Split> > expected_splits = expected_tree.get_splits_by_height_index(false);
 
         // The BaseTree constructor indexes leaves after sorting them by their
         // labels, so these should NOT be equal
@@ -273,7 +273,7 @@ TEST_CASE("Testing 3 leaves with different expected leaf indices that should mat
         for (unsigned int i = 0; i < heights.size(); ++ i) {
             REQUIRE(heights.at(i) == Approx(expected_heights.at(i)));
         }
-        std::map< unsigned int, std::set<Split> > splits = tree.get_splits_by_height_index(false);
+        std::map< int, std::set<Split> > splits = tree.get_splits_by_height_index(false);
 
 
         std::shared_ptr<Node> root = std::make_shared<Node>(4, "root", 0.3);
@@ -292,7 +292,7 @@ TEST_CASE("Testing 3 leaves with different expected leaf indices that should mat
         root->add_child(spc);
         BaseTree<Node> expected_tree(root);
 
-        std::map< unsigned int, std::set<Split> > expected_splits = expected_tree.get_splits_by_height_index(false);
+        std::map< int, std::set<Split> > expected_splits = expected_tree.get_splits_by_height_index(false);
 
         // The BaseTree constructor indexes leaves after sorting them by their
         // labels, so these should NOT be equal
@@ -311,7 +311,7 @@ TEST_CASE("Testing 5 leaves with polytomy and shared div", "[treeio]") {
             REQUIRE(heights.at(i) == Approx(expected_heights.at(i)));
         }
 
-        std::map< unsigned int, std::set<Split> > splits = tree.get_splits_by_height_index(false);
+        std::map< int, std::set<Split> > splits = tree.get_splits_by_height_index(false);
 
 
         std::shared_ptr<Node> root = std::make_shared<Node>(4, "root", 0.3);
@@ -340,14 +340,14 @@ TEST_CASE("Testing 5 leaves with polytomy and shared div", "[treeio]") {
         root->add_child(c);
         BaseTree<Node> expected_tree(root);
 
-        std::map< unsigned int, std::set<Split> > expected_splits = expected_tree.get_splits_by_height_index(false);
+        std::map< int, std::set<Split> > expected_splits = expected_tree.get_splits_by_height_index(false);
 
         REQUIRE(splits == expected_splits);
 
         // Changing positions of sisters should not matter
         newick_tree_str = "((d:0.1,b:0.1)[&height=0.1,height_index=0]:0.2,(e:0.1,a:0.1)[&height=0.1,height_index=0]:0.2,c:0.3)[&height=0.3,height_index=1];";
         BaseTree<Node> tree2(newick_tree_str);
-        std::map< unsigned int, std::set<Split> > splits2 = tree2.get_splits_by_height_index(false);
+        std::map< int, std::set<Split> > splits2 = tree2.get_splits_by_height_index(false);
         REQUIRE(splits2 == expected_splits);
         heights = tree2.get_node_heights();
         REQUIRE(expected_heights.size() == heights.size());
@@ -358,7 +358,7 @@ TEST_CASE("Testing 5 leaves with polytomy and shared div", "[treeio]") {
         // swapping sisters should matter
         newick_tree_str = "((a:0.1,d:0.1)[&height=0.1,height_index=0]:0.2,(b:0.1,e:0.1)[&height=0.1,height_index=0]:0.2,c:0.3)[&height=0.3,height_index=1];";
         BaseTree<Node> tree3(newick_tree_str);
-        std::map< unsigned int, std::set<Split> > splits3 = tree3.get_splits_by_height_index(false);
+        std::map< int, std::set<Split> > splits3 = tree3.get_splits_by_height_index(false);
         REQUIRE(splits3 != expected_splits);
         heights = tree3.get_node_heights();
         REQUIRE(expected_heights.size() == heights.size());
@@ -384,8 +384,8 @@ TEST_CASE("Testing 5 leaves with polytomy and shared div, round trip", "[treeio]
             REQUIRE(round_trip_heights.at(i) == Approx(expected_heights.at(i)));
         }
 
-        std::map< unsigned int, std::set<Split> > splits = tree.get_splits_by_height_index(false);
-        std::map< unsigned int, std::set<Split> > round_trip_splits = round_trip_tree.get_splits_by_height_index(false);
+        std::map< int, std::set<Split> > splits = tree.get_splits_by_height_index(false);
+        std::map< int, std::set<Split> > round_trip_splits = round_trip_tree.get_splits_by_height_index(false);
 
 
         std::shared_ptr<Node> root = std::make_shared<Node>(4, "root", 0.3);
@@ -414,7 +414,7 @@ TEST_CASE("Testing 5 leaves with polytomy and shared div, round trip", "[treeio]
         root->add_child(c);
         BaseTree<Node> expected_tree(root);
 
-        std::map< unsigned int, std::set<Split> > expected_splits = expected_tree.get_splits_by_height_index(false);
+        std::map< int, std::set<Split> > expected_splits = expected_tree.get_splits_by_height_index(false);
 
         REQUIRE(splits == expected_splits);
         REQUIRE(round_trip_splits == expected_splits);
@@ -617,7 +617,7 @@ TEST_CASE("Testing BasePopulationTree with 3 leaves", "[treeio]") {
         REQUIRE(tree.get_root_population_size() == expected_root_pop_size);
         REQUIRE(pop_sizes == expected_pop_sizes);
 
-        std::map< unsigned int, std::set<Split> > splits = tree.get_splits_by_height_index(false);
+        std::map< int, std::set<Split> > splits = tree.get_splits_by_height_index(false);
 
 
         std::shared_ptr<Node> root = std::make_shared<Node>(4, "root", 0.3);
@@ -636,7 +636,7 @@ TEST_CASE("Testing BasePopulationTree with 3 leaves", "[treeio]") {
         root->add_child(spc);
         BaseTree<Node> expected_tree(root);
 
-        std::map< unsigned int, std::set<Split> > expected_splits = expected_tree.get_splits_by_height_index(false);
+        std::map< int, std::set<Split> > expected_splits = expected_tree.get_splits_by_height_index(false);
 
         REQUIRE(splits == expected_splits);
     }
