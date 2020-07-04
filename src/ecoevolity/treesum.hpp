@@ -927,7 +927,7 @@ class TreeSample {
             return 0.0;
         }
 
-        double get_average_std_dev_of_split_freqs(
+        SampleSummarizer<double> get_summary_of_split_freq_std_devs(
                 double min_frequency = 0.1) const {
             if (this->get_number_of_sources() < 2) {
                 throw EcoevolityError("Calculating the ASDSF requires multiple chains");
@@ -951,6 +951,16 @@ class TreeSample {
                 }
                 std_devs_of_split_freqs.add_sample(split_freqs.std_dev());
             }
+            return std_devs_of_split_freqs;
+        }
+
+        double get_average_std_dev_of_split_freqs(
+                double min_frequency = 0.1) const {
+            if (this->get_number_of_sources() < 2) {
+                throw EcoevolityError("Calculating the ASDSF requires multiple chains");
+            }
+            SampleSummarizer<double> std_devs_of_split_freqs = this->get_summary_of_split_freq_std_devs(
+                    min_frequency);
             return std_devs_of_split_freqs.mean();
         }
 
@@ -1520,9 +1530,12 @@ class TreeSample {
             out.precision(precision);
             out << "---\n";
             if (this->get_number_of_sources() > 1) {
-                out << "average_std_dev_of_split_freqs: "
-                    << this->get_average_std_dev_of_split_freqs(min_freq_for_asdsf)
-                    << "\n";
+                SampleSummarizer<double> sdsf_summary =
+                    this->get_summary_of_split_freq_std_devs(min_freq_for_asdsf);
+                out << "summary_of_split_freq_std_deviations:\n"
+                    << indent << "min_frequency: " << min_freq_for_asdsf << "\n"
+                    << indent << "n: " << sdsf_summary.sample_size() << "\n"
+                    << indent << "mean: " << sdsf_summary.mean() << "\n";
             }
             this->write_summary_of_tree_lengths(out, margin, precision);
             out << "summary_of_map_trees:\n";
