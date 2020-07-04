@@ -909,7 +909,7 @@ TEST_CASE("Basic testing", "[treesum]") {
         REQUIRE(asdsf == Approx(split_freq_stdevs.mean()));
 
         std::stringstream ss;
-        ts.write_summary_of_split(split_12,
+        ts.write_summary_of_nontrivial_split(split_12,
                 ss,
                 true,
                 "",
@@ -918,18 +918,24 @@ TEST_CASE("Basic testing", "[treesum]") {
         ess << "leaf_indices: [0, 1]\n"
             << "count: 7\n"
             << "frequency: 0.39\n"
+            << "height_n: 7\n"
+            << "height_ess: 2.7\n"
             << "height_mean: 0.2\n"
             << "height_median: 0.2\n"
             << "height_std_dev: 0.12\n"
             << "height_range: [0.1, 0.4]\n"
             << "height_eti_95: [0.1, 0.38]\n"
             << "height_hpdi_95: [0.1, 0.4]\n"
+            << "length_n: 7\n"
+            << "length_ess: 7\n"
             << "length_mean: 0.13\n"
             << "length_median: 0.1\n"
             << "length_std_dev: 0.049\n"
             << "length_range: [0.1, 0.2]\n"
             << "length_eti_95: [0.1, 0.2]\n"
             << "length_hpdi_95: [0.1, 0.2]\n"
+            << "pop_size_n: 7\n"
+            << "pop_size_ess: 2.4\n"
             << "pop_size_mean: 0.34\n"
             << "pop_size_median: 0.3\n"
             << "pop_size_std_dev: 0.19\n"
@@ -950,6 +956,8 @@ TEST_CASE("Basic testing", "[treesum]") {
             << "    - leaf_indices: [0, 3]\n"
             << "count: 4\n"
             << "frequency: 0.22\n"
+            << "n: 4\n"
+            << "ess: 0\n"
             << "mean: 0.35\n"
             << "median: 0.35\n"
             << "std_dev: 0.13\n"
@@ -969,6 +977,8 @@ TEST_CASE("Basic testing", "[treesum]") {
             << "    - leaf_indices: [0, 1, 2, 3]\n"
             << "count: 18\n"
             << "frequency: 1\n"
+            << "n: 18\n"
+            << "ess: 4.5\n"
             << "mean: 0.38\n"
             << "median: 0.35\n"
             << "std_dev: 0.16\n"
@@ -992,6 +1002,8 @@ TEST_CASE("Basic testing", "[treesum]") {
             << "    - number_of_nodes: 1\n"
             << "      clades:\n"
             << "          - leaf_indices: [0, 1]\n"
+            << "      n: 3\n"
+            << "      ess: 3\n"
             << "      mean: 0.27\n"
             << "      median: 0.3\n"
             << "      std_dev: 0.15\n"
@@ -1001,6 +1013,8 @@ TEST_CASE("Basic testing", "[treesum]") {
             << "    - number_of_nodes: 1\n"
             << "      clades:\n"
             << "          - leaf_indices: [0, 1, 2, 3]\n"
+            << "      n: 3\n"
+            << "      ess: 3\n"
             << "      mean: 0.4\n"
             << "      median: 0.4\n"
             << "      std_dev: 0.1\n"
@@ -1033,10 +1047,18 @@ TEST_CASE("Basic testing", "[treesum]") {
               << "      cumulative_frequency: 1\n";
         REQUIRE(nohs.str() == enohs.str());
 
-        // ts.write_summary(std::cout, false, "", 2);
+        // ts.write_summary(std::cout,
+        //         false, // use_median_heights
+        //         0.1,   // min_freq_for_asdsf
+        //         "",    // margin
+        //         2);    // precision
 
         std::stringstream sumstream;
-        ts.write_summary(sumstream, false, "", 2);
+        ts.write_summary(sumstream,
+                false, // use_median_heights
+                0.1,   // min_freq_for_asdsf
+                "",    // margin
+                2);    // precision
         YAML::Node summary;
         try {
             summary = YAML::Load(sumstream);
@@ -1098,5 +1120,35 @@ TEST_CASE("Basic testing", "[treesum]") {
 
         // ts.write_map_trees_to_nexus(std::cout);
         // ts.write_target_tree_to_nexus(std::cout);
+
+        source_tree_paths = {
+                "data/4-tip-trees-12-34.nex",
+                "data/4-tip-trees-13-24.nex",
+                "data/4-tip-trees-34.nex",
+                "data/4-tip-trees-comb.nex",
+                "data/4-tip-trees-ladder-1234.nex",
+        };
+        target_tree_path = "data/4-tip-target-tree-comb.nex";
+
+        treesum::TreeSample<PopulationNode> ts2(
+                target_tree_path,
+                source_tree_paths,
+                "nexus",
+                1);
+        REQUIRE(ts2.get_number_of_leaves() == 4);
+        REQUIRE(ts2.get_number_of_sources() == 5);
+        REQUIRE(ts2.get_sample_size() == 15);
+
+        expected_source_sample_sizes = {
+            3, 3, 3, 3, 3
+        };
+        REQUIRE(ts2.get_source_sample_sizes() == expected_source_sample_sizes);
+        REQUIRE(ts2.has_multiple_sources_with_equal_n() == true);
+
+        ts2.write_summary(std::cout,
+                false, // use_median_heights
+                0.1,   // min_freq_for_asdsf
+                "",    // margin
+                2);    // precision
     }
 }
