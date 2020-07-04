@@ -20,6 +20,6 @@
 #include "sumphycoeval.hpp"
 
 int main(int argc, char *argv[]) {
-    sumphycoeval_main<BasePopulationTree>(argc, argv);
+    sumphycoeval_main<PopulationNode>(argc, argv);
     return 0;
 }

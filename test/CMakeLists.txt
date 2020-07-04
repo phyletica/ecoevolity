@@ -3,22 +3,7 @@ set(CMAKE_BUILD_TYPE Debug)
 
 include_directories("${SOURCE_DIR}" "${YAML_CPP_INCLUDE_DIR}" "${EXTERNAL_PROJECT_DIR}")
 
-# file(GLOB ECOEVOLITY_TEST_SOURCES "test_*.cpp")
-set(ECOEVOLITY_TEST_SOURCES
-    # "test_general_tree_settings.cpp"
-    # "test_general_tree_operator_schedule.cpp"
-    # "test_phycoeval_cli.cpp"
-    # "test_simphycoeval_cli.cpp"
-    # "test_general_tree_operator.cpp"
-    # "test_general_tree_rj_operator.cpp"
-    # "test_general_tree_topo_operators.cpp"
-    # "test_tree.cpp"
-    # "test_tree_io.cpp"
-    # "test_stats_util.cpp"
-    # "test_treecomp.cpp"
-    "test_treesum.cpp"
-    # "test_split.cpp"
-    )
+file(GLOB ECOEVOLITY_TEST_SOURCES "test_*.cpp")
 
 set(ECOEVOLITY_SOURCES
     "${ECOEVOLITY_SOURCE_DIR}/error.cpp"
@@ -33,6 +18,7 @@ set(ECOEVOLITY_SOURCES
     "${ECOEVOLITY_SOURCE_DIR}/simcoevolity.cpp"
     "${ECOEVOLITY_SOURCE_DIR}/phycoeval.cpp"
     "${ECOEVOLITY_SOURCE_DIR}/simphycoeval.cpp"
+    "${ECOEVOLITY_SOURCE_DIR}/sumphycoeval.cpp"
     "${ECOEVOLITY_SOURCE_DIR}/data.cpp")
 
 if (BUILD_WITH_THREADS)

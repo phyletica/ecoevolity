@@ -36,7 +36,7 @@ void write_sum_phy_splash(std::ostream& out);
 
 void check_sumphy_output_path(const std::string& path);
 
-template <class TreeType>
+template <class NodeType>
 int sumphycoeval_main(int argc, char * argv[]) {
 
     write_sum_phy_splash(std::cout);

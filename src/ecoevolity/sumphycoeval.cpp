@@ -37,7 +37,7 @@ void check_sumphy_output_path(const std::string& path) {
         std::ostringstream message;
         message << "ERROR: The sumphycoeval output file \'"
                 << path
-                << "\' already exists!\n"
+                << "\' already exists!\n";
         throw EcoevolityError(message.str());
     }
 }

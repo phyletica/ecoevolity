@@ -1,6 +1,7 @@
 #include "catch.hpp"
 
 #include "ecoevolity/sumphycoeval.hpp"
+#include "ecoevolity/node.hpp"
 #include "ecoevolity/treesum.hpp"
 #include "ecoevolity/path.hpp"
 
@@ -48,11 +49,11 @@ TEST_CASE("Testing missing target tree", "[sumphycoeval]") {
         int argc = (int)(sizeof(argv) / sizeof(argv[0])) - 1;
         // int ret;
 
-        // ret = simphycoeval_main<BasePopulationTree>(argc, argv);
+        // ret = simphycoeval_main<PopulationNode>(argc, argv);
         // REQUIRE(ret == 0);
 
         REQUIRE_THROWS_AS(
-                (sumphycoeval_main<BasePopulationTree>(argc, argv)),
+                (sumphycoeval_main<PopulationNode>(argc, argv)),
                 EcoevolityError &);
     }
 }
