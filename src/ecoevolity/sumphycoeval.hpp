@@ -27,12 +27,9 @@
 
 #include "version.hpp"
 #include "error.hpp"
-#include "rng.hpp"
 #include "path.hpp"
-#include "string_util.hpp"
-#include "general_tree_settings.hpp"
-#include "settings_io.hpp"
-#include "mcmc.hpp"
+#include "node.hpp"
+#include "treesum.hpp"
 
 
 void write_sum_phy_splash(std::ostream& out);
@@ -95,7 +92,7 @@ int sumphycoeval_main(int argc, char * argv[]) {
             .action("store_true")
             .dest("use_median_heights")
             .help("Use median (rather than mean) of MCMC samples for the node "
-                  "heights of output trees. Default: Use mean.")
+                  "heights of output trees. Default: Use mean.");
     parser.add_option("--min-split-freq")
             .action("store")
             .type("double")
@@ -183,10 +180,13 @@ int sumphycoeval_main(int argc, char * argv[]) {
 
     const bool use_median_heights = options.get("use_median_heights");
     const double min_split_freq = options.get("min_split_freq");
+    if ((min_split_freq < 0.0) || (min_split_freq >=1.0)) {
+        throw EcoevolityError("\'--min-split-freq\' must be between 0 and 1\n");
+    }
     const double precision = 18;
 
+    std::ofstream target_tree_out_stream;
     if (writing_target_to_nexus) {
-        std::ofstream target_tree_out_stream;
         target_tree_out_stream.open(target_tree_out_path);
         if (! target_tree_out_stream.is_open()) {
             std::ostringstream message;
@@ -196,8 +196,8 @@ int sumphycoeval_main(int argc, char * argv[]) {
             throw EcoevolityError(message.str());
         }
     }
+    std::ofstream map_tree_out_stream;
     if (writing_map_to_nexus) {
-        std::ofstream map_tree_out_stream;
         map_tree_out_stream.open(map_tree_out_path);
         if (! map_tree_out_stream.is_open()) {
             std::ostringstream message;
@@ -213,16 +213,16 @@ int sumphycoeval_main(int argc, char * argv[]) {
     time(&start);
 
     std::cerr << "Parsing trees from files..." << std::endl;
-    TreeSample tree_sample;
+    treesum::TreeSample<PopulationNode> tree_sample;
     if (target_tree_provided) {
-        tree_sample = TreeSample(
+        tree_sample = treesum::TreeSample<PopulationNode>(
                 target_tree_path,
                 log_paths,
                 "nexus",
                 burnin);
     }
     else {
-        tree_sample = TreeSample(
+        tree_sample = treesum::TreeSample<PopulationNode>(
                 log_paths,
                 "nexus",
                 burnin);
@@ -235,7 +235,7 @@ int sumphycoeval_main(int argc, char * argv[]) {
                 target_tree_out_stream,
                 use_median_heights,
                 precision);
-        target_tree_out_stream.close()
+        target_tree_out_stream.close();
     }
     if (writing_map_to_nexus) {
         std::cerr << "Writing annotated MAP trees to:\n"
@@ -244,7 +244,7 @@ int sumphycoeval_main(int argc, char * argv[]) {
                 map_tree_out_stream,
                 use_median_heights,
                 precision);
-        map_tree_out_stream.close()
+        map_tree_out_stream.close();
     }
 
     std::cerr << "Writing YAML-formatted summary to standard output..." << std::endl;
