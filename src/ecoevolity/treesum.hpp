@@ -318,6 +318,7 @@ class TreeSample {
         std::vector<double> tree_lengths_;
         std::vector<std::string> source_paths_;
         std::vector<unsigned int> source_sample_sizes_;
+        std::vector<unsigned int> source_num_skipped_;
         std::set<Split> trivial_splits_;
         Split root_split_;
         std::vector<Split> leaf_splits_;
@@ -578,6 +579,7 @@ class TreeSample {
                 unsigned int skip = 0,
                 double ultrametricity_tolerance = 1e-6) {
             this->source_paths_.push_back(path);
+            this->source_num_skipped_.push_back(skip);
             std::vector<tree_type> trees;
             get_trees<tree_type>(
                     path,
@@ -593,6 +595,7 @@ class TreeSample {
                 const std::string & ncl_file_format,
                 unsigned int skip = 0,
                 double ultrametricity_tolerance = 1e-6) {
+            this->source_num_skipped_.push_back(skip);
             std::vector<tree_type> trees;
             get_trees<tree_type>(
                     tree_stream,
@@ -799,6 +802,24 @@ class TreeSample {
         const std::vector< std::shared_ptr<NumberOfHeightsSamples> > & get_all_numbers_of_heights() const {
             return this->num_heights_;
         }
+        std::vector< std::vector<unsigned int> > get_all_numbers_of_heights_by_source() const {
+            std::vector< std::vector<unsigned int> > source_values(
+                    this->source_sample_sizes_.size());
+            for (unsigned int i = 0; i < this->source_sample_sizes_.size(); ++i) {
+                source_values.at(i).reserve(this->source_sample_sizes_.at(i));
+            }
+
+            for (auto nhs : this->get_all_numbers_of_heights()) {
+                for (auto src_idx : nhs->get_source_indices()) {
+                    source_values.at(src_idx).push_back(nhs->get_number_of_heights());
+                }
+            }
+            for (unsigned int i = 0; i < this->source_sample_sizes_.size(); ++i) {
+                ECOEVOLITY_ASSERT(source_values.at(i).size() == this->source_sample_sizes_.at(i));
+            }
+            return source_values;
+        }
+
 
         std::shared_ptr<TopologySamples> get_topology(
                 const std::set< std::set<Split> > & topology
@@ -1171,9 +1192,26 @@ class TreeSample {
             std::string indent = string_util::get_indent(1);
             out.precision(precision);
 
+            out << margin << "number_of_heights_summary:\n";
+            std::vector< std::vector<unsigned int> > n_heights = this->get_all_numbers_of_heights_by_source();
+            std::vector<unsigned int> n_hts;
+            n_hts.reserve(this->get_sample_size());
+            for (auto n_vec : n_heights) {
+                for (auto num_ht : n_vec) {
+                    n_hts.push_back(num_ht);
+                }
+            }
+            ECOEVOLITY_ASSERT(n_hts.size() == this->get_sample_size());
+            this->_write_summary_of_values<unsigned int>(
+                    n_hts,
+                    out,
+                    "",
+                    margin + indent,
+                    precision);
+
+            out << margin << "numbers_of_heights:\n";
             double cumulative_freq = 0.0;
             std::string nh_margin = margin + indent + "  ";
-            out << margin << "numbers_of_heights:\n";
             for (auto nh_samples : this->get_all_numbers_of_heights()) {
                 out << margin << indent << "-\n";
                 cumulative_freq += this->write_summary_of_number_of_heights(
@@ -1224,6 +1262,35 @@ class TreeSample {
                         "",
                         indent,
                         precision);
+            }
+        }
+
+        void write_summary_of_source_data(std::ostream & out,
+                const std::string & margin = "",
+                const unsigned int precision = 12) const {
+            std::string indent = string_util::get_indent(1);
+            out.precision(precision);
+            out << margin << "summary_of_tree_sources:\n"
+                << margin << indent << "total_number_of_trees_sampled: " << this->get_sample_size() << "\n"
+                << margin << indent << "sources:\n";
+            unsigned int n_sources = this->get_number_of_sources();
+            ECOEVOLITY_ASSERT(n_sources = this->source_sample_sizes_.size());
+            ECOEVOLITY_ASSERT(n_sources = this->source_num_skipped_.size());
+            bool source_paths_provided = false;
+            if (this->source_paths_.size() > 0) {
+                source_paths_provided = true;
+                ECOEVOLITY_ASSERT(n_sources = this->source_paths_.size());
+            }
+            std::string src_indent = margin + indent + indent + "  ";
+            for (unsigned int i = 0; i < this->get_number_of_sources(); ++i) {
+                out << margin << indent << indent << "-\n";
+                if (source_paths_provided) {
+                    out << src_indent << "path: " << this->source_paths_.at(i) << "\n";
+                }
+                out << src_indent << "number_of_trees_skipped: "
+                    << this->source_num_skipped_.at(i) << "\n"
+                    << src_indent << "number_of_trees_sampled: "
+                    << this->source_sample_sizes_.at(i) << "\n";
             }
         }
 
@@ -1529,6 +1596,7 @@ class TreeSample {
             std::string indent = string_util::get_indent(1);
             out.precision(precision);
             out << "---\n";
+            this->write_summary_of_source_data(out, margin, precision);
             if (this->get_number_of_sources() > 1) {
                 SampleSummarizer<double> sdsf_summary =
                     this->get_summary_of_split_freq_std_devs(min_freq_for_asdsf);
@@ -1553,6 +1621,7 @@ class TreeSample {
             this->write_summary_of_topologies(out, "", precision);
             this->write_summary_of_heights(out, "", precision);
             this->write_summary_of_splits(out, "", precision);
+            this->write_summary_of_all_numbers_of_heights(out, "", precision);
         }
 
         void write_to_nexus(

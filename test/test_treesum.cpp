@@ -1029,7 +1029,16 @@ TEST_CASE("Basic testing", "[treesum]") {
                 "",
                 2);
         std::stringstream enohs;
-        enohs << "numbers_of_heights:\n"
+        enohs << "number_of_heights_summary:\n"
+              << "    n: 18\n"
+              << "    ess: 13\n"
+              << "    mean: 2.3\n"
+              << "    median: 2\n"
+              << "    std_dev: 0.67\n"
+              << "    range: [1, 3]\n"
+              << "    eti_95: [1, 3]\n"
+              << "    hpdi_95: [1, 3]\n"
+              << "numbers_of_heights:\n"
               << "    -\n"
               << "      number_of_heights: 2\n"
               << "      count: 9\n"
@@ -1117,6 +1126,31 @@ TEST_CASE("Basic testing", "[treesum]") {
         REQUIRE(summary["topologies"][1]["heights"][1]["hpdi_95"][1].as<double>() == 0.5);
         REQUIRE(summary["summary_of_map_trees"][0]["count"].as<int>() == 4);
         REQUIRE(summary["summary_of_map_trees"][0]["frequency"].as<double>() == 0.22);
+        REQUIRE(summary["summary_of_tree_sources"]["total_number_of_trees_sampled"].as<int>() == 18);
+        REQUIRE(summary["summary_of_tree_sources"]["sources"][0]["number_of_trees_skipped"].as<int>() == 2);
+        REQUIRE(summary["summary_of_tree_sources"]["sources"][1]["number_of_trees_skipped"].as<int>() == 2);
+        REQUIRE(summary["summary_of_tree_sources"]["sources"][2]["number_of_trees_skipped"].as<int>() == 2);
+        REQUIRE(summary["summary_of_tree_sources"]["sources"][3]["number_of_trees_skipped"].as<int>() == 2);
+        REQUIRE(summary["summary_of_tree_sources"]["sources"][4]["number_of_trees_skipped"].as<int>() == 2);
+        REQUIRE(summary["summary_of_tree_sources"]["sources"][5]["number_of_trees_skipped"].as<int>() == 2);
+        REQUIRE(summary["summary_of_tree_sources"]["sources"][6]["number_of_trees_skipped"].as<int>() == 2);
+        REQUIRE(summary["summary_of_tree_sources"]["sources"][7]["number_of_trees_skipped"].as<int>() == 2);
+        REQUIRE(summary["summary_of_tree_sources"]["sources"][0]["number_of_trees_sampled"].as<int>() == 2);
+        REQUIRE(summary["summary_of_tree_sources"]["sources"][1]["number_of_trees_sampled"].as<int>() == 3);
+        REQUIRE(summary["summary_of_tree_sources"]["sources"][2]["number_of_trees_sampled"].as<int>() == 2);
+        REQUIRE(summary["summary_of_tree_sources"]["sources"][3]["number_of_trees_sampled"].as<int>() == 4);
+        REQUIRE(summary["summary_of_tree_sources"]["sources"][4]["number_of_trees_sampled"].as<int>() == 2);
+        REQUIRE(summary["summary_of_tree_sources"]["sources"][5]["number_of_trees_sampled"].as<int>() == 2);
+        REQUIRE(summary["summary_of_tree_sources"]["sources"][6]["number_of_trees_sampled"].as<int>() == 2);
+        REQUIRE(summary["summary_of_tree_sources"]["sources"][7]["number_of_trees_sampled"].as<int>() == 1);
+        REQUIRE(summary["summary_of_tree_sources"]["sources"][0]["path"].as<std::string>() == "data/4-tip-trees-12-34.nex");
+        REQUIRE(summary["summary_of_tree_sources"]["sources"][1]["path"].as<std::string>() == "data/4-tip-trees-12.nex");
+        REQUIRE(summary["summary_of_tree_sources"]["sources"][2]["path"].as<std::string>() == "data/4-tip-trees-13-24.nex");
+        REQUIRE(summary["summary_of_tree_sources"]["sources"][3]["path"].as<std::string>() == "data/4-tip-trees-14-23-shared.nex");
+        REQUIRE(summary["summary_of_tree_sources"]["sources"][4]["path"].as<std::string>() == "data/4-tip-trees-34.nex");
+        REQUIRE(summary["summary_of_tree_sources"]["sources"][5]["path"].as<std::string>() == "data/4-tip-trees-comb.nex");
+        REQUIRE(summary["summary_of_tree_sources"]["sources"][6]["path"].as<std::string>() == "data/4-tip-trees-ladder-1234.nex");
+        REQUIRE(summary["summary_of_tree_sources"]["sources"][7]["path"].as<std::string>() == "data/4-tip-trees-ladder-4321.nex");
 
         // ts.write_map_trees_to_nexus(std::cout);
         // ts.write_target_tree_to_nexus(std::cout);
