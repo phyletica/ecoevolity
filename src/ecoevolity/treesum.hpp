@@ -1294,6 +1294,19 @@ class TreeSample {
             }
         }
 
+        bool is_a_map_tree(const std::set< std::set<Split> > & split_set) const {
+            unsigned int map_count = this->topologies_.at(0)->get_sample_size();
+            for (auto topo_samples : this->topologies_) {
+                if (topo_samples->get_sample_size() < map_count) {
+                    return false;
+                }
+                if (topo_samples->get_split_set() == split_set) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
         void write_summary_of_target_tree(
                 std::ostream & out,
                 const bool use_median_heights = false,
@@ -1302,16 +1315,20 @@ class TreeSample {
             if (! this->target_tree_provided_) {
                 return;
             }
+            out.precision(precision);
+            out << std::boolalpha;
             const std::set< std::set<Split> > & split_set = this->target_topology_;
             double target_tree_length = this->target_tree_.get_tree_length();
             double target_tree_length_percentile = percentile(
                     this->get_tree_lengths(),
                     target_tree_length);
+            bool target_is_a_map_tree = this->is_a_map_tree(this->target_topology_);
             std::string indent = string_util::get_indent(1);
             out.precision(precision);
             out << margin << "count: " << this->get_topology_count(split_set) << "\n"
                 << margin << "frequency: " << this->get_topology_frequency(split_set) << "\n"
                 << margin << "credibility_level: " << this->get_topology_credibility_level(split_set) << "\n"
+                << margin << "is_a_map_topology: " << target_is_a_map_tree << "\n"
                 << margin << "number_of_heights: " << split_set.size() << "\n"
                 << margin << "number_of_heights_count: " << this->get_number_of_heights_count(split_set.size()) << "\n"
                 << margin << "number_of_heights_frequency: " << this->get_number_of_heights_frequency(split_set.size()) << "\n"
@@ -1395,6 +1412,7 @@ class TreeSample {
                 const bool use_median_heights = false,
                 const std::string & margin = "",
                 const unsigned int precision = 12) const {
+            out.precision(precision);
             unsigned int map_count = this->topologies_.at(0)->get_sample_size();
             for (auto topo_samples : this->topologies_) {
                 if (topo_samples->get_sample_size() < map_count) {
@@ -1421,6 +1439,7 @@ class TreeSample {
             std::map<std::string, std::vector<double> > split_parameter_map;
             split_parameter_map = this->get_split(this->root_split_)->get_parameter_map();
             std::ostringstream root_label;
+            root_label.precision(precision);
             root_label << "[&height_index=" << split_set.size() - 1;
             for (auto p_values : split_parameter_map) {
                 parameter_keys.push_back(p_values.first);
@@ -1455,6 +1474,7 @@ class TreeSample {
             std::vector< std::shared_ptr<Node> > leaf_nodes;
             for (unsigned int i = 0; i < this->leaf_splits_.size(); ++i) {
                 std::ostringstream label;
+                label.precision(precision);
                 label << this->leaf_labels_.at(i) << "[&";
                 unsigned int leaf_index = this->leaf_splits_.at(i).get_leaf_indices().at(0);
                 ECOEVOLITY_ASSERT(leaf_index == i);
@@ -1531,6 +1551,7 @@ class TreeSample {
                 }
                 for (auto split : height_keys.at(key_idx)) {
                     std::ostringstream node_label;
+                    node_label.precision(precision);
                     node_label << "[&height_index=" << height_idx
                         // << ",index_n=" << this->get_height_count(height_keys.at(key_idx))
                         << ",index_freq=" << this->get_height_frequency(height_keys.at(key_idx))
@@ -1606,7 +1627,7 @@ class TreeSample {
                     << indent << "mean: " << sdsf_summary.mean() << "\n";
             }
             this->write_summary_of_tree_lengths(out, margin, precision);
-            out << "summary_of_map_trees:\n";
+            out << "summary_of_map_topologies:\n";
             this->write_summary_of_map_trees(out,
                     use_median_heights,
                     indent,
@@ -1630,6 +1651,7 @@ class TreeSample {
                 std::ostream & out,
                 const bool use_median_heights = false,
                 const unsigned int precision = 12) const {
+            out.precision(precision);
             out<< "#NEXUS\n\n"
                 << "BEGIN TAXA;\n"
                 << "    DIMENSIONS NTAX=" << this->leaf_labels_.size() << ";\n"

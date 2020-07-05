@@ -621,6 +621,15 @@ TEST_CASE("Basic testing", "[treesum]") {
         REQUIRE(ts.get_topology_credibility_level(t_ladder_4321) == Approx(1.0/18.0));
         REQUIRE(ts.get_topology_credibility_level(t_13_missing) == 0.0);
 
+        REQUIRE(ts.is_a_map_tree(t_14_23_shared));
+        REQUIRE(! ts.is_a_map_tree(t_12));
+        REQUIRE(! ts.is_a_map_tree(t_34));
+        REQUIRE(! ts.is_a_map_tree(t_12_34));
+        REQUIRE(! ts.is_a_map_tree(t_13_24));
+        REQUIRE(! ts.is_a_map_tree(t_comb));
+        REQUIRE(! ts.is_a_map_tree(t_ladder_1234));
+        REQUIRE(! ts.is_a_map_tree(t_ladder_4321));
+
         std::map< std::set< std::set<Split> >, unsigned int> topo_count_map;
         std::vector<unsigned int> topo_counts;
         for (auto t : ts.get_topologies()) {
@@ -1124,8 +1133,8 @@ TEST_CASE("Basic testing", "[treesum]") {
         REQUIRE(summary["topologies"][1]["heights"][1]["hpdi_95"][0].as<double>() == 0.3);
         REQUIRE(summary["topologies"][1]["heights"][0]["hpdi_95"][1].as<double>() == 0.4);
         REQUIRE(summary["topologies"][1]["heights"][1]["hpdi_95"][1].as<double>() == 0.5);
-        REQUIRE(summary["summary_of_map_trees"][0]["count"].as<int>() == 4);
-        REQUIRE(summary["summary_of_map_trees"][0]["frequency"].as<double>() == 0.22);
+        REQUIRE(summary["summary_of_map_topologies"][0]["count"].as<int>() == 4);
+        REQUIRE(summary["summary_of_map_topologies"][0]["frequency"].as<double>() == 0.22);
         REQUIRE(summary["summary_of_tree_sources"]["total_number_of_trees_sampled"].as<int>() == 18);
         REQUIRE(summary["summary_of_tree_sources"]["sources"][0]["number_of_trees_skipped"].as<int>() == 2);
         REQUIRE(summary["summary_of_tree_sources"]["sources"][1]["number_of_trees_skipped"].as<int>() == 2);
@@ -1151,6 +1160,7 @@ TEST_CASE("Basic testing", "[treesum]") {
         REQUIRE(summary["summary_of_tree_sources"]["sources"][5]["path"].as<std::string>() == "data/4-tip-trees-comb.nex");
         REQUIRE(summary["summary_of_tree_sources"]["sources"][6]["path"].as<std::string>() == "data/4-tip-trees-ladder-1234.nex");
         REQUIRE(summary["summary_of_tree_sources"]["sources"][7]["path"].as<std::string>() == "data/4-tip-trees-ladder-4321.nex");
+        REQUIRE(summary["summary_of_target_tree"]["is_a_map_topology"].as<bool>() == true);
 
         // ts.write_map_trees_to_nexus(std::cout);
         // ts.write_target_tree_to_nexus(std::cout);
