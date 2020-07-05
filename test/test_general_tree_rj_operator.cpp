@@ -153,7 +153,7 @@ TEST_CASE("Testing SplitLumpNodesRevJumpSampler::split with 3 leaves",
 }
 
 TEST_CASE("Testing SplitLumpNodesRevJumpSampler with 3 leaves and fixed root",
-        "[xSplitLumpNodesRevJumpSampler]") {
+        "[SplitLumpNodesRevJumpSampler]") {
 
     SECTION("Testing 3 leaves with fixed root") {
         RandomNumberGenerator rng = RandomNumberGenerator(18);
@@ -340,7 +340,7 @@ TEST_CASE("Testing SplitLumpNodesRevJumpSampler with 3 leaves, fixed root and op
 }
 
 TEST_CASE("Testing SplitLumpNodesRevJumpSampler with 4 leaves and fixed root",
-        "[xxSplitLumpNodesRevJumpSampler]") {
+        "[SplitLumpNodesRevJumpSampler]") {
 
     SECTION("Testing 4 leaves with fixed root") {
         RandomNumberGenerator rng = RandomNumberGenerator(20);
@@ -2172,7 +2172,7 @@ TEST_CASE("Testing SplitLumpNodesRevJumpSampler::merge from balanced general wit
 //
 // The asterisks in the topologies above indicated shared node heights.
 TEST_CASE("Testing SplitLumpNodesRevJumpSampler with 5 leaves and fixed root",
-        "[xSplitLumpNodesRevJumpSampler]") {
+        "[SplitLumpNodesRevJumpSampler]") {
 
     SECTION("Testing 5 leaves with fixed root") {
         RandomNumberGenerator rng = RandomNumberGenerator(2193647912);
@@ -2450,9 +2450,9 @@ TEST_CASE("Testing SplitLumpNodesRevJumpSampler::split with 3-2 shared tree with
         BaseTree<Node> tree_cde("((A:0.05,B:0.05)[&height_index=0,height=0.05]:0.15,(C:0.1,D:0.1,E:0.1)[&height_index=1,height=0.1]:0.1)[&height_index=2,height=0.2];");
         BaseTree<Node> tree_ab("((A:0.1,B:0.1)[&height_index=1,height=0.1]:0.1,(C:0.05,D:0.05,E:0.05)[&height_index=0,height=0.05]:0.15)[&height_index=2,height=0.2];");
 
-        BaseTree<Node> tree_abc("((A:0.1,B:0.1)[&height_index=1,height=0.1]:0.1,(C:0.1,(D:0.05,E:0.05)[&height_index=0,height=0.05]:0.05)[&height_index=1,height=0.01]:0.1)[&height_index=2,height=0.2];");
-        BaseTree<Node> tree_abd("((A:0.1,B:0.1)[&height_index=1,height=0.1]:0.1,(D:0.1,(C:0.05,E:0.05)[&height_index=0,height=0.05]:0.05)[&height_index=1,height=0.01]:0.1)[&height_index=2,height=0.2];");
-        BaseTree<Node> tree_abe("((A:0.1,B:0.1)[&height_index=1,height=0.1]:0.1,(E:0.1,(C:0.05,D:0.05)[&height_index=0,height=0.05]:0.05)[&height_index=1,height=0.01]:0.1)[&height_index=2,height=0.2];");
+        BaseTree<Node> tree_abc("((A:0.1,B:0.1)[&height_index=1,height=0.1]:0.1,(C:0.1,(D:0.05,E:0.05)[&height_index=0,height=0.05]:0.05)[&height_index=1,height=0.1]:0.1)[&height_index=2,height=0.2];");
+        BaseTree<Node> tree_abd("((A:0.1,B:0.1)[&height_index=1,height=0.1]:0.1,(D:0.1,(C:0.05,E:0.05)[&height_index=0,height=0.05]:0.05)[&height_index=1,height=0.1]:0.1)[&height_index=2,height=0.2];");
+        BaseTree<Node> tree_abe("((A:0.1,B:0.1)[&height_index=1,height=0.1]:0.1,(E:0.1,(C:0.05,D:0.05)[&height_index=0,height=0.05]:0.05)[&height_index=1,height=0.1]:0.1)[&height_index=2,height=0.2];");
 
         BaseTree<Node> tree_c("((A:0.05,B:0.05)[&height_index=0,height=0.05]:0.15,(C:0.1,(D:0.05,E:0.05)[&height_index=0,height=0.05]:0.05)[&height_index=1,height=0.1]:0.1)[&height_index=2,height=0.2];");
         BaseTree<Node> tree_d("((A:0.05,B:0.05)[&height_index=0,height=0.05]:0.15,(D:0.1,(C:0.05,E:0.05)[&height_index=0,height=0.05]:0.05)[&height_index=1,height=0.1]:0.1)[&height_index=2,height=0.2];");
@@ -3591,7 +3591,7 @@ TEST_CASE("Testing SplitLumpNodesRevJumpSampler::propose from (A,B,C,D,E) tree",
 }
 
 TEST_CASE("Testing SplitLumpNodesRevJumpSampler with 6 leaves and fixed root",
-        "[xSplitLumpNodesRevJumpSampler]") {
+        "[SplitLumpNodesRevJumpSampler]") {
 
     SECTION("Testing 6 leaves with fixed root") {
         /* RandomNumberGenerator rng = RandomNumberGenerator(25478465); */
@@ -3720,7 +3720,7 @@ TEST_CASE("Testing SplitLumpNodesRevJumpSampler with 6 leaves and fixed root",
 }
 
 TEST_CASE("Testing SplitLumpNodesRevJumpSampler with 7 leaves and fixed root",
-        "[xSplitLumpNodesRevJumpSampler]") {
+        "[SplitLumpNodesRevJumpSampler]") {
 
     SECTION("Testing 7 leaves with fixed root") {
         RandomNumberGenerator rng = RandomNumberGenerator(2347243665);
