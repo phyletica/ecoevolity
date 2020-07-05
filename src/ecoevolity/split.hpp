@@ -72,10 +72,16 @@ class Split {
         void set_leaf_bit(const unsigned int leaf_index);
         void add_split(const Split & other);
 
+        void get_leaf_indices(
+                std::vector<unsigned int> & leaf_indices) const;
+        std::vector<unsigned int> get_leaf_indices() const;
+
         bool is_equivalent(const Split & other,
                 const bool strict_root = true) const;
         bool is_compatible(const Split & other) const;
         bool conflicts_with(const Split & other) const;
+        bool is_proper_subset_of(const Split & other) const;
+        bool is_proper_superset_of(const Split & other) const;
 
         std::string as_string(const char unset_char = '0',
                 const char set_char = '1') const;
@@ -180,6 +186,21 @@ inline void Split::add_split(const Split & other) {
     }
 }
 
+inline void Split::get_leaf_indices(std::vector<unsigned int> & leaf_indices) const {
+    leaf_indices.clear();
+    for (unsigned int i = 0; i < this->size(); ++i) {
+        if (this->get_leaf_bit(i)) {
+            leaf_indices.push_back(i);
+        }
+    }
+}
+
+inline std::vector<unsigned int> Split::get_leaf_indices() const {
+    std::vector<unsigned int> leaf_indices;
+    this->get_leaf_indices(leaf_indices);
+    return leaf_indices;
+}
+
 inline std::string Split::as_string(
         const char unset_char,
         const char set_char) const {
@@ -267,6 +288,40 @@ inline bool Split::is_compatible(const Split & other) const {
 
 inline bool Split::conflicts_with(const Split & other) const {
     return (! this->is_compatible(other));
+}
+
+inline bool Split::is_proper_subset_of(const Split & other) const {
+    if (this->is_equivalent(other, true)) {
+        // Proper excludes equivalent sets
+        return false;
+    }
+    for (unsigned int i = 0; i < this->bits_.size(); ++i) {
+        split_unit_t a = this->bits_.at(i);
+        split_unit_t b = other.bits_.at(i);
+        split_unit_t a_and_b = (a & b);
+        if (a != a_and_b) {
+            // other does not contain this
+            return false;
+        }
+    }
+    return true;
+}
+
+inline bool Split::is_proper_superset_of(const Split & other) const {
+    if (this->is_equivalent(other, true)) {
+        // Proper excludes equivalent sets
+        return false;
+    }
+    for (unsigned int i = 0; i < this->bits_.size(); ++i) {
+        split_unit_t a = this->bits_.at(i);
+        split_unit_t b = other.bits_.at(i);
+        split_unit_t a_and_b = (a & b);
+        if (b != a_and_b) {
+            // this does not contain other
+            return false;
+        }
+    }
+    return true;
 }
 
 #endif

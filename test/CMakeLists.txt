@@ -18,6 +18,7 @@ set(ECOEVOLITY_SOURCES
     "${ECOEVOLITY_SOURCE_DIR}/simcoevolity.cpp"
     "${ECOEVOLITY_SOURCE_DIR}/phycoeval.cpp"
     "${ECOEVOLITY_SOURCE_DIR}/simphycoeval.cpp"
+    "${ECOEVOLITY_SOURCE_DIR}/sumphycoeval.cpp"
     "${ECOEVOLITY_SOURCE_DIR}/data.cpp")
 
 if (BUILD_WITH_THREADS)

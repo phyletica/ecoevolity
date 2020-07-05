@@ -16689,7 +16689,7 @@ TEST_CASE("Testing BaseTree::store_splits()", "[BaseTree]") {
         root->add_child(internal2);
         BaseTree<Node> tree(root);
 
-        std::map< unsigned int, std::set<Split> > split_set;
+        std::map< int, std::set<Split> > split_set;
         tree.store_splits_by_height_index(split_set);
         std::cout << "split set:\n";
         for (auto height_splits : split_set) {
@@ -16706,7 +16706,7 @@ TEST_CASE("Testing BaseTree::store_splits()", "[BaseTree]") {
 
         Split s;
         s.resize(8);
-        std::map< unsigned int, std::set<Split> > expected_set;
+        std::map< int, std::set<Split> > expected_set;
         for (unsigned int i = 0; i < 8; ++i) {
             s.set_leaf_bit(i);
         }
@@ -16764,7 +16764,7 @@ TEST_CASE("Testing BaseTree::store_splits()", "[BaseTree]") {
         REQUIRE(split_set == expected_set);
 
         // What if a height index is off?
-        std::map< unsigned int, std::set<Split> > index_off_set;
+        std::map< int, std::set<Split> > index_off_set;
         for (unsigned int i = 0; i < 8; ++i) {
             s.set_leaf_bit(i);
         }
@@ -16809,7 +16809,7 @@ TEST_CASE("Testing BaseTree::store_splits()", "[BaseTree]") {
         REQUIRE(split_set != index_off_set);
 
         // What if one leaf index is off?
-        std::map< unsigned int, std::set<Split> > one_leaf_off_set;
+        std::map< int, std::set<Split> > one_leaf_off_set;
         for (unsigned int i = 0; i < 8; ++i) {
             s.set_leaf_bit(i);
         }

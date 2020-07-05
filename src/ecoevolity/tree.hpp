@@ -155,6 +155,13 @@ class BasePopulationTree : public BaseTree<PopulationNode> {
                 const std::string & ncl_file_format
             ) : BaseTree<PopulationNode>(tree_stream, ncl_file_format) { }
 
+        BasePopulationTree(
+                const NxsFullTreeDescription & tree_description,
+                NxsTaxaBlock * taxa_block,
+                const double ultrametricity_tolerance
+            ) : BaseTree<PopulationNode>(tree_description, taxa_block,
+                        ultrametricity_tolerance) { }
+
         void init(
                 std::string path, 
                 char population_name_delimiter = ' ',

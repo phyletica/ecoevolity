@@ -493,6 +493,15 @@ class BaseTree {
                     height);
             if (using_height_comments) {
                 if (indices_to_heights.count(height_index) > 0) {
+                    // Sanity check to make sure height indices are consistent
+                    // across tree
+                    if (height != indices_to_heights[height_index]->get_value()) {
+                        std::ostringstream message;
+                        message << "ERROR: create_internal_node_: "
+                                << "Height index " << height_index
+                                << " has multiple heights in tree";
+                        throw EcoevolityError(message.str());
+                    }
                     node->set_height_parameter(indices_to_heights[height_index]);
                 }
                 else {
@@ -543,97 +552,15 @@ class BaseTree {
                 throw;
             }
         }
+        BaseTree(const NxsFullTreeDescription & tree_description,
+                NxsTaxaBlock * taxa_block,
+                const double ultrametricity_tolerance) {
+            this->build_from_ncl_tree_description_(tree_description,
+                    taxa_block,
+                    ultrametricity_tolerance);
+        }
 
         typedef std::shared_ptr<NodeType> NodePtr;
-
-        template<class TreeType>
-        static void get_trees(
-                std::istream & tree_stream,
-                const std::string & ncl_file_format,
-                std::vector<TreeType> & trees,
-                double ultrametricity_tolerance = 1e-6
-                ) {
-            MultiFormatReader nexus_reader(-1, NxsReader::WARNINGS_TO_STDERR);
-            try {
-                nexus_reader.ReadStream(tree_stream, ncl_file_format.c_str());
-            }
-            catch(...) {
-                nexus_reader.DeleteBlocksFromFactories();
-                throw;
-            }
-            unsigned int num_taxa_blocks = nexus_reader.GetNumTaxaBlocks();
-            ECOEVOLITY_ASSERT(num_taxa_blocks == 1);
-            NxsTaxaBlock * taxa_block = nexus_reader.GetTaxaBlock(0);
-
-            unsigned int num_tree_blocks = nexus_reader.GetNumTreesBlocks(taxa_block);
-            ECOEVOLITY_ASSERT(num_tree_blocks == 1);
-
-            NxsTreesBlock * tree_block = nexus_reader.GetTreesBlock(taxa_block, 0);
-            unsigned int num_trees = tree_block->GetNumTrees();
-            ECOEVOLITY_ASSERT(num_trees > 0);
-
-            for (unsigned int i = 0; i < num_trees; ++i) {
-                const NxsFullTreeDescription & tree_description = tree_block->GetFullTreeDescription(i);
-                TreeType t;
-                t.build_from_ncl_tree_description_(tree_description,
-                        taxa_block,
-                        ultrametricity_tolerance);
-                trees.push_back(t);
-            }
-            nexus_reader.DeleteBlocksFromFactories();
-        }
-        template<class TreeType>
-        static std::vector<TreeType> get_trees(
-                std::istream & tree_stream,
-                const std::string & ncl_file_format,
-                double ultrametricity_tolerance = 1e-6
-                ) {
-            std::vector<TreeType> trees;
-            BaseTree::get_trees(tree_stream,
-                    ncl_file_format,
-                    trees,
-                    ultrametricity_tolerance);
-            return trees;
-        }
-        template<class TreeType>
-        static void get_trees(
-                const std::string & path,
-                const std::string & ncl_file_format,
-                std::vector<TreeType> & trees,
-                double ultrametricity_tolerance = 1e-6
-                ) {
-            std::ifstream in_stream;
-            in_stream.open(path);
-            if (! in_stream.is_open()) {
-                throw EcoevolityParsingError(
-                        "Could not open tree file",
-                        path);
-            }
-            try {
-                BaseTree::get_trees(in_stream,
-                        ncl_file_format,
-                        trees,
-                        ultrametricity_tolerance);
-            }
-            catch(...) {
-                std::cerr << "ERROR: Problem parsing tree file path: "
-                        << path << "\n";
-                throw;
-            }
-        }
-        template<class TreeType>
-        static std::vector<TreeType> get_trees(
-                const std::string & path,
-                const std::string & ncl_file_format,
-                double ultrametricity_tolerance = 1e-6
-                ) {
-            std::vector<TreeType> trees;
-            BaseTree::get_trees(path,
-                    ncl_file_format,
-                    trees,
-                    ultrametricity_tolerance);
-            return trees;
-        }
 
         virtual double get_ln_prob_of_drawing_node_state(
                 std::shared_ptr<NodeType>) const {
@@ -1819,6 +1746,10 @@ class BaseTree {
             return this->root_->get_height();
         }
 
+        double get_tree_length() const {
+            return this->root_->get_clade_length();
+        }
+
         void scale_tree(double multiplier) {
             ECOEVOLITY_ASSERT(multiplier >= 0.0);
             ECOEVOLITY_ASSERT(! this->root_height_is_fixed());
@@ -2130,6 +2061,7 @@ class BaseTree {
         }
         void write_nexus_taxa_block(std::ostream& out) const {
             std::vector<std::string> leaf_labels = this->root_->get_leaf_labels();
+            std::sort(std::begin(leaf_labels), std::end(leaf_labels));
             out << "BEGIN TAXA;\n"
                 << "    DIMENSIONS NTAX=" << leaf_labels.size() << ";\n"
                 << "    TAXLABELS\n";
@@ -2138,6 +2070,19 @@ class BaseTree {
             }
             out << "    ;\n"
                 << "END;" << std::endl;
+        }
+
+        void get_leaf_labels(std::vector<std::string> & leaf_labels) const {
+            this->root_->get_leaf_labels(leaf_labels);
+        }
+        std::vector<std::string> get_leaf_labels() const {
+            return this->root_->get_leaf_labels();
+        }
+        void get_leaf_label_set(std::set<std::string> & leaf_labels) const {
+            this->root_->get_leaf_label_set(leaf_labels);
+        }
+        std::set<std::string> get_leaf_label_set() const {
+            return this->root_->get_leaf_label_set();
         }
 
         virtual void draw_from_prior(RandomNumberGenerator& rng) {
@@ -2161,8 +2106,10 @@ class BaseTree {
         }
 
         void store_splits_by_height_index(
-                std::map< unsigned int, std::set<Split> > & split_map,
-                bool resize_splits = false) const {
+                std::map< int, std::set<Split> > & split_map,
+                const bool resize_splits = false,
+                const bool include_root = true,
+                const bool include_leaves = false) const {
             if (resize_splits) {
                 this->root_->resize_splits(this->get_leaf_node_count());
             }
@@ -2171,12 +2118,18 @@ class BaseTree {
                     ++node) {
                 if (! (*node)->is_leaf()) { 
                     // add this internal node's split to split set
-                    unsigned int height_idx = this->get_node_height_index((*node)->get_height_parameter());
-                    split_map[height_idx].insert((*node)->split_);
+                    if (include_root || (! (*node)->is_root())) {
+                        int height_idx = (int)this->get_node_height_index(
+                                (*node)->get_height_parameter());
+                        split_map[height_idx].insert((*node)->split_);
+                    }
                 }
                 else {
                     // Set bit for this leaf node's index
                     (*node)->split_.set_leaf_bit((*node)->get_index());
+                    if (include_leaves) {
+                        split_map[-1].insert((*node)->split_);
+                    }
                 }
                 if ((*node)->has_parent()) {
                     (*node)->get_parent()->split_.add_split((*node)->split_);
@@ -2184,27 +2137,114 @@ class BaseTree {
             }
         }
 
-        std::map< unsigned int, std::set<Split> > get_splits_by_height_index(
-                bool resize_splits = false) const {
-            std::map< unsigned int, std::set<Split> > split_map;
-            this->store_splits_by_height_index(split_map, resize_splits);
+        std::map< int, std::set<Split> > get_splits_by_height_index(
+                const bool resize_splits = false,
+                const bool include_root = true,
+                const bool include_leaves = false) const {
+            std::map< int, std::set<Split> > split_map;
+            this->store_splits_by_height_index(split_map,
+                    resize_splits,
+                    include_root,
+                    include_leaves);
             return split_map;
         }
 
         void store_splits(
                 std::set< std::set<Split> > & split_set,
-                bool resize_splits = false) const {
-            std::map< unsigned int, std::set<Split> > split_map = this->get_splits_by_height_index(resize_splits);
+                const bool resize_splits = false,
+                const bool include_root = false,
+                const bool include_leaves = false) const {
+            std::map< int, std::set<Split> > split_map = this->get_splits_by_height_index(
+                    resize_splits,
+                    include_root,
+                    include_leaves);
             for (auto item : split_map) {
-                split_set.insert(item.second);
+                if (item.first == -1) {
+                    // If we have a leaf we want to store each leaf in its own
+                    // set so that it doesn't look like a shared divergence
+                    // time (i.e., multiple splits in a set)
+                    for (auto leaf_split : item.second) {
+                        std::set<Split> leaf_set {leaf_split};
+                        split_set.insert(leaf_set);
+                    }
+                }
+                else {
+                    split_set.insert(item.second);
+                }
             }
         }
 
         std::set< std::set<Split> > get_splits(
-                bool resize_splits = false) const {
+                const bool resize_splits = false,
+                const bool include_root = false,
+                const bool include_leaves = false) const {
             std::set< std::set<Split> > split_set;
-            this->store_splits(split_set, resize_splits);
+            this->store_splits(split_set,
+                    resize_splits,
+                    include_root,
+                    include_leaves);
             return split_set;
+        }
+
+        void store_split_length_map(
+                std::map<Split, double> & split_length_map,
+                const bool resize_splits = false) const {
+            if (resize_splits) {
+                this->root_->resize_splits(this->get_leaf_node_count());
+            }
+            for (auto node = this->pre_ordered_nodes_.rbegin();
+                    node != this->pre_ordered_nodes_.rend();
+                    ++node) {
+                if ((*node)->is_leaf()) {
+                    // Set bit for this leaf node's index
+                    (*node)->split_.set_leaf_bit((*node)->get_index());
+                }
+                split_length_map[(*node)->split_] = (*node)->get_length();
+                if ((*node)->has_parent()) {
+                    (*node)->get_parent()->split_.add_split((*node)->split_);
+                }
+            }
+        }
+
+        std::map<Split, double> get_split_length_map(
+                const bool resize_splits = false) const {
+            std::map<Split, double> split_length_map;
+            this->store_split_length_map(split_length_map, resize_splits);
+            return split_length_map;
+        }
+
+        void store_splits_heights_parameters(
+                std::set< std::set<Split> > & split_set,
+                std::map<std::set<Split>, double> & heights,
+                std::map<Split, std::map<std::string, double> > & parameters,
+                const bool resize_splits = false) const {
+            std::map< unsigned int, std::set<Split> > split_map;
+            if (resize_splits) {
+                this->root_->resize_splits(this->get_leaf_node_count());
+            }
+            for (auto node = this->pre_ordered_nodes_.rbegin();
+                    node != this->pre_ordered_nodes_.rend();
+                    ++node) {
+                if (! (*node)->is_leaf()) {
+                    // add this internal node's split to split set
+                    unsigned int height_idx = this->get_node_height_index((*node)->get_height_parameter());
+                    split_map[height_idx].insert((*node)->split_);
+                }
+                else {
+                    // Set bit for this leaf node's index
+                    (*node)->split_.set_leaf_bit((*node)->get_index());
+                }
+                std::map<std::string, double> parameter_map;
+                (*node)->get_parameter_map(parameter_map);
+                parameters[(*node)->split_] = parameter_map;
+                if ((*node)->has_parent()) {
+                    (*node)->get_parent()->split_.add_split((*node)->split_);
+                }
+            }
+            for (auto item : split_map) {
+                split_set.insert(item.second);
+                heights[item.second] = this->get_height(item.first);
+            }
         }
 
         double get_alpha_of_node_height_beta_prior() const {
@@ -2253,5 +2293,137 @@ class BaseTree {
             return this->beta_of_node_height_beta_prior_->get_prior();
         }
 };
+
+
+template<class TreeType>
+inline void get_trees(
+        std::istream & tree_stream,
+        const std::string & ncl_file_format,
+        std::vector<TreeType> & trees,
+        unsigned int skip = 0,
+        double ultrametricity_tolerance = 1e-6
+        ) {
+    MultiFormatReader nexus_reader(-1, NxsReader::WARNINGS_TO_STDERR);
+    try {
+        nexus_reader.ReadStream(tree_stream, ncl_file_format.c_str());
+    }
+    catch(...) {
+        nexus_reader.DeleteBlocksFromFactories();
+        throw;
+    }
+    unsigned int num_taxa_blocks = nexus_reader.GetNumTaxaBlocks();
+    ECOEVOLITY_ASSERT(num_taxa_blocks == 1);
+    NxsTaxaBlock * taxa_block = nexus_reader.GetTaxaBlock(0);
+
+    unsigned int num_tree_blocks = nexus_reader.GetNumTreesBlocks(taxa_block);
+    ECOEVOLITY_ASSERT(num_tree_blocks == 1);
+
+    NxsTreesBlock * tree_block = nexus_reader.GetTreesBlock(taxa_block, 0);
+    unsigned int num_trees = tree_block->GetNumTrees();
+    ECOEVOLITY_ASSERT(num_trees > 0);
+
+    for (unsigned int i = skip; i < num_trees; ++i) {
+        const NxsFullTreeDescription & tree_description = tree_block->GetFullTreeDescription(i);
+        TreeType t(tree_description,
+                taxa_block,
+                ultrametricity_tolerance);
+        trees.push_back(t);
+    }
+    nexus_reader.DeleteBlocksFromFactories();
+}
+
+template<class TreeType>
+inline std::vector<TreeType> get_trees(
+        std::istream & tree_stream,
+        const std::string & ncl_file_format,
+        unsigned int skip = 0,
+        double ultrametricity_tolerance = 1e-6
+        ) {
+    std::vector<TreeType> trees;
+    get_trees<TreeType>(tree_stream,
+            ncl_file_format,
+            trees,
+            skip,
+            ultrametricity_tolerance);
+    return trees;
+}
+
+template<class TreeType>
+inline void get_trees(
+        const std::string & path,
+        const std::string & ncl_file_format,
+        std::vector<TreeType> & trees,
+        unsigned int skip = 0,
+        double ultrametricity_tolerance = 1e-6
+        ) {
+    std::ifstream in_stream;
+    in_stream.open(path);
+    if (! in_stream.is_open()) {
+        throw EcoevolityParsingError(
+                "Could not open tree file",
+                path);
+    }
+    try {
+        get_trees<TreeType>(in_stream,
+                ncl_file_format,
+                trees,
+                skip,
+                ultrametricity_tolerance);
+    }
+    catch(...) {
+        std::cerr << "ERROR: Problem parsing tree file path: "
+                << path << "\n";
+        throw;
+    }
+}
+
+template<class TreeType>
+inline std::vector<TreeType> get_trees(
+        const std::string & path,
+        const std::string & ncl_file_format,
+        unsigned int skip = 0,
+        double ultrametricity_tolerance = 1e-6
+        ) {
+    std::vector<TreeType> trees;
+    get_trees<TreeType>(path,
+            ncl_file_format,
+            trees,
+            skip,
+            ultrametricity_tolerance);
+    return trees;
+}
+
+template<class TreeType>
+inline void get_trees(
+        const std::vector<std::string> & paths,
+        const std::string & ncl_file_format,
+        std::vector<TreeType> & trees,
+        unsigned int skip = 0,
+        double ultrametricity_tolerance = 1e-6
+        ) {
+    for (auto path : paths) {
+        get_trees<TreeType>(path,
+                ncl_file_format,
+                trees,
+                skip,
+                ultrametricity_tolerance);
+    }
+}
+
+template<class TreeType>
+inline std::vector<TreeType> get_trees(
+        const std::vector<std::string> & paths,
+        const std::string & ncl_file_format,
+        unsigned int skip = 0,
+        double ultrametricity_tolerance = 1e-6
+        ) {
+    std::vector<TreeType> trees;
+    get_trees<TreeType>(paths,
+            ncl_file_format,
+            trees,
+            skip,
+            ultrametricity_tolerance);
+    return trees;
+}
 
 #endif

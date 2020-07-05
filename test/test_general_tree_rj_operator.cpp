@@ -2458,24 +2458,24 @@ TEST_CASE("Testing SplitLumpNodesRevJumpSampler::split with 3-2 shared tree with
         BaseTree<Node> tree_d("((A:0.05,B:0.05)[&height_index=0,height=0.05]:0.15,(D:0.1,(C:0.05,E:0.05)[&height_index=0,height=0.05]:0.05)[&height_index=1,height=0.1]:0.1)[&height_index=2,height=0.2];");
         BaseTree<Node> tree_e("((A:0.05,B:0.05)[&height_index=0,height=0.05]:0.15,(E:0.1,(C:0.05,D:0.05)[&height_index=0,height=0.05]:0.05)[&height_index=1,height=0.1]:0.1)[&height_index=2,height=0.2];");
 
-        std::set<std::map< unsigned int, std::set<Split> > > choose_ab;
+        std::set<std::map< int, std::set<Split> > > choose_ab;
         choose_ab.insert(tree_cde.get_splits_by_height_index());
         double choose_ab_hr = std::log(0.15);
 
-        std::set<std::map< unsigned int, std::set<Split> > > choose_cde;
+        std::set<std::map< int, std::set<Split> > > choose_cde;
         choose_cde.insert(tree_ab.get_splits_by_height_index());
         choose_cde.insert(tree_abc.get_splits_by_height_index());
         choose_cde.insert(tree_abd.get_splits_by_height_index());
         choose_cde.insert(tree_abe.get_splits_by_height_index());
         double choose_cde_hr = std::log(0.6);
 
-        std::set<std::map< unsigned int, std::set<Split> > > choose_both;
+        std::set<std::map< int, std::set<Split> > > choose_both;
         choose_both.insert(tree_c.get_splits_by_height_index());
         choose_both.insert(tree_d.get_splits_by_height_index());
         choose_both.insert(tree_e.get_splits_by_height_index());
         double choose_both_hr = std::log(0.45);
 
-        std::map<std::map< unsigned int, std::set<Split> >, unsigned int> counts;
+        std::map<std::map< int, std::set<Split> >, unsigned int> counts;
         for (auto splits : choose_ab) {
             counts[splits] = 0;
         }
@@ -2486,7 +2486,7 @@ TEST_CASE("Testing SplitLumpNodesRevJumpSampler::split with 3-2 shared tree with
             counts[splits] = 0;
         }
 
-        std::map< unsigned int, std::set<Split> > splits;
+        std::map< int, std::set<Split> > splits;
         unsigned int nsamples = 50000;
         for (unsigned int i = 0; i < nsamples; ++i) {
             double root_ht = 0.2;
@@ -2648,22 +2648,22 @@ TEST_CASE("Testing SplitLumpNodesRevJumpSampler::propose from 2-1-1 shared tree 
         BaseTree<Node> tree_gen_ab("((A:0.02,B:0.02)[&height_index=0,height=0.02]:0.18,(C:0.1,(D:0.05,E:0.05)[&height_index=1,height=0.05]:0.05)[&height_index=2,height=0.1]:0.1)[&height_index=3,height=0.2];");
         BaseTree<Node> tree_gen_de("((A:0.05,B:0.05)[&height_index=1,height=0.05]:0.15,(C:0.1,(D:0.02,E:0.02)[&height_index=0,height=0.02]:0.08)[&height_index=2,height=0.1]:0.1)[&height_index=3,height=0.2];");
 
-        std::set<std::map< unsigned int, std::set<Split> > > merge_0;
+        std::set<std::map< int, std::set<Split> > > merge_0;
         merge_0.insert(tree_ab_cde.get_splits_by_height_index());
         double merge_0_hr = std::log(4.0 / 1.8);
 
-        std::set<std::map< unsigned int, std::set<Split> > > merge_1;
+        std::set<std::map< int, std::set<Split> > > merge_1;
         merge_1.insert(tree_ab_de_c.get_splits_by_height_index());
         double merge_1_hr = std::log(4.0 / 1.8);
 
-        std::set<std::map< unsigned int, std::set<Split> > > split_ab;
+        std::set<std::map< int, std::set<Split> > > split_ab;
         split_ab.insert(tree_gen_ab.get_splits_by_height_index());
         double split_hr = std::log(1.0 / 15.0);
 
-        std::set<std::map< unsigned int, std::set<Split> > > split_de;
+        std::set<std::map< int, std::set<Split> > > split_de;
         split_ab.insert(tree_gen_de.get_splits_by_height_index());
 
-        std::map<std::map< unsigned int, std::set<Split> >, unsigned int> counts;
+        std::map<std::map< int, std::set<Split> >, unsigned int> counts;
         for (auto splits : merge_0) {
             counts[splits] = 0;
         }
@@ -2677,7 +2677,7 @@ TEST_CASE("Testing SplitLumpNodesRevJumpSampler::propose from 2-1-1 shared tree 
             counts[splits] = 0;
         }
 
-        std::map< unsigned int, std::set<Split> > splits;
+        std::map< int, std::set<Split> > splits;
         unsigned int nsamples = 50000;
         for (unsigned int i = 0; i < nsamples; ++i) {
             double root_ht = 0.2;
@@ -2893,22 +2893,22 @@ TEST_CASE("Testing SplitLumpNodesRevJumpSampler::propose from 1-2-1 shared tree 
         BaseTree<Node> tree_split_ab("((A:0.08,B:0.08)[&height_index=1,height=0.08]:0.12,(C:0.1,(D:0.05,E:0.05)[&height_index=0,height=0.05]:0.05)[&height_index=2,height=0.1]:0.1)[&height_index=3,height=0.2];");
         BaseTree<Node> tree_split_cde("((A:0.1,B:0.1)[&height_index=2,height=0.1]:0.1,(C:0.08,(D:0.05,E:0.05)[&height_index=0,height=0.05]:0.03)[&height_index=1,height=0.08]:0.12)[&height_index=3,height=0.2];");
 
-        std::set<std::map< unsigned int, std::set<Split> > > merge_0;
+        std::set<std::map< int, std::set<Split> > > merge_0;
         merge_0.insert(tree_merge_0.get_splits_by_height_index());
         double merge_0_hr = std::log(4.0 / 2.4);
 
-        std::set<std::map< unsigned int, std::set<Split> > > merge_1;
+        std::set<std::map< int, std::set<Split> > > merge_1;
         merge_1.insert(tree_merge_1.get_splits_by_height_index());
         double merge_1_hr = std::log(4.0 / 3.9);
 
-        std::set<std::map< unsigned int, std::set<Split> > > split_ab;
+        std::set<std::map< int, std::set<Split> > > split_ab;
         split_ab.insert(tree_split_ab.get_splits_by_height_index());
         double split_hr = std::log(1.0 / 15.0);
 
-        std::set<std::map< unsigned int, std::set<Split> > > split_cde;
+        std::set<std::map< int, std::set<Split> > > split_cde;
         split_cde.insert(tree_split_cde.get_splits_by_height_index());
 
-        std::map<std::map< unsigned int, std::set<Split> >, unsigned int> counts;
+        std::map<std::map< int, std::set<Split> >, unsigned int> counts;
         for (auto splits : merge_0) {
             counts[splits] = 0;
         }
@@ -2922,7 +2922,7 @@ TEST_CASE("Testing SplitLumpNodesRevJumpSampler::propose from 1-2-1 shared tree 
             counts[splits] = 0;
         }
 
-        std::map< unsigned int, std::set<Split> > splits;
+        std::map< int, std::set<Split> > splits;
         unsigned int nsamples = 50000;
         for (unsigned int i = 0; i < nsamples; ++i) {
             double root_ht = 0.2;
@@ -3130,21 +3130,21 @@ TEST_CASE("Testing SplitLumpNodesRevJumpSampler::propose from ((A,B),(C,D,E)*) t
         BaseTree<Node> tree_split_ce("((A:0.1,B:0.1)[&height_index=2,height=0.1]:0.1,(D:0.05,(C:0.02,E:0.02)[&height_index=0,height=0.02]:0.03)[&height_index=1,height=0.05]:0.15)[&height_index=3,height=0.2];");
         BaseTree<Node> tree_split_cd("((A:0.1,B:0.1)[&height_index=2,height=0.1]:0.1,(E:0.05,(C:0.02,D:0.02)[&height_index=0,height=0.02]:0.03)[&height_index=1,height=0.05]:0.15)[&height_index=3,height=0.2];");
 
-        std::set<std::map< unsigned int, std::set<Split> > > merge_0;
+        std::set<std::map< int, std::set<Split> > > merge_0;
         merge_0.insert(tree_merge_0.get_splits_by_height_index());
         double merge_0_hr = std::log(4.0 / 2.4);
 
-        std::set<std::map< unsigned int, std::set<Split> > > merge_1;
+        std::set<std::map< int, std::set<Split> > > merge_1;
         merge_1.insert(tree_merge_1.get_splits_by_height_index());
         double merge_1_hr = std::log(4.0 / 1.8);
 
-        std::set<std::map< unsigned int, std::set<Split> > > split_poly;
+        std::set<std::map< int, std::set<Split> > > split_poly;
         split_poly.insert(tree_split_de.get_splits_by_height_index());
         split_poly.insert(tree_split_ce.get_splits_by_height_index());
         split_poly.insert(tree_split_cd.get_splits_by_height_index());
         double split_hr = std::log(0.1);
 
-        std::map<std::map< unsigned int, std::set<Split> >, unsigned int> counts;
+        std::map<std::map< int, std::set<Split> >, unsigned int> counts;
         for (auto splits : merge_0) {
             counts[splits] = 0;
         }
@@ -3155,7 +3155,7 @@ TEST_CASE("Testing SplitLumpNodesRevJumpSampler::propose from ((A,B),(C,D,E)*) t
             counts[splits] = 0;
         }
 
-        std::map< unsigned int, std::set<Split> > splits;
+        std::map< int, std::set<Split> > splits;
         unsigned int nsamples = 50000;
         for (unsigned int i = 0; i < nsamples; ++i) {
             double root_ht = 0.2;
@@ -3343,21 +3343,21 @@ TEST_CASE("Testing SplitLumpNodesRevJumpSampler::propose from ((A,B)*,(C,D,E)) t
         BaseTree<Node> tree_split_ce("((A:0.05,B:0.05)[&height_index=0,height=0.05]:0.15,(D:0.1,(C:0.08,E:0.08)[&height_index=1,height=0.08]:0.02)[&height_index=2,height=0.1]:0.1)[&height_index=3,height=0.2];");
         BaseTree<Node> tree_split_cd("((A:0.05,B:0.05)[&height_index=0,height=0.05]:0.15,(E:0.1,(D:0.08,C:0.08)[&height_index=1,height=0.08]:0.02)[&height_index=2,height=0.1]:0.1)[&height_index=3,height=0.2];");
 
-        std::set<std::map< unsigned int, std::set<Split> > > merge_0;
+        std::set<std::map< int, std::set<Split> > > merge_0;
         merge_0.insert(tree_merge_0.get_splits_by_height_index());
         double merge_0_hr = std::log(1.0 / 0.15);
 
-        std::set<std::map< unsigned int, std::set<Split> > > merge_1;
+        std::set<std::map< int, std::set<Split> > > merge_1;
         merge_1.insert(tree_merge_1.get_splits_by_height_index());
         double merge_1_hr = std::log(4.0 / 3.9);
 
-        std::set<std::map< unsigned int, std::set<Split> > > split_poly;
+        std::set<std::map< int, std::set<Split> > > split_poly;
         split_poly.insert(tree_split_de.get_splits_by_height_index());
         split_poly.insert(tree_split_ce.get_splits_by_height_index());
         split_poly.insert(tree_split_cd.get_splits_by_height_index());
         double split_hr = std::log(0.1);
 
-        std::map<std::map< unsigned int, std::set<Split> >, unsigned int> counts;
+        std::map<std::map< int, std::set<Split> >, unsigned int> counts;
         for (auto splits : merge_0) {
             counts[splits] = 0;
         }
@@ -3368,7 +3368,7 @@ TEST_CASE("Testing SplitLumpNodesRevJumpSampler::propose from ((A,B)*,(C,D,E)) t
             counts[splits] = 0;
         }
 
-        std::map< unsigned int, std::set<Split> > splits;
+        std::map< int, std::set<Split> > splits;
         unsigned int nsamples = 50000;
         for (unsigned int i = 0; i < nsamples; ++i) {
             double root_ht = 0.2;
@@ -3521,9 +3521,9 @@ TEST_CASE("Testing SplitLumpNodesRevJumpSampler::propose from (A,B,C,D,E) tree",
         //                  = 1/5
         // HR = 1/2 / 1/5 = 5/2 = 2.5
         //
-        std::map<std::map< unsigned int, std::set<Split> >, unsigned int> counts;
+        std::map<std::map< int, std::set<Split> >, unsigned int> counts;
 
-        std::map< unsigned int, std::set<Split> > splits;
+        std::map< int, std::set<Split> > splits;
         unsigned int nsamples = 50000;
         for (unsigned int i = 0; i < nsamples; ++i) {
             double root_ht = 0.1;

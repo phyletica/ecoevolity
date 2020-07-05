@@ -180,13 +180,19 @@ class BaseNode : public std::enable_shared_from_this<DerivedNodeT> {
 
         //Methods
 
+        virtual void get_parameter_map(
+                std::map<std::string, double> & parameter_map) const {
+            parameter_map["height"] = this->get_height();
+            parameter_map["length"] = this->get_length();
+        }
+
         /**
          * Method to populate non-height related data (e.g., pop size) from
          * node comments in the form of a map.  Nothing to do for BaseNode, but
          * this is intended for derived classes to override
          */
         virtual void extract_data_from_node_comments(
-                std::map<std::string, std::string> comment_map) { }
+                const std::map<std::string, std::string> & comment_map) { }
 
         unsigned int degree() const {
             unsigned int d = children_.size();
@@ -831,6 +837,20 @@ class BaseNode : public std::enable_shared_from_this<DerivedNodeT> {
             return leaf_labels;
         }
 
+        void get_leaf_label_set(std::set<std::string>& leaf_labels) const {
+            if (this->is_leaf()) {
+                leaf_labels.insert(this->get_label());
+            }
+            for (auto child_iter: this->children_) {
+                child_iter->get_leaf_label_set(leaf_labels);
+            }
+        }
+        std::set<std::string> get_leaf_label_set() const {
+            std::set<std::string> leaf_labels;
+            this->get_leaf_label_set(leaf_labels);
+            return leaf_labels;
+        }
+
         std::shared_ptr<ContinuousProbabilityDistribution> get_node_height_prior() const {
             return this->height_->get_prior();
         }
@@ -893,7 +913,8 @@ class BaseNode : public std::enable_shared_from_this<DerivedNodeT> {
             return d;
         }
 
-        std::string to_parentheses(unsigned int precision = 12) const {
+        std::string to_parentheses(unsigned int precision = 12,
+                const bool label_internal_nodes = false) const {
             std::ostringstream s;
             s.precision(precision);
             if (this->is_leaf()) {
@@ -906,10 +927,14 @@ class BaseNode : public std::enable_shared_from_this<DerivedNodeT> {
                     if (child_idx > 0) {
                         s << ",";
                     }
-                    s << child_iter->to_parentheses(precision);
+                    s << child_iter->to_parentheses(precision,
+                            label_internal_nodes);
                     ++child_idx;
                 }
                 s << ")";
+                if (label_internal_nodes) {
+                    s << this->get_label();
+                }
             }
             s << ":" << this->get_length();
             return s.str();

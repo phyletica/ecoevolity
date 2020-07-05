@@ -361,15 +361,21 @@ class PopulationNode: public BaseNode<PopulationNode>{
             copy->stored_population_size_ = std::make_shared<PositiveRealParameter>(*this->stored_population_size_);
         }
 
+        void get_parameter_map(
+                std::map<std::string, double> & parameter_map) const {
+            BaseNode::get_parameter_map(parameter_map);
+            parameter_map["pop_size"] = this->get_population_size();
+        }
+
         /**
          * Method to populate non-height related data (e.g., pop size) from
          * node comments in the form of a map. Overridding from BaseNode.
          */
         void extract_data_from_node_comments(
-                std::map<std::string, std::string> comment_map) {
+                const std::map<std::string, std::string> & comment_map) {
             if (comment_map.count("pop_size") > 0) {
                 double pop_size;
-                std::stringstream s_converter(comment_map["pop_size"]);
+                std::stringstream s_converter(comment_map.at("pop_size"));
                 if (! (s_converter >> pop_size)) {
                     throw EcoevolityError("could not convert pop_size \'" +
                             s_converter.str() + "\'");

@@ -1,0 +1,14 @@
+#NEXUS
+BEGIN TAXA;
+    DIMENSIONS NTAX=4;
+    TAXLABELS
+        sp1
+        sp2b
+        sp3
+        sp4
+    ;
+END;
+
+BEGIN TREES;
+    TREE t1 = [&R] ((sp1[&height=0,pop_size=0.2]:0.3,sp4[&height=0,pop_size=0.1]:0.3)[&height_index=0,height=0.3,pop_size=0.1]:0.1,(sp2b[&height=0,pop_size=0.2]:0.3,sp3[&height=0,pop_size=0.1]:0.3)[&height_index=0,height=0.3,pop_size=0.2]:0.1)[&height_index=1,height=0.4,pop_size=0.1]:0.0;
+END;
