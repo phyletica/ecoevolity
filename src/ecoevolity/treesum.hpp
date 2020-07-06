@@ -1183,7 +1183,7 @@ class TreeSample {
                         h_margin,
                         precision);
             }
-            return freq + cumulative_freq;
+            return freq;
         }
 
         void write_summary_of_all_numbers_of_heights(std::ostream & out,

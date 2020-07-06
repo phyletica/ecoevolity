@@ -1133,6 +1133,12 @@ TEST_CASE("Basic testing", "[treesum]") {
         REQUIRE(summary["topologies"][1]["heights"][1]["hpdi_95"][0].as<double>() == 0.3);
         REQUIRE(summary["topologies"][1]["heights"][0]["hpdi_95"][1].as<double>() == 0.4);
         REQUIRE(summary["topologies"][1]["heights"][1]["hpdi_95"][1].as<double>() == 0.5);
+        REQUIRE(summary["topologies"][2]["cumulative_frequency"].as<double>() == 0.5);
+        REQUIRE(summary["topologies"][3]["cumulative_frequency"].as<double>() == 0.61);
+        REQUIRE(summary["topologies"][4]["cumulative_frequency"].as<double>() == 0.72);
+        REQUIRE(summary["topologies"][5]["cumulative_frequency"].as<double>() == 0.83);
+        REQUIRE(summary["topologies"][6]["cumulative_frequency"].as<double>() == 0.94);
+        REQUIRE(summary["topologies"][7]["cumulative_frequency"].as<double>() == 1);
         REQUIRE(summary["summary_of_map_topologies"][0]["count"].as<int>() == 4);
         REQUIRE(summary["summary_of_map_topologies"][0]["frequency"].as<double>() == 0.22);
         REQUIRE(summary["summary_of_tree_sources"]["total_number_of_trees_sampled"].as<int>() == 18);
