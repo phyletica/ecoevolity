@@ -13,6 +13,7 @@ set(ECOEVOLITY_SOURCES
     simcoevolity.cpp
     phycoeval.cpp
     simphycoeval.cpp
+    sumphycoeval.cpp
     nex2yml.cpp
     dpprobs.cpp
     swprobs.cpp
@@ -77,4 +78,9 @@ install(TARGETS phycoeval
 add_executable(simphycoeval simphycoeval_main.cpp)
 target_link_libraries(simphycoeval ${LIBRARIES_TO_LINK})
 install(TARGETS simphycoeval
+        DESTINATION bin)
+
+add_executable(sumphycoeval sumphycoeval_main.cpp)
+target_link_libraries(sumphycoeval ${LIBRARIES_TO_LINK})
+install(TARGETS sumphycoeval
         DESTINATION bin)
