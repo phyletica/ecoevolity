@@ -39,8 +39,8 @@ void check_sumphy_output_path(const std::string& path);
 template <class NodeType>
 int sumphycoeval_main(int argc, char * argv[]) {
 
-    write_sum_phy_splash(std::cout);
-    std::cout << "\n";
+    write_sum_phy_splash(std::cerr);
+    std::cerr << "\n";
 
     const std::string usage = 
         "usage: %prog [OPTIONS] PHYCOEVAL-TREE-LOG-FILE-1 [PHYCOEVAL-TREE-LOG-FILE-2 ...]";
@@ -74,21 +74,21 @@ int sumphycoeval_main(int argc, char * argv[]) {
             .set_default("")
             .help("Path to a file containing a tree on to which the MCMC "
                   "samples of trees will be summarized.");
-    parser.add_option("--target-tree-out")
+    parser.add_option("--to", "--target-tree-out")
             .action("store")
             .dest("target_tree_out_path")
             .set_default("")
             .help("Path to a file where the annotated target tree "
                   "will be written in nexus format. Default: Do not write a "
                   "nexus-formatted file of the annotated target tree.");
-    parser.add_option("--map-tree-out")
+    parser.add_option("--mo", "--map-tree-out")
             .action("store")
             .dest("map_tree_out_path")
             .set_default("")
             .help("Path to a file where the maximum a posteriori (MAP) tree(s) "
                   "will be written in nexus format. Default: Do not write a "
                   "nexus-formatted file of the MAP tree(s).");
-    parser.add_option("-m", "--median-heights")
+    parser.add_option("--median-heights")
             .action("store_true")
             .dest("use_median_heights")
             .help("Use median (rather than mean) of MCMC samples for the node "
@@ -105,7 +105,7 @@ int sumphycoeval_main(int argc, char * argv[]) {
     parser.add_option("-f", "--force")
             .action("store_true")
             .dest("force")
-            .help("Force overwriting of existing output files, if they exist.");
+            .help("Force overwriting of existing output files.");
 
     optparse::Values& options = parser.parse_args(argc, argv);
     std::vector<std::string> log_paths = parser.args();
