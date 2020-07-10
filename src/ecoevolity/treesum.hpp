@@ -547,6 +547,102 @@ class TreeSample {
             return source_values;
         }
 
+        void _add_tree(
+                const tree_type & tree,
+                const unsigned int tree_index,
+                const unsigned int source_index) {
+            if ((this->sample_size_ < 1) && (this->leaf_labels_.size() < 1)) {
+                this->update_splits_and_labels_(tree);
+            }
+            this->check_leaf_labels_(tree);
+
+            std::set< std::set<Split> > split_set;
+            std::map<std::set<Split>, double> heights;
+            std::map<Split, std::map<std::string, double> > parameters;
+            tree.store_splits_heights_parameters(
+                    split_set,
+                    heights,
+                    parameters,
+                    false);
+            unsigned int nheights = heights.size();
+            if (this->num_heights_map_.count(nheights) > 0) {
+                this->num_heights_map_[nheights]->add_sample(
+                        nheights,
+                        tree_index,
+                        source_index);
+            }
+            else {
+                std::shared_ptr<NumberOfHeightsSamples> nhs = std::make_shared<NumberOfHeightsSamples>();
+                nhs->add_sample(nheights, tree_index, source_index);
+                this->num_heights_.push_back(nhs);
+                this->num_heights_map_[nheights] = nhs;
+            }
+            if (this->topologies_map_.count(split_set) > 0) {
+                this->topologies_map_[split_set]->add_sample(
+                        heights,
+                        tree_index,
+                        source_index);
+            }
+            else {
+                std::shared_ptr<TopologySamples> ts = std::make_shared<TopologySamples>();
+                ts->add_sample(heights, tree_index, source_index);
+                this->topologies_.push_back(ts);
+                this->topologies_map_[split_set] = ts;
+            }
+            for (auto splits_height : heights) {
+                if (this->heights_map_.count(splits_height.first) > 0) {
+                    this->heights_map_[splits_height.first]->add_sample(
+                            splits_height.first,
+                            splits_height.second,
+                            tree_index,
+                            source_index);
+                }
+                else {
+                    std::shared_ptr<HeightSamples> hs = std::make_shared<HeightSamples>();
+                    hs->add_sample(
+                            splits_height.first,
+                            splits_height.second,
+                            tree_index,
+                            source_index);
+                    this->heights_.push_back(hs);
+                    this->heights_map_[splits_height.first] = hs;
+                }
+            }
+            for (auto split_pmap : parameters) {
+                if (this->splits_map_.count(split_pmap.first) > 0) {
+                    this->splits_map_[split_pmap.first]->add_sample(
+                            split_pmap.first,
+                            split_pmap.second,
+                            tree_index,
+                            source_index);
+                }
+                else {
+                    std::shared_ptr<SplitSamples> ss = std::make_shared<SplitSamples>();
+                    ss->add_sample(
+                            split_pmap.first,
+                            split_pmap.second,
+                            tree_index,
+                            source_index);
+                    this->splits_.push_back(ss);
+                    this->splits_map_[split_pmap.first] = ss;
+                    if (this->trivial_splits_.count(ss->get_split()) < 1) {
+                        this->non_trivial_splits_.push_back(ss);
+                    }
+                }
+            }
+            if (this->target_tree_provided_) {
+                this->target_euclidean_distances_.push_back(
+                        treecomp::euclidean_distance<tree_type>(
+                            this->target_tree_,
+                            tree,
+                            false)
+                        );
+            }
+            this->tree_lengths_.push_back(tree.get_tree_length());
+            ++this->sample_size_;
+            ++this->source_sample_sizes_.back();
+        }
+
     public:
 
         TreeSample() { }
@@ -579,15 +675,24 @@ class TreeSample {
                 unsigned int skip = 0,
                 double ultrametricity_tolerance = 1e-6) {
             this->source_paths_.push_back(path);
-            this->source_num_skipped_.push_back(skip);
-            std::vector<tree_type> trees;
-            get_trees<tree_type>(
-                    path,
-                    ncl_file_format,
-                    trees,
-                    skip,
-                    ultrametricity_tolerance);
-            this->add_trees(trees);
+            std::ifstream in_stream;
+            in_stream.open(path);
+            if (! in_stream.is_open()) {
+                throw EcoevolityParsingError(
+                        "Could not open tree file",
+                        path);
+            }
+            try {
+                this->add_trees(in_stream,
+                        ncl_file_format,
+                        skip,
+                        ultrametricity_tolerance);
+            }
+            catch(...) {
+                std::cerr << "ERROR: Problem parsing tree file path: "
+                        << path << "\n";
+                throw;
+            }
         }
 
         void add_trees(
@@ -596,121 +701,37 @@ class TreeSample {
                 unsigned int skip = 0,
                 double ultrametricity_tolerance = 1e-6) {
             this->source_num_skipped_.push_back(skip);
-            std::vector<tree_type> trees;
-            get_trees<tree_type>(
-                    tree_stream,
-                    ncl_file_format,
-                    trees,
-                    skip,
-                    ultrametricity_tolerance);
-            this->add_trees(trees);
-        }
-
-        void add_trees(
-                const std::vector<tree_type> & trees) {
-            std::set< std::set<Split> > split_set;
-            std::map<std::set<Split>, double> heights;
-            std::map<Split, std::map<std::string, double> > parameters;
-            std::map<std::string, double> parameter_map;
-            std::vector< std::shared_ptr<NodeType> > leaves;
             unsigned int source_index = this->source_sample_sizes_.size();
             this->source_sample_sizes_.push_back(0);
-            for (auto tree : trees) {
-                if ((this->sample_size_ < 1) && (this->leaf_labels_.size() < 1)) {
-                    this->update_splits_and_labels_(tree);
-                }
-                /* else { */
-                /*     this->check_leaf_labels_(tree); */
-                /* } */
-                this->check_leaf_labels_(tree);
 
-                unsigned int tree_index = this->sample_size_;
-                split_set.clear();
-                heights.clear();
-                parameters.clear();
-                tree.store_splits_heights_parameters(
-                        split_set,
-                        heights,
-                        parameters,
-                        false);
-                unsigned int nheights = heights.size();
-                if (this->num_heights_map_.count(nheights) > 0) {
-                    this->num_heights_map_[nheights]->add_sample(
-                            nheights,
-                            tree_index,
-                            source_index);
-                }
-                else {
-                    std::shared_ptr<NumberOfHeightsSamples> nhs = std::make_shared<NumberOfHeightsSamples>();
-                    nhs->add_sample(nheights, tree_index, source_index);
-                    this->num_heights_.push_back(nhs);
-                    this->num_heights_map_[nheights] = nhs;
-                }
-                if (this->topologies_map_.count(split_set) > 0) {
-                    this->topologies_map_[split_set]->add_sample(
-                            heights,
-                            tree_index,
-                            source_index);
-                }
-                else {
-                    std::shared_ptr<TopologySamples> ts = std::make_shared<TopologySamples>();
-                    ts->add_sample(heights, tree_index, source_index);
-                    this->topologies_.push_back(ts);
-                    this->topologies_map_[split_set] = ts;
-                }
-                for (auto splits_height : heights) {
-                    if (this->heights_map_.count(splits_height.first) > 0) {
-                        this->heights_map_[splits_height.first]->add_sample(
-                                splits_height.first,
-                                splits_height.second,
-                                tree_index,
-                                source_index);
-                    }
-                    else {
-                        std::shared_ptr<HeightSamples> hs = std::make_shared<HeightSamples>();
-                        hs->add_sample(
-                                splits_height.first,
-                                splits_height.second,
-                                tree_index,
-                                source_index);
-                        this->heights_.push_back(hs);
-                        this->heights_map_[splits_height.first] = hs;
-                    }
-                }
-                for (auto split_pmap : parameters) {
-                    if (this->splits_map_.count(split_pmap.first) > 0) {
-                        this->splits_map_[split_pmap.first]->add_sample(
-                                split_pmap.first,
-                                split_pmap.second,
-                                tree_index,
-                                source_index);
-                    }
-                    else {
-                        std::shared_ptr<SplitSamples> ss = std::make_shared<SplitSamples>();
-                        ss->add_sample(
-                                split_pmap.first,
-                                split_pmap.second,
-                                tree_index,
-                                source_index);
-                        this->splits_.push_back(ss);
-                        this->splits_map_[split_pmap.first] = ss;
-                        if (this->trivial_splits_.count(ss->get_split()) < 1) {
-                            this->non_trivial_splits_.push_back(ss);
-                        }
-                    }
-                }
-                if (this->target_tree_provided_) {
-                    this->target_euclidean_distances_.push_back(
-                            treecomp::euclidean_distance<tree_type>(
-                                this->target_tree_,
-                                tree,
-                                false)
-                            );
-                }
-                this->tree_lengths_.push_back(tree.get_tree_length());
-                ++this->sample_size_;
-                ++this->source_sample_sizes_.back();
+            MultiFormatReader nexus_reader(-1, NxsReader::WARNINGS_TO_STDERR);
+            try {
+                nexus_reader.ReadStream(tree_stream, ncl_file_format.c_str());
             }
+            catch(...) {
+                nexus_reader.DeleteBlocksFromFactories();
+                throw;
+            }
+            unsigned int num_taxa_blocks = nexus_reader.GetNumTaxaBlocks();
+            ECOEVOLITY_ASSERT(num_taxa_blocks == 1);
+            NxsTaxaBlock * taxa_block = nexus_reader.GetTaxaBlock(0);
+
+            unsigned int num_tree_blocks = nexus_reader.GetNumTreesBlocks(taxa_block);
+            ECOEVOLITY_ASSERT(num_tree_blocks == 1);
+
+            NxsTreesBlock * tree_block = nexus_reader.GetTreesBlock(taxa_block, 0);
+            unsigned int num_trees = tree_block->GetNumTrees();
+            ECOEVOLITY_ASSERT(num_trees > 0);
+
+            for (unsigned int i = skip; i < num_trees; ++i) {
+                const NxsFullTreeDescription & tree_description = tree_block->GetFullTreeDescription(i);
+                tree_type t(tree_description,
+                        taxa_block,
+                        ultrametricity_tolerance);
+                this->_add_tree(t, i, source_index);
+            }
+            nexus_reader.DeleteBlocksFromFactories();
+
             unsigned int source_total = 0;
             for (unsigned int n : this->source_sample_sizes_) {
                 source_total += n;
