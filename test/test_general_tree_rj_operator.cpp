@@ -4240,7 +4240,7 @@ TEST_CASE("Testing SplitLumpNodesRevJumpSampler with BasePopulationTree, 5 leave
 }
 
 TEST_CASE("Testing SplitLumpNodesRevJumpSampler with BasePopulationTree, 5 leaves, full model, constrained sizes",
-        "[xBasePopulationTree]") {
+        "[BasePopulationTree]") {
 
     SECTION("Testing 5 leaves with BasePopulationTree, full model, constrained, sizes") {
         RandomNumberGenerator rng = RandomNumberGenerator(6543234056);
@@ -4578,7 +4578,7 @@ TEST_CASE("Testing SplitLumpNodesRevJumpSampler with BasePopulationTree, 5 leave
 }
 
 TEST_CASE("Testing SplitLumpNodesRevJumpSampler with BasePopulationTree, 5 leaves, full model, unconstrained sizes",
-        "[xBasePopulationTree]") {
+        "[BasePopulationTree]") {
 
     SECTION("Testing 5 leaves with BasePopulationTree, full model, unconstrained sizes") {
         RandomNumberGenerator rng = RandomNumberGenerator(8374523);

@@ -2444,7 +2444,7 @@ TEST_CASE("Testing BaseTree::collision_node_permute 6 leaf 4 colliders", "[BaseT
     }
 }
 
-TEST_CASE("Testing BaseTree::collision_node_swap with 3 leaves", "[xBaseTree]") {
+TEST_CASE("Testing BaseTree::collision_node_swap with 3 leaves", "[BaseTree]") {
     SECTION("Testing collision_node_swap") {
         unsigned int nsamples = 100000;
         RandomNumberGenerator rng = RandomNumberGenerator(111);
@@ -2505,7 +2505,7 @@ TEST_CASE("Testing BaseTree::collision_node_swap with 3 leaves", "[xBaseTree]") 
     }
 }
 
-TEST_CASE("Testing BaseTree::collision_node_swap_all with 3 leaves", "[xBaseTree]") {
+TEST_CASE("Testing BaseTree::collision_node_swap_all with 3 leaves", "[BaseTree]") {
     SECTION("Testing collision_node_swap_all") {
         unsigned int nsamples = 100000;
         RandomNumberGenerator rng = RandomNumberGenerator(111);
@@ -2566,7 +2566,7 @@ TEST_CASE("Testing BaseTree::collision_node_swap_all with 3 leaves", "[xBaseTree
     }
 }
 
-TEST_CASE("Testing BaseTree::collision_node_swap 4 leaf polytomy", "[xBaseTree]") {
+TEST_CASE("Testing BaseTree::collision_node_swap 4 leaf polytomy", "[BaseTree]") {
     SECTION("Testing collision_node_swap") {
         unsigned int nsamples = 100000;
         RandomNumberGenerator rng = RandomNumberGenerator(111);
@@ -2641,7 +2641,7 @@ TEST_CASE("Testing BaseTree::collision_node_swap 4 leaf polytomy", "[xBaseTree]"
     }
 }
 
-TEST_CASE("Testing BaseTree::collision_node_swap_all 4 leaf polytomy", "[xBaseTree]") {
+TEST_CASE("Testing BaseTree::collision_node_swap_all 4 leaf polytomy", "[BaseTree]") {
     SECTION("Testing collision_node_swap_all") {
         unsigned int nsamples = 100000;
         RandomNumberGenerator rng = RandomNumberGenerator(111);
@@ -2716,7 +2716,7 @@ TEST_CASE("Testing BaseTree::collision_node_swap_all 4 leaf polytomy", "[xBaseTr
     }
 }
 
-TEST_CASE("Testing BaseTree::collision_node_swap 4 leaf 3 colliders", "[xBaseTree]") {
+TEST_CASE("Testing BaseTree::collision_node_swap 4 leaf 3 colliders", "[BaseTree]") {
     SECTION("Testing collision_node_swap") {
         unsigned int nsamples = 100000;
         RandomNumberGenerator rng = RandomNumberGenerator(111);
@@ -2796,7 +2796,7 @@ TEST_CASE("Testing BaseTree::collision_node_swap 4 leaf 3 colliders", "[xBaseTre
     }
 }
 
-TEST_CASE("Testing BaseTree::collision_node_swap_all 4 leaf 3 colliders", "[xBaseTree]") {
+TEST_CASE("Testing BaseTree::collision_node_swap_all 4 leaf 3 colliders", "[BaseTree]") {
     SECTION("Testing collision_node_swap_all") {
         unsigned int nsamples = 100000;
         RandomNumberGenerator rng = RandomNumberGenerator(111);
@@ -2876,7 +2876,7 @@ TEST_CASE("Testing BaseTree::collision_node_swap_all 4 leaf 3 colliders", "[xBas
     }
 }
 
-TEST_CASE("Testing BaseTree::collision_node_swap 6 leaf 4 colliders", "[xBaseTree]") {
+TEST_CASE("Testing BaseTree::collision_node_swap 6 leaf 4 colliders", "[BaseTree]") {
     SECTION("Testing collision_node_swap") {
         unsigned int nsamples = 100000;
         RandomNumberGenerator rng = RandomNumberGenerator(111);
@@ -3028,7 +3028,7 @@ TEST_CASE("Testing BaseTree::collision_node_swap 6 leaf 4 colliders", "[xBaseTre
     }
 }
 
-TEST_CASE("Testing BaseTree::collision_node_swap_all 6 leaf 4 colliders", "[xBaseTree]") {
+TEST_CASE("Testing BaseTree::collision_node_swap_all 6 leaf 4 colliders", "[BaseTree]") {
     SECTION("Testing collision_node_swap_all") {
         unsigned int nsamples = 100000;
         RandomNumberGenerator rng = RandomNumberGenerator(111);
@@ -3649,7 +3649,7 @@ TEST_CASE("Testing BaseTree::slide_bump_permute_height 9 leaf 4 colliders", "[Ba
     }
 }
 
-TEST_CASE("Testing BaseTree::slide_bump_swap_height 9 leaf 4 colliders", "[xBaseTree]") {
+TEST_CASE("Testing BaseTree::slide_bump_swap_height 9 leaf 4 colliders", "[BaseTree]") {
     SECTION("Testing slide_bump_swap_height") {
         unsigned int nsamples = 200000;
         RandomNumberGenerator rng = RandomNumberGenerator(111);
@@ -4031,7 +4031,7 @@ TEST_CASE("Testing BaseTree::slide_bump_swap_height 9 leaf 4 colliders", "[xBase
     }
 }
 
-TEST_CASE("Testing BaseTree::slide_bump_swap_all_height 9 leaf 4 colliders", "[xBaseTree]") {
+TEST_CASE("Testing BaseTree::slide_bump_swap_all_height 9 leaf 4 colliders", "[BaseTree]") {
     SECTION("Testing slide_bump_swap_all_height") {
         unsigned int nsamples = 200000;
         RandomNumberGenerator rng = RandomNumberGenerator(111);

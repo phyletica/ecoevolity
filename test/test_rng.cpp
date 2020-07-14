@@ -3823,7 +3823,7 @@ TEST_CASE("Testing shuffle with 3 ints", "[RandomNumberGenerator]") {
 }
 
 TEST_CASE("Testing restricted_random_number_of_subsets 3, (1,2)",
-        "[xRandomNumberGenerator]") {
+        "[RandomNumberGenerator]") {
     SECTION("Testing restricted_random_number_of_subsets") {
         unsigned int nsamples = 200000;
         std::map<unsigned int, unsigned int> counts;
@@ -3849,7 +3849,7 @@ TEST_CASE("Testing restricted_random_number_of_subsets 3, (1,2)",
 }
 
 TEST_CASE("Testing restricted_random_number_of_subsets 3, (2,3)",
-        "[xRandomNumberGenerator]") {
+        "[RandomNumberGenerator]") {
     SECTION("Testing restricted_random_number_of_subsets") {
         unsigned int nsamples = 200000;
         std::map<unsigned int, unsigned int> counts;
@@ -3875,7 +3875,7 @@ TEST_CASE("Testing restricted_random_number_of_subsets 3, (2,3)",
 }
 
 TEST_CASE("Testing restricted_random_number_of_subsets 4, (3,2)",
-        "[xRandomNumberGenerator]") {
+        "[RandomNumberGenerator]") {
     SECTION("Testing restricted_random_number_of_subsets") {
         unsigned int nsamples = 200000;
         std::map<unsigned int, unsigned int> counts;
@@ -3901,7 +3901,7 @@ TEST_CASE("Testing restricted_random_number_of_subsets 4, (3,2)",
 }
 
 TEST_CASE("Testing restricted_random_number_of_subsets 4, (3,1)",
-        "[xRandomNumberGenerator]") {
+        "[RandomNumberGenerator]") {
     SECTION("Testing restricted_random_number_of_subsets") {
         unsigned int nsamples = 200000;
         std::map<unsigned int, unsigned int> counts;
@@ -3927,7 +3927,7 @@ TEST_CASE("Testing restricted_random_number_of_subsets 4, (3,1)",
 }
 
 TEST_CASE("Testing restricted_random_set_partition_as_subsets 4, (1,2)",
-        "[xRandomNumberGenerator]") {
+        "[RandomNumberGenerator]") {
     SECTION("Testing restricted_random_number_of_subsets") {
         unsigned int nsamples = 400000;
         std::map<std::vector< std::vector<unsigned int> >, unsigned int> counts;
@@ -3974,7 +3974,7 @@ TEST_CASE("Testing restricted_random_set_partition_as_subsets 4, (1,2)",
 }
 
 TEST_CASE("Testing restricted_random_set_partition_as_subsets 4, (3,2)",
-        "[xRandomNumberGenerator]") {
+        "[RandomNumberGenerator]") {
     SECTION("Testing restricted_random_number_of_subsets") {
         unsigned int nsamples = 500000;
         std::map<std::vector< std::vector<unsigned int> >, unsigned int> counts;

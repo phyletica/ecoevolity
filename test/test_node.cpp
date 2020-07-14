@@ -2857,7 +2857,7 @@ TEST_CASE("Testing Node::is_ancestor", "[Node]") {
     }
 }
 
-TEST_CASE("Testing Node::pre_order", "[xNode]") {
+TEST_CASE("Testing Node::pre_order", "[Node]") {
     SECTION("Testing Node::pre_order") {
         std::shared_ptr<Node> root = std::make_shared<Node>("root", 0.5);
         std::shared_ptr<Node> n1 = std::make_shared<Node>("node1", 0.3);
@@ -2918,7 +2918,7 @@ TEST_CASE("Testing Node::pre_order", "[xNode]") {
     }
 }
 
-TEST_CASE("Testing Node::level_order", "[xNode]") {
+TEST_CASE("Testing Node::level_order", "[Node]") {
     SECTION("Testing Node::level_order") {
         std::shared_ptr<Node> root = std::make_shared<Node>("root", 0.5);
         std::shared_ptr<Node> n1 = std::make_shared<Node>("node1", 0.3);
