@@ -102,6 +102,11 @@ int sumphycoeval_main(int argc, char * argv[]) {
                   "standard deviation of split frequencies among MCMC "
                   "samples. Default: 0.1. This is only used if more than "
                   "one tree log file is provided.");
+    parser.add_option("-n", "--newick-target")
+            .action("store_true")
+            .dest("newick_target_tree")
+            .help("The target tree is in newick format. By default, the target "
+                  "tree must be in nexus format.");
     parser.add_option("-f", "--force")
             .action("store_true")
             .dest("force")
@@ -178,6 +183,11 @@ int sumphycoeval_main(int argc, char * argv[]) {
         }
     }
 
+    std::string target_tree_format = "nexus";
+    if (options.get("newick_target_tree")) {
+        target_tree_format = "relaxedphyliptree";
+    }
+
     const bool use_median_heights = options.get("use_median_heights");
     const double min_split_freq = options.get("min_split_freq");
     if ((min_split_freq < 0.0) || (min_split_freq >=1.0)) {
@@ -218,6 +228,7 @@ int sumphycoeval_main(int argc, char * argv[]) {
         tree_sample = treesum::TreeSample<PopulationNode>(
                 target_tree_path,
                 log_paths,
+                target_tree_format,
                 "nexus",
                 burnin);
     }

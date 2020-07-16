@@ -659,10 +659,11 @@ class TreeSample {
         TreeSample(
                 const std::string & target_tree_path,
                 const std::vector<std::string> & paths,
+                const std::string & target_ncl_file_format,
                 const std::string & ncl_file_format,
                 unsigned int skip = 0,
                 double ultrametricity_tolerance = 1e-6) {
-            this->set_target_tree(target_tree_path, ncl_file_format);
+            this->set_target_tree(target_tree_path, target_ncl_file_format);
             for (auto path : paths) {
                 this->add_trees(path, ncl_file_format, skip,
                         ultrametricity_tolerance);

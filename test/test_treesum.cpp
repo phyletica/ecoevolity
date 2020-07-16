@@ -50,6 +50,7 @@ TEST_CASE("Bad label in source tree", "[treesum]") {
                         target_tree_path,
                         source_tree_paths,
                         "nexus",
+                        "nexus",
                         0),
                 EcoevolityError &);
     }
@@ -92,6 +93,7 @@ TEST_CASE("Extra label in source tree", "[treesum]") {
                 treesum::TreeSample<PopulationNode>(
                         target_tree_path,
                         source_tree_paths,
+                        "nexus",
                         "nexus",
                         0),
                 EcoevolityError &);
@@ -137,6 +139,7 @@ TEST_CASE("Missing label in source tree", "[treesum]") {
                         target_tree_path,
                         source_tree_paths,
                         "nexus",
+                        "nexus",
                         0),
                 EcoevolityError &);
     }
@@ -180,6 +183,7 @@ TEST_CASE("Bad label in target tree", "[treesum]") {
                 treesum::TreeSample<PopulationNode>(
                         target_tree_path,
                         source_tree_paths,
+                        "nexus",
                         "nexus",
                         0),
                 EcoevolityError &);
@@ -225,6 +229,7 @@ TEST_CASE("Extra label in target tree", "[treesum]") {
                         target_tree_path,
                         source_tree_paths,
                         "nexus",
+                        "nexus",
                         0),
                 EcoevolityError &);
     }
@@ -268,6 +273,7 @@ TEST_CASE("Missing label in target tree", "[treesum]") {
                 treesum::TreeSample<PopulationNode>(
                         target_tree_path,
                         source_tree_paths,
+                        "nexus",
                         "nexus",
                         0),
                 EcoevolityError &);
@@ -327,6 +333,7 @@ TEST_CASE("Basic testing", "[treesum]") {
         treesum::TreeSample<PopulationNode> ts(
                 target_tree_path,
                 source_tree_paths,
+                "nexus",
                 "nexus",
                 2);
         REQUIRE(ts.get_number_of_leaves() == 4);
@@ -1183,6 +1190,7 @@ TEST_CASE("Basic testing", "[treesum]") {
         treesum::TreeSample<PopulationNode> ts2(
                 target_tree_path,
                 source_tree_paths,
+                "nexus",
                 "nexus",
                 1);
         REQUIRE(ts2.get_number_of_leaves() == 4);

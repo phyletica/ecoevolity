@@ -187,6 +187,7 @@ TEST_CASE("Testing working example", "[sumphycoeval]") {
                 target_tree_path,
                 source_tree_paths,
                 "nexus",
+                "nexus",
                 2);
         std::stringstream expected_target_stream;
         std::stringstream expected_map_stream;
