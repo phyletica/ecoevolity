@@ -430,12 +430,31 @@ class TreeSample {
                 const std::string & margin = "",
                 const unsigned int precision = 12) const {
             out.precision(precision);
-            SampleSummary<T> summary(values);
-            double ess = effective_sample_size<T>(values, true);
             std::string p_name = parameter_name;
             if (parameter_name != "") {
                 p_name += "_";
             }
+            if (values.size() < 1) {
+                double nan = std::numeric_limits<double>::quiet_NaN();
+                out << margin << p_name << "n: " << 0 << "\n"
+                    << margin << p_name << "ess: " << 0 << "\n"
+                    << margin << p_name << "mean: " << nan << "\n"
+                    << margin << p_name << "median: " << nan << "\n"
+                    << margin << p_name << "std_dev: " << nan << "\n"
+                    << margin << p_name << "range: ["
+                                        << nan << ", "
+                                        << nan << "]\n"
+                    << margin << p_name << "eti_95: ["
+                                        << nan << ", "
+                                        << nan << "]\n"
+                    << margin << p_name << "hpdi_95: ["
+                                        << nan << ", "
+                                        << nan << "]"
+                    << std::endl;
+                return;
+            }
+            SampleSummary<T> summary(values);
+            double ess = effective_sample_size<T>(values, true);
             out << margin << p_name << "n: " << summary.sample_size() << "\n"
                 << margin << p_name << "ess: " << ess << "\n"
                 << margin << p_name << "mean: " << summary.mean() << "\n"
@@ -1095,6 +1114,21 @@ class TreeSample {
             }
             out << margin << "count: " << this->get_split_count(split) << "\n"
                 << margin << "frequency: " << this->get_split_frequency(split) << "\n";
+            if (this->splits_map_.count(split) < 1) {
+                // This split was not sampled (this can happen for target
+                // tree), so we can't call get_split on this split, and we need
+                // to feed _write_summary_of_values empty vectors of values
+                std::vector<double> empty_values;
+                for (auto param_vals : this->get_split(this->leaf_splits_.at(0))->get_parameter_map()) {
+                    this->_write_summary_of_values<double>(
+                            empty_values,
+                            out,
+                            param_vals.first,
+                            margin,
+                            precision);
+                }
+                return;
+            }
             for (auto param_vals : this->get_split(split)->get_parameter_map()) {
                 this->_write_summary_of_values<double>(
                         param_vals.second,
@@ -1145,6 +1179,19 @@ class TreeSample {
             }
             out << margin << "count: " << this->get_height_count(split_set) << "\n"
                 << margin << "frequency: " << this->get_height_frequency(split_set) << "\n";
+            if (this->heights_map_.count(split_set) < 1) {
+                // This height was not sampled (this can happen for target
+                // tree), so we can't call get_height, and we need to feed
+                // _write_summary_of_values an empty vector of values
+                std::vector<double> empty_heights;
+                this->_write_summary_of_values<double>(
+                        empty_heights,
+                        out,
+                        "",
+                        margin,
+                        precision);
+                return;
+            }
             this->_write_summary_of_values<double>(
                     this->get_height(split_set)->get_heights(),
                     out,
