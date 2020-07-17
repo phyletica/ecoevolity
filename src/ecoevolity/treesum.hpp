@@ -1693,7 +1693,8 @@ class TreeSample {
                 out << "summary_of_split_freq_std_deviations:\n"
                     << indent << "min_frequency: " << min_freq_for_asdsf << "\n"
                     << indent << "n: " << sdsf_summary.sample_size() << "\n"
-                    << indent << "mean: " << sdsf_summary.mean() << "\n";
+                    << indent << "mean: " << sdsf_summary.mean() << "\n"
+                    << indent << "max: " << sdsf_summary.max() << "\n";
             }
             this->write_summary_of_tree_lengths(out, margin, precision);
             out << "summary_of_map_topologies:\n";
