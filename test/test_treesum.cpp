@@ -1072,6 +1072,18 @@ TEST_CASE("Basic testing", "[treesum]") {
               << "      cumulative_frequency: 1\n";
         REQUIRE(nohs.str() == enohs.str());
 
+        std::stringstream soll;
+        ts.write_summary_of_leaf_labels(
+                soll,
+                "");
+        std::stringstream esoll;
+        esoll << "leaf_label_map:\n"
+              << "    0: sp1\n"
+              << "    1: sp2\n"
+              << "    2: sp3\n"
+              << "    3: sp4\n";
+        REQUIRE(soll.str() == esoll.str());
+
         // ts.write_summary(std::cout,
         //         false, // use_median_heights
         //         0.1,   // min_freq_for_asdsf
@@ -1091,6 +1103,11 @@ TEST_CASE("Basic testing", "[treesum]") {
         catch (...) {
             REQUIRE(0 == 1);
         }
+
+        REQUIRE(summary["leaf_label_map"]["0"].as<std::string>() == "sp1");
+        REQUIRE(summary["leaf_label_map"]["1"].as<std::string>() == "sp2");
+        REQUIRE(summary["leaf_label_map"]["2"].as<std::string>() == "sp3");
+        REQUIRE(summary["leaf_label_map"]["3"].as<std::string>() == "sp4");
         REQUIRE(summary["clades"]["root"]["count"].as<int>() == 18);
         REQUIRE(summary["clades"]["leaves"][0]["count"].as<int>() == 18);
         REQUIRE(summary["clades"]["leaves"][3]["count"].as<int>() == 18);

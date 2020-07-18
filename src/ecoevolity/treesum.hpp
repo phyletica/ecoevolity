@@ -368,9 +368,9 @@ class TreeSample {
             ECOEVOLITY_ASSERT(nleaves > 0);
             tree.get_leaf_labels(this->leaf_labels_);
             ECOEVOLITY_ASSERT(this->leaf_labels_.size() == nleaves);
-            // Leaf labels are sorted for every tree is parsed by
-            // BaseTree::get_trees.  Sorting here to make sure order is
-            // consistent with sampled trees (parsed by BaseTree)
+            // Leaf labels are sorted for every tree parsed by BaseTree.
+            // Sorting here to make sure order is consistent with sampled trees
+            // (parsed by BaseTree)
             std::sort(std::begin(this->leaf_labels_), std::end(this->leaf_labels_));
             std::set<std::string> leaf_label_set(
                     std::begin(this->leaf_labels_),
@@ -1678,6 +1678,17 @@ class TreeSample {
             return root_node->to_parentheses(precision, true);
         }
 
+        void write_summary_of_leaf_labels(std::ostream & out,
+                const std::string & margin = "") const {
+            std::string indent = string_util::get_indent(1);
+            out << "leaf_label_map:\n";
+            for (unsigned int i = 0; i < this->leaf_splits_.size(); ++i) {
+                std::vector<unsigned int> leaf_indices = this->leaf_splits_.at(i).get_leaf_indices();
+                ECOEVOLITY_ASSERT(leaf_indices.size() == 1);
+                out << indent << leaf_indices.at(0) << ": " << this->leaf_labels_.at(i) << "\n";
+            }
+        }
+
         void write_summary(std::ostream & out,
                 const bool use_median_heights = false,
                 const double min_freq_for_asdsf = 0.1,
@@ -1686,6 +1697,7 @@ class TreeSample {
             std::string indent = string_util::get_indent(1);
             out.precision(precision);
             out << "---\n";
+            this->write_summary_of_leaf_labels(out, margin);
             this->write_summary_of_source_data(out, margin, precision);
             if (this->get_number_of_sources() > 1) {
                 SampleSummarizer<double> sdsf_summary =
