@@ -418,6 +418,44 @@ TEST_CASE("Basic testing", "[treesum]") {
         split_r.set_leaf_bit(2);
         split_r.set_leaf_bit(3);
 
+
+        std::set<Split> root_descendants_12_34;
+        root_descendants_12_34.insert(split_12);
+        root_descendants_12_34.insert(split_34);
+
+        std::set<Split> root_descendants_12_3_4;
+        root_descendants_12_3_4.insert(split_12);
+        root_descendants_12_3_4.insert(split_3);
+        root_descendants_12_3_4.insert(split_4);
+
+        std::set<Split> root_descendants_13_24;
+        root_descendants_13_24.insert(split_13);
+        root_descendants_13_24.insert(split_24);
+
+        std::set<Split> root_descendants_14_23;
+        root_descendants_14_23.insert(split_14);
+        root_descendants_14_23.insert(split_23);
+
+        std::set<Split> root_descendants_1_2_34;
+        root_descendants_1_2_34.insert(split_1);
+        root_descendants_1_2_34.insert(split_2);
+        root_descendants_1_2_34.insert(split_34);
+
+        std::set<Split> root_descendants_1_2_3_4;
+        root_descendants_1_2_3_4.insert(split_1);
+        root_descendants_1_2_3_4.insert(split_2);
+        root_descendants_1_2_3_4.insert(split_3);
+        root_descendants_1_2_3_4.insert(split_4);
+
+        std::set<Split> root_descendants_123_4;
+        root_descendants_123_4.insert(split_123);
+        root_descendants_123_4.insert(split_4);
+
+        std::set<Split> root_descendants_1_234;
+        root_descendants_1_234.insert(split_1);
+        root_descendants_1_234.insert(split_234);
+
+
         std::set<Split> s_12;
         // s_12.insert("1100");
         s_12.insert(split_12);
@@ -489,6 +527,44 @@ TEST_CASE("Basic testing", "[treesum]") {
         std::set< std::set<Split> > t_13_missing;
         t_13_24.insert(s_13);
         t_13_24.insert(s_r);
+
+
+        // Root descendants
+        std::map< std::set<Split>, unsigned int > expected_root_descendants_count_map {
+            {root_descendants_14_23,    4},
+            {root_descendants_12_3_4,   3},
+            {root_descendants_12_34,    2},
+            {root_descendants_13_24,    2},
+            {root_descendants_1_2_34,   2},
+            {root_descendants_1_2_3_4,  2},
+            {root_descendants_123_4,    2},
+            {root_descendants_1_234,    1}
+        };
+        std::vector<unsigned int> expected_root_descendants_counts {
+            4, 3, 2, 2, 2, 2, 2, 1
+        };
+
+        for (auto key_count : expected_root_descendants_count_map) {
+            REQUIRE(ts.get_root_descendant_splits_count(key_count.first) == key_count.second);
+            REQUIRE(ts.get_root_descendant_splits_frequency(key_count.first) == key_count.second / 18.0);
+        }
+
+        std::map< std::set<Split>, unsigned int > root_descendants_count_map;
+        std::vector<unsigned int> root_descendants_counts;
+        for (auto s : ts.get_all_root_descendant_splits()) {
+            REQUIRE(root_descendants_count_map.count(s->get_split_set()) == 0);
+            root_descendants_count_map[s->get_split_set()] = s->get_sample_size();
+            root_descendants_counts.push_back(s->get_sample_size());
+            if (s->get_sample_size() == 4) {
+                REQUIRE(ts.is_a_map_root_descendant_splits(s->get_split_set()));
+            }
+            else{
+                REQUIRE(! ts.is_a_map_root_descendant_splits(s->get_split_set()));
+            }
+        }
+        REQUIRE(root_descendants_counts == expected_root_descendants_counts);
+        REQUIRE(root_descendants_count_map == expected_root_descendants_count_map);
+
 
         // Split counts
         std::map< Split, unsigned int > expected_split_count_map {
@@ -1191,6 +1267,55 @@ TEST_CASE("Basic testing", "[treesum]") {
         REQUIRE(summary["summary_of_tree_sources"]["sources"][6]["path"].as<std::string>() == "data/4-tip-trees-ladder-1234.nex");
         REQUIRE(summary["summary_of_tree_sources"]["sources"][7]["path"].as<std::string>() == "data/4-tip-trees-ladder-4321.nex");
         REQUIRE(summary["summary_of_target_tree"]["is_a_map_topology"].as<bool>() == true);
+
+        REQUIRE(summary["root_relationships"][0]["number_of_descendants"].as<int>() == 2);
+        REQUIRE(summary["root_relationships"][0]["count"].as<int>() == 4);
+        REQUIRE(summary["root_relationships"][0]["frequency"].as<double>() == 0.22);
+        REQUIRE(summary["root_relationships"][0]["cumulative_frequency"].as<double>() == 0.22);
+        REQUIRE(summary["root_relationships"][0]["clades"][0]["leaf_indices"][0].as<int>() == 1);
+        REQUIRE(summary["root_relationships"][0]["clades"][0]["leaf_indices"][1].as<int>() == 2);
+        REQUIRE(summary["root_relationships"][0]["clades"][1]["leaf_indices"][0].as<int>() == 0);
+        REQUIRE(summary["root_relationships"][0]["clades"][1]["leaf_indices"][1].as<int>() == 3);
+
+        REQUIRE(summary["root_relationships"][1]["number_of_descendants"].as<int>() == 3);
+        REQUIRE(summary["root_relationships"][1]["count"].as<int>() == 3);
+        REQUIRE(summary["root_relationships"][1]["frequency"].as<double>() == 0.17);
+        REQUIRE(summary["root_relationships"][1]["cumulative_frequency"].as<double>() == 0.39);
+
+        REQUIRE(summary["root_relationships"][2]["count"].as<int>() == 2);
+        REQUIRE(summary["root_relationships"][2]["frequency"].as<double>() == 0.11);
+        REQUIRE(summary["root_relationships"][2]["cumulative_frequency"].as<double>() == 0.5);
+        REQUIRE(summary["root_relationships"][3]["count"].as<int>() == 2);
+        REQUIRE(summary["root_relationships"][3]["frequency"].as<double>() == 0.11);
+        REQUIRE(summary["root_relationships"][3]["cumulative_frequency"].as<double>() == 0.61);
+        REQUIRE(summary["root_relationships"][4]["count"].as<int>() == 2);
+        REQUIRE(summary["root_relationships"][4]["frequency"].as<double>() == 0.11);
+        REQUIRE(summary["root_relationships"][4]["cumulative_frequency"].as<double>() == 0.72);
+        REQUIRE(summary["root_relationships"][5]["count"].as<int>() == 2);
+        REQUIRE(summary["root_relationships"][5]["frequency"].as<double>() == 0.11);
+        REQUIRE(summary["root_relationships"][5]["cumulative_frequency"].as<double>() == 0.83);
+        REQUIRE(summary["root_relationships"][6]["count"].as<int>() == 2);
+        REQUIRE(summary["root_relationships"][6]["frequency"].as<double>() == 0.11);
+        REQUIRE(summary["root_relationships"][6]["cumulative_frequency"].as<double>() == 0.94);
+
+        REQUIRE(summary["root_relationships"][7]["number_of_descendants"].as<int>() == 2);
+        REQUIRE(summary["root_relationships"][7]["count"].as<int>() == 1);
+        REQUIRE(summary["root_relationships"][7]["frequency"].as<double>() == 0.056);
+        REQUIRE(summary["root_relationships"][7]["cumulative_frequency"].as<double>() == 1.0);
+        REQUIRE(summary["root_relationships"][7]["clades"][0]["leaf_indices"][0].as<int>() == 0);
+        REQUIRE(summary["root_relationships"][7]["clades"][1]["leaf_indices"][0].as<int>() == 1);
+        REQUIRE(summary["root_relationships"][7]["clades"][1]["leaf_indices"][1].as<int>() == 2);
+        REQUIRE(summary["root_relationships"][7]["clades"][1]["leaf_indices"][2].as<int>() == 3);
+
+        REQUIRE(summary["summary_of_target_tree"]["root_relationships"]["is_a_map_root"].as<bool>() == true);
+        REQUIRE(summary["summary_of_target_tree"]["root_relationships"]["number_of_descendants"].as<int>() == 2);
+        REQUIRE(summary["summary_of_target_tree"]["root_relationships"]["count"].as<int>() == 4);
+        REQUIRE(summary["summary_of_target_tree"]["root_relationships"]["frequency"].as<double>() == 0.22);
+        REQUIRE(summary["summary_of_target_tree"]["root_relationships"]["credibility_level"].as<double>() == 1.0);
+        REQUIRE(summary["summary_of_target_tree"]["root_relationships"]["clades"][0]["leaf_indices"][0].as<int>() == 1);
+        REQUIRE(summary["summary_of_target_tree"]["root_relationships"]["clades"][0]["leaf_indices"][1].as<int>() == 2);
+        REQUIRE(summary["summary_of_target_tree"]["root_relationships"]["clades"][1]["leaf_indices"][0].as<int>() == 0);
+        REQUIRE(summary["summary_of_target_tree"]["root_relationships"]["clades"][1]["leaf_indices"][1].as<int>() == 3);
 
         // ts.write_map_trees_to_nexus(std::cout);
         // ts.write_target_tree_to_nexus(std::cout);
