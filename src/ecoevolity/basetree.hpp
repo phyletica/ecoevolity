@@ -2215,9 +2215,9 @@ class BaseTree {
 
         void store_splits_heights_parameters(
                 std::set< std::set<Split> > & split_set,
-                std::set< Split > & root_descendent_split_set,
                 std::map<std::set<Split>, double> & heights,
-                std::map<Split, std::map<std::string, double> > & parameters,
+                std::map<Split, std::map<std::string, double> > & split_parameters,
+                std::map<std::set<Split>, std::map<std::string, double> > & node_parameters,
                 const bool resize_splits = false) const {
             std::map< unsigned int, std::set<Split> > split_map;
             if (resize_splits) {
@@ -2226,22 +2226,25 @@ class BaseTree {
             for (auto node = this->pre_ordered_nodes_.rbegin();
                     node != this->pre_ordered_nodes_.rend();
                     ++node) {
+                std::map<std::string, double> parameter_map;
+                (*node)->get_parameter_map(parameter_map);
                 if (! (*node)->is_leaf()) {
                     // add this internal node's split to split set
                     unsigned int height_idx = this->get_node_height_index((*node)->get_height_parameter());
+                    // Store this node's descendant relationships
                     split_map[height_idx].insert((*node)->split_);
+                    std::set<Split> node_split_set;
+                    for (auto child : (*node)->get_children()) {
+                        node_split_set.insert(child->split_);
+                    }
+                    node_parameters[node_split_set] = parameter_map;
                 }
                 else {
                     // Set bit for this leaf node's index
                     (*node)->split_.set_leaf_bit((*node)->get_index());
                 }
-                std::map<std::string, double> parameter_map;
-                (*node)->get_parameter_map(parameter_map);
-                parameters[(*node)->split_] = parameter_map;
+                split_parameters[(*node)->split_] = parameter_map;
                 if ((*node)->has_parent()) {
-                    if ((*node)->get_parent()->is_root()) {
-                        root_descendent_split_set.insert((*node)->split_);
-                    }
                     (*node)->get_parent()->split_.add_split((*node)->split_);
                 }
             }
