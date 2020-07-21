@@ -14,6 +14,7 @@ TEST_CASE("Testing 2 leaves", "[split]") {
         std::vector<unsigned int> expected_leaf_indices = {0};
         REQUIRE(s10.get_leaf_indices() == expected_leaf_indices);
         REQUIRE(s10.get_leaf_node_count() == 1);
+        REQUIRE(! s10.is_empty());
 
         Split s01;
         s01.resize(2);
@@ -24,6 +25,7 @@ TEST_CASE("Testing 2 leaves", "[split]") {
         expected_leaf_indices = {1};
         REQUIRE(s01.get_leaf_indices() == expected_leaf_indices);
         REQUIRE(s01.get_leaf_node_count() == 1);
+        REQUIRE(! s01.is_empty());
 
         Split s00;
         s00.resize(2);
@@ -33,6 +35,7 @@ TEST_CASE("Testing 2 leaves", "[split]") {
         expected_leaf_indices = {};
         REQUIRE(s00.get_leaf_indices() == expected_leaf_indices);
         REQUIRE(s00.get_leaf_node_count() == 0);
+        REQUIRE(s00.is_empty());
 
         Split s11;
         s11.resize(2);
@@ -44,6 +47,7 @@ TEST_CASE("Testing 2 leaves", "[split]") {
         expected_leaf_indices = {0, 1};
         REQUIRE(s11.get_leaf_indices() == expected_leaf_indices);
         REQUIRE(s11.get_leaf_node_count() == 2);
+        REQUIRE(! s11.is_empty());
 
 
         REQUIRE(s10 != s01);
@@ -209,6 +213,7 @@ TEST_CASE("Testing 5 leaves", "[split]") {
         std::vector<unsigned int> expected_leaf_indices = {0, 2};
         REQUIRE(s10100.get_leaf_indices() == expected_leaf_indices);
         REQUIRE(s10100.get_leaf_node_count() == 2);
+        REQUIRE(! s10100.is_empty());
 
         Split s01010;
         s01010.resize(5);
@@ -218,6 +223,7 @@ TEST_CASE("Testing 5 leaves", "[split]") {
         expected_leaf_indices = {1, 3};
         REQUIRE(s01010.get_leaf_indices() == expected_leaf_indices);
         REQUIRE(s01010.get_leaf_node_count() == 2);
+        REQUIRE(! s01010.is_empty());
 
         REQUIRE(! (s10100 == s01010));
         REQUIRE(s10100 != s01010);
@@ -276,6 +282,9 @@ TEST_CASE("Testing 5 leaves", "[split]") {
         REQUIRE(! s11000.is_equivalent(s01011, true));
         REQUIRE(! s11000.is_compatible(s01011));
         REQUIRE(s11000.conflicts_with(s01011));
+
+        s11000.clear();
+        REQUIRE(s11000.is_empty());
     }
 }
 
@@ -284,8 +293,11 @@ TEST_CASE("Testing 100000 leaves", "[split]") {
         unsigned int nleaves = 100000;
         Split s;
         s.resize(nleaves);
+        REQUIRE(s.is_empty());
         s.set_leaf_bit(0);
+        REQUIRE(! s.is_empty());
         s.set_leaf_bit(nleaves - 1);
+        REQUIRE(! s.is_empty());
 
         std::ostringstream expected;
         expected << "1";
@@ -294,8 +306,368 @@ TEST_CASE("Testing 100000 leaves", "[split]") {
         }
         expected << "1";
         REQUIRE(s.as_string() == expected.str());
+
+        s.clear();
+        REQUIRE(s.is_empty());
     }
 }
+
+TEST_CASE("Testing is_parent_of", "[split]") {
+    SECTION("Testing is_parent_of") {
+        std::set<Split> splits;
+        Split s00000;
+        s00000.resize(5);
+
+        Split s11000;
+        s11000.resize(5);
+        s11000.set_leaf_bit(0);
+        s11000.set_leaf_bit(1);
+        Split s00101;
+        s00101.resize(5);
+        s00101.set_leaf_bit(2);
+        s00101.set_leaf_bit(4);
+        Split s11101;
+        s11101.resize(5);
+        s11101.set_leaf_bit(0);
+        s11101.set_leaf_bit(1);
+        s11101.set_leaf_bit(2);
+        s11101.set_leaf_bit(4);
+
+        splits = {
+            s11000,
+            s00101};
+        REQUIRE(s11101.is_parent_of(splits));
+        splits = {
+                  s11101,
+                  s11000};
+        REQUIRE(! s11101.is_parent_of(splits));
+        splits = {
+                  s11101,
+                  s00101};
+        REQUIRE(! s11000.is_parent_of(splits));
+
+        Split s10000;
+        s10000.resize(5);
+        s10000.set_leaf_bit(0);
+        Split s01000;
+        s01000.resize(5);
+        s01000.set_leaf_bit(1);
+        Split s00100;
+        s00100.resize(5);
+        s00100.set_leaf_bit(2);
+        Split s00010;
+        s00010.resize(5);
+        s00010.set_leaf_bit(3);
+        Split s00001;
+        s00001.resize(5);
+        s00001.set_leaf_bit(4);
+
+        splits = {
+                s10000,
+                s01000};
+        REQUIRE(s11000.is_parent_of(splits));
+        splits = {
+                s00100,
+                s00001};
+        REQUIRE(s00101.is_parent_of(splits));
+        splits = {
+                s10000,
+                s01000,
+                s00100,
+                s00001};
+        REQUIRE(s11101.is_parent_of(splits));
+        // Can't have empty split
+        splits = {
+                  s00000,
+                  s10000,
+                  s01000,
+                  s00100,
+                  s00001};
+        REQUIRE(! s11101.is_parent_of(splits));
+        // Can't have overlap
+        splits = {
+                  s10000,
+                  s11000,
+                  s01000,
+                  s00100,
+                  s00001};
+        REQUIRE(! s11101.is_parent_of(splits));
+
+        Split s01101;
+        s01101.resize(5);
+        s01101.set_leaf_bit(1);
+        s01101.set_leaf_bit(2);
+        s01101.set_leaf_bit(4);
+        // Can't have overlap
+        splits = {
+                  s11000,
+                  s01101};
+        REQUIRE(! s11101.is_parent_of(splits));
+        // Can't miss elements
+        splits = {
+                  s10000,
+                  s00101};
+        REQUIRE(! s11101.is_parent_of(splits));
+        splits = {
+                s10000,
+                s01000,
+                s00101};
+        REQUIRE(s11101.is_parent_of(splits));
+    }
+}
+
+TEST_CASE("Testing get_parent_of", "[split]") {
+    SECTION("Testing get_parent_of") {
+        std::set<Split> splits;
+
+        Split s00000;
+        s00000.resize(5);
+
+        Split s11000;
+        s11000.resize(5);
+        s11000.set_leaf_bit(0);
+        s11000.set_leaf_bit(1);
+        Split s00101;
+        s00101.resize(5);
+        s00101.set_leaf_bit(2);
+        s00101.set_leaf_bit(4);
+        Split s11101;
+        s11101.resize(5);
+        s11101.set_leaf_bit(0);
+        s11101.set_leaf_bit(1);
+        s11101.set_leaf_bit(2);
+        s11101.set_leaf_bit(4);
+
+        splits = {
+                s11000,
+                s00101};
+        REQUIRE(s11101 == Split::get_parent_of(splits));
+        splits = {
+                  s11101,
+                  s11000};
+        REQUIRE_THROWS_AS(Split::get_parent_of(splits),
+                  EcoevolityError &);
+        splits = {
+                  s11101,
+                  s00101};
+        REQUIRE_THROWS_AS(Split::get_parent_of(splits),
+                  EcoevolityError &);
+
+        Split s10000;
+        s10000.resize(5);
+        s10000.set_leaf_bit(0);
+        Split s01000;
+        s01000.resize(5);
+        s01000.set_leaf_bit(1);
+        Split s00100;
+        s00100.resize(5);
+        s00100.set_leaf_bit(2);
+        Split s00010;
+        s00010.resize(5);
+        s00010.set_leaf_bit(3);
+        Split s00001;
+        s00001.resize(5);
+        s00001.set_leaf_bit(4);
+
+        splits = {
+                s10000,
+                s01000};
+        REQUIRE(s11000 == Split::get_parent_of(splits));
+        splits = {
+                s00100,
+                s00001};
+        REQUIRE(s00101 == Split::get_parent_of(splits));
+        splits = {
+                s10000,
+                s01000,
+                s00100,
+                s00001};
+        REQUIRE(s11101 == Split::get_parent_of(splits));
+        // Can't have overlap
+        splits = {
+                  s10000,
+                  s11000,
+                  s01000,
+                  s00100,
+                  s00001};
+        REQUIRE_THROWS_AS(Split::get_parent_of(splits),
+                  EcoevolityError &);
+
+        Split s01101;
+        s01101.resize(5);
+        s01101.set_leaf_bit(1);
+        s01101.set_leaf_bit(2);
+        s01101.set_leaf_bit(4);
+        // Can't have overlap
+        splits = {
+                  s11000,
+                  s01101};
+        REQUIRE_THROWS_AS(Split::get_parent_of(splits),
+                  EcoevolityError &);
+        // Can't miss elements
+        splits = {
+                  s10000,
+                  s00101};
+        REQUIRE(s11101 != Split::get_parent_of(splits));
+        splits = {
+                s10000,
+                s01000,
+                s00101};
+        REQUIRE(s11101 == Split::get_parent_of(splits));
+        Split s10101;
+        s10101.resize(5);
+        s10101.set_leaf_bit(0);
+        s10101.set_leaf_bit(2);
+        s10101.set_leaf_bit(4);
+        splits = {
+                  s10000,
+                  s00101};
+        REQUIRE(s10101 == Split::get_parent_of(splits));
+    }
+}
+
+TEST_CASE("Testing overlaps_with", "[split]") {
+    SECTION("Testing overlaps_with") {
+        Split s11000;
+        s11000.resize(5);
+        s11000.set_leaf_bit(0);
+        s11000.set_leaf_bit(1);
+        Split s00101;
+        s00101.resize(5);
+        s00101.set_leaf_bit(2);
+        s00101.set_leaf_bit(4);
+        Split s01001;
+        s01001.resize(5);
+        s01001.set_leaf_bit(1);
+        s01001.set_leaf_bit(4);
+
+        REQUIRE(s11000.overlaps_with(s11000));
+        REQUIRE(! s11000.overlaps_with(s00101));
+        REQUIRE(s11000.overlaps_with(s01001));
+
+        REQUIRE(! s00101.overlaps_with(s11000));
+        REQUIRE(s00101.overlaps_with(s00101));
+        REQUIRE(s00101.overlaps_with(s01001));
+
+        REQUIRE(s01001.overlaps_with(s11000));
+        REQUIRE(s01001.overlaps_with(s00101));
+        REQUIRE(s01001.overlaps_with(s01001));
+    }
+}
+
+TEST_CASE("Testing can_be_siblings", "[split]") {
+    SECTION("Testing can_be_siblings") {
+        std::set<Split> splits;
+
+        Split s00000;
+        s00000.resize(5);
+
+        Split s11000;
+        s11000.resize(5);
+        s11000.set_leaf_bit(0);
+        s11000.set_leaf_bit(1);
+        Split s00101;
+        s00101.resize(5);
+        s00101.set_leaf_bit(2);
+        s00101.set_leaf_bit(4);
+        Split s11101;
+        s11101.resize(5);
+        s11101.set_leaf_bit(0);
+        s11101.set_leaf_bit(1);
+        s11101.set_leaf_bit(2);
+        s11101.set_leaf_bit(4);
+
+        splits = {
+                s11000,
+                s00101};
+        REQUIRE(Split::can_be_siblings(splits));
+        splits = {
+                  s11101,
+                  s11000};
+        REQUIRE(! Split::can_be_siblings(splits));
+        splits = {
+                  s11101,
+                  s00101};
+        REQUIRE(! Split::can_be_siblings(splits));
+
+        Split s10000;
+        s10000.resize(5);
+        s10000.set_leaf_bit(0);
+        Split s01000;
+        s01000.resize(5);
+        s01000.set_leaf_bit(1);
+        Split s00100;
+        s00100.resize(5);
+        s00100.set_leaf_bit(2);
+        Split s00010;
+        s00010.resize(5);
+        s00010.set_leaf_bit(3);
+        Split s00001;
+        s00001.resize(5);
+        s00001.set_leaf_bit(4);
+
+        splits = {
+                s10000,
+                s01000};
+        REQUIRE(Split::can_be_siblings(splits));
+        splits = {
+                s00100,
+                s00001};
+        REQUIRE(Split::can_be_siblings(splits));
+        splits = {
+                s10000,
+                s01000,
+                s00100,
+                s00001};
+        REQUIRE(Split::can_be_siblings(splits));
+        // Can't have empty split 
+        splits = {
+                  s00000,
+                  s10000,
+                  s01000,
+                  s00100,
+                  s00001};
+        REQUIRE(! Split::can_be_siblings(splits));
+        // Can't have overlap
+        splits = {
+                  s10000,
+                  s11000,
+                  s01000,
+                  s00100,
+                  s00001};
+        REQUIRE(! Split::can_be_siblings(splits));
+
+        Split s01101;
+        s01101.resize(5);
+        s01101.set_leaf_bit(1);
+        s01101.set_leaf_bit(2);
+        s01101.set_leaf_bit(4);
+        // Can't have overlap
+        splits = {
+                  s11000,
+                  s01101};
+        REQUIRE(! Split::can_be_siblings(splits));
+        splits = {
+                  s10000,
+                  s00101};
+        REQUIRE(Split::can_be_siblings(splits));
+        splits = {
+                s10000,
+                s01000,
+                s00101};
+        REQUIRE(Split::can_be_siblings(splits));
+        Split s10101;
+        s11101.resize(5);
+        s11101.set_leaf_bit(0);
+        s11101.set_leaf_bit(2);
+        s11101.set_leaf_bit(4);
+        splits = {
+                  s10000,
+                  s00101};
+        REQUIRE(Split::can_be_siblings(splits));
+    }
+}
+
 
 TEST_CASE("Testing tree with 5 leaves", "[split]") {
     SECTION("Testing tree with 5 leaves") {

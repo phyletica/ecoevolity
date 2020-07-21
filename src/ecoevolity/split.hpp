@@ -27,6 +27,8 @@
 #include <climits>
 #include <cassert>
 
+#include "error.hpp"
+
 
 /**
  * Object for storing set of taxa that descend from a node.
@@ -55,7 +57,9 @@ class Split {
         bool operator!=(const Split & other) const;
         bool operator<(const Split & other) const;
 
+
         void clear();
+        inline bool is_empty() const;
         unsigned int size() const;
         void resize(unsigned int number_of_leaves);
 
@@ -83,6 +87,8 @@ class Split {
         bool conflicts_with(const Split & other) const;
         bool is_proper_subset_of(const Split & other) const;
         bool is_proper_superset_of(const Split & other) const;
+        inline bool overlaps_with(const Split & other) const;
+        inline bool is_parent_of(const std::set<Split> & split_set) const;
 
         std::string as_string(const char unset_char = '0',
                 const char set_char = '1') const;
@@ -93,6 +99,54 @@ class Split {
         split_t       bits_;
         unsigned int  bits_per_unit_;
         unsigned int  number_of_leaves_;
+
+    public:
+        static Split get_parent_of(std::set<Split> splits) {
+            assert(splits.size() > 1);
+            Split parent_split;
+            bool parent_split_resized = false;
+            for (auto s : splits) {
+                assert(! s.is_empty());
+                if (! parent_split_resized) {
+                    parent_split.resize(s.size());
+                    parent_split_resized = true;
+                }
+                else {
+                    assert(parent_split.size() == s.size());
+                }
+                if (parent_split.overlaps_with(s)) {
+                    throw EcoevolityError(
+                            "Overlapping splits passed to Split::get_parent_of");
+                }
+                parent_split.add_split(s);
+            }
+            return parent_split;
+        }
+
+        static bool can_be_siblings(std::set<Split> splits) {
+            assert(splits.size() > 1);
+            Split parent_split;
+            bool parent_split_resized = false;
+            for (auto s : splits) {
+                if (s.is_empty()) {
+                    return false;
+                }
+                if (! parent_split_resized) {
+                    parent_split.resize(s.size());
+                    parent_split_resized = true;
+                }
+                else {
+                    if (parent_split.size() != s.size()) {
+                        return false;
+                    }
+                }
+                if (parent_split.overlaps_with(s)) {
+                    return false;
+                }
+                parent_split.add_split(s);
+            }
+            return true;
+        }
 };
 
 inline Split::Split() {
@@ -117,6 +171,15 @@ inline void Split::clear() {
     }
 }
 
+inline bool Split::is_empty() const {
+    for (auto & split_u : this->bits_) {
+        if (split_u != 0) {
+            return false;
+        }
+    }
+    return true;
+}
+
 inline Split & Split::operator=(const Split & other) {
     this->mask_ = other.mask_;
     this->number_of_leaves_ = other.number_of_leaves_;
@@ -134,7 +197,7 @@ inline bool Split::operator!=(const Split & other) const {
 }
 
 inline bool Split::operator<(const Split & other) const {
-    assert(this->bits_.size() == other.bits_.size());
+    assert(this->size() == other.size());
     return (this->bits_ < other.bits_);
 }
 
@@ -180,6 +243,7 @@ inline bool Split::get_leaf_bit(const unsigned leaf_index) const {
 }
 
 inline void Split::add_split(const Split & other) {
+    assert(this->size() == other.size());
     unsigned nunits = (unsigned int)this->bits_.size();
     assert(nunits == other.bits_.size());
     for (unsigned int i = 0; i < nunits; ++i) {
@@ -237,6 +301,9 @@ inline std::string Split::as_string(
 
 inline bool Split::is_equivalent(const Split & other,
         const bool strict_root) const {
+    if (this->size() != other.size()) {
+        return false;
+    }
     if (strict_root) {
         return (this->bits_ == other.bits_);
     }
@@ -283,6 +350,7 @@ inline bool Split::is_equivalent(const Split & other,
 }
 
 inline bool Split::is_compatible(const Split & other) const {
+    assert(this->size() == other.size());
     for (unsigned int i = 0; i < this->bits_.size(); ++i) {
         split_unit_t a = this->bits_.at(i);
         split_unit_t b = other.bits_.at(i);
@@ -302,6 +370,7 @@ inline bool Split::conflicts_with(const Split & other) const {
 }
 
 inline bool Split::is_proper_subset_of(const Split & other) const {
+    assert(this->size() == other.size());
     if (this->is_equivalent(other, true)) {
         // Proper excludes equivalent sets
         return false;
@@ -319,6 +388,7 @@ inline bool Split::is_proper_subset_of(const Split & other) const {
 }
 
 inline bool Split::is_proper_superset_of(const Split & other) const {
+    assert(this->size() == other.size());
     if (this->is_equivalent(other, true)) {
         // Proper excludes equivalent sets
         return false;
@@ -333,6 +403,42 @@ inline bool Split::is_proper_superset_of(const Split & other) const {
         }
     }
     return true;
+}
+
+inline bool Split::overlaps_with(const Split & other) const {
+    assert(this->size() == other.size());
+    for (unsigned int i = 0; i < this->bits_.size(); ++i) {
+        split_unit_t a = this->bits_.at(i);
+        split_unit_t b = other.bits_.at(i);
+        split_unit_t a_and_b = (a & b);
+        if (a_and_b) {
+            // this does not contain other
+            return true;
+        }
+    }
+    return false;
+}
+
+inline bool Split::is_parent_of(
+        const std::set<Split> & split_set
+        ) const {
+    assert(split_set.size() > 1);
+    Split parent_split;
+    parent_split.resize(this->size());
+    for (auto s : split_set) {
+        assert(this->size() == s.size());
+        if (this->is_equivalent(s, true)) {
+            return false;
+        }
+        if (parent_split.overlaps_with(s)) {
+            return false;
+        }
+        if (s.is_empty()) {
+            return false;
+        }
+        parent_split.add_split(s);
+    }
+    return (this->is_equivalent(parent_split, true));
 }
 
 #endif
