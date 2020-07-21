@@ -72,6 +72,7 @@ class Split {
         void set_leaf_bit(const unsigned int leaf_index);
         void add_split(const Split & other);
 
+        unsigned int get_leaf_node_count() const;
         void get_leaf_indices(
                 std::vector<unsigned int> & leaf_indices) const;
         std::vector<unsigned int> get_leaf_indices() const;
@@ -184,6 +185,16 @@ inline void Split::add_split(const Split & other) {
     for (unsigned int i = 0; i < nunits; ++i) {
         this->bits_.at(i) |= other.bits_.at(i);
     }
+}
+
+inline unsigned int Split::get_leaf_node_count() const {
+    unsigned int count = 0;
+    for (unsigned int i = 0; i < this->size(); ++i) {
+        if (this->get_leaf_bit(i)) {
+            ++count;
+        }
+    }
+    return count;
 }
 
 inline void Split::get_leaf_indices(std::vector<unsigned int> & leaf_indices) const {

@@ -13,6 +13,7 @@ TEST_CASE("Testing 2 leaves", "[split]") {
         REQUIRE(s10.as_string() == "10");
         std::vector<unsigned int> expected_leaf_indices = {0};
         REQUIRE(s10.get_leaf_indices() == expected_leaf_indices);
+        REQUIRE(s10.get_leaf_node_count() == 1);
 
         Split s01;
         s01.resize(2);
@@ -22,6 +23,7 @@ TEST_CASE("Testing 2 leaves", "[split]") {
         REQUIRE(s01.as_string() == "01");
         expected_leaf_indices = {1};
         REQUIRE(s01.get_leaf_indices() == expected_leaf_indices);
+        REQUIRE(s01.get_leaf_node_count() == 1);
 
         Split s00;
         s00.resize(2);
@@ -30,6 +32,7 @@ TEST_CASE("Testing 2 leaves", "[split]") {
         REQUIRE(s00.as_string() == "00");
         expected_leaf_indices = {};
         REQUIRE(s00.get_leaf_indices() == expected_leaf_indices);
+        REQUIRE(s00.get_leaf_node_count() == 0);
 
         Split s11;
         s11.resize(2);
@@ -40,6 +43,8 @@ TEST_CASE("Testing 2 leaves", "[split]") {
         REQUIRE(s11.as_string() == "11");
         expected_leaf_indices = {0, 1};
         REQUIRE(s11.get_leaf_indices() == expected_leaf_indices);
+        REQUIRE(s11.get_leaf_node_count() == 2);
+
 
         REQUIRE(s10 != s01);
         REQUIRE(! (s10 == s01));
@@ -203,6 +208,7 @@ TEST_CASE("Testing 5 leaves", "[split]") {
         REQUIRE(s10100.as_string() == "10100");
         std::vector<unsigned int> expected_leaf_indices = {0, 2};
         REQUIRE(s10100.get_leaf_indices() == expected_leaf_indices);
+        REQUIRE(s10100.get_leaf_node_count() == 2);
 
         Split s01010;
         s01010.resize(5);
@@ -211,6 +217,7 @@ TEST_CASE("Testing 5 leaves", "[split]") {
         REQUIRE(s01010.as_string() == "01010");
         expected_leaf_indices = {1, 3};
         REQUIRE(s01010.get_leaf_indices() == expected_leaf_indices);
+        REQUIRE(s01010.get_leaf_node_count() == 2);
 
         REQUIRE(! (s10100 == s01010));
         REQUIRE(s10100 != s01010);
@@ -227,6 +234,7 @@ TEST_CASE("Testing 5 leaves", "[split]") {
         REQUIRE(s01011.as_string() == "01011");
         expected_leaf_indices = {1, 3, 4};
         REQUIRE(s01011.get_leaf_indices() == expected_leaf_indices);
+        REQUIRE(s01011.get_leaf_node_count() == 3);
 
         REQUIRE(! (s10100 == s01011));
         REQUIRE(s10100 != s01011);
