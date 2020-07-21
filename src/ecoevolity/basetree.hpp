@@ -2234,7 +2234,7 @@ class BaseTree {
                     // Store this node's descendant relationships
                     split_map[height_idx].insert((*node)->split_);
                     std::set<Split> node_split_set;
-                    for (auto child : (*node)->get_children()) {
+                    for (auto child : (*node)->get_all_children()) {
                         node_split_set.insert(child->split_);
                     }
                     node_parameters[node_split_set] = parameter_map;
