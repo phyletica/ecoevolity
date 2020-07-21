@@ -165,6 +165,10 @@ class HeightSamples : public BaseSamples {
                 ECOEVOLITY_ASSERT(set_of_splits == this->split_set_);
             }
             else {
+                if (set_of_splits.size() > 1) {
+                    // Make sure splits are not nested
+                    ECOEVOLITY_ASSERT(Split::can_be_siblings(set_of_splits));
+                }
                 this->split_set_ = set_of_splits;
             }
         }
@@ -342,6 +346,8 @@ class NodeSamples : public BaseSamples {
                 ECOEVOLITY_ASSERT(set_of_splits == this->split_set_);
             }
             else {
+                // Make sure splits can be siblings
+                ECOEVOLITY_ASSERT(Split::can_be_siblings(set_of_splits));
                 this->split_set_ = set_of_splits;
             }
         }
@@ -991,6 +997,16 @@ class TreeSample {
             }
             return node_samples;
         }
+        std::set<Split> get_target_node_split_set_of_split(
+                const Split & split
+                ) const {
+            for (auto splitset_params : this->target_node_parameters_) {
+                if (split.is_parent_of(splitset_params.first)) {
+                    return splitset_params.first;
+                }
+            }
+            throw EcoevolityError("Split not in target tree");
+        }
         std::shared_ptr<NumberOfHeightsSamples> get_number_of_heights(
                 const unsigned int number_of_heights
                 ) const {
@@ -1639,6 +1655,17 @@ class TreeSample {
                     << item_margin << param_val.first << "_percentile: "
                     << perc << "\n";
             }
+            std::set<Split> node_split_set = this->get_target_node_split_set_of_split(
+                    this->root_split_);
+            out << item_margin << "node:\n";
+            this->write_summary_of_node(
+                    node_split_set,
+                    out,
+                    item_margin + indent,
+                    precision);
+            out << item_margin << indent << "is_a_map_node: "
+                << this->is_a_map_node(node_split_set) << "\n";
+
             item_margin += "  ";
             out << margin << indent << "leaves:\n";
             for (auto s : this->leaf_splits_) {
@@ -1672,25 +1699,18 @@ class TreeSample {
                         out << item_margin << param_val.first << ": "
                             << param_val.second << "\n";
                     }
-                }
-            }
-            std::string node_margin = margin + indent + "  ";
-            out << margin << "nodes:\n";
-            for (auto splitset_params : this->target_node_parameters_) {
-                // Nodes with only two leaves will be identical to the split
-                // with those leaves, so no need to write the same data again
-                if (this->get_node(splitset_params.first)->get_split().get_leaf_node_count() > 2) {
-                    out << margin << indent << "-\n";
-                    this->write_summary_of_node(
-                            splitset_params.first,
-                            out,
-                            node_margin,
-                            precision);
-                    out << node_margin << "is_a_map_node: "
-                        << this->is_a_map_node(splitset_params.first) << "\n";
-                    for (auto param_val : splitset_params.second) {
-                        out << node_margin << param_val.first << ": "
-                            << param_val.second << "\n";
+
+                    if (split.get_leaf_node_count() > 2) {
+                        node_split_set = this->get_target_node_split_set_of_split(split);
+                        out << item_margin << "node:\n";
+                        std::string node_margin = item_margin + indent;
+                        this->write_summary_of_node(
+                                node_split_set,
+                                out,
+                                node_margin,
+                                precision);
+                        out << node_margin << "is_a_map_node: "
+                            << this->is_a_map_node(node_split_set) << "\n";
                     }
                 }
             }

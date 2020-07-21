@@ -1300,32 +1300,14 @@ TEST_CASE("Basic testing", "[treesum]") {
         REQUIRE(summary["splits"]["root"]["nodes"][7]["descendant_splits"][1]["leaf_indices"][1].as<int>() == 2);
         REQUIRE(summary["splits"]["root"]["nodes"][7]["descendant_splits"][1]["leaf_indices"][2].as<int>() == 3);
 
-        std::set<int> all_leaf_indices;
-        all_leaf_indices.insert(0);
-        all_leaf_indices.insert(1);
-        all_leaf_indices.insert(2);
-        all_leaf_indices.insert(3);
-        bool root_node_checked = false;
-        for (auto n : summary["summary_of_target_tree"]["nodes"]) {
-            std::set<int> node_leaf_indices;
-            for (auto ds : n["descendant_splits"]) {
-                for (auto l : ds["leaf_indices"]) {
-                    node_leaf_indices.insert(l.as<int>());
-                }
-            }
-            if (node_leaf_indices == all_leaf_indices) {
-                REQUIRE(n["is_a_map_node"].as<bool>() == true);
-                REQUIRE(n["number_of_descendants"].as<int>() == 2);
-                REQUIRE(n["count"].as<int>() == 4);
-                REQUIRE(n["frequency"].as<double>() == 0.22);
-                REQUIRE(n["descendant_splits"][0]["leaf_indices"][0].as<int>() == 1);
-                REQUIRE(n["descendant_splits"][0]["leaf_indices"][1].as<int>() == 2);
-                REQUIRE(n["descendant_splits"][1]["leaf_indices"][0].as<int>() == 0);
-                REQUIRE(n["descendant_splits"][1]["leaf_indices"][1].as<int>() == 3);
-                root_node_checked = true;
-            }
-        }
-        REQUIRE(root_node_checked);
+        REQUIRE(summary["summary_of_target_tree"]["splits"]["root"]["node"]["is_a_map_node"].as<bool>() == true);
+        REQUIRE(summary["summary_of_target_tree"]["splits"]["root"]["node"]["number_of_descendants"].as<int>() == 2);
+        REQUIRE(summary["summary_of_target_tree"]["splits"]["root"]["node"]["count"].as<int>() == 4);
+        REQUIRE(summary["summary_of_target_tree"]["splits"]["root"]["node"]["frequency"].as<double>() == 0.22);
+        REQUIRE(summary["summary_of_target_tree"]["splits"]["root"]["node"]["descendant_splits"][0]["leaf_indices"][0].as<int>() == 1);
+        REQUIRE(summary["summary_of_target_tree"]["splits"]["root"]["node"]["descendant_splits"][0]["leaf_indices"][1].as<int>() == 2);
+        REQUIRE(summary["summary_of_target_tree"]["splits"]["root"]["node"]["descendant_splits"][1]["leaf_indices"][0].as<int>() == 0);
+        REQUIRE(summary["summary_of_target_tree"]["splits"]["root"]["node"]["descendant_splits"][1]["leaf_indices"][1].as<int>() == 3);
 
         // ts.write_map_trees_to_nexus(std::cout);
         // ts.write_target_tree_to_nexus(std::cout);
