@@ -300,33 +300,6 @@ class SplitSamples : public BaseSamples {
         }
 };
 
-class RootDescendantSplitsSamples : public BaseSamples {
-    protected:
-        std::set<Split> split_set_;
-
-    public:
-        void add_sample(
-                const std::set<Split> & set_of_splits,
-                unsigned int tree_index,
-                unsigned int source_index) {
-            ECOEVOLITY_ASSERT(set_of_splits.size() > 0);
-            this->set_split_set(set_of_splits);
-            this->tally_sample_(tree_index, source_index);
-        }
-
-        const std::set<Split> & get_split_set() const {
-            return this->split_set_;
-        }
-
-        void set_split_set(const std::set<Split> & set_of_splits) {
-            if ((this->n_ > 0) || (this->split_set_.size() > 0)) {
-                ECOEVOLITY_ASSERT(set_of_splits == this->split_set_);
-            }
-            else {
-                this->split_set_ = set_of_splits;
-            }
-        }
-};
 
 class NodeSamples : public BaseSamples {
     protected:
@@ -349,6 +322,19 @@ class NodeSamples : public BaseSamples {
 
         const std::set<Split> & get_split_set() const {
             return this->split_set_;
+        }
+
+        Split get_split() const {
+            Split ret_split;
+            bool split_resized = false;
+            for (auto split : this->split_set_) {
+                if (! split_resized) {
+                    ret_split.resize(split.size());
+                    split_resized = true;
+                }
+                ret_split.add_split(split);
+            }
+            return ret_split;
         }
 
         void set_split_set(const std::set<Split> & set_of_splits) {
@@ -385,7 +371,7 @@ class TreeSample {
         std::map< std::set< std::set<Split> >, std::shared_ptr<TopologySamples> > topologies_map_;
         std::map< std::set<Split>,             std::shared_ptr<HeightSamples>   > heights_map_;
         std::map< Split,                       std::shared_ptr<SplitSamples>    > splits_map_;
-        std::map< std::set<Split>,             std::shared_ptr<SplitSamples>    > nodes_map_;
+        std::map< std::set<Split>,             std::shared_ptr<NodeSamples>    > nodes_map_;
         std::map< unsigned int,                std::shared_ptr<NumberOfHeightsSamples> > num_heights_map_;
         std::vector<double> tree_lengths_;
         std::vector<std::string> source_paths_;
@@ -994,6 +980,17 @@ class TreeSample {
             }
             return this->nodes_map_.at(split_set);
         }
+        std::vector< std::shared_ptr<NodeSamples> > get_nodes_of_split(
+                const Split & split
+                ) const {
+            std::vector< std::shared_ptr<NodeSamples> > node_samples;
+            for (auto ns : this->nodes_) {
+                if (ns->get_split() == split) {
+                    node_samples.push_back(ns);
+                }
+            }
+            return node_samples;
+        }
         std::shared_ptr<NumberOfHeightsSamples> get_number_of_heights(
                 const unsigned int number_of_heights
                 ) const {
@@ -1161,6 +1158,7 @@ class TreeSample {
             this->write_summary_of_trivial_split(this->root_split_,
                     out,
                     false,
+                    true,
                     item_margin,
                     precision);
             item_margin += "  ";
@@ -1170,6 +1168,7 @@ class TreeSample {
                 this->write_summary_of_trivial_split(s,
                         out,
                         true,
+                        false,
                         item_margin,
                         precision);
             }
@@ -1179,6 +1178,7 @@ class TreeSample {
                 this->write_summary_of_nontrivial_split(split_samples->get_split(),
                         out,
                         true,
+                        true,
                         item_margin,
                         precision);
             }
@@ -1187,12 +1187,14 @@ class TreeSample {
         void write_summary_of_trivial_split(const Split & split,
                 std::ostream & out,
                 const bool include_leaf_indices = true,
+                const bool include_nodes = false,
                 const std::string & margin = "",
                 const unsigned int precision = 12) const {
             if (! this->has_multiple_sources_with_equal_n()) {
                 this->write_summary_of_nontrivial_split(split,
                         out,
                         include_leaf_indices,
+                        include_nodes,
                         margin,
                         precision);
                 return;
@@ -1218,11 +1220,27 @@ class TreeSample {
                         margin,
                         precision);
             }
+            if ((split.get_leaf_node_count() > 2) && include_nodes) {
+                out << margin << "nodes:\n";
+                std::string indent = string_util::get_indent(1);
+                std::string item_margin = margin + indent + "  ";
+                unsigned int cumulative_count = 0;
+                for (auto node_samples : this->get_nodes_of_split(split)) {
+                    out << margin << indent << "-\n";
+                    cumulative_count += this->write_summary_of_node(
+                            node_samples->get_split_set(),
+                            out,
+                            item_margin,
+                            precision);
+                }
+                ECOEVOLITY_ASSERT(cumulative_count == this->get_split_count(split));
+            }
         }
 
         void write_summary_of_nontrivial_split(const Split & split,
                 std::ostream & out,
                 const bool include_leaf_indices = true,
+                const bool include_nodes = false,
                 const std::string & margin = "",
                 const unsigned int precision = 12) const {
             out.precision(precision);
@@ -1259,43 +1277,41 @@ class TreeSample {
                         margin,
                         precision);
             }
-        }
-
-        void write_summary_of_nodes(std::ostream & out,
-                const std::string & margin = "",
-                const unsigned int precision = 12) const {
-            std::string indent = string_util::get_indent(1);
-            out.precision(precision);
-
-            std::string item_margin = margin + indent + "  ";
-
-            out << margin << "nodes:\n";
-            for (auto node_samples : this->get_nodes()) {
-                out << margin << indent << "-\n";
-                this->write_summary_of_nontrivial_split(split_samples->get_split(),
-                        out,
-                        true,
-                        item_margin,
-                        precision);
+            if ((split.get_leaf_node_count() > 2) && include_nodes) {
+                out << margin << "nodes:\n";
+                std::string indent = string_util::get_indent(1);
+                std::string item_margin = margin + indent + "  ";
+                unsigned int cumulative_count = 0;
+                for (auto node_samples : this->get_nodes_of_split(split)) {
+                    out << margin << indent << "-\n";
+                    cumulative_count += this->write_summary_of_node(
+                            node_samples->get_split_set(),
+                            out,
+                            item_margin,
+                            precision);
+                }
+                ECOEVOLITY_ASSERT(cumulative_count == this->get_split_count(split));
             }
         }
 
-        void write_summary_of_node(const std::set<Split> & split_set,
+        unsigned int write_summary_of_node(const std::set<Split> & split_set,
                 std::ostream & out,
                 const std::string & margin = "",
                 const unsigned int precision = 12) const {
             std::string indent = string_util::get_indent(1);
             out.precision(precision);
-            out << margin << "descendant_splits:\n";
+            out << margin << "number_of_descendants: " << split_set.size() << "\n"
+                << margin << "descendant_splits:\n";
             for (auto split : split_set) {
                 std::vector<unsigned int> leaf_indices = split.get_leaf_indices();
-                out << margin << indent << "- leaf_indices: ["
+                out << margin << indent << "- leaf_indices: [" << leaf_indices.at(0);
                 for (unsigned int i = 1; i < leaf_indices.size(); ++i) {
                     out << ", " << leaf_indices.at(i);
                 }
                 out << "]\n";
             }
-            out << margin << "count: " << this->get_node_count(split_set) << "\n"
+            double count = this->get_node_count(split_set);
+            out << margin << "count: " << count << "\n"
                 << margin << "frequency: " << this->get_node_frequency(split_set) << "\n";
             if (this->nodes_map_.count(split_set) < 1) {
                 // This node was not sampled (this can happen for target tree),
@@ -1310,7 +1326,7 @@ class TreeSample {
                             margin,
                             precision);
                 }
-                return;
+                return count;
             }
             for (auto param_vals : this->get_node(split_set)->get_parameter_map()) {
                 this->_write_summary_of_values<double>(
@@ -1320,6 +1336,7 @@ class TreeSample {
                         margin,
                         precision);
             }
+            return count;
         }
 
         void write_summary_of_heights(std::ostream & out,
@@ -1546,6 +1563,25 @@ class TreeSample {
             }
         }
 
+        bool is_a_map_node(const std::set< Split > & split_set) const {
+            Split split;
+            split.resize(this->get_number_of_leaves());
+            for (auto s : split_set) {
+                split.add_split(s);
+            }
+            std::vector< std::shared_ptr<NodeSamples> > node_samples = this->get_nodes_of_split(split);
+            unsigned int map_count = node_samples.at(0)->get_sample_size();
+            for (auto ns : node_samples) {
+                if (ns->get_sample_size() < map_count) {
+                    return false;
+                }
+                if (ns->get_split_set() == split_set) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
         bool is_a_map_tree(const std::set< std::set<Split> > & split_set) const {
             unsigned int map_count = this->topologies_.at(0)->get_sample_size();
             for (auto topo_samples : this->topologies_) {
@@ -1629,10 +1665,31 @@ class TreeSample {
                     this->write_summary_of_nontrivial_split(split,
                             out,
                             true,
+                            false,
                             item_margin,
                             precision);
                     for (auto param_val : this->target_split_parameters_.at(split)) {
                         out << item_margin << param_val.first << ": "
+                            << param_val.second << "\n";
+                    }
+                }
+            }
+            std::string node_margin = margin + indent + "  ";
+            out << margin << "nodes:\n";
+            for (auto splitset_params : this->target_node_parameters_) {
+                // Nodes with only two leaves will be identical to the split
+                // with those leaves, so no need to write the same data again
+                if (this->get_node(splitset_params.first)->get_split().get_leaf_node_count() > 2) {
+                    out << margin << indent << "-\n";
+                    this->write_summary_of_node(
+                            splitset_params.first,
+                            out,
+                            node_margin,
+                            precision);
+                    out << node_margin << "is_a_map_node: "
+                        << this->is_a_map_node(splitset_params.first) << "\n";
+                    for (auto param_val : splitset_params.second) {
+                        out << node_margin << param_val.first << ": "
                             << param_val.second << "\n";
                     }
                 }
@@ -1714,7 +1771,8 @@ class TreeSample {
                             precision);
                 }
             }
-            root_label << "]";
+            // Leave this off, so we can append node summaries below
+            // root_label << "]";
             SampleSummary<double> root_height_summary(split_parameter_map.at("height"));
             double root_height = root_height_summary.mean();
             if (use_median_heights) {
@@ -1844,7 +1902,8 @@ class TreeSample {
                                     precision);
                         }
                     }
-                    node_label << "]";
+                    // Leave this off so we can append node summaries below
+                    // node_label << "]";
                     std::shared_ptr<Node> new_node = std::make_shared<Node>(
                             node_label.str(), index_height);
                     std::vector<unsigned int> leaf_indices = split.get_leaf_indices();
@@ -1857,6 +1916,51 @@ class TreeSample {
                     }
                 }
                 --height_idx;
+            }
+
+
+            // Do a preorder traversal of tree in order to append to the node
+            // label comments of all internal nodes.
+            // We didn't know the splits that descend from each node as we
+            // built the tree above; knowing the descendant splits is necessary
+            // for looking up the NodeSamples
+            root_node->resize_splits(this->get_number_of_leaves());
+            std::vector< std::shared_ptr<Node> > pre_ordered_nodes = root_node->get_nodes();
+            for (auto node = pre_ordered_nodes.rbegin();
+                    node != pre_ordered_nodes.rend();
+                    ++node) {
+                if (! (*node)->is_leaf()) {
+                    // Get splits that descend from this node and use them to
+                    // get summaries of node samples
+                    std::set<Split> node_split_set;
+                    for (auto child : (*node)->get_all_children()) {
+                        node_split_set.insert(child->split_);
+                    }
+                    // Add node probability to the node label comment
+                    // annotations.
+                    // Note: we could summarize other parameters conditional on
+                    // each node (e.g., height, pop size), but we already
+                    // report height conditional on each shared height and all
+                    // parameters conditional on each split, so it seems like
+                    // overkill.
+                    // If we are ever interested in including annotations of
+                    // node-conditional summaries of parameters, this is where
+                    // we can add them.
+                    std::ostringstream l;
+                    l.precision(precision);
+                    l << (*node)->get_label()
+                      << ",node_freq="
+                      << this->get_node_frequency(node_split_set)
+                      << "]";
+                    (*node)->set_label(l.str());
+                }
+                else {
+                    // Set bit for this leaf node's index
+                    (*node)->split_.set_leaf_bit((*node)->get_index());
+                }
+                if ((*node)->has_parent()) {
+                    (*node)->get_parent()->split_.add_split((*node)->split_);
+                }
             }
             return root_node->to_parentheses(precision, true);
         }
@@ -1907,7 +2011,6 @@ class TreeSample {
             this->write_summary_of_topologies(out, "", precision);
             this->write_summary_of_heights(out, "", precision);
             this->write_summary_of_splits(out, "", precision);
-            this->write_summary_of_nodes(out, "", precision);
             this->write_summary_of_all_numbers_of_heights(out, "", precision);
         }
 
