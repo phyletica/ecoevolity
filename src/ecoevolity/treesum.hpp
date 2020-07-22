@@ -105,10 +105,13 @@ class TopologySamples : public BaseSamples {
     protected:
         std::set< std::set<Split> > split_set_;
         std::map< std::set<Split>, std::vector<double> > heights_;
+        std::map< Split, std::set<Split> > split_to_node_map_;
+        std::map< std::set<Split>, Split > node_to_split_map_;
 
     public:
         void add_sample(
                 const std::map<std::set<Split>, double> & height_map,
+                const std::map< Split, std::set<Split> > & node_map,
                 unsigned int tree_index,
                 unsigned int source_index) { 
             std::set< std::set<Split> > s_set;
@@ -119,9 +122,14 @@ class TopologySamples : public BaseSamples {
             }
             if (this->n_ == 0) {
                 this->split_set_ = s_set;
+                this->split_to_node_map_ = node_map;
+                for (auto split_node : node_map) {
+                    this->node_to_split_map_[split_node.second] = split_node.first;
+                }
             }
             else {
                 ECOEVOLITY_ASSERT(s_set == this->split_set_);
+                ECOEVOLITY_ASSERT(node_map == this->split_to_node_map_);
             }
             this->tally_sample_(tree_index, source_index);
         }
@@ -136,6 +144,30 @@ class TopologySamples : public BaseSamples {
 
         const std::vector<double> & get_heights(const std::set<Split> & split_set) const {
             return this->heights_.at(split_set);
+        }
+
+        const std::map< Split, std::set<Split> > & get_split_to_node_map() const {
+            return this->split_to_node_map_;
+        }
+
+        const std::map< std::set<Split>, Split > & get_node_to_split_map() const {
+            return this->node_to_split_map_;
+        }
+
+        bool has_split(const Split & split) const {
+            return (this->split_to_node_map_.count(split) > 0);
+        }
+        bool has_node(const std::set<Split> & split_set) const {
+            return (this->node_to_split_map_.count(split_set) > 0);
+        }
+
+        const std::set<Split> & get_node_split_set(const Split & split) const {
+            ECOEVOLITY_ASSERT(this->has_split(split));
+            return this->split_to_node_map_.at(split);
+        }
+        const Split & get_split(const std::set<Split> & node_split_set) const {
+            ECOEVOLITY_ASSERT(this->has_node(node_split_set));
+            return this->node_to_split_map_.at(node_split_set);
         }
 };
 
@@ -481,9 +513,11 @@ class TreeSample {
             this->target_heights_.clear();
             this->target_split_parameters_.clear();
             this->target_node_parameters_.clear();
+            std::map< Split, std::set<Split> > node_map;
             this->target_tree_.store_splits_heights_parameters(
                     this->target_topology_,
                     this->target_heights_,
+                    node_map,
                     this->target_split_parameters_,
                     this->target_node_parameters_,
                     false);
@@ -648,9 +682,11 @@ class TreeSample {
             std::map<std::set<Split>, double> heights;
             std::map<Split, std::map<std::string, double> > split_parameters;
             std::map<std::set<Split>, std::map<std::string, double> > node_parameters;
+            std::map<Split, std::set< Split > > node_map;
             tree.store_splits_heights_parameters(
                     split_set,
                     heights,
+                    node_map,
                     split_parameters,
                     node_parameters,
                     false);
@@ -670,12 +706,13 @@ class TreeSample {
             if (this->topologies_map_.count(split_set) > 0) {
                 this->topologies_map_[split_set]->add_sample(
                         heights,
+                        node_map,
                         tree_index,
                         source_index);
             }
             else {
                 std::shared_ptr<TopologySamples> ts = std::make_shared<TopologySamples>();
-                ts->add_sample(heights, tree_index, source_index);
+                ts->add_sample(heights, node_map, tree_index, source_index);
                 this->topologies_.push_back(ts);
                 this->topologies_map_[split_set] = ts;
             }
@@ -1450,6 +1487,7 @@ class TreeSample {
                 << margin << "number_of_heights: " << split_set.size() << "\n"
                 << margin << "heights:\n";
             std::string h_margin = margin + indent + "  ";
+            std::string n_margin = h_margin + indent + "  ";
             for (auto s_set : split_set) {
                 out << margin << indent << "- number_of_nodes: " << s_set.size() << "\n";
                 out << h_margin << "splits:\n";
@@ -1460,6 +1498,18 @@ class TreeSample {
                         out << ", " << leaf_indices.at(i);
                     }
                     out << "]\n";
+                    if (leaf_indices.size() > 2) {
+                        out << n_margin << "node:\n";
+                        out << n_margin << indent << "descendant_splits:\n";
+                        for (auto node_split : this->get_topology(split_set)->get_node_split_set(split)) {
+                            leaf_indices = node_split.get_leaf_indices();
+                            out << n_margin << indent << indent << "- leaf_indices: [" << leaf_indices.at(0);
+                            for (unsigned int i = 1; i < leaf_indices.size(); ++i) {
+                                out << ", " << leaf_indices.at(i);
+                            }
+                            out << "]\n";
+                        }
+                    }
                 }
                 this->_write_summary_of_values<double>(
                         this->get_topology(split_set)->get_heights(s_set),
@@ -1663,7 +1713,7 @@ class TreeSample {
                     out,
                     item_margin + indent,
                     precision);
-            out << item_margin << indent << "is_a_map_node: "
+            out << item_margin << indent << "is_a_map_node_given_split: "
                 << this->is_a_map_node(node_split_set) << "\n";
 
             item_margin += "  ";

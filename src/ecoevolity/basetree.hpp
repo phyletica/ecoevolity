@@ -2216,6 +2216,7 @@ class BaseTree {
         void store_splits_heights_parameters(
                 std::set< std::set<Split> > & split_set,
                 std::map<std::set<Split>, double> & heights,
+                std::map< Split, std::set<Split> > & node_map,
                 std::map<Split, std::map<std::string, double> > & split_parameters,
                 std::map<std::set<Split>, std::map<std::string, double> > & node_parameters,
                 const bool resize_splits = false) const {
@@ -2238,6 +2239,7 @@ class BaseTree {
                         node_split_set.insert(child->split_);
                     }
                     node_parameters[node_split_set] = parameter_map;
+                    node_map[(*node)->split_] = node_split_set;
                 }
                 else {
                     // Set bit for this leaf node's index

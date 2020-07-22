@@ -281,15 +281,6 @@ TEST_CASE("Missing label in target tree", "[treesum]") {
 }
 
 
-        std::vector<double> expected_12_lengths = {
-            0.2,
-            0.1,
-            0.1,
-            0.1,
-            0.2,
-            0.1,
-            0.1,
-        };
 // 12-34
 // TREE t3 = [&R] ((sp1[&height=0,pop_size=0.1]:0.1,sp2[&height=0,pop_size=0.2]:0.1)[&height_index=0,height=0.1,pop_size=0.3]:0.2,(sp3[&height=0,pop_size=0.1]:0.2,sp4[&height=0,pop_size=0.2]:0.2)[&height_index=1,height=0.2,pop_size=0.3]:0.1)[&height_index=2,height=0.3,pop_size=0.3]:0.0;
 // TREE t4 = [&R] ((sp4[&height=0,pop_size=0.1]:0.1,sp3[&height=0,pop_size=0.2]:0.1)[&height_index=0,height=0.1,pop_size=0.3]:0.2,(sp2[&height=0,pop_size=0.1]:0.2,sp1[&height=0,pop_size=0.2]:0.2)[&height_index=1,height=0.2,pop_size=0.3]:0.1)[&height_index=2,height=0.3,pop_size=0.3]:0.0;
@@ -1106,6 +1097,11 @@ TEST_CASE("Basic testing", "[treesum]") {
             << "    - number_of_nodes: 1\n"
             << "      splits:\n"
             << "          - leaf_indices: [0, 1, 2, 3]\n"
+            << "            node:\n"
+            << "                descendant_splits:\n"
+            << "                    - leaf_indices: [0, 1]\n"
+            << "                    - leaf_indices: [2]\n"
+            << "                    - leaf_indices: [3]\n"
             << "      n: 3\n"
             << "      ess: 3\n"
             << "      mean: 0.4\n"
@@ -1300,7 +1296,7 @@ TEST_CASE("Basic testing", "[treesum]") {
         REQUIRE(summary["splits"]["root"]["nodes"][7]["descendant_splits"][1]["leaf_indices"][1].as<int>() == 2);
         REQUIRE(summary["splits"]["root"]["nodes"][7]["descendant_splits"][1]["leaf_indices"][2].as<int>() == 3);
 
-        REQUIRE(summary["summary_of_target_tree"]["splits"]["root"]["node"]["is_a_map_node"].as<bool>() == true);
+        REQUIRE(summary["summary_of_target_tree"]["splits"]["root"]["node"]["is_a_map_node_given_split"].as<bool>() == true);
         REQUIRE(summary["summary_of_target_tree"]["splits"]["root"]["node"]["number_of_descendants"].as<int>() == 2);
         REQUIRE(summary["summary_of_target_tree"]["splits"]["root"]["node"]["count"].as<int>() == 4);
         REQUIRE(summary["summary_of_target_tree"]["splits"]["root"]["node"]["frequency"].as<double>() == 0.22);
