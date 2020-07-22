@@ -1357,7 +1357,7 @@ class TreeSample {
                 << margin << "descendant_splits:\n";
             for (auto split : split_set) {
                 std::vector<unsigned int> leaf_indices = split.get_leaf_indices();
-                out << margin << indent << "- leaf_indices: [" << leaf_indices.at(0);
+                out << margin << indent << "- [" << leaf_indices.at(0);
                 for (unsigned int i = 1; i < leaf_indices.size(); ++i) {
                     out << ", " << leaf_indices.at(i);
                 }
@@ -1503,7 +1503,7 @@ class TreeSample {
                         out << n_margin << indent << "descendant_splits:\n";
                         for (auto node_split : this->get_topology(split_set)->get_node_split_set(split)) {
                             leaf_indices = node_split.get_leaf_indices();
-                            out << n_margin << indent << indent << "- leaf_indices: [" << leaf_indices.at(0);
+                            out << n_margin << indent << indent << "- [" << leaf_indices.at(0);
                             for (unsigned int i = 1; i < leaf_indices.size(); ++i) {
                                 out << ", " << leaf_indices.at(i);
                             }
