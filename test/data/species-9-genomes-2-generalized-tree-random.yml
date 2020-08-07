@@ -1,0 +1,40 @@
+---
+data:
+    ploidy: 2
+    constant_sites_removed: false
+    yaml_allele_counts:
+        path: ./species-9-genomes-2-chars-1000.yml
+tree_model:
+    tree_space: generalized
+    starting_tree: random
+    tree_prior:
+        uniform_root_and_betas:
+            parameters:
+                root_height:
+                    estimate: true
+                    prior:
+                        gamma_distribution:
+                            shape: 10.0
+                            mean: 0.2
+                alpha_of_node_height_beta_prior:
+                    value: 1.0
+                    estimate: false
+branch_parameters:
+    population_size:
+        equal_population_sizes: true
+        value: 0.001
+        estimate: true
+        prior:
+            gamma_distribution:
+                shape: 20.0
+                mean: 0.001
+mutation_parameters:
+    freq_1:
+        value: 0.5
+        estimate: false
+    mutation_rate:
+        value: 1.0
+        estimate: false
+mcmc_settings:
+    chain_length: 15000
+    sample_frequency: 10

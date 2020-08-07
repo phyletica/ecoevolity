@@ -1,0 +1,6 @@
+---
+markers_are_dominant: false
+population_labels: [sp1, sp2, sp3, sp4, sp5, sp6, sp7, sp8, sp9]
+allele_count_patterns:
+    - [[1, 2], [1, 2], [1, 2], [1, 2], [1, 2], [1, 2], [1, 2], [1, 2], [1, 2]]
+pattern_weights: [1000]

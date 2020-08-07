@@ -810,3 +810,58 @@ TEST_CASE("Testing simphycoeval cli with 3 leaves, fully constrained model",
         delete[] cfg_path;
     }
 }
+
+TEST_CASE("Testing 9 species with 2 genomes",
+        "[xsimphycoeval]") {
+
+    SECTION("Testing generalized model with 9 species with 2 genomes") {
+        RandomNumberGenerator rng = RandomNumberGenerator(16878646);
+
+        std::string tag = rng.random_string(10);
+        std::string out_prefix_str = "test-out-" + tag + "-species-9-genomes-2-";
+        std::string test_path = "data/species-9-genomes-2-generalized-tree-random.yml";
+        REQUIRE(path::exists(test_path));
+
+
+        char arg0[] = "simphycoeval";
+        char arg1[] = "--seed";
+        char arg2[] = "1234";
+        char arg3[] = "-n";
+        unsigned int nsamples = 10;
+        char arg4[] = "10";
+        char arg5[] = "--prefix";
+        char arg6[] = "-t";
+        char arg7[] = "10";
+        char * cfg_path = new char[test_path.size() + 1];
+        std::copy(test_path.begin(), test_path.end(), cfg_path);
+        cfg_path[test_path.size()] = '\0';
+        char * out_prefix = new char[out_prefix_str.size() + 1];
+        std::copy(out_prefix_str.begin(), out_prefix_str.end(), out_prefix);
+        out_prefix[out_prefix_str.size()] = '\0';
+        char * argv[] = {
+            &arg0[0],
+            &arg1[0],
+            &arg2[0],
+            &arg3[0],
+            &arg4[0],
+            &arg5[0],
+            out_prefix,
+            &arg6[0],
+            &arg7[0],
+            cfg_path,
+            NULL
+        };
+        int argc = (int)(sizeof(argv) / sizeof(argv[0])) - 1;
+        int ret;
+
+        ret = simphycoeval_main<BasePopulationTree>(argc, argv);
+        REQUIRE(ret == 0);
+
+        std::string out_model_cfg_path = "data/" + out_prefix_str + "simphycoeval-model-used-for-sims.yml";
+
+        REQUIRE(path::exists(out_model_cfg_path));
+
+        delete[] cfg_path;
+        delete[] out_prefix;
+    }
+}
