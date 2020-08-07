@@ -812,7 +812,7 @@ TEST_CASE("Testing simphycoeval cli with 3 leaves, fully constrained model",
 }
 
 TEST_CASE("Testing 9 species with 2 genomes",
-        "[xsimphycoeval]") {
+        "[simphycoeval]") {
 
     SECTION("Testing generalized model with 9 species with 2 genomes") {
         RandomNumberGenerator rng = RandomNumberGenerator(16878646);

@@ -79,8 +79,7 @@ class BaseTree {
                 RandomNumberGenerator & rng,
                 std::shared_ptr<NodeType> polytomy_node,
                 std::shared_ptr<PositiveRealParameter> new_height_parameter,
-                const bool refresh_node_heights = false,
-                const bool refresh_node_ordering = true) {
+                const bool refresh_node_heights = false) {
             unsigned int n_children = polytomy_node->get_number_of_children();
             std::vector< std::vector<unsigned int> > child_subsets;
             // Need to avoid the partitions where all children are assigned to
@@ -122,9 +121,7 @@ class BaseTree {
                 this->node_heights_.push_back(new_height_parameter);
                 this->sort_node_heights();
             }
-            if (refresh_node_ordering) {
-                this->refresh_ordered_nodes();
-            }
+            this->update_internal_node_indices();
             return ln_prob_new_vals;
         }
 
@@ -595,6 +592,19 @@ class BaseTree {
             this->refresh_level_ordered_nodes();
         }
 
+        void update_internal_node_indices() {
+            this->refresh_ordered_nodes();
+            int next_idx = this->root_->get_leaf_node_count();
+            for (auto node = this->level_ordered_nodes_.rbegin();
+                    node != this->level_ordered_nodes_.rend();
+                    ++node) {
+                if (! (*node)->is_leaf()) {
+                    (*node)->set_index(next_idx);
+                    ++next_idx;
+                }
+            }
+        }
+
         void update_node_heights() {
             this->node_heights_.clear();
             std::vector< std::shared_ptr<NodeType> > internal_nodes = this->root_->get_internal_nodes();
@@ -700,8 +710,7 @@ class BaseTree {
         double merge_node_height_up(const unsigned int height_index,
                 std::vector<unsigned int> & sizes_of_mapped_polytomies_after_merge,
                 unsigned int & number_of_resulting_merged_nodes,
-                const bool refresh_node_heights = false,
-                const bool refresh_node_ordering = true) {
+                const bool refresh_node_heights = false) {
             // Make sure we aren't dealing with the root node
             ECOEVOLITY_ASSERT(height_index < (this->get_number_of_node_heights() - 1));
 
@@ -745,9 +754,7 @@ class BaseTree {
             else {
                 this->node_heights_.erase(this->node_heights_.begin() + height_index);
             }
-            if (refresh_node_ordering) {
-                this->refresh_ordered_nodes();
-            }
+            this->update_internal_node_indices();
             return ln_prob_of_drawing_state_of_removed_nodes;
         }
 
@@ -759,8 +766,7 @@ class BaseTree {
                 unsigned int & number_of_nodes_in_split_subset,
                 std::vector<unsigned int> & moving_polytomy_sizes,
                 bool & mapped_nodes_include_polytomy,
-                const bool refresh_node_heights = false,
-                const bool refresh_node_ordering = true) {
+                const bool refresh_node_heights = false) {
             moving_polytomy_sizes.clear();
             std::vector< std::shared_ptr<NodeType> > mapped_nodes = this->get_mapped_nodes(height_index);
             number_of_mapped_nodes = mapped_nodes.size();
@@ -787,8 +793,7 @@ class BaseTree {
                 return this->split_singleton_polytomy(rng,
                         mapped_nodes.at(0),
                         new_height_parameter,
-                        refresh_node_heights,
-                        refresh_node_ordering);
+                        refresh_node_heights);
             }
 
             mapped_nodes_include_polytomy = false;
@@ -817,9 +822,7 @@ class BaseTree {
                     this->node_heights_.push_back(new_height_parameter);
                     this->sort_node_heights();
                 }
-                if (refresh_node_ordering) {
-                    this->refresh_ordered_nodes();
-                }
+                this->refresh_ordered_nodes();
                 return 0.0;
             }
 
@@ -932,9 +935,7 @@ class BaseTree {
                 this->node_heights_.push_back(new_height_parameter);
                 this->sort_node_heights();
             }
-            if (refresh_node_ordering) {
-                this->refresh_ordered_nodes();
-            }
+            this->update_internal_node_indices();
             return ln_prob_new_vals;
         }
 
@@ -1620,7 +1621,7 @@ class BaseTree {
             this->root_ = root;
             this->vet_tree();
             this->update_node_heights();
-            this->refresh_ordered_nodes();
+            this->update_internal_node_indices();
             this->root_->resize_splits(this->get_leaf_node_count());
             this->root_->make_all_dirty();
             this->make_dirty();
@@ -1983,7 +1984,7 @@ class BaseTree {
         }
         virtual void restore_topology() {
             this->root_ = this->stored_root_;
-            this->refresh_ordered_nodes();
+            this->update_internal_node_indices();
         }
         // Derived classes can override this
         virtual void restore_derived_class_parameters() { }
