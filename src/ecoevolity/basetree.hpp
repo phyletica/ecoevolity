@@ -604,6 +604,24 @@ class BaseTree {
                 }
             }
         }
+        void check_internal_node_indices() const {
+            std::set<int> internal_node_indices;
+            for (auto n : this->pre_ordered_nodes_) {
+                if (n->get_index() < 0) {
+                    std::ostringstream msg;
+                    msg << "ERROR: Negative internal node index: "
+                        << n->get_index() << "\n";
+                    throw EcoevolityError(msg.str());
+                }
+                if (internal_node_indices.count(n->get_index()) > 0) {
+                    std::ostringstream msg;
+                    msg << "ERROR: Duplicate internal node index: "
+                        << n->get_index() << "\n";
+                    throw EcoevolityError(msg.str());
+                }
+                internal_node_indices.insert(n->get_index());
+            }
+        }
 
         void update_node_heights() {
             this->node_heights_.clear();

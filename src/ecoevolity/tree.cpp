@@ -1304,6 +1304,10 @@ BiallelicData BasePopulationTree::simulate_biallelic_data_set(
         RandomNumberGenerator& rng,
         float singleton_sample_probability,
         bool validate) const {
+    ECOEVOLITY_DEBUG(
+        this->check_internal_node_indices();
+        std::cerr << "DEBUG: simulate_biallelic_data_set: Node indices are valid\n";
+    )
     BiallelicData sim_data = this->data_.get_empty_copy();
     const bool filtering_constant_sites = this->constant_sites_removed_;
     // Looping over patterns to make sure simulated dataset has exact same
@@ -1357,6 +1361,10 @@ BiallelicData BasePopulationTree::simulate_linked_biallelic_data_set(
         float singleton_sample_probability,
         bool max_one_variable_site_per_locus,
         bool validate) const {
+    ECOEVOLITY_DEBUG(
+        this->check_internal_node_indices();
+        std::cerr << "DEBUG: simulate_linked_biallelic_data_set: Node indices are valid\n";
+    )
     ECOEVOLITY_ASSERT(this->data_.has_seq_loci_info());
     BiallelicData sim_data = this->data_.get_empty_copy();
     bool filtering_constant_sites = this->constant_sites_removed_;
@@ -1441,6 +1449,10 @@ BasePopulationTree::simulate_complete_biallelic_data_set(
         unsigned int locus_size,
         float singleton_sample_probability,
         bool validate) const {
+    ECOEVOLITY_DEBUG(
+        this->check_internal_node_indices();
+        std::cerr << "DEBUG: simulate_complete_biallelic_data_set: Node indices are valid\n";
+    )
     ECOEVOLITY_ASSERT(locus_size > 0);
     BiallelicData sim_data = this->data_.get_empty_copy();
     const bool filtering_constant_sites = this->constant_sites_removed_;
@@ -1518,6 +1530,10 @@ BasePopulationTree::simulate_data_set_max_one_variable_site_per_locus(
         unsigned int locus_size,
         float singleton_sample_probability,
         bool validate) const {
+    ECOEVOLITY_DEBUG(
+        this->check_internal_node_indices();
+        std::cerr << "DEBUG: simulate_data_set_max_one_variable_site_per_locus: Node indices are valid\n";
+    )
     ECOEVOLITY_ASSERT(locus_size > 0);
     BiallelicData sim_data = this->data_.get_empty_copy();
     if (this->constant_sites_removed_) {

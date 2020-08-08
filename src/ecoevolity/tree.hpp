@@ -27,6 +27,7 @@
 #include "parameter.hpp"
 #include "probability.hpp"
 #include "error.hpp"
+#include "debug.hpp"
 #include "assert.hpp"
 #include "general_tree_settings.hpp"
 

@@ -814,6 +814,10 @@ TEST_CASE("Testing simphycoeval cli with 3 leaves, fully constrained model",
 TEST_CASE("Testing 9 species with 2 genomes",
         "[simphycoeval]") {
 
+    // This dataset was causing simphycoeval to crash due to invalid internal
+    // node indices borking the simulation of gene trees.  Internal node
+    // indices are irrelevant elsewhere, but they are used by
+    // BasePopulationTree::simulate_gene_tree.
     SECTION("Testing generalized model with 9 species with 2 genomes") {
         RandomNumberGenerator rng = RandomNumberGenerator(16878646);
 
