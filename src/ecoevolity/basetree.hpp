@@ -778,7 +778,10 @@ class BaseTree {
 
         double split_node_height_down(
                 RandomNumberGenerator & rng,
+                double beta_a,
+                double beta_b,
                 const unsigned int height_index,
+                double & proposed_height,
                 double & height_lower_bound,
                 unsigned int & number_of_mapped_nodes,
                 unsigned int & number_of_nodes_in_split_subset,
@@ -799,7 +802,9 @@ class BaseTree {
                 min_height = this->node_heights_.at(height_index - 1)->get_value();
             }
             height_lower_bound = min_height;
-            double new_height = rng.uniform_real(min_height, max_height);
+            // double new_height = rng.uniform_real(min_height, max_height);
+            double new_height = (rng.beta(beta_a, beta_b) * (max_height - min_height)) + min_height;
+            proposed_height = new_height;
             std::shared_ptr<PositiveRealParameter> new_height_parameter = std::make_shared<PositiveRealParameter>(new_height);
             if (mapped_nodes.size() == 1) {
                 // If we only have a single polytomy, we need to handle the
