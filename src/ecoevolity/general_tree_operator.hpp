@@ -381,8 +381,8 @@ class GeneralTreeOperatorInterface : public GeneralTreeOperatorTemplate<TreeType
         }
 
         virtual std::string to_string() const {
-            unsigned int n_accepted = this->op_.get_number_accepted();
-            unsigned int n_rejected = this->op_.get_number_rejected();
+            unsigned int n_accepted = this->get_number_accepted();
+            unsigned int n_rejected = this->get_number_rejected();
             double p_accepted = (double)n_accepted / (n_accepted + n_rejected);
             std::ostringstream ss;
             ss << this->get_name() << "\t"
@@ -391,7 +391,7 @@ class GeneralTreeOperatorInterface : public GeneralTreeOperatorTemplate<TreeType
                << n_rejected << "\t"
                << this->get_weight() << "\t";
 
-            double tuning = this->op_.get_coercable_parameter_value();
+            double tuning = this->get_coercable_parameter_value();
             if (std::isnan(tuning)) {
                 ss << "none\t";
             }
@@ -1966,6 +1966,17 @@ class SplitLumpNodesRevJumpSampler : public GeneralTreeOperatorInterface<TreeTyp
     public:
         SplitLumpNodesRevJumpSampler() : GeneralTreeOperatorInterface<TreeType, Op>() { }
         SplitLumpNodesRevJumpSampler(double weight) : GeneralTreeOperatorInterface<TreeType, Op>(weight) { }
+        SplitLumpNodesRevJumpSampler(double weight,
+                const unsigned int auto_optimize_delay,
+                const bool auto_optimize = false) : GeneralTreeOperatorInterface<TreeType, Op>(weight) {
+            if (auto_optimize) {
+                this->turn_on_auto_optimize();
+            }
+            else {
+                this->turn_off_auto_optimize();
+            }
+            this->set_auto_optimize_delay(auto_optimize_delay);
+        }
 
         std::string get_name() const {
             return "SplitLumpNodesRevJumpSampler";
@@ -2014,6 +2025,24 @@ class SplitLumpNodesRevJumpSampler : public GeneralTreeOperatorInterface<TreeTyp
             }
         }
 
+        double get_coercable_parameter_value() const {
+            return this->beta_a_;
+        }
+
+        virtual void set_coercable_parameter_value(double value) {
+            this->beta_a_ = value;
+        }
+
+        void optimize(double log_alpha) {
+            double delta = this->op_.calc_delta(log_alpha);
+            if (delta == 0.0) {
+                return;
+            }
+            // delta += std::log(this->get_coercable_parameter_value());
+            delta -= std::log(this->get_coercable_parameter_value());
+            this->set_coercable_parameter_value(std::exp(delta));
+        }
+
         double propose_split(RandomNumberGenerator& rng,
                 TreeType * tree,
                 unsigned int nthreads = 1) {
@@ -2046,6 +2075,8 @@ class SplitLumpNodesRevJumpSampler : public GeneralTreeOperatorInterface<TreeTyp
             ECOEVOLITY_ASSERT(number_of_mapped_nodes > 0);
             double height_window = current_height - height_lower_bound;
             ECOEVOLITY_ASSERT(height_window > 0.0);
+            ECOEVOLITY_ASSERT(proposed_height < current_height);
+            ECOEVOLITY_ASSERT(proposed_height > height_lower_bound);
             double beta_val = proposed_height - height_lower_bound;
             double ln_density_of_proposed_height = BetaDistribution::get_scaled_ln_pdf(
                     beta_val,
@@ -2502,6 +2533,8 @@ class SplitLumpNodesRevJumpSampler : public GeneralTreeOperatorInterface<TreeTyp
             }
             const double height_window = older_height - younger_height;
             ECOEVOLITY_ASSERT(height_window > 0.0);
+            ECOEVOLITY_ASSERT(original_height < older_height);
+            ECOEVOLITY_ASSERT(original_height > younger_height);
             double rev_beta_val = original_height - younger_height;
             double ln_density_of_rev_height = BetaDistribution::get_scaled_ln_pdf(
                     rev_beta_val,
