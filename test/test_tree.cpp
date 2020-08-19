@@ -1675,6 +1675,7 @@ TEST_CASE("Testing BaseTree::merge_node_height_up", "[BaseTree]") {
 TEST_CASE("Testing BaseTree::split_node_height_down", "[BaseTree]") {
     SECTION("Testing split_node_height_down") {
         double height_lower_bound;
+        double proposed_height;
         unsigned int number_of_mapped_nodes;
         unsigned int number_of_nodes_in_split_subset;
         bool mapped_nodes_include_polytomy;
@@ -1749,7 +1750,8 @@ TEST_CASE("Testing BaseTree::split_node_height_down", "[BaseTree]") {
         REQUIRE(splittable_heights.size() == 1);
         REQUIRE(splittable_heights.at(0) == 0);
 
-        tree.split_node_height_down(rng, 0,
+        tree.split_node_height_down(rng, 1.0, 1.0, 0,
+                proposed_height,
                 height_lower_bound,
                 number_of_mapped_nodes,
                 number_of_nodes_in_split_subset,
@@ -1792,7 +1794,8 @@ TEST_CASE("Testing BaseTree::split_node_height_down", "[BaseTree]") {
             }
             unsigned int splittable_ht = splittable_heights.at(0);
             orig_height = tree.get_height_parameter(splittable_ht);
-            tree.split_node_height_down(rng, splittable_ht,
+            tree.split_node_height_down(rng, 1.0, 1.0, splittable_ht,
+                    proposed_height,
                     height_lower_bound,
                     number_of_mapped_nodes,
                     number_of_nodes_in_split_subset,
@@ -4428,6 +4431,7 @@ TEST_CASE("Testing BaseTree::slide_bump_swap_all_height 9 leaf 4 colliders", "[B
 TEST_CASE("Testing BaseTree store and restore", "[BaseTree]") {
     SECTION("Testing store-restore of state") {
         double height_lower_bound;
+        double proposed_height;
         unsigned int number_of_mapped_nodes;
         unsigned int number_of_nodes_in_split_subset;
         std::vector<unsigned int> moving_polytomy_sizes;
@@ -4634,7 +4638,8 @@ TEST_CASE("Testing BaseTree store and restore", "[BaseTree]") {
         REQUIRE(tree.get_log_prior_density_value() == expected_ln_prior);
 
         tree.store_state();
-        tree.split_node_height_down(rng, 2,
+        tree.split_node_height_down(rng, 1.0, 1.0, 2,
+                proposed_height,
                 height_lower_bound,
                 number_of_mapped_nodes,
                 number_of_nodes_in_split_subset,
@@ -4668,7 +4673,8 @@ TEST_CASE("Testing BaseTree store and restore", "[BaseTree]") {
         REQUIRE(tree.get_log_prior_density_value() == expected_ln_prior);
 
         tree.store_state();
-        tree.split_node_height_down(rng, 1,
+        tree.split_node_height_down(rng, 1.0, 1.0, 1,
+                proposed_height,
                 height_lower_bound,
                 number_of_mapped_nodes,
                 number_of_nodes_in_split_subset,
@@ -4702,7 +4708,8 @@ TEST_CASE("Testing BaseTree store and restore", "[BaseTree]") {
         REQUIRE(tree.get_log_prior_density_value() == expected_ln_prior);
 
         tree.store_state();
-        tree.split_node_height_down(rng, 0,
+        tree.split_node_height_down(rng, 1.0, 1.0, 0,
+                proposed_height,
                 height_lower_bound,
                 number_of_mapped_nodes,
                 number_of_nodes_in_split_subset,
