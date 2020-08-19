@@ -379,6 +379,15 @@ int simphycoeval_main(int argc, char * argv[]) {
     GeneralTreeOperatorSchedule<BasePopulationTree> operator_schedule(
             settings.operator_settings, tree.get_leaf_node_count());
 
+    std::vector< GeneralTreeOperatorSchedule<BasePopulationTree> > prior_operator_schedules;
+    prior_operator_schedules.reserve(num_prior_configs);
+    for (auto prior_settings : prior_settings_vector) {
+        GeneralTreeOperatorSchedule<BasePopulationTree> prior_op_schedule(
+                    prior_settings.operator_settings,
+                    tree.get_leaf_node_count());
+        prior_operator_schedules.push_back( prior_op_schedule );
+    }
+
     std::string sim_settings_path = path::join(
             output_dir,
             output_prefix + "model-used-for-sims.yml");
@@ -577,7 +586,7 @@ int simphycoeval_main(int argc, char * argv[]) {
                 analysis_settings_stream.open(analysis_config_path);
                 write_settings(analysis_settings_stream,
                         prior_settings,
-                        operator_schedule);
+                        prior_operator_schedules.at(prior_i));
                 analysis_settings_stream.close();
             }
         }

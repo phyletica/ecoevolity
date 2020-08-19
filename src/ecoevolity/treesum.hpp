@@ -209,7 +209,26 @@ class HeightSamples : public BaseSamples {
             return this->heights_;
         }
 
-        static bool sort_by_nesting(
+        static bool is_nested_in(
+                const std::shared_ptr<HeightSamples> & hs1,
+                const std::shared_ptr<HeightSamples> & hs2) {
+            const std::set<Split> & split_set1 = hs1->get_split_set();
+            const std::set<Split> & split_set2 = hs2->get_split_set();
+            bool s1_in_s2 = false;
+            for (auto s1 : split_set1) {
+                for (auto s2 : split_set2) {
+                    if (s1.is_proper_subset_of(s2)) {
+                        s1_in_s2 = true;
+                    }
+                }
+            }
+            if (s1_in_s2) {
+                return true;
+            }
+            return false;
+        }
+
+        static bool is_younger(
                 const std::shared_ptr<HeightSamples> & hs1,
                 const std::shared_ptr<HeightSamples> & hs2) {
             const std::set<Split> & split_set1 = hs1->get_split_set();
@@ -251,7 +270,7 @@ class HeightSamples : public BaseSamples {
             return s1_sum.mean() < s2_sum.mean();
         }
 
-        static bool reverse_sort_by_nesting(
+        static bool is_older(
                 const std::shared_ptr<HeightSamples> & hs1,
                 const std::shared_ptr<HeightSamples> & hs2) {
             const std::set<Split> & split_set1 = hs1->get_split_set();
@@ -291,6 +310,97 @@ class HeightSamples : public BaseSamples {
                 s2_sum.add_sample(h);
             }
             return s1_sum.mean() > s2_sum.mean();
+        }
+
+        // TODO: There is probably a more efficient way to sort height samples
+        // such that heights with parent splits always come before their
+        // children
+        static std::vector< std::shared_ptr<HeightSamples> > reverse_sort_by_nesting(
+                const std::vector< std::shared_ptr<HeightSamples> > & height_samples) {
+            std::vector< std::shared_ptr<HeightSamples> > r;
+            r.reserve(height_samples.size());
+            for (auto hs : height_samples) {
+                if (r.size() < 1) {
+                    r.push_back(hs);
+                    continue;
+                }
+                int idx = r.size() - 1;
+                int first_younger_idx = r.size();
+                int first_child_idx = r.size();
+                int last_parent_idx = -1;
+                for (auto r_i = r.rbegin();
+                        r_i != r.rend();
+                        ++r_i) {
+                    if (HeightSamples::is_younger(*r_i, hs)) {
+                        first_younger_idx = idx;
+                    }
+                    if (HeightSamples::is_nested_in(*r_i, hs)) {
+                        first_child_idx = idx;
+                    }
+                    if (HeightSamples::is_nested_in(hs, *r_i)) {
+                        if (last_parent_idx < 0) {
+                            last_parent_idx = idx;
+                        }
+                    }
+                    --idx;
+                }
+                if (first_child_idx <= last_parent_idx) {
+                    throw EcoevolityError("HeightSamples::reverse_sort_by_nesting: child placed before parent");
+                }
+                int last_idx = r.size() - 1;
+                if (last_parent_idx >= 0) {
+                    // We have parent in list
+                    if (first_child_idx <= last_idx) {
+                        // We have parent and child in list
+                        if ((first_younger_idx > last_parent_idx) && (first_younger_idx < first_child_idx)) {
+                            // We can use the first younger idx
+                            r.insert(r.begin() + first_younger_idx, hs);
+                        }
+                        else {
+                            // We need to use the child idx
+                            r.insert(r.begin() + first_child_idx, hs);
+                        }
+                    }
+                    else {
+                        // We have parent in list but no children
+                        if (first_younger_idx > last_parent_idx) {
+                            // We can use the first younger idx
+                            r.insert(r.begin() + first_younger_idx, hs);
+                        }
+                        else {
+                            // We need to put this height after its parent
+                            r.insert(r.begin() + (last_parent_idx + 1), hs);
+                        }
+                    }
+                }
+                else {
+                    // We have no parents in list
+                    if (first_child_idx <= last_idx) {
+                        // We have child in list, but no parent
+                        if (first_younger_idx < first_child_idx) {
+                            // We can use the first younger idx
+                            r.insert(r.begin() + first_younger_idx, hs);
+                        }
+                        else {
+                            // We need to use the child idx
+                            r.insert(r.begin() + first_child_idx, hs);
+                        }
+                    }
+                    else {
+                        // We have no parents or children in list
+                        if (first_younger_idx <= last_idx) {
+                            // We can use the first younger idx
+                            r.insert(r.begin() + first_younger_idx, hs);
+                        }
+                        else {
+                            // No parents, no children, and nothing younger, so stick at end
+                            r.push_back(hs);
+                        }
+                    }
+                }
+            }
+            ECOEVOLITY_ASSERT(height_samples.size() == r.size());
+            return r;
         }
 };
 
@@ -1907,8 +2017,9 @@ class TreeSample {
                     height_samples.push_back(hs);
                 }
             }
-            std::sort(std::begin(height_samples), std::end(height_samples),
-                    HeightSamples::reverse_sort_by_nesting);
+
+            height_samples = HeightSamples::reverse_sort_by_nesting(height_samples);
+
             std::vector< std::set<Split> > height_keys;
             height_keys.reserve(height_samples.size());
             for (auto hs : height_samples) {
