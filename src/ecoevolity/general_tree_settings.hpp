@@ -155,30 +155,55 @@ class StartingTreeSettings {
 
 class GeneralTreeOperatorSettings {
     protected:
-        double weight_ = -1.0;
+        std::vector<double> weights_;
 
     public:
         GeneralTreeOperatorSettings() { }
+        GeneralTreeOperatorSettings(const std::vector<double> & weights) {
+            this->weights_ = weights;
+        }
         GeneralTreeOperatorSettings(double weight) {
-            this->weight_ = weight;
+            this->weights_ = { weight };
         }
         GeneralTreeOperatorSettings(const GeneralTreeOperatorSettings& other) {
-            this->weight_ = other.weight_;
+            this->weights_ = other.weights_;
         }
         virtual ~GeneralTreeOperatorSettings() { }
         GeneralTreeOperatorSettings& operator=(const GeneralTreeOperatorSettings& other) {
-            this->weight_ = other.weight_;
+            this->weights_ = other.weights_;
             return * this;
         }
+
+        void init(const std::vector<double> & weights) {
+            this->weights_ = weights;
+        }
+
+        virtual void clear() {
+            this->weights_.clear();
+        }
+        virtual void turn_off() {
+            this->clear();
+            this->weights_.push_back(0.0);
+        }
+
         virtual bool is_tunable() const {
             return false;
         }
-        double get_weight() const {
-            return this->weight_;
+
+        double get_weight(unsigned int index) const {
+            return this->weights_.at(index);
         }
-        void set_weight(double weight) {
-            this->weight_ = weight;
+        const std::vector<double> & get_weights() const {
+            return this->weights_;
         }
+
+        unsigned int get_number_of_operators() const {
+            return this->weights_.size();
+        }
+        bool is_empty() const {
+            return this->weights_.empty();
+        }
+
         virtual void update_from_config(const YAML::Node& operator_node) {
             if (! operator_node.IsMap()) {
                 std::string message = (
@@ -203,7 +228,29 @@ class GeneralTreeOperatorSettings {
                 keys.insert(p->first.as<std::string>());
 
                 if (p->first.as<std::string>() == "weight") {
-                    this->set_weight(p->second.as<double>());
+                    if (p->second.IsScalar()) {
+                        double wt = p->second.as<double>();
+                        if (wt < 0.0) {
+                            throw EcoevolityYamlConfigError("operator weight cannot be negative");
+                        }
+                        this->init( { wt } );
+                    }
+                    else if (p->second.IsSequence()) {
+                        std::vector<double> weights;
+                        for (YAML::const_iterator wt_node = p->second.begin();
+                                wt_node != p->second.end();
+                                ++wt_node) {
+                            double wt = wt_node->as<double>();
+                            if (wt < 0.0) {
+                                throw EcoevolityYamlConfigError("operator weight cannot be negative");
+                            }
+                            weights.push_back(wt);
+                        }
+                        this->init(weights);
+                    }
+                    else {
+                        throw EcoevolityYamlConfigError("Operator weight node is not a scalar or sequence");
+                    }
                 }
                 else {
                     std::string message = (
@@ -218,59 +265,158 @@ class GeneralTreeOperatorSettings {
             std::ostringstream ss;
             ss << std::boolalpha;
             std::string margin = string_util::get_indent(indent_level);
-            ss << margin << "weight: " << this->weight_ << "\n";
+            if (! this->weights_.empty()) {
+                ss << margin << "weight: ";
+                if (this->weights_.size() == 1) {
+                    ss << this->weights_.at(0) << "\n";
+                }
+                else {
+                    ss << "[" << this->weights_.at(0);
+                    for (unsigned int i = 1; i < this->weights_.size(); ++i) {
+                        ss << ", " << this->weights_.at(i);
+                    }
+                    ss << "]\n";
+                }
+            }
             return ss.str();
         }
 };
 
 class GeneralTreeTunableOperatorSettings : public GeneralTreeOperatorSettings {
     protected:
-        double tuning_parameter_ = -1.0;
-        bool auto_optimize_ = true;
-        unsigned int auto_optimize_delay_ = 50;
+        std::vector<double> tuning_parameters_;
+        std::vector<bool> auto_optimize_bools_;
+        std::vector<int> auto_optimize_delays_;
 
     public:
         GeneralTreeTunableOperatorSettings() : GeneralTreeOperatorSettings() { }
-        GeneralTreeTunableOperatorSettings(double weight) : GeneralTreeOperatorSettings(weight) { }
-        GeneralTreeTunableOperatorSettings(double weight, double tuning_parameter)
-            : GeneralTreeOperatorSettings(weight) {
-                this->set_tuning_parameter(tuning_parameter);
+        GeneralTreeTunableOperatorSettings(
+                const std::vector<double> & weights
+                ) : GeneralTreeOperatorSettings() {
+            std::vector<double> tuning_parameters(weights.size(), -1.0);
+            std::vector<bool> auto_opt_bools(weights.size(), true);
+            std::vector<int> auto_opt_delays(weights.size(), -1);
+            this->init(weights, tuning_parameters, auto_opt_bools, auto_opt_delays);
+        }
+        GeneralTreeTunableOperatorSettings(
+                double weight
+                ) : GeneralTreeOperatorSettings() {
+            std::vector<double> weights = { weight };
+            std::vector<double> tuning_parameters(weights.size(), -1.0);
+            std::vector<bool> auto_opt_bools(weights.size(), true);
+            std::vector<int> auto_opt_delays(weights.size(), -1);
+            this->init(weights, tuning_parameters, auto_opt_bools, auto_opt_delays);
+        }
+        GeneralTreeTunableOperatorSettings(
+                const std::vector<double> & weights,
+                const std::vector<double> & tuning_parameters
+                ) : GeneralTreeOperatorSettings() {
+            std::vector<bool> auto_opt_bools(weights.size(), true);
+            std::vector<int> auto_opt_delays(weights.size(), -1);
+            this->init(weights, tuning_parameters, auto_opt_bools, auto_opt_delays);
+        }
+        GeneralTreeTunableOperatorSettings(
+                double weight,
+                double tuning_parameter
+                ) : GeneralTreeOperatorSettings() {
+            std::vector<double> weights = { weight };
+            std::vector<double> tuning_parameters = { tuning_parameter };
+            std::vector<bool> auto_opt_bools(weights.size(), true);
+            std::vector<int> auto_opt_delays(weights.size(), -1);
+            this->init(weights, tuning_parameters, auto_opt_bools, auto_opt_delays);
+        }
+        GeneralTreeTunableOperatorSettings(
+                const std::vector<double> & weights,
+                const std::vector<double> & tuning_parameters,
+                const std::vector<bool> & auto_optimize_bools
+                ) : GeneralTreeOperatorSettings() {
+            std::vector<int> auto_opt_delays(weights.size(), -1);
+            this->init(weights, tuning_parameters, auto_optimize_bools, auto_opt_delays);
+        }
+        GeneralTreeTunableOperatorSettings(
+                double weight,
+                double tuning_parameter,
+                bool auto_optimize
+                ) : GeneralTreeOperatorSettings() {
+            std::vector<double> weights = { weight };
+            std::vector<double> tuning_parameters = { tuning_parameter };
+            std::vector<bool> auto_opt_bools = { auto_optimize };
+            std::vector<int> auto_opt_delays(weights.size(), -1);
+            this->init(weights, tuning_parameters, auto_opt_bools, auto_opt_delays);
         }
         GeneralTreeTunableOperatorSettings(const GeneralTreeTunableOperatorSettings& other) :
                 GeneralTreeOperatorSettings(other) {
-            this->tuning_parameter_ = other.tuning_parameter_;
-            this->auto_optimize_ = other.auto_optimize_;
-            this->auto_optimize_delay_ = other.auto_optimize_delay_;
+            this->tuning_parameters_ = other.tuning_parameters_;
+            this->auto_optimize_bools_ = other.auto_optimize_bools_;
+            this->auto_optimize_delays_ = other.auto_optimize_delays_;
         }
         virtual ~GeneralTreeTunableOperatorSettings() { }
         GeneralTreeTunableOperatorSettings& operator=(const GeneralTreeTunableOperatorSettings& other) {
-            this->weight_ = other.weight_;
-            this->tuning_parameter_ = other.tuning_parameter_;
-            this->auto_optimize_ = other.auto_optimize_;
-            this->auto_optimize_delay_ = other.auto_optimize_delay_;
+            this->weights_ = other.weights_;
+            this->tuning_parameters_ = other.tuning_parameters_;
+            this->auto_optimize_bools_ = other.auto_optimize_bools_;
+            this->auto_optimize_delays_ = other.auto_optimize_delays_;
             return * this;
         }
+
+        void init(const std::vector<double> & weights,
+                const std::vector<double> & tuning_parameters,
+                const std::vector<bool> & auto_optimize_bools,
+                const std::vector<int> auto_optimize_delays) {
+            if (weights.size() != tuning_parameters.size()) {
+                throw EcoevolityError("Number of tuning parameters does not equal number of weights");
+            }
+            if (weights.size() != auto_optimize_bools.size()) {
+                throw EcoevolityError("Number of auto opt bools does not equal number of weights");
+            }
+            if (weights.size() != auto_optimize_delays.size()) {
+                throw EcoevolityError("Number of auto opt delays does not equal number of weights");
+            }
+            this->weights_ = weights;
+            this->tuning_parameters_ = tuning_parameters;
+            this->auto_optimize_bools_ = auto_optimize_bools;
+            this->auto_optimize_delays_ = auto_optimize_delays;
+        }
+
         bool is_tunable() const {
             return true;
         }
-        double get_tuning_parameter() const {
-            return this->tuning_parameter_;
+
+        virtual void clear() {
+            this->weights_.clear();
+            this->tuning_parameters_.clear();
+            this->auto_optimize_bools_.clear();
+            this->auto_optimize_delays_.clear();
         }
-        void set_tuning_parameter(double tuning_parameter) {
-            this->tuning_parameter_ = tuning_parameter;
+        void turn_off() {
+            this->clear();
+            this->weights_.push_back(0.0);
+            this->tuning_parameters_.push_back(-1.0);
+            this->auto_optimize_bools_.push_back(true);
+            this->auto_optimize_delays_.push_back(-1);
         }
-        unsigned int get_auto_optimize_delay() const {
-            return this->auto_optimize_delay_;
+
+        double get_tuning_parameter(unsigned int index) const {
+            return this->tuning_parameters_.at(index);
         }
-        void set_auto_optimize_delay(unsigned int auto_optimize_delay) {
-            this->auto_optimize_delay_ = auto_optimize_delay;
+        const std::vector<double> & get_tuning_parameters() const {
+            return this->tuning_parameters_;
         }
-        void set_auto_optimize(bool b) {
-            this->auto_optimize_ = b;
+
+        int get_auto_optimize_delay(unsigned int index) const {
+            return this->auto_optimize_delays_.at(index);
         }
-        bool auto_optimizing() const {
-            return this->auto_optimize_;
+        const std::vector<int> & get_auto_optimize_delays() const {
+            return this->auto_optimize_delays_;
         }
+
+        bool auto_optimizing(unsigned int index) const {
+            return this->auto_optimize_bools_.at(index);
+        }
+        const std::vector<bool> & get_auto_optimize_bools() const {
+            return this->auto_optimize_bools_;
+        }
+
         void update_from_config(const YAML::Node& operator_node) {
             if (! operator_node.IsMap()) {
                 std::string message = (
@@ -291,29 +437,96 @@ class GeneralTreeTunableOperatorSettings : public GeneralTreeOperatorSettings {
                 }
                 keys.insert(p->first.as<std::string>());
 
+                std::vector<double> weights;
+                std::vector<double> tuning_parameters;
+                std::vector<int> opt_delays;
+                std::vector<bool> auto_opt_bools;
+
                 if (p->first.as<std::string>() == "weight") {
-                    double wt = p->second.as<double>();
-                    if (wt < 0.0) {
-                        throw EcoevolityYamlConfigError("operator weight cannot be negative");
+                    if (p->second.IsScalar()) {
+                        double wt = p->second.as<double>();
+                        if (wt < 0.0) {
+                            throw EcoevolityYamlConfigError("operator weight cannot be negative");
+                        }
+                        weights.push_back(wt);
                     }
-                    this->set_weight(wt);
+                    else if (p->second.IsSequence()) {
+                        for (YAML::const_iterator wt_node = p->second.begin();
+                                wt_node != p->second.end();
+                                ++wt_node) {
+                            double wt = wt_node->as<double>();
+                            if (wt < 0.0) {
+                                throw EcoevolityYamlConfigError("operator weight cannot be negative");
+                            }
+                            weights.push_back(wt);
+                        }
+                    }
+                    else {
+                        throw EcoevolityYamlConfigError("Operator weight node is not a scalar or sequence");
+                    }
                 }
                 else if (p->first.as<std::string>() == "tuning_parameter") {
-                    double tuning_param = p->second.as<double>();
-                    if (tuning_param <= 0.0) {
-                        throw EcoevolityYamlConfigError("tuning_parameter must be positive");
+                    if (p->second.IsScalar()) {
+                        double tuning_param = p->second.as<double>();
+                        if (tuning_param <= 0.0) {
+                            throw EcoevolityYamlConfigError("tuning_parameter must be positive");
+                        }
+                        tuning_parameters.push_back(tuning_param);
                     }
-                    this->set_tuning_parameter(tuning_param);
+                    else if (p->second.IsSequence()) {
+                        for (YAML::const_iterator tp_node = p->second.begin();
+                                tp_node != p->second.end();
+                                ++tp_node) {
+                            double tp = tp_node->as<double>();
+                            if (tp <= 0.0) {
+                                throw EcoevolityYamlConfigError("tuning_parameter must be positive");
+                            }
+                            tuning_parameters.push_back(tp);
+                        }
+                    }
+                    else {
+                        throw EcoevolityYamlConfigError("Operator tuning_parameter node is not a scalar or sequence");
+                    }
                 }
                 else if (p->first.as<std::string>() == "auto_optimize") {
-                    this->set_auto_optimize(p->second.as<bool>());
+                    if (p->second.IsScalar()) {
+                        bool auto_opt_bool = p->second.as<bool>();
+                        auto_opt_bools.push_back(auto_opt_bool);
+                    }
+                    else if (p->second.IsSequence()) {
+                        for (YAML::const_iterator auto_opt_node = p->second.begin();
+                                auto_opt_node != p->second.end();
+                                ++auto_opt_node) {
+                            bool aob = auto_opt_node->as<bool>();
+                            auto_opt_bools.push_back(aob);
+                        }
+                    }
+                    else {
+                        throw EcoevolityYamlConfigError("Operator auto_optimize node is not a scalar or sequence");
+                    }
                 }
                 else if (p->first.as<std::string>() == "auto_optimize_delay") {
-                    int opt_delay = p->second.as<int>();
-                    if (opt_delay <= 0) {
-                        throw EcoevolityYamlConfigError("auto_optimize_delay must be positive");
+                    if (p->second.IsScalar()) {
+                        int opt_delay = p->second.as<int>();
+                        if (opt_delay <= 0) {
+                            throw EcoevolityYamlConfigError("auto_optimize_delay must be positive");
+                        }
+                        opt_delays.push_back(opt_delay);
                     }
-                    this->set_auto_optimize_delay(opt_delay);
+                    else if (p->second.IsSequence()) {
+                        for (YAML::const_iterator delay_node = p->second.begin();
+                                delay_node != p->second.end();
+                                ++delay_node) {
+                            int d = delay_node->as<int>();
+                            if (d <= 0) {
+                                throw EcoevolityYamlConfigError("auto_optimize_delay must be positive");
+                            }
+                            opt_delays.push_back(d);
+                        }
+                    }
+                    else {
+                        throw EcoevolityYamlConfigError("Operator auto_optimize_delay node is not a scalar or sequence");
+                    }
                 }
                 else {
                     std::string message = (
@@ -321,6 +534,35 @@ class GeneralTreeTunableOperatorSettings : public GeneralTreeOperatorSettings {
                             p->first.as<std::string>());
                     throw EcoevolityYamlConfigError(message);
                 }
+
+                std::vector<size_t> n_ops_vector =  {
+                        weights.size(),
+                        tuning_parameters.size(),
+                        opt_delays.size(),
+                        auto_opt_bools.size()};
+                size_t n_ops = *std::max_element(std::begin(n_ops_vector), std::end(n_ops_vector));
+                if (n_ops < 1) {
+                    throw EcoevolityYamlConfigError("operator listed with no options");
+                }
+                for (auto n : n_ops_vector) {
+                    if ((n > 0) && (n != n_ops)) {
+                        throw EcoevolityYamlConfigError("operator with unequal number of options");
+                    }
+                }
+                if (weights.empty()) {
+                    weights = std::vector<double>(n_ops, -1.0);
+                }
+                if (tuning_parameters.empty()) {
+                    tuning_parameters = std::vector<double>(n_ops, -1.0);
+                }
+                if (opt_delays.empty()) {
+                    opt_delays = std::vector<int>(n_ops, -1);
+                }
+                if (auto_opt_bools.empty()) {
+                    auto_opt_bools = std::vector<bool>(n_ops, true);
+                }
+
+                this->init(weights, tuning_parameters, auto_opt_bools, opt_delays);
             }
         }
 
@@ -328,10 +570,58 @@ class GeneralTreeTunableOperatorSettings : public GeneralTreeOperatorSettings {
             std::ostringstream ss;
             ss << std::boolalpha;
             std::string margin = string_util::get_indent(indent_level);
-            ss << margin << "weight: " << this->weight_ << "\n";
-            ss << margin << "tuning_parameter: " << this->tuning_parameter_ << "\n";
-            ss << margin << "auto_optimize: " << this->auto_optimize_ << "\n";
-            ss << margin << "auto_optimize_delay: " << this->auto_optimize_delay_ << "\n";
+            if (! this->weights_.empty()) {
+                ss << margin << "weight: ";
+                if (this->weights_.size() == 1) {
+                    ss << this->weights_.at(0) << "\n";
+                }
+                else {
+                    ss << "[" << this->weights_.at(0);
+                    for (unsigned int i = 1; i < this->weights_.size(); ++i) {
+                        ss << ", " << this->weights_.at(i);
+                    }
+                    ss << "]\n";
+                }
+            }
+            if (! this->tuning_parameters_.empty()) {
+                ss << margin << "tuning_parameter: ";
+                if (this->tuning_parameters_.size() == 1) {
+                    ss << this->tuning_parameters_.at(0) << "\n";
+                }
+                else {
+                    ss << "[" << this->tuning_parameters_.at(0);
+                    for (unsigned int i = 1; i < this->tuning_parameters_.size(); ++i) {
+                        ss << ", " << this->tuning_parameters_.at(i);
+                    }
+                    ss << "]\n";
+                }
+            }
+            if (! this->auto_optimize_bools_.empty()) {
+                ss << margin << "auto_optimize: ";
+                if (this->auto_optimize_bools_.size() == 1) {
+                    ss << this->auto_optimize_bools_.at(0) << "\n";
+                }
+                else {
+                    ss << "[" << this->auto_optimize_bools_.at(0);
+                    for (unsigned int i = 1; i < this->auto_optimize_bools_.size(); ++i) {
+                        ss << ", " << this->auto_optimize_bools_.at(i);
+                    }
+                    ss << "]\n";
+                }
+            }
+            if (! this->auto_optimize_delays_.empty()) {
+                ss << margin << "auto_optimize_delay: ";
+                if (this->auto_optimize_delays_.size() == 1) {
+                    ss << this->auto_optimize_delays_.at(0) << "\n";
+                }
+                else {
+                    ss << "[" << this->auto_optimize_delays_.at(0);
+                    for (unsigned int i = 1; i < this->auto_optimize_delays_.size(); ++i) {
+                        ss << ", " << this->auto_optimize_delays_.at(i);
+                    }
+                    ss << "]\n";
+                }
+            }
             return ss.str();
         }
 };
@@ -343,27 +633,27 @@ class GeneralTreeOperatorSettingsCollection {
             // If not set in the config, negative weights will be updated to
             // default weight for the operator class and zero weights will
             // prevent operator from being created.
-            {"SplitLumpNodesRevJumpSampler",        GeneralTreeOperatorSettings(-1)},
-            {"NeighborHeightNodePermute",           GeneralTreeOperatorSettings(-1)},
-            {"NeighborHeightNodeSwap",              GeneralTreeOperatorSettings(-1)},
-            {"NeighborHeightNodeSwapAll",           GeneralTreeOperatorSettings(0)},
+            {"NeighborHeightNodePermute",           GeneralTreeOperatorSettings()},
+            {"NeighborHeightNodeSwap",              GeneralTreeOperatorSettings()},
+            {"NeighborHeightNodeSwapAll",           GeneralTreeOperatorSettings()},
         };
         std::map<std::string, GeneralTreeTunableOperatorSettings> tunable_operators {
             // If not set in the config, negative weights will be updated to
             // default weight for the operator class and zero weights will
             // prevent operator from being created.
-            {"TreeScaler",                          GeneralTreeTunableOperatorSettings(-1, 0.015 )},
-            {"NodeHeightScaler",                    GeneralTreeTunableOperatorSettings(-1, 0.02  )},
-            {"NodeHeightMover",                     GeneralTreeTunableOperatorSettings(-1, 0.002 )},
-            {"NodeHeightSlideBumpScaler",           GeneralTreeTunableOperatorSettings(-1, 0.02  )},
-            {"NodeHeightSlideBumpPermuteScaler",    GeneralTreeTunableOperatorSettings(0,  0.02  )},
-            {"NodeHeightSlideBumpSwapScaler",       GeneralTreeTunableOperatorSettings(-1, 0.02  )},
-            {"NodeHeightSlideBumpMover",            GeneralTreeTunableOperatorSettings(0,  0.002 )},
-            {"NodeHeightSlideBumpPermuteMover",     GeneralTreeTunableOperatorSettings(0,  0.002 )},
-            {"NodeHeightSlideBumpSwapMover",        GeneralTreeTunableOperatorSettings(0,  0.002 )},
-            {"RootHeightScaler",                    GeneralTreeTunableOperatorSettings(-1, 0.02  )},
-            {"GlobalNodeHeightDirichletOperator",   GeneralTreeTunableOperatorSettings(-1, 0.0002)},
-            {"NodeHeightDirichletOperator",         GeneralTreeTunableOperatorSettings(-1, 0.001 )},
+            {"SplitLumpNodesRevJumpSampler",        GeneralTreeTunableOperatorSettings()},
+            {"TreeScaler",                          GeneralTreeTunableOperatorSettings()},
+            {"NodeHeightScaler",                    GeneralTreeTunableOperatorSettings()},
+            {"NodeHeightMover",                     GeneralTreeTunableOperatorSettings()},
+            {"NodeHeightSlideBumpScaler",           GeneralTreeTunableOperatorSettings()},
+            {"NodeHeightSlideBumpPermuteScaler",    GeneralTreeTunableOperatorSettings()},
+            {"NodeHeightSlideBumpSwapScaler",       GeneralTreeTunableOperatorSettings()},
+            {"NodeHeightSlideBumpMover",            GeneralTreeTunableOperatorSettings()},
+            {"NodeHeightSlideBumpPermuteMover",     GeneralTreeTunableOperatorSettings()},
+            {"NodeHeightSlideBumpSwapMover",        GeneralTreeTunableOperatorSettings()},
+            {"RootHeightScaler",                    GeneralTreeTunableOperatorSettings()},
+            {"GlobalNodeHeightDirichletOperator",   GeneralTreeTunableOperatorSettings()},
+            {"NodeHeightDirichletOperator",         GeneralTreeTunableOperatorSettings()},
         };
 
         GeneralTreeOperatorSettingsCollection() { }
@@ -456,8 +746,8 @@ class BetaTreeOperatorSettingsCollection : public GeneralTreeOperatorSettingsCol
             // If not set in the config, negative weights will be updated to
             // default weight for the operator class and zero weights will
             // prevent operator from being created.
-            this->tunable_operators["NodeHeightPriorAlphaScaler"]  = GeneralTreeTunableOperatorSettings(-1, 0.5);
-            this->tunable_operators["NodeHeightPriorAlphaMover"]   = GeneralTreeTunableOperatorSettings(0, 0.1);
+            this->tunable_operators["NodeHeightPriorAlphaScaler"]  = GeneralTreeTunableOperatorSettings();
+            this->tunable_operators["NodeHeightPriorAlphaMover"]   = GeneralTreeTunableOperatorSettings();
         }
         BetaTreeOperatorSettingsCollection& operator=(const BetaTreeOperatorSettingsCollection& other) {
             this->untunable_operators = other.untunable_operators;
@@ -475,18 +765,18 @@ class PopulationTreeOperatorSettingsCollection : public GeneralTreeOperatorSetti
             // If not set in the config, negative weights will be updated to
             // default weight for the operator class and zero weights will
             // prevent operator from being created.
-            this->tunable_operators["MuRateScaler"]                = GeneralTreeTunableOperatorSettings(-1, 0.1);
-            this->tunable_operators["GlobalPopSizeScaler"]         = GeneralTreeTunableOperatorSettings(-1, 0.03);
-            this->tunable_operators["PopSizeScaler"]               = GeneralTreeTunableOperatorSettings(-1, 0.05);
-            this->tunable_operators["GlobalHeightSizeMixer"]       = GeneralTreeTunableOperatorSettings(-1, 0.03);
-            this->tunable_operators["HeightSizeMixer"]             = GeneralTreeTunableOperatorSettings(-1, 0.05);
-            this->tunable_operators["HeightSizeSlideBumpMixer"]    = GeneralTreeTunableOperatorSettings(0,  0.05);
-            this->tunable_operators["RootHeightSizeMixer"]         = GeneralTreeTunableOperatorSettings(-1, 0.05);
-            this->tunable_operators["GlobalHeightSizeRateScaler"]  = GeneralTreeTunableOperatorSettings(-1, 0.015);
-            this->tunable_operators["GlobalHeightSizeScaler"]      = GeneralTreeTunableOperatorSettings(0,  0.015);
-            this->tunable_operators["GlobalHeightRateScaler"]      = GeneralTreeTunableOperatorSettings(0,  0.1);
-            this->tunable_operators["StateFreqMover"]              = GeneralTreeTunableOperatorSettings(-1, 0.01);
-            this->tunable_operators["StateFreqDirichletOperator"]  = GeneralTreeTunableOperatorSettings(-1, 0.005);
+            this->tunable_operators["MuRateScaler"]                = GeneralTreeTunableOperatorSettings();
+            this->tunable_operators["GlobalPopSizeScaler"]         = GeneralTreeTunableOperatorSettings();
+            this->tunable_operators["PopSizeScaler"]               = GeneralTreeTunableOperatorSettings();
+            this->tunable_operators["GlobalHeightSizeMixer"]       = GeneralTreeTunableOperatorSettings();
+            this->tunable_operators["HeightSizeMixer"]             = GeneralTreeTunableOperatorSettings();
+            this->tunable_operators["HeightSizeSlideBumpMixer"]    = GeneralTreeTunableOperatorSettings();
+            this->tunable_operators["RootHeightSizeMixer"]         = GeneralTreeTunableOperatorSettings();
+            this->tunable_operators["GlobalHeightSizeRateScaler"]  = GeneralTreeTunableOperatorSettings();
+            this->tunable_operators["GlobalHeightSizeScaler"]      = GeneralTreeTunableOperatorSettings();
+            this->tunable_operators["GlobalHeightRateScaler"]      = GeneralTreeTunableOperatorSettings();
+            this->tunable_operators["StateFreqMover"]              = GeneralTreeTunableOperatorSettings();
+            this->tunable_operators["StateFreqDirichletOperator"]  = GeneralTreeTunableOperatorSettings();
         }
         PopulationTreeOperatorSettingsCollection& operator=(const PopulationTreeOperatorSettingsCollection& other) {
             this->untunable_operators = other.untunable_operators;
@@ -505,8 +795,8 @@ class BetaPopulationTreeOperatorSettingsCollection : public PopulationTreeOperat
             // If not set in the config, negative weights will be updated to
             // default weight for the operator class and zero weights will
             // prevent operator from being created.
-            this->tunable_operators["NodeHeightPriorAlphaScaler"]  = GeneralTreeTunableOperatorSettings(-1, 0.5);
-            this->tunable_operators["NodeHeightPriorAlphaMover"]   = GeneralTreeTunableOperatorSettings(0, 0.1);
+            this->tunable_operators["NodeHeightPriorAlphaScaler"]  = GeneralTreeTunableOperatorSettings();
+            this->tunable_operators["NodeHeightPriorAlphaMover"]   = GeneralTreeTunableOperatorSettings();
         }
         BetaPopulationTreeOperatorSettingsCollection& operator=(const BetaPopulationTreeOperatorSettingsCollection& other) {
             this->untunable_operators = other.untunable_operators;
@@ -612,27 +902,27 @@ class UniformRootAndBetasPriorSettings : public UniformTreePriorSettings {
 
         void update_operator_weights(std::shared_ptr<GeneralTreeOperatorSettingsCollection> op_collection) const {
             if (this->root_height_is_fixed()) {
-                op_collection->tunable_operators.at("TreeScaler").set_weight(0);
-                op_collection->tunable_operators.at("RootHeightScaler").set_weight(0);
-                op_collection->tunable_operators.at("TreeScaler").set_weight(0);
-                op_collection->tunable_operators.at("RootHeightScaler").set_weight(0);
+                op_collection->tunable_operators.at("TreeScaler").turn_off();
+                op_collection->tunable_operators.at("RootHeightScaler").turn_off();
+                op_collection->tunable_operators.at("TreeScaler").turn_off();
+                op_collection->tunable_operators.at("RootHeightScaler").turn_off();
 
                 if (op_collection->tunable_operators.count("GlobalHeightSizeRateScaler") > 0) {
-                    op_collection->tunable_operators.at("GlobalHeightSizeRateScaler").set_weight(0);
+                    op_collection->tunable_operators.at("GlobalHeightSizeRateScaler").turn_off();
                 }
                 if (op_collection->tunable_operators.count("GlobalHeightRateScaler") > 0) {
-                    op_collection->tunable_operators.at("GlobalHeightRateScaler").set_weight(0);
+                    op_collection->tunable_operators.at("GlobalHeightRateScaler").turn_off();
                 }
                 if (op_collection->tunable_operators.count("GlobalHeightSizeScaler") > 0) {
-                    op_collection->tunable_operators.at("GlobalHeightSizeScaler").set_weight(0);
+                    op_collection->tunable_operators.at("GlobalHeightSizeScaler").turn_off();
                 }
             }
             if (this->alpha_of_node_height_beta_prior_is_fixed()) {
                 if (op_collection->tunable_operators.count("NodeHeightPriorAlphaMover") > 0) {
-                    op_collection->tunable_operators.at("NodeHeightPriorAlphaMover").set_weight(0);
+                    op_collection->tunable_operators.at("NodeHeightPriorAlphaMover").turn_off();
                 }
                 if (op_collection->tunable_operators.count("NodeHeightPriorAlphaScaler") > 0) {
-                    op_collection->tunable_operators.at("NodeHeightPriorAlphaScaler").set_weight(0);
+                    op_collection->tunable_operators.at("NodeHeightPriorAlphaScaler").turn_off();
                 }
             }
         }
@@ -917,19 +1207,19 @@ class TreeModelSettings {
         void update_operator_weights(std::shared_ptr<GeneralTreeOperatorSettingsCollection> op_collection) const {
             if (this->get_tree_space() == EcoevolityOptions::TreeSpace::bifurcating) {
                 // Turn off RJ move that moves through generalized tree space
-                op_collection->untunable_operators.at("SplitLumpNodesRevJumpSampler").set_weight(0);
+                op_collection->tunable_operators.at("SplitLumpNodesRevJumpSampler").turn_off();
             }
             else if (this->get_tree_space() == EcoevolityOptions::TreeSpace::fixed_tree) {
                 // Turn off topology changing moves
-                op_collection->untunable_operators.at("SplitLumpNodesRevJumpSampler").set_weight(0);
-                op_collection->untunable_operators.at("NeighborHeightNodeSwap").set_weight(0);
-                op_collection->untunable_operators.at("NeighborHeightNodeSwapAll").set_weight(0);
-                op_collection->untunable_operators.at("NeighborHeightNodePermute").set_weight(0);
+                op_collection->tunable_operators.at("SplitLumpNodesRevJumpSampler").turn_off();
+                op_collection->untunable_operators.at("NeighborHeightNodeSwap").turn_off();
+                op_collection->untunable_operators.at("NeighborHeightNodeSwapAll").turn_off();
+                op_collection->untunable_operators.at("NeighborHeightNodePermute").turn_off();
 
-                op_collection->tunable_operators.at("NodeHeightSlideBumpSwapMover").set_weight(0);
-                op_collection->tunable_operators.at("NodeHeightSlideBumpSwapScaler").set_weight(0);
-                op_collection->tunable_operators.at("NodeHeightSlideBumpPermuteMover").set_weight(0);
-                op_collection->tunable_operators.at("NodeHeightSlideBumpPermuteScaler").set_weight(0);
+                op_collection->tunable_operators.at("NodeHeightSlideBumpSwapMover").turn_off();
+                op_collection->tunable_operators.at("NodeHeightSlideBumpSwapScaler").turn_off();
+                op_collection->tunable_operators.at("NodeHeightSlideBumpPermuteMover").turn_off();
+                op_collection->tunable_operators.at("NodeHeightSlideBumpPermuteScaler").turn_off();
             }
             this->tree_prior->update_operator_weights(op_collection);
         }
@@ -1365,11 +1655,11 @@ class PopulationTreeSettings {
             this->tree_model_settings.update_operator_weights(this->operator_settings);
 
             if (mutation_rate_settings.is_fixed()) {
-                this->operator_settings->tunable_operators.at("MuRateScaler").set_weight(0);
+                this->operator_settings->tunable_operators.at("MuRateScaler").turn_off();
             }
             if (freq_1_settings.is_fixed()) {
-                this->operator_settings->tunable_operators.at("StateFreqMover").set_weight(0);
-                this->operator_settings->tunable_operators.at("StateFreqDirichletOperator").set_weight(0);
+                this->operator_settings->tunable_operators.at("StateFreqMover").turn_off();
+                this->operator_settings->tunable_operators.at("StateFreqDirichletOperator").turn_off();
             }
 
             const bool root_height_is_fixed = tree_model_settings.tree_prior->root_height_is_fixed();
@@ -1377,18 +1667,18 @@ class PopulationTreeSettings {
             const bool pop_sizes_constrained = population_size_settings.population_sizes_are_constrained();
 
             if (root_height_is_fixed || pop_sizes_constrained || pop_sizes_fixed) {
-                this->operator_settings->tunable_operators.at("RootHeightSizeMixer").set_weight(0);
+                this->operator_settings->tunable_operators.at("RootHeightSizeMixer").turn_off();
             }
             if (root_height_is_fixed || pop_sizes_fixed) {
-                this->operator_settings->tunable_operators.at("GlobalHeightSizeMixer").set_weight(0);
+                this->operator_settings->tunable_operators.at("GlobalHeightSizeMixer").turn_off();
             }
             if (pop_sizes_fixed || pop_sizes_constrained) {
-                this->operator_settings->tunable_operators.at("HeightSizeMixer").set_weight(0);
-                this->operator_settings->tunable_operators.at("HeightSizeSlideBumpMixer").set_weight(0);
+                this->operator_settings->tunable_operators.at("HeightSizeMixer").turn_off();
+                this->operator_settings->tunable_operators.at("HeightSizeSlideBumpMixer").turn_off();
             }
             if (pop_sizes_fixed) {
-                this->operator_settings->tunable_operators.at("GlobalPopSizeScaler").set_weight(0);
-                this->operator_settings->tunable_operators.at("PopSizeScaler").set_weight(0);
+                this->operator_settings->tunable_operators.at("GlobalPopSizeScaler").turn_off();
+                this->operator_settings->tunable_operators.at("PopSizeScaler").turn_off();
             }
 
             if (pop_sizes_constrained && (! pop_sizes_fixed)) {
@@ -1398,20 +1688,23 @@ class PopulationTreeSettings {
                 // the weight would be way too large).
                 // If sizes are constrained, PopSizeScaler and
                 // GlobalPopSizeScaler are equivalent, so we'll use the latter.
-                double size_scaler_wt = this->operator_settings->tunable_operators.at("PopSizeScaler").get_weight();
-                double global_size_scaler_wt = this->operator_settings->tunable_operators.at("GlobalPopSizeScaler").get_weight();
-                if (size_scaler_wt < 0.0) {
-                    this->operator_settings->tunable_operators.at("PopSizeScaler").set_weight(0);
-                    if (global_size_scaler_wt <= 0.0) {
-                        // Make sure we use default weight for GlobalPopSizeScaler
-                        this->operator_settings->tunable_operators.at("GlobalPopSizeScaler").set_weight(-1);
+                this->operator_settings->tunable_operators.at("PopSizeScaler").turn_off();
+                std::vector<double> global_size_scaler_wts = this->operator_settings->tunable_operators.at("GlobalPopSizeScaler").get_weights();
+                bool global_size_scaler_off = true;
+                if (global_size_scaler_wts.empty()) {
+                    global_size_scaler_off = false;
+                }
+                else {
+                    for (auto w : global_size_scaler_wts) {
+                        if (w != 0.0) {
+                            global_size_scaler_off = false;
+                            break;
+                        }
                     }
                 }
-                else if (size_scaler_wt > 0.0) {
-                    this->operator_settings->tunable_operators.at("PopSizeScaler").set_weight(0);
-                    if (global_size_scaler_wt <= 0.0) {
-                        this->operator_settings->tunable_operators.at("GlobalPopSizeScaler").set_weight(size_scaler_wt);
-                    }
+                if (global_size_scaler_off) {
+                    // Make sure we use default weight for GlobalPopSizeScaler
+                    this->operator_settings->tunable_operators.at("GlobalPopSizeScaler").clear();
                 }
             }
         }

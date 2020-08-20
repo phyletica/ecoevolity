@@ -45,13 +45,15 @@ TEST_CASE("Testing generalized BasePopulationTree config",
                 5); // number of leaves
 
         std::vector< std::shared_ptr< GeneralTreeOperatorTemplate<BasePopulationTree> > > ops;
-        std::shared_ptr< GeneralTreeOperatorTemplate<BasePopulationTree> > op;
 
-        op = op_schedule.get_split_lump_rj_operator();
-        REQUIRE(op);
+        ops = op_schedule.get_split_lump_rj_operators();
+        REQUIRE(! ops.empty());
 
-        REQUIRE(op->helper_ops.size() > 0);
+        for (auto oper : ops) {
+            REQUIRE(oper->helper_ops.size() > 0);
+        }
 
+        ops.clear();
         ops = op_schedule.get_operators(BaseGeneralTreeOperatorTemplate::OperatorScopeEnum::topology);
         REQUIRE(ops.size() > 0);
     }
@@ -96,10 +98,11 @@ TEST_CASE("Testing bifurcating BasePopulationTree config",
                 5); // number of leaves
 
         std::vector< std::shared_ptr< GeneralTreeOperatorTemplate<BasePopulationTree> > > ops;
-        std::shared_ptr< GeneralTreeOperatorTemplate<BasePopulationTree> > op;
 
-        op = op_schedule.get_split_lump_rj_operator();
-        REQUIRE(! op);
+        ops = op_schedule.get_split_lump_rj_operators();
+        REQUIRE(ops.empty());
+
+        ops.clear();
 
         ops = op_schedule.get_operators(BaseGeneralTreeOperatorTemplate::OperatorScopeEnum::topology);
         REQUIRE(ops.size() > 0);
@@ -145,10 +148,11 @@ TEST_CASE("Testing fixed tree BasePopulationTree config",
                 5); // number of leaves
 
         std::vector< std::shared_ptr< GeneralTreeOperatorTemplate<BasePopulationTree> > > ops;
-        std::shared_ptr< GeneralTreeOperatorTemplate<BasePopulationTree> > op;
 
-        op = op_schedule.get_split_lump_rj_operator();
-        REQUIRE(! op);
+        ops = op_schedule.get_split_lump_rj_operators();
+        REQUIRE(ops.empty());
+
+        ops.clear();
 
         ops = op_schedule.get_operators(BaseGeneralTreeOperatorTemplate::OperatorScopeEnum::topology);
         REQUIRE(ops.size() == 0);

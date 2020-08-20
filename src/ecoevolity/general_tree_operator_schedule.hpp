@@ -36,6 +36,7 @@ class GeneralTreeOperatorSchedule {
         std::vector< std::shared_ptr< GeneralTreeOperatorTemplate<TreeType> > > operators_;
         double total_weight_ = 0.0;
         std::vector<double> cumulative_probs_;
+        unsigned int default_auto_optimize_delay_ = 50;
 
     public:
         GeneralTreeOperatorSchedule() { }
@@ -43,20 +44,16 @@ class GeneralTreeOperatorSchedule {
                 std::shared_ptr<GeneralTreeOperatorSettingsCollection> settings,
                 unsigned int number_of_leaves) {
             for (auto op_settings : settings->untunable_operators) {
-                if (op_settings.second.get_weight() != 0.0) {
-                    this->_add_untunable_op(
-                            op_settings.first,
-                            op_settings.second,
-                            number_of_leaves);
-                }
+                this->_add_untunable_operators(
+                        op_settings.first,
+                        op_settings.second,
+                        number_of_leaves);
             }
             for (auto op_settings : settings->tunable_operators) {
-                if (op_settings.second.get_weight() != 0.0) {
-                    this->_add_tunable_op(
-                            op_settings.first,
-                            op_settings.second,
-                            number_of_leaves);
-                }
+                this->_add_tunable_operators(
+                        op_settings.first,
+                        op_settings.second,
+                        number_of_leaves);
             }
             this->provide_split_lump_rj_move_with_helper_ops();
         }
@@ -96,45 +93,53 @@ class GeneralTreeOperatorSchedule {
             return this->operators_.at(operator_index);
         }
 
-        void append_operator(
+        bool append_operators(
                 const std::string & op_name,
                 std::vector< std::shared_ptr< GeneralTreeOperatorTemplate<TreeType> > > & ops
                 ) const {
+            bool found = false;
             for (std::shared_ptr< GeneralTreeOperatorTemplate<TreeType> > op: this->operators_) {
                 if (op->get_name() == op_name) {
                     ops.push_back(op);
-                    return;
+                    found = true;
                 }
             }
+            return found;
         }
 
-        void get_operator(
+        bool get_operators(
                 const std::string & op_name,
-                std::shared_ptr< GeneralTreeOperatorTemplate<TreeType> > & op) const {
+                std::vector< std::shared_ptr< GeneralTreeOperatorTemplate<TreeType> > > & ops
+                ) const {
+            bool found = false;
             for (std::shared_ptr< GeneralTreeOperatorTemplate<TreeType> > op_iter: this->operators_) {
                 if (op_iter->get_name() == op_name) {
-                    op = op_iter;
-                    return;
+                    ops.push_back(op_iter);
+                    found = true;
                 }
             }
+            return found;
         }
 
-        std::shared_ptr< GeneralTreeOperatorTemplate<TreeType> > get_operator(
+        std::vector< std::shared_ptr< GeneralTreeOperatorTemplate<TreeType> > > get_operators(
                 const std::string & op_name) const {
-            std::shared_ptr< GeneralTreeOperatorTemplate<TreeType> > return_op;
-            this->get_operator(op_name, return_op);
-            return return_op;
+            std::vector< std::shared_ptr< GeneralTreeOperatorTemplate<TreeType> > > return_ops;
+            this->get_operators(op_name, return_ops);
+            return return_ops;
         }
 
-        void get_operators(
+        bool get_operators(
                 const BaseGeneralTreeOperatorTemplate::OperatorTypeEnum op_type,
                 std::vector< std::shared_ptr< GeneralTreeOperatorTemplate<TreeType> > > & ops
                 ) const {
+            bool found = false;
             for (std::shared_ptr< GeneralTreeOperatorTemplate<TreeType> > op: this->operators_) {
                 if (op->get_type() == op_type) {
                     ops.push_back(op);
+                    found = true;
                 }
             }
+            return found;
         }
 
         std::vector< std::shared_ptr< GeneralTreeOperatorTemplate<TreeType> > > get_operators(
@@ -145,15 +150,18 @@ class GeneralTreeOperatorSchedule {
             return ops;
         }
 
-        void get_operators(
+        bool get_operators(
                 const BaseGeneralTreeOperatorTemplate::OperatorScopeEnum op_scope,
                 std::vector< std::shared_ptr< GeneralTreeOperatorTemplate<TreeType> > > & ops
                 ) const {
+            bool found = false;
             for (std::shared_ptr< GeneralTreeOperatorTemplate<TreeType> > op: this->operators_) {
                 if (op->get_scope() == op_scope) {
                     ops.push_back(op);
+                    found = true;
                 }
             }
+            return found;
         }
 
         std::vector< std::shared_ptr< GeneralTreeOperatorTemplate<TreeType> > > get_operators(
@@ -164,21 +172,22 @@ class GeneralTreeOperatorSchedule {
             return ops;
         }
 
-        void get_split_lump_rj_operator(
-                std::shared_ptr< GeneralTreeOperatorTemplate<TreeType> > & rj_op) const {
-            this->get_operator("SplitLumpNodesRevJumpSampler", rj_op);
+        bool get_split_lump_rj_operators(
+                std::vector< std::shared_ptr< GeneralTreeOperatorTemplate<TreeType> > > & rj_ops
+                ) const {
+            return this->get_operators("SplitLumpNodesRevJumpSampler", rj_ops);
         }
 
-        std::shared_ptr< GeneralTreeOperatorTemplate<TreeType> > get_split_lump_rj_operator() const {
-            std::shared_ptr< GeneralTreeOperatorTemplate<TreeType> > return_op;
-            this->get_split_lump_rj_operator(return_op);
-            return return_op;
+        std::vector< std::shared_ptr< GeneralTreeOperatorTemplate<TreeType> > > get_split_lump_rj_operators() const {
+            std::vector< std::shared_ptr< GeneralTreeOperatorTemplate<TreeType> > > return_ops;
+            this->get_split_lump_rj_operators(return_ops);
+            return return_ops;
         }
 
-        void get_root_height_operators(
+        bool get_root_height_operators(
                 std::vector< std::shared_ptr< GeneralTreeOperatorTemplate<TreeType> > > & ops
                 ) const {
-            this->get_operators(
+            return this->get_operators(
                     BaseGeneralTreeOperatorTemplate::OperatorTypeEnum::root_height_operator,
                     ops);
         }
@@ -209,10 +218,9 @@ class GeneralTreeOperatorSchedule {
 
         void get_preferred_node_height_operators(
                 std::vector< std::shared_ptr< GeneralTreeOperatorTemplate<TreeType> > > & ops) const {
-            std::shared_ptr< GeneralTreeOperatorTemplate<TreeType> >
-                op = this->get_operator("GlobalNodeHeightDirichletOperator");
-            if (op) {
-                ops.push_back(op);
+            bool got_global_dir_op = false;
+            got_global_dir_op = this->get_operators("GlobalNodeHeightDirichletOperator", ops);
+            if (got_global_dir_op) {
                 this->get_root_height_operators(ops);
                 return;
             }
@@ -226,13 +234,16 @@ class GeneralTreeOperatorSchedule {
         }
 
         void provide_split_lump_rj_move_with_helper_ops() {
-            std::shared_ptr< GeneralTreeOperatorTemplate<TreeType> > rj_op = this->get_split_lump_rj_operator();
-            if (! rj_op) {
+            std::vector< std::shared_ptr< GeneralTreeOperatorTemplate<TreeType> > > rj_ops;
+            this->get_split_lump_rj_operators(rj_ops);
+            if (rj_ops.empty()) {
                 return;
             }
             std::vector< std::shared_ptr< GeneralTreeOperatorTemplate<TreeType> > > ops;
             this->get_preferred_node_height_operators(ops);
-            rj_op->helper_ops = ops;
+            for (auto rj_op: rj_ops) {
+                rj_op->helper_ops = ops;
+            }
         }
 
         double get_total_weight() const {
@@ -253,26 +264,68 @@ class GeneralTreeOperatorSchedule {
                 std::ostream & out,
                 const unsigned int indent_level = 0) const {
             std::set<std::string> op_names;
+            std::map< std::string, std::vector< std::shared_ptr< GeneralTreeOperatorTemplate<TreeType> > > > op_map;
+            for (auto op : this->operators_) {
+                op_names.insert(op->get_name());
+                op_map[op->get_name()].push_back(op);
+            }
+
             out << std::boolalpha;
             std::string margin = string_util::get_indent(indent_level);
             std::string indent = string_util::get_indent(1);
-            for (auto op : this->operators_) {
-                op_names.insert(op->get_name());
-                out << margin << op->get_name() << ":\n"
-                    << margin << indent
-                    << "weight: " << op->get_weight() << "\n";
-                if (std::isnan(op->get_coercable_parameter_value())) {
+            for (auto name_ops : op_map) {
+                out << margin << name_ops.first << ":\n";
+
+                out << margin << indent << "weight: ";
+                if (name_ops.second.size() == 1) {
+                    out << name_ops.second.at(0)->get_weight() << "\n";
+                }
+                else {
+                    out << "[" << name_ops.second.at(0)->get_weight();
+                    for (unsigned int i = 1; i < name_ops.second.size(); ++i) {
+                        out << ", " << name_ops.second.at(i)->get_weight();
+                    }
+                    out << "]\n";
+                }
+
+                if (std::isnan(name_ops.second.at(0)->get_coercable_parameter_value())) {
                     continue;
                 }
-                out << margin << indent
-                    << "tuning_parameter: "
-                    << op->get_coercable_parameter_value() << "\n"
-                    << margin << indent
-                    << "auto_optimize: " << op->auto_optimizing() << "\n";
-                if (op->auto_optimizing()) {
-                    out << margin << indent
-                        << "auto_optimize_delay: "
-                        << op->get_auto_optimize_delay() << "\n";
+
+                out << margin << indent << "tuning_parameter: ";
+                if (name_ops.second.size() == 1) {
+                    out << name_ops.second.at(0)->get_coercable_parameter_value() << "\n";
+                }
+                else {
+                    out << "[" << name_ops.second.at(0)->get_coercable_parameter_value();
+                    for (unsigned int i = 1; i < name_ops.second.size(); ++i) {
+                        out << ", " << name_ops.second.at(i)->get_coercable_parameter_value();
+                    }
+                    out << "]\n";
+                }
+
+                out << margin << indent << "auto_optimize: ";
+                if (name_ops.second.size() == 1) {
+                    out << name_ops.second.at(0)->auto_optimizing() << "\n";
+                }
+                else {
+                    out << "[" << name_ops.second.at(0)->auto_optimizing();
+                    for (unsigned int i = 1; i < name_ops.second.size(); ++i) {
+                        out << ", " << name_ops.second.at(i)->auto_optimizing();
+                    }
+                    out << "]\n";
+                }
+
+                out << margin << indent << "auto_optimize_delay: ";
+                if (name_ops.second.size() == 1) {
+                    out << name_ops.second.at(0)->get_auto_optimize_delay() << "\n";
+                }
+                else {
+                    out << "[" << name_ops.second.at(0)->get_auto_optimize_delay();
+                    for (unsigned int i = 1; i < name_ops.second.size(); ++i) {
+                        out << ", " << name_ops.second.at(i)->get_auto_optimize_delay();
+                    }
+                    out << "]\n";
                 }
             }
             return op_names;
@@ -280,17 +333,37 @@ class GeneralTreeOperatorSchedule {
 
 
     protected:
-        void _add_untunable_op(
+        void _add_untunable_operators(
                 const std::string & op_name,
                 GeneralTreeOperatorSettings op_settings,
                 unsigned int number_of_leaves) {
-            std::shared_ptr< GeneralTreeOperatorTemplate<TreeType> > op;
-            if (op_name == "SplitLumpNodesRevJumpSampler") {
-                op = std::make_shared<
-                            SplitLumpNodesRevJumpSampler<TreeType>
-                                      >();
+            if (op_settings.is_empty()) {
+                this->_add_untunable_op(
+                        op_name,
+                        -1.0,
+                        1,
+                        number_of_leaves);
+                return;
             }
-            else if (op_name == "NeighborHeightNodePermute") {
+            for (unsigned int i = 0; i < op_settings.get_number_of_operators(); ++i) {
+                this->_add_untunable_op(
+                        op_name,
+                        op_settings.get_weight(i),
+                        op_settings.get_number_of_operators(),
+                        number_of_leaves);
+            }
+        }
+
+        void _add_untunable_op(
+                const std::string & op_name,
+                double weight,
+                unsigned int operator_count,
+                unsigned int number_of_leaves) {
+            if (weight == 0.0) {
+                return;
+            }
+            std::shared_ptr< GeneralTreeOperatorTemplate<TreeType> > op;
+            if (op_name == "NeighborHeightNodePermute") {
                 op = std::make_shared<
                                  NeighborHeightNodePermute<TreeType>
                                       >();
@@ -310,23 +383,100 @@ class GeneralTreeOperatorSchedule {
                         "GeneralTreeOperatorSchedule: Unrecognized untunable operator: " + op_name);
             }
 
-            if (op_settings.get_weight() < 0.0) {
-                op->set_default_weight(number_of_leaves);
+            if (weight < 0.0) {
+                double wt = op->get_default_weight(number_of_leaves);
+                if (wt <= 0.0) {
+                    return;
+                }
+                op->set_weight(wt / (double)operator_count);
             }
             else {
-                op->set_weight(op_settings.get_weight());
+                op->set_weight(weight);
             }
+
+            ECOEVOLITY_ASSERT(op->get_weight() > 0.0);
 
             this->add_operator(op);
         }
-        void _add_tunable_op(
+
+        void _add_tunable_operators(
                 const std::string & op_name,
                 GeneralTreeTunableOperatorSettings op_settings,
                 unsigned int number_of_leaves) {
+            if (op_settings.is_empty()) {
+                if (op_name ==  "SplitLumpNodesRevJumpSampler") {
+                    // Special default case of multiple operators for
+                    // SplitLumpNodesRevJumpSampler
+                    unsigned int n_rj_ops = 3;
+                    this->_add_tunable_op(
+                            op_name,
+                            -1.0,
+                            1.0,
+                            false,
+                            -1,
+                            n_rj_ops,
+                            number_of_leaves);
+                    this->_add_tunable_op(
+                            op_name,
+                            -1.0,
+                            10.0,
+                            false,
+                            -1,
+                            n_rj_ops,
+                            number_of_leaves);
+                    this->_add_tunable_op(
+                            op_name,
+                            -1.0,
+                            1.0,
+                            true,
+                            -1,
+                            n_rj_ops,
+                            number_of_leaves);
+                    return;
+                }
+                this->_add_tunable_op(
+                        op_name,
+                        -1.0,
+                        -1.0,
+                        true,
+                        -1,
+                        1,
+                        number_of_leaves);
+                return;
+            }
+            for (unsigned int i = 0; i < op_settings.get_number_of_operators(); ++i) {
+                this->_add_tunable_op(
+                        op_name,
+                        op_settings.get_weight(i),
+                        op_settings.get_tuning_parameter(i),
+                        op_settings.auto_optimizing(i),
+                        op_settings.get_auto_optimize_delay(i),
+                        op_settings.get_number_of_operators(),
+                        number_of_leaves);
+            }
+        }
+
+        void _add_tunable_op(
+                const std::string & op_name,
+                double weight,
+                double tuning_parameter,
+                bool auto_optimize,
+                int auto_optimize_delay,
+                unsigned int operator_count,
+                unsigned int number_of_leaves) {
+            if (weight == 0.0) {
+                return;
+            }
             std::shared_ptr< GeneralTreeOperatorTemplate<TreeType> > op;
-            if (op_name == "TreeScaler") {
+            if (op_name == "SplitLumpNodesRevJumpSampler") {
                 op = std::make_shared<
-                            TreeScaler<TreeType> >();
+                            SplitLumpNodesRevJumpSampler<TreeType>
+                                      >();
+            }
+            else if (op_name == "TreeScaler") {
+                op = std::make_shared<
+                            TreeScaler<TreeType>
+                                      >();
             }
             else if (op_name == "NodeHeightScaler") {
                 op = std::make_shared<
@@ -458,26 +608,38 @@ class GeneralTreeOperatorSchedule {
                         "GeneralTreeOperatorSchedule: Unrecognized tunable operator: " + op_name);
             }
 
-            if (op_settings.get_weight() < 0.0) {
-                op->set_default_weight(number_of_leaves);
+            if (weight < 0.0) {
+                double wt = op->get_default_weight(number_of_leaves);
+                if (wt <= 0.0) {
+                    return;
+                }
+                op->set_weight(wt / (double)operator_count);
             }
             else {
-                op->set_weight(op_settings.get_weight());
-            }
-
-            op->set_auto_optimize_delay(op_settings.get_auto_optimize_delay());
-
-            // If the tuning parameter is negative, it has not been set,
-            // and we will keep the default value of the operator class
-            if (op_settings.get_tuning_parameter() > 0.0) {
-                op->set_coercable_parameter_value(
-                        op_settings.get_tuning_parameter());
+                op->set_weight(weight);
             }
 
             op->turn_on_auto_optimize();
-            if (! op_settings.auto_optimizing()) {
+            if (! auto_optimize) {
                 op->turn_off_auto_optimize();
             }
+
+            if (tuning_parameter > 0.0) {
+                op->set_coercable_parameter_value(tuning_parameter);
+            }
+            else {
+                op->set_coercable_parameter_value(
+                        op->get_default_coercable_parameter_value());
+            }
+
+            if (auto_optimize_delay < 0) {
+                op->set_auto_optimize_delay(this->default_auto_optimize_delay_);
+            }
+            else {
+                op->set_auto_optimize_delay(auto_optimize_delay);
+            }
+
+            ECOEVOLITY_ASSERT(op->get_weight() > 0.0);
 
             this->add_operator(op);
         }

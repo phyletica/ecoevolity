@@ -72,22 +72,26 @@ class BaseGeneralTreeOperatorTemplate {
             ECOEVOLITY_ASSERT(weight >= 0.0);
             this->weight_ = weight;
         }
-        virtual void set_default_weight(unsigned int number_of_leaves) {
+        virtual double get_default_weight(unsigned int number_of_leaves) {
             if (this->get_type() == BaseGeneralTreeOperatorTemplate::OperatorTypeEnum::topology_model_operator) {
-                this->weight_ = (double)number_of_leaves;
+                return (double)number_of_leaves;
             }
             else if (this->get_scope() == BaseGeneralTreeOperatorTemplate::OperatorScopeEnum::topology) {
-                this->weight_ = (double)number_of_leaves / 2.0;
+                return (double)number_of_leaves / 2.0;
             }
             else if (this->get_scope() == BaseGeneralTreeOperatorTemplate::OperatorScopeEnum::node_height) {
-                this->weight_ = (double)number_of_leaves / 2.0;
+                return (double)number_of_leaves / 2.0;
             }
             else if (this->get_scope() == BaseGeneralTreeOperatorTemplate::OperatorScopeEnum::branch) {
-                this->weight_ = (double)number_of_leaves / 2.0;
+                return (double)number_of_leaves / 2.0;
             }
             else {
-                this->weight_ = 1.0;
+                return 1.0;
             }
+        }
+
+        virtual double get_default_coercable_parameter_value() const {
+            return std::numeric_limits<double>::quiet_NaN();
         }
 
         virtual std::string get_name() const = 0;
@@ -318,6 +322,10 @@ class GeneralTreeOperatorInterface : public GeneralTreeOperatorTemplate<TreeType
             this->op_.reject();
         }
 
+        double get_default_coercable_parameter_value() const {
+            return this->op_.get_default_coercable_parameter_value();
+        }
+
         virtual double get_coercable_parameter_value() const {
             return this->op_.get_coercable_parameter_value();
         }
@@ -419,6 +427,10 @@ class Op {
             auto_optimize_(auto_optimize) { }
 
         virtual void optimize(double log_alpha) { }
+
+        virtual double get_default_coercable_parameter_value() const {
+            return std::numeric_limits<double>::quiet_NaN();
+        }
 
         virtual double get_coercable_parameter_value() const {
             return std::numeric_limits<double>::quiet_NaN();
@@ -582,6 +594,10 @@ class ScaleOp : public BaseOptimizingOp {
             return std::exp(this->scale_ * ((2.0 * rng.uniform_real()) - 1.0));
         }
 
+        double get_default_coercable_parameter_value() const {
+            return 0.5;
+        }
+
         double get_coercable_parameter_value() const {
             return this->scale_;
         }
@@ -633,6 +649,10 @@ class WindowOp : public BaseOptimizingOp {
 
         double get_move_amount(RandomNumberGenerator& rng) const {
             return (rng.uniform_real() * 2 * this->window_size_) - this->window_size_;
+        }
+
+        double get_default_coercable_parameter_value() const {
+            return 0.1;
         }
 
         double get_coercable_parameter_value() const {
@@ -720,6 +740,10 @@ class DirichletOp : public BaseOptimizingOp {
             // We should never call this
             ECOEVOLITY_ASSERT(0 == 1);
             return 0.0;
+        }
+
+        double get_default_coercable_parameter_value() const {
+            return 0.5;
         }
 
         double get_coercable_parameter_value() const {
@@ -812,6 +836,10 @@ class BetaOp : public BaseOptimizingOp {
             return 0.0;
         }
 
+        double get_default_coercable_parameter_value() const {
+            return 0.5;
+        }
+
         double get_coercable_parameter_value() const {
             return this->scale_;
         }
@@ -874,6 +902,10 @@ class NodeHeightPriorAlphaScaler : public GeneralTreeOperatorInterface<TreeType,
             tree->set_alpha_of_node_height_beta_prior(new_alpha);
             return ln_multiplier;
         }
+
+        double get_default_coercable_parameter_value() const {
+            return 0.5;
+        }
 };
 
 
@@ -928,6 +960,13 @@ class NodeHeightPriorAlphaMover : public GeneralTreeOperatorInterface<TreeType, 
             tree->set_alpha_of_node_height_beta_prior(new_alpha);
             return ln_hastings;
         }
+
+        double get_default_coercable_parameter_value() const {
+            return 0.1;
+        }
+        double get_default_weight(unsigned int number_of_leaves) {
+            return 0.0;
+        }
 };
 
 
@@ -978,6 +1017,13 @@ class NodeHeightPriorBetaScaler : public GeneralTreeOperatorInterface<TreeType, 
             this->update(rng, new_beta, ln_multiplier);
             tree->set_beta_of_node_height_beta_prior(new_beta);
             return ln_multiplier;
+        }
+
+        double get_default_coercable_parameter_value() const {
+            return 0.5;
+        }
+        double get_default_weight(unsigned int number_of_leaves) {
+            return 0.0;
         }
 };
 
@@ -1033,6 +1079,13 @@ class NodeHeightPriorBetaMover : public GeneralTreeOperatorInterface<TreeType, W
             tree->set_beta_of_node_height_beta_prior(new_beta);
             return ln_hastings;
         }
+
+        double get_default_coercable_parameter_value() const {
+            return 0.1;
+        }
+        double get_default_weight(unsigned int number_of_leaves) {
+            return 0.0;
+        }
 };
 
 
@@ -1082,6 +1135,10 @@ class TreeScaler : public GeneralTreeOperatorInterface<TreeType, ScaleOp> {
             double multiplier = this->op_.get_move_amount(rng);
             tree->scale_tree(multiplier);
             return std::log(multiplier) * num_heights;
+        }
+
+        double get_default_coercable_parameter_value() const {
+            return 0.015;
         }
 };
 
@@ -1144,6 +1201,10 @@ class NodeHeightScaler : public GeneralTreeOperatorInterface<TreeType, ScaleOp> 
             tree->set_height(height_index, new_height);
             return ln_multiplier;
         }
+
+        double get_default_coercable_parameter_value() const {
+            return 0.02;
+        }
 };
 
 
@@ -1199,6 +1260,10 @@ class RootHeightScaler : public GeneralTreeOperatorInterface<TreeType, ScaleOp> 
             }
             tree->set_height(height_index, height);
             return ln_multiplier;
+        }
+
+        double get_default_coercable_parameter_value() const {
+            return 0.02;
         }
 };
 
@@ -1273,6 +1338,10 @@ class GlobalNodeHeightDirichletOperator : public GeneralTreeOperatorInterface<Tr
             tree->make_dirty();
             return ln_hastings;
         }
+
+        double get_default_coercable_parameter_value() const {
+            return 0.0002;
+        }
 };
 
 
@@ -1339,6 +1408,10 @@ class NodeHeightDirichletOperator : public GeneralTreeOperatorInterface<TreeType
 
             tree->set_height(height_index, new_height);
             return ln_hastings;
+        }
+
+        double get_default_coercable_parameter_value() const {
+            return 0.001;
         }
 };
 
@@ -1474,6 +1547,10 @@ class NodeHeightMover : public GeneralTreeOperatorInterface<TreeType, WindowOp> 
             tree->set_height(height_index, height);
             return ln_hastings;
         }
+
+        double get_default_coercable_parameter_value() const {
+            return 0.002;
+        }
 };
 
 
@@ -1566,6 +1643,10 @@ class NodeHeightSlideBumpScaler : public GeneralTreeOperatorInterface<TreeType, 
             }
             return ln_multiplier;
         }
+
+        double get_default_coercable_parameter_value() const {
+            return 0.02;
+        }
 };
 
 
@@ -1590,6 +1671,13 @@ class NodeHeightSlideBumpPermuteScaler : public NodeHeightSlideBumpScaler<TreeTy
 
         std::string get_name() const {
             return "NodeHeightSlideBumpPermuteScaler";
+        }
+
+        double get_default_coercable_parameter_value() const {
+            return 0.02;
+        }
+        double get_default_weight(unsigned int number_of_leaves) {
+            return 0.0;
         }
 };
 
@@ -1616,6 +1704,10 @@ class NodeHeightSlideBumpSwapScaler : public NodeHeightSlideBumpScaler<TreeType>
         std::string get_name() const {
             return "NodeHeightSlideBumpSwapScaler";
         }
+
+        double get_default_coercable_parameter_value() const {
+            return 0.02;
+        }
 };
 
 
@@ -1640,6 +1732,13 @@ class NodeHeightSlideBumpSwapAllScaler : public NodeHeightSlideBumpScaler<TreeTy
 
         std::string get_name() const {
             return "NodeHeightSlideBumpSwapAllScaler";
+        }
+
+        double get_default_coercable_parameter_value() const {
+            return 0.02;
+        }
+        double get_default_weight(unsigned int number_of_leaves) {
+            return 0.0;
         }
 };
 
@@ -1733,6 +1832,13 @@ class NodeHeightSlideBumpMover : public GeneralTreeOperatorInterface<TreeType, W
             }
             return ln_hastings;
         }
+
+        double get_default_coercable_parameter_value() const {
+            return 0.002;
+        }
+        double get_default_weight(unsigned int number_of_leaves) {
+            return 0.0;
+        }
 };
 
 
@@ -1757,6 +1863,13 @@ class NodeHeightSlideBumpPermuteMover : public NodeHeightSlideBumpMover<TreeType
 
         std::string get_name() const {
             return "NodeHeightSlideBumpPermuteMover";
+        }
+
+        double get_default_coercable_parameter_value() const {
+            return 0.002;
+        }
+        double get_default_weight(unsigned int number_of_leaves) {
+            return 0.0;
         }
 };
 
@@ -1783,6 +1896,13 @@ class NodeHeightSlideBumpSwapMover : public NodeHeightSlideBumpMover<TreeType> {
         std::string get_name() const {
             return "NodeHeightSlideBumpSwapMover";
         }
+
+        double get_default_coercable_parameter_value() const {
+            return 0.002;
+        }
+        double get_default_weight(unsigned int number_of_leaves) {
+            return 0.0;
+        }
 };
 
 
@@ -1807,6 +1927,13 @@ class NodeHeightSlideBumpSwapAllMover : public NodeHeightSlideBumpMover<TreeType
 
         std::string get_name() const {
             return "NodeHeightSlideBumpSwapAllMover";
+        }
+
+        double get_default_coercable_parameter_value() const {
+            return 0.002;
+        }
+        double get_default_weight(unsigned int number_of_leaves) {
+            return 0.0;
         }
 };
 
@@ -1952,6 +2079,10 @@ class NeighborHeightNodeSwapAll : public NeighborHeightNodeSwap<TreeType> {
                     height_index);
             return 0.0;
         }
+
+        double get_default_weight(unsigned int number_of_leaves) {
+            return 0.0;
+        }
 };
 
 
@@ -2041,6 +2172,10 @@ class SplitLumpNodesRevJumpSampler : public GeneralTreeOperatorInterface<TreeTyp
             // delta += std::log(this->get_coercable_parameter_value());
             delta -= std::log(this->get_coercable_parameter_value());
             this->set_coercable_parameter_value(std::exp(delta));
+        }
+
+        double get_default_coercable_parameter_value() const {
+            return 1.0;
         }
 
         double propose_split(RandomNumberGenerator& rng,
@@ -2748,6 +2883,10 @@ class GlobalPopSizeScaler : public GeneralTreeOperatorInterface<BasePopulationTr
             n_parameters_scaled = tree->scale_all_population_sizes(multiplier);
             return std::log(multiplier) * n_parameters_scaled;
         }
+
+        double get_default_coercable_parameter_value() const {
+            return 0.03;
+        }
 };
 
 class PopSizeScaler : public GeneralTreeOperatorInterface<BasePopulationTree, ScaleOp> {
@@ -2809,6 +2948,10 @@ class PopSizeScaler : public GeneralTreeOperatorInterface<BasePopulationTree, Sc
 
             return ln_multiplier;
         }
+
+        double get_default_coercable_parameter_value() const {
+            return 0.05;
+        }
 };
 
 class MuRateScaler : public GeneralTreeOperatorInterface<BasePopulationTree, ScaleOp> {
@@ -2861,6 +3004,10 @@ class MuRateScaler : public GeneralTreeOperatorInterface<BasePopulationTree, Sca
             }
             tree->set_mutation_rate(mutation_rate);
             return ln_multiplier;
+        }
+
+        double get_default_coercable_parameter_value() const {
+            return 0.1;
         }
 };
 
@@ -3044,6 +3191,10 @@ class GlobalHeightSizeMixer : public GeneralTreeOperatorInterface<BasePopulation
             // }
             // return std::log(multiplier) * num_heights;
         }
+
+        double get_default_coercable_parameter_value() const {
+            return 0.03;
+        }
 };
 
 class HeightSizeMixer : public GeneralTreeOperatorInterface<BasePopulationTree, ScaleOp> {
@@ -3175,6 +3326,10 @@ class HeightSizeMixer : public GeneralTreeOperatorInterface<BasePopulationTree, 
 
             return std::log(multiplier);
         }
+
+        double get_default_coercable_parameter_value() const {
+            return 0.05;
+        }
 };
 
 class RootHeightSizeMixer : public GeneralTreeOperatorInterface<BasePopulationTree, ScaleOp> {
@@ -3280,6 +3435,10 @@ class RootHeightSizeMixer : public GeneralTreeOperatorInterface<BasePopulationTr
             tree->set_root_population_size(new_size);
             tree->set_root_height(new_height);
             return std::log(multiplier);
+        }
+
+        double get_default_coercable_parameter_value() const {
+            return 0.05;
         }
 };
 
@@ -3393,6 +3552,13 @@ class HeightSizeSlideBumpMixer : public GeneralTreeOperatorInterface<BasePopulat
             }
             return ln_multiplier;
         }
+
+        double get_default_coercable_parameter_value() const {
+            return 0.05;
+        }
+        double get_default_weight(unsigned int number_of_leaves) {
+            return 0.0;
+        }
 };
 
 
@@ -3456,6 +3622,10 @@ class GlobalHeightSizeRateScaler : public GeneralTreeOperatorInterface<BasePopul
             }
             return std::log(multiplier) * (num_params_scaled - num_params_inv_scaled);
         }
+
+        double get_default_coercable_parameter_value() const {
+            return 0.015;
+        }
 };
 
 
@@ -3485,6 +3655,13 @@ class GlobalHeightRateScaler : public GlobalHeightSizeRateScaler {
         BaseGeneralTreeOperatorTemplate::OperatorScopeEnum get_scope() const {
             return BaseGeneralTreeOperatorTemplate::OperatorScopeEnum::global;
         }
+
+        double get_default_coercable_parameter_value() const {
+            return 0.1;
+        }
+        double get_default_weight(unsigned int number_of_leaves) {
+            return 0.0;
+        }
 };
 
 
@@ -3513,6 +3690,13 @@ class GlobalHeightSizeScaler : public GlobalHeightSizeRateScaler {
         }
         BaseGeneralTreeOperatorTemplate::OperatorScopeEnum get_scope() const {
             return BaseGeneralTreeOperatorTemplate::OperatorScopeEnum::global;
+        }
+
+        double get_default_coercable_parameter_value() const {
+            return 0.015;
+        }
+        double get_default_weight(unsigned int number_of_leaves) {
+            return 0.0;
         }
 };
 
@@ -3570,6 +3754,10 @@ class StateFreqMover : public GeneralTreeOperatorInterface<BasePopulationTree, W
             tree->set_freq_1(freq_1);
             return ln_hastings; 
         }
+
+        double get_default_coercable_parameter_value() const {
+            return 0.01;
+        }
 };
 
 
@@ -3626,6 +3814,10 @@ class StateFreqDirichletOperator : public GeneralTreeOperatorInterface<BasePopul
             tree->set_freq_1(freq_1);
             return ln_hastings; 
         }
+
+        double get_default_coercable_parameter_value() const {
+            return 0.005;
+        }
 };
 
 
@@ -3681,6 +3873,13 @@ class StateFreqBetaOperator : public GeneralTreeOperatorInterface<BasePopulation
             }
             tree->set_freq_1(freq_1);
             return ln_hastings; 
+        }
+
+        double get_default_coercable_parameter_value() const {
+            return 0.5;
+        }
+        double get_default_weight(unsigned int number_of_leaves) {
+            return 0.0;
         }
 };
 
