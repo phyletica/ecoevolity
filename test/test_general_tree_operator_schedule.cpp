@@ -246,6 +246,67 @@ TEST_CASE("Testing SplitLumpNodesRevJumpSampler operator with some defaults",
     }
 }
 
+TEST_CASE("Testing SplitLumpNodesRevJumpSampler operator with zero weight",
+        "[GeneralTreeOperatorSchedule]") {
+    SECTION("Testing SplitLumpNodesRevJumpSampler with zero weight") {
+        std::string cfg_path = "data/dummy.yml";
+
+        std::stringstream cfg_stream;
+        cfg_stream << "---\n";
+        cfg_stream << "tree_model:\n";
+        cfg_stream << "    tree_space: \"generalized\"\n";
+        cfg_stream << "    tree_prior:\n";
+        cfg_stream << "        uniform_root_and_betas:\n";
+        cfg_stream << "            parameters:\n";
+        cfg_stream << "                root_height:\n";
+        cfg_stream << "                    value: 0.3\n";
+        cfg_stream << "                    estimate: true\n";
+        cfg_stream << "                    prior:\n";
+        cfg_stream << "                        gamma_distribution:\n";
+        cfg_stream << "                            shape: 8.0\n";
+        cfg_stream << "                            mean: 0.3\n";
+        cfg_stream << "                alpha_of_node_height_beta_prior:\n";
+        cfg_stream << "                    value: 1.0\n";
+        cfg_stream << "                    estimate: true\n";
+        cfg_stream << "                    prior:\n";
+        cfg_stream << "                        gamma_distribution:\n";
+        cfg_stream << "                            shape: 4.0\n";
+        cfg_stream << "                            mean: 1.0\n";
+        cfg_stream << "data:\n";
+        cfg_stream << "    ploidy: 1\n";
+        cfg_stream << "    constant_sites_removed: false\n";
+        cfg_stream << "    yaml_allele_counts:\n";
+        cfg_stream << "        path: \"diploid-dna-constant-missing.yml\"\n";
+        cfg_stream << "mcmc_settings:\n";
+        cfg_stream << "    chain_length: 15000\n";
+        cfg_stream << "    sample_frequency: 10\n";
+        cfg_stream << "    operators:\n";
+        cfg_stream << "        SplitLumpNodesRevJumpSampler:\n";
+        cfg_stream << "            weight: 0\n";
+
+        PopulationTreeSettings settings = PopulationTreeSettings(cfg_stream, cfg_path);
+
+        auto rj_op = settings.operator_settings->tunable_operators["SplitLumpNodesRevJumpSampler"];
+        for (unsigned int i = 0; i < rj_op.get_number_of_operators(); ++i) {
+            std::cout << "weight " << i << ": " << rj_op.get_weight(i) << "\n";
+            std::cout << "tuning param " << i << ": " << rj_op.get_tuning_parameter(i) << "\n";
+            std::cout << "auto opt " << i << ": " << rj_op.auto_optimizing(i) << "\n";
+            std::cout << "auto opt delay " << i << ": " << rj_op.get_auto_optimize_delay(i) << "\n";
+        }
+
+        GeneralTreeOperatorSchedule<BasePopulationTree> op_schedule(
+                settings.operator_settings,
+                9); // number of leaves
+
+        op_schedule.write_op_settings(std::cout);
+
+        std::vector< std::shared_ptr< GeneralTreeOperatorTemplate<BasePopulationTree> > > ops;
+
+        ops = op_schedule.get_split_lump_rj_operators();
+        REQUIRE(ops.empty());
+    }
+}
+
 TEST_CASE("Testing SplitLumpNodesRevJumpSampler operator turn off",
         "[GeneralTreeOperatorSchedule]") {
     SECTION("Testing SplitLumpNodesRevJumpSampler turn off") {
