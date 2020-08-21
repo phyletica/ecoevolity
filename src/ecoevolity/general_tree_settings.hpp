@@ -425,6 +425,11 @@ class GeneralTreeTunableOperatorSettings : public GeneralTreeOperatorSettings {
                 throw EcoevolityYamlConfigError(message);
             }
 
+            std::vector<double> weights;
+            std::vector<double> tuning_parameters;
+            std::vector<int> opt_delays;
+            std::vector<bool> auto_opt_bools;
+
             std::unordered_set<std::string> keys;
             for (YAML::const_iterator p = operator_node.begin();
                     p != operator_node.end();
@@ -436,11 +441,6 @@ class GeneralTreeTunableOperatorSettings : public GeneralTreeOperatorSettings {
                     throw EcoevolityYamlConfigError(message);
                 }
                 keys.insert(p->first.as<std::string>());
-
-                std::vector<double> weights;
-                std::vector<double> tuning_parameters;
-                std::vector<int> opt_delays;
-                std::vector<bool> auto_opt_bools;
 
                 if (p->first.as<std::string>() == "weight") {
                     if (p->second.IsScalar()) {
@@ -534,36 +534,36 @@ class GeneralTreeTunableOperatorSettings : public GeneralTreeOperatorSettings {
                             p->first.as<std::string>());
                     throw EcoevolityYamlConfigError(message);
                 }
-
-                std::vector<size_t> n_ops_vector =  {
-                        weights.size(),
-                        tuning_parameters.size(),
-                        opt_delays.size(),
-                        auto_opt_bools.size()};
-                size_t n_ops = *std::max_element(std::begin(n_ops_vector), std::end(n_ops_vector));
-                if (n_ops < 1) {
-                    throw EcoevolityYamlConfigError("operator listed with no options");
-                }
-                for (auto n : n_ops_vector) {
-                    if ((n > 0) && (n != n_ops)) {
-                        throw EcoevolityYamlConfigError("operator with unequal number of options");
-                    }
-                }
-                if (weights.empty()) {
-                    weights = std::vector<double>(n_ops, -1.0);
-                }
-                if (tuning_parameters.empty()) {
-                    tuning_parameters = std::vector<double>(n_ops, -1.0);
-                }
-                if (opt_delays.empty()) {
-                    opt_delays = std::vector<int>(n_ops, -1);
-                }
-                if (auto_opt_bools.empty()) {
-                    auto_opt_bools = std::vector<bool>(n_ops, true);
-                }
-
-                this->init(weights, tuning_parameters, auto_opt_bools, opt_delays);
             }
+
+            std::vector<size_t> n_ops_vector =  {
+                    weights.size(),
+                    tuning_parameters.size(),
+                    opt_delays.size(),
+                    auto_opt_bools.size()};
+            size_t n_ops = *std::max_element(std::begin(n_ops_vector), std::end(n_ops_vector));
+            if (n_ops < 1) {
+                throw EcoevolityYamlConfigError("operator listed with no options");
+            }
+            for (auto n : n_ops_vector) {
+                if ((n > 0) && (n != n_ops)) {
+                    throw EcoevolityYamlConfigError("operator with unequal number of options");
+                }
+            }
+            if (weights.empty()) {
+                weights = std::vector<double>(n_ops, -1.0);
+            }
+            if (tuning_parameters.empty()) {
+                tuning_parameters = std::vector<double>(n_ops, -1.0);
+            }
+            if (opt_delays.empty()) {
+                opt_delays = std::vector<int>(n_ops, -1);
+            }
+            if (auto_opt_bools.empty()) {
+                auto_opt_bools = std::vector<bool>(n_ops, true);
+            }
+
+            this->init(weights, tuning_parameters, auto_opt_bools, opt_delays);
         }
 
         std::string to_string(unsigned int indent_level = 0) const {
