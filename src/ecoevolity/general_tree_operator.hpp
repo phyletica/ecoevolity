@@ -2169,9 +2169,10 @@ class SplitLumpNodesRevJumpSampler : public GeneralTreeOperatorInterface<TreeTyp
             if (delta == 0.0) {
                 return;
             }
-            // delta += std::log(this->get_coercable_parameter_value());
-            delta -= std::log(this->get_coercable_parameter_value());
-            this->set_coercable_parameter_value(std::exp(delta));
+            // Using 1 / alpha as the optimizing parameter, because larger
+            // values of alpha correspond to smaller split moves
+            delta += std::log(1.0 / this->get_coercable_parameter_value());
+            this->set_coercable_parameter_value(1.0 / std::exp(delta));
         }
 
         double get_default_coercable_parameter_value() const {
