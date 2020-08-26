@@ -1746,6 +1746,9 @@ class TreeSample {
                 split.add_split(s);
             }
             std::vector< std::shared_ptr<NodeSamples> > node_samples = this->get_nodes_of_split(split);
+            if (node_samples.empty()) {
+                return false;
+            }
             unsigned int map_count = node_samples.at(0)->get_sample_size();
             for (auto ns : node_samples) {
                 if (ns->get_sample_size() < map_count) {
