@@ -204,7 +204,8 @@ class GeneralTreeOperatorSettings {
             return this->weights_.empty();
         }
 
-        virtual void update_from_config(const YAML::Node& operator_node) {
+        virtual void update_from_config(const YAML::Node& operator_node,
+                const bool auto_opt_by_default = false) {
             if (! operator_node.IsMap()) {
                 std::string message = (
                         "Expecting operator parameters to be a map, but found: " +
@@ -392,7 +393,7 @@ class GeneralTreeTunableOperatorSettings : public GeneralTreeOperatorSettings {
             this->clear();
             this->weights_.push_back(0.0);
             this->tuning_parameters_.push_back(-1.0);
-            this->auto_optimize_bools_.push_back(true);
+            this->auto_optimize_bools_.push_back(false);
             this->auto_optimize_delays_.push_back(-1);
         }
 
@@ -417,7 +418,8 @@ class GeneralTreeTunableOperatorSettings : public GeneralTreeOperatorSettings {
             return this->auto_optimize_bools_;
         }
 
-        void update_from_config(const YAML::Node& operator_node) {
+        void update_from_config(const YAML::Node& operator_node,
+                const bool auto_opt_by_default = true) {
             if (! operator_node.IsMap()) {
                 std::string message = (
                         "Expecting operator parameters to be a map, but found: " +
@@ -561,6 +563,9 @@ class GeneralTreeTunableOperatorSettings : public GeneralTreeOperatorSettings {
             }
             if (auto_opt_bools.empty()) {
                 auto_opt_bools = std::vector<bool>(n_ops, true);
+                if (! auto_opt_by_default) {
+                    auto_opt_bools = std::vector<bool>(n_ops, false);
+                }
             }
 
             this->init(weights, tuning_parameters, auto_opt_bools, opt_delays);
@@ -713,7 +718,12 @@ class GeneralTreeOperatorSettingsCollection {
                     this->untunable_operators[name].update_from_config(p->second);
                 }
                 else if (this->is_tunable_operator(name)) {
-                    this->tunable_operators[name].update_from_config(p->second);
+                    if (name == "SplitLumpNodesRevJumpSampler") {
+                        this->tunable_operators[name].update_from_config(p->second, false);
+                    }
+                    else {
+                        this->tunable_operators[name].update_from_config(p->second, true);
+                    }
                 }
                 else {
                     std::string message = (

@@ -427,8 +427,8 @@ class GeneralTreeOperatorSchedule {
                     this->_add_tunable_op(
                             op_name,
                             -1.0,
-                            1.0,
-                            true,
+                            100.0,
+                            false,
                             -1,
                             n_rj_ops,
                             number_of_leaves);
@@ -445,6 +445,11 @@ class GeneralTreeOperatorSchedule {
                 return;
             }
             for (unsigned int i = 0; i < op_settings.get_number_of_operators(); ++i) {
+                if ((op_name ==  "SplitLumpNodesRevJumpSampler") &&
+                        (op_settings.auto_optimizing(i))) {
+                    throw EcoevolityError(
+                            "Auto-tuning not supported for SplitLumpNodesRevJumpSampler");
+                }
                 this->_add_tunable_op(
                         op_name,
                         op_settings.get_weight(i),
