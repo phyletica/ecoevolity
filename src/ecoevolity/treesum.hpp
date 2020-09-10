@@ -317,13 +317,22 @@ class HeightSamples : public BaseSamples {
         // children
         static std::vector< std::shared_ptr<HeightSamples> > reverse_sort_by_nesting(
                 const std::vector< std::shared_ptr<HeightSamples> > & height_samples) {
+            std::vector< std::shared_ptr<HeightSamples> > ht_samples = height_samples;
             std::vector< std::shared_ptr<HeightSamples> > r;
             r.reserve(height_samples.size());
-            for (auto hs : height_samples) {
+            while (! ht_samples.empty()) {
+                std::shared_ptr<HeightSamples> hs = ht_samples.back();
+                ht_samples.pop_back();
+                // Debug output
+                // std::cout << "Adding:\n";
+                // for (auto ss : hs->get_split_set()) {
+                //     std::cout << "  " << ss.as_string() << "\n";
+                // }
                 if (r.size() < 1) {
                     r.push_back(hs);
                     continue;
                 }
+                bool no_nesting = true;
                 int idx = r.size() - 1;
                 int first_younger_idx = r.size();
                 int first_child_idx = r.size();
@@ -336,16 +345,31 @@ class HeightSamples : public BaseSamples {
                     }
                     if (HeightSamples::is_nested_in(*r_i, hs)) {
                         first_child_idx = idx;
+                        no_nesting = false;
                     }
                     if (HeightSamples::is_nested_in(hs, *r_i)) {
                         if (last_parent_idx < 0) {
+                            no_nesting = false;
                             last_parent_idx = idx;
                         }
                     }
                     --idx;
                 }
+                if (no_nesting) {
+                    // This height has no parents or children in the vector, so
+                    // we can't safely insert it now. Stick it at the end of
+                    // the queue to try again later
+                    ht_samples.insert(r.begin(), hs);
+                    continue;
+                }
                 if (first_child_idx <= last_parent_idx) {
-                    throw EcoevolityError("HeightSamples::reverse_sort_by_nesting: child placed before parent");
+                    std::ostringstream msg;
+                    msg << "HeightSamples::reverse_sort_by_nesting: child ("
+                        << first_child_idx
+                        << ") placed before parent ("
+                        << last_parent_idx
+                        << ")";
+                    throw EcoevolityError(msg.str());
                 }
                 int last_idx = r.size() - 1;
                 if (last_parent_idx >= 0) {
@@ -398,6 +422,16 @@ class HeightSamples : public BaseSamples {
                         }
                     }
                 }
+                // Debug output
+                // for (unsigned int i = 0; i < r.size(); ++i) {
+                //     if (i == 0) {
+                //         std::cout << "\n\n\n";
+                //     }
+                //     std::cout << i << ":\n";
+                //     for (auto ss : r.at(i)->get_split_set()) {
+                //         std::cout << "  " << ss.as_string() << "\n";
+                //     }
+                // }
             }
             ECOEVOLITY_ASSERT(height_samples.size() == r.size());
             return r;
