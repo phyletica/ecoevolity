@@ -92,7 +92,7 @@ int sumphycoeval_main(int argc, char * argv[]) {
             .action("store_true")
             .dest("use_median_heights")
             .help("Use median (rather than mean) of MCMC samples for the node "
-                  "heights of output trees. Default: Use mean.");
+                  "heights of output MAP trees. Default: Use mean.");
     parser.add_option("--min-split-freq")
             .action("store")
             .type("double")
