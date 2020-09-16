@@ -244,7 +244,6 @@ int sumphycoeval_main(int argc, char * argv[]) {
                   << "  " << target_tree_out_path << std::endl;
         tree_sample.write_target_tree_to_nexus(
                 target_tree_out_stream,
-                use_median_heights,
                 precision);
         target_tree_out_stream.close();
     }

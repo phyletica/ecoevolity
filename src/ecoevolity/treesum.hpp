@@ -107,6 +107,7 @@ class TopologySamples : public BaseSamples {
         std::map< std::set<Split>, std::vector<double> > heights_;
         std::map< Split, std::set<Split> > split_to_node_map_;
         std::map< std::set<Split>, Split > node_to_split_map_;
+        std::map< Split, std::set<Split> > split_to_height_split_set_map_;
 
     public:
         void add_sample(
@@ -126,6 +127,11 @@ class TopologySamples : public BaseSamples {
                 for (auto split_node : node_map) {
                     this->node_to_split_map_[split_node.second] = split_node.first;
                 }
+                for (auto splt_set : s_set) {
+                    for (auto splt : splt_set) {
+                        this->split_to_height_split_set_map_[splt] = splt_set;
+                    }
+                }
             }
             else {
                 ECOEVOLITY_ASSERT(s_set == this->split_set_);
@@ -136,6 +142,18 @@ class TopologySamples : public BaseSamples {
 
         const std::set< std::set<Split> > & get_split_set() const {
             return this->split_set_;
+        }
+
+        unsigned int get_number_of_heights() const {
+            return this->split_set_.size();
+        }
+        unsigned int get_number_of_non_leaf_splits() const {
+            return this->split_to_node_map_.size();
+        }
+
+        const std::set< Split > & get_height_split_set(
+                const Split & split) const {
+            return this->split_to_height_split_set_map_.at(split);
         }
 
         const std::map< std::set<Split>, std::vector<double> > & get_height_map() const {
@@ -208,235 +226,8 @@ class HeightSamples : public BaseSamples {
         const std::vector<double> & get_heights() const {
             return this->heights_;
         }
-
-        static bool is_nested_in(
-                const std::shared_ptr<HeightSamples> & hs1,
-                const std::shared_ptr<HeightSamples> & hs2) {
-            const std::set<Split> & split_set1 = hs1->get_split_set();
-            const std::set<Split> & split_set2 = hs2->get_split_set();
-            bool s1_in_s2 = false;
-            for (auto s1 : split_set1) {
-                for (auto s2 : split_set2) {
-                    if (s1.is_proper_subset_of(s2)) {
-                        s1_in_s2 = true;
-                    }
-                }
-            }
-            if (s1_in_s2) {
-                return true;
-            }
-            return false;
-        }
-
-        static bool is_younger(
-                const std::shared_ptr<HeightSamples> & hs1,
-                const std::shared_ptr<HeightSamples> & hs2) {
-            const std::set<Split> & split_set1 = hs1->get_split_set();
-            const std::set<Split> & split_set2 = hs2->get_split_set();
-            bool s1_in_s2 = false;
-            bool s2_in_s1 = false;
-            for (auto s1 : split_set1) {
-                for (auto s2 : split_set2) {
-                    if (s1.is_proper_subset_of(s2)) {
-                        s1_in_s2 = true;
-                    }
-                    if (s2.is_proper_subset_of(s1)) {
-                        s2_in_s1 = true;
-                    }
-                }
-            }
-            ECOEVOLITY_ASSERT(! (s1_in_s2 && s2_in_s1));
-            if (s1_in_s2) {
-                return true;
-            }
-            if (s2_in_s1) {
-                return false;
-            }
-            // They are not nested, so we need to use heights
-            if (hs1->get_sample_size() < 1) {
-                return true;
-            }
-            if (hs2->get_sample_size() < 1) {
-                return false;
-            }
-            SampleSummarizer<double> s1_sum;
-            SampleSummarizer<double> s2_sum;
-            for (auto h : hs1->get_heights()) {
-                s1_sum.add_sample(h);
-            }
-            for (auto h : hs2->get_heights()) {
-                s2_sum.add_sample(h);
-            }
-            return s1_sum.mean() < s2_sum.mean();
-        }
-
-        static bool is_older(
-                const std::shared_ptr<HeightSamples> & hs1,
-                const std::shared_ptr<HeightSamples> & hs2) {
-            const std::set<Split> & split_set1 = hs1->get_split_set();
-            const std::set<Split> & split_set2 = hs2->get_split_set();
-            bool s1_in_s2 = false;
-            bool s2_in_s1 = false;
-            for (auto s1 : split_set1) {
-                for (auto s2 : split_set2) {
-                    if (s1.is_proper_subset_of(s2)) {
-                        s1_in_s2 = true;
-                    }
-                    if (s2.is_proper_subset_of(s1)) {
-                        s2_in_s1 = true;
-                    }
-                }
-            }
-            ECOEVOLITY_ASSERT(! (s1_in_s2 && s2_in_s1));
-            if (s1_in_s2) {
-                return false;
-            }
-            if (s2_in_s1) {
-                return true;
-            }
-            // They are not nested, so we need to use heights
-            if (hs1->get_sample_size() < 1) {
-                return false;
-            }
-            if (hs2->get_sample_size() < 1) {
-                return true;
-            }
-            SampleSummarizer<double> s1_sum;
-            SampleSummarizer<double> s2_sum;
-            for (auto h : hs1->get_heights()) {
-                s1_sum.add_sample(h);
-            }
-            for (auto h : hs2->get_heights()) {
-                s2_sum.add_sample(h);
-            }
-            return s1_sum.mean() > s2_sum.mean();
-        }
-
-        // TODO: There is probably a more efficient way to sort height samples
-        // such that heights with parent splits always come before their
-        // children
-        static std::vector< std::shared_ptr<HeightSamples> > reverse_sort_by_nesting(
-                const std::vector< std::shared_ptr<HeightSamples> > & height_samples) {
-            std::vector< std::shared_ptr<HeightSamples> > ht_samples = height_samples;
-            std::vector< std::shared_ptr<HeightSamples> > r;
-            r.reserve(height_samples.size());
-            while (! ht_samples.empty()) {
-                std::shared_ptr<HeightSamples> hs = ht_samples.back();
-                ht_samples.pop_back();
-                // Debug output
-                // std::cout << "Adding:\n";
-                // for (auto ss : hs->get_split_set()) {
-                //     std::cout << "  " << ss.as_string() << "\n";
-                // }
-                if (r.size() < 1) {
-                    r.push_back(hs);
-                    continue;
-                }
-                bool no_nesting = true;
-                int idx = r.size() - 1;
-                int first_younger_idx = r.size();
-                int first_child_idx = r.size();
-                int last_parent_idx = -1;
-                for (auto r_i = r.rbegin();
-                        r_i != r.rend();
-                        ++r_i) {
-                    if (HeightSamples::is_younger(*r_i, hs)) {
-                        first_younger_idx = idx;
-                    }
-                    if (HeightSamples::is_nested_in(*r_i, hs)) {
-                        first_child_idx = idx;
-                        no_nesting = false;
-                    }
-                    if (HeightSamples::is_nested_in(hs, *r_i)) {
-                        if (last_parent_idx < 0) {
-                            no_nesting = false;
-                            last_parent_idx = idx;
-                        }
-                    }
-                    --idx;
-                }
-                if (no_nesting) {
-                    // This height has no parents or children in the vector, so
-                    // we can't safely insert it now. Stick it at the end of
-                    // the queue to try again later
-                    ht_samples.insert(r.begin(), hs);
-                    continue;
-                }
-                if (first_child_idx <= last_parent_idx) {
-                    std::ostringstream msg;
-                    msg << "HeightSamples::reverse_sort_by_nesting: child ("
-                        << first_child_idx
-                        << ") placed before parent ("
-                        << last_parent_idx
-                        << ")";
-                    throw EcoevolityError(msg.str());
-                }
-                int last_idx = r.size() - 1;
-                if (last_parent_idx >= 0) {
-                    // We have parent in list
-                    if (first_child_idx <= last_idx) {
-                        // We have parent and child in list
-                        if ((first_younger_idx > last_parent_idx) && (first_younger_idx < first_child_idx)) {
-                            // We can use the first younger idx
-                            r.insert(r.begin() + first_younger_idx, hs);
-                        }
-                        else {
-                            // We need to use the child idx
-                            r.insert(r.begin() + first_child_idx, hs);
-                        }
-                    }
-                    else {
-                        // We have parent in list but no children
-                        if (first_younger_idx > last_parent_idx) {
-                            // We can use the first younger idx
-                            r.insert(r.begin() + first_younger_idx, hs);
-                        }
-                        else {
-                            // We need to put this height after its parent
-                            r.insert(r.begin() + (last_parent_idx + 1), hs);
-                        }
-                    }
-                }
-                else {
-                    // We have no parents in list
-                    if (first_child_idx <= last_idx) {
-                        // We have child in list, but no parent
-                        if (first_younger_idx < first_child_idx) {
-                            // We can use the first younger idx
-                            r.insert(r.begin() + first_younger_idx, hs);
-                        }
-                        else {
-                            // We need to use the child idx
-                            r.insert(r.begin() + first_child_idx, hs);
-                        }
-                    }
-                    else {
-                        // We have no parents or children in list
-                        if (first_younger_idx <= last_idx) {
-                            // We can use the first younger idx
-                            r.insert(r.begin() + first_younger_idx, hs);
-                        }
-                        else {
-                            // No parents, no children, and nothing younger, so stick at end
-                            r.push_back(hs);
-                        }
-                    }
-                }
-                // Debug output
-                // for (unsigned int i = 0; i < r.size(); ++i) {
-                //     if (i == 0) {
-                //         std::cout << "\n\n\n";
-                //     }
-                //     std::cout << i << ":\n";
-                //     for (auto ss : r.at(i)->get_split_set()) {
-                //         std::cout << "  " << ss.as_string() << "\n";
-                //     }
-                // }
-            }
-            ECOEVOLITY_ASSERT(height_samples.size() == r.size());
-            return r;
-        }
 };
+
 
 class SplitSamples : public BaseSamples {
     protected:
@@ -566,6 +357,7 @@ class TreeSample {
         unsigned int sample_size_ = 0;
         bool target_tree_provided_ = false;
         tree_type target_tree_;
+        TopologySamples target_topology_sample_;
         std::set< std::set<Split> > target_topology_;
         std::map<std::set<Split>, double> target_heights_;
         std::map<Split, std::map<std::string, double> > target_split_parameters_;
@@ -667,6 +459,11 @@ class TreeSample {
                     false);
             this->target_tree_provided_ = true;
             this->check_target_tree_();
+            this->target_topology_sample_ = TopologySamples();
+            this->target_topology_sample_.add_sample(
+                    this->target_heights_,
+                    node_map,
+                    0, 0);
         }
 
         template <typename T>
@@ -932,6 +729,234 @@ class TreeSample {
             ++this->sample_size_;
             ++this->source_sample_sizes_.back();
         }
+
+        void _annotate_nodes(
+                const TopologySamples & topo_sample,
+                std::shared_ptr<NodeType> root_node,
+                const unsigned int precision = 12) const {
+            // Let's get sorted node heights so that we can use them for
+            // looking up height indices
+            std::vector< std::shared_ptr<PositiveRealParameter> > node_heights;
+            std::vector< std::shared_ptr<NodeType> > internal_nodes = root_node->get_internal_nodes();
+            for (unsigned int i = 0; i < internal_nodes.size(); ++i) {
+                bool exists = false;
+                // Check if we already have a pointer to the same place in memory
+                for (unsigned int j = 0; j < node_heights.size(); ++j) {
+                    if (internal_nodes.at(i)->get_height_parameter() == node_heights.at(j)) {
+                        exists = true;
+                    }
+                }
+                if (! exists) {
+                    node_heights.push_back(internal_nodes.at(i)->get_height_parameter());
+                }
+            }
+            std::sort(node_heights.begin(), node_heights.end(), PositiveRealParameter::sort_by_value);
+            std::map< std::shared_ptr<PositiveRealParameter>, unsigned int > heights_to_index_map;
+            for (unsigned int i = 0; i < node_heights.size(); ++i) {
+                heights_to_index_map[node_heights.at(i)] = i;
+            }
+
+            // Collect values of parameters that are constrained across all
+            // branches of the tree; we can do this just using the root split
+            std::map<std::string, std::vector<double> > constrained_params;
+            for (auto param : this->constrained_node_parameters_) {
+                constrained_params[param] = this->get_split(this->root_split_)->get_values(param);
+            }
+            // Get parameter map using root split; we need the keys of
+            // this map below for each internal node
+            std::map<std::string, std::vector<double> > split_parameter_map;
+            split_parameter_map = this->get_split(this->root_split_)->get_parameter_map();
+
+            // Do a reverse level-order traversal of tree in order to annotate
+            // the internal node labels.
+            root_node->resize_splits(this->get_number_of_leaves());
+            std::vector< std::shared_ptr<NodeType> > level_ordered_nodes;
+            root_node->level_order(level_ordered_nodes);
+
+            for (auto node = level_ordered_nodes.rbegin();
+                    node != level_ordered_nodes.rend();
+                    ++node) {
+                if (! (*node)->is_leaf()) {
+                    Split split = (*node)->split_;
+                    std::set<Split> height_split_set = topo_sample.get_height_split_set(split);
+                    unsigned int height_idx = heights_to_index_map.at((*node)->get_height_parameter());
+
+                    // Get splits that descend from this node and use them to
+                    // get summaries of node samples
+                    std::set<Split> node_split_set;
+                    for (auto child : (*node)->get_all_children()) {
+                        node_split_set.insert(child->split_);
+                    }
+
+                    std::shared_ptr<HeightSamples> height_sample = this->get_height(height_split_set);
+                    std::vector<double> index_heights;
+                    if (height_sample) {
+                        index_heights = height_sample->get_heights();
+                        SampleSummary<double> index_height_summary(index_heights);
+                    }
+
+                    std::ostringstream node_label;
+                    node_label.precision(precision);
+                    node_label << "[&height_index=" << height_idx
+                        << ",index_freq=" << this->get_height_frequency(height_split_set)
+                        << ",split_freq=" << this->get_split_frequency(split)
+                        << ",";
+                    this->_write_node_annotations<double>(index_heights,
+                            node_label,
+                            "index_height",
+                            precision);
+                    for (auto key_params : split_parameter_map) {
+                        key_params.second.clear();
+                    }
+                    std::shared_ptr<SplitSamples> split_sample = this->get_split(split);
+                    if (split_sample) {
+                        split_parameter_map = split_sample->get_parameter_map();
+                    }
+                    for (auto p_values : split_parameter_map) {
+                        node_label << ",";
+                        if (p_values.first == "height") {
+                            this->_write_node_annotations<double>(p_values.second,
+                                    node_label,
+                                    "split_height",
+                                    precision);
+                        }
+                        else if (constrained_params.count(p_values.first) > 0) {
+                            this->_write_node_annotations<double>(
+                                    constrained_params.at(p_values.first),
+                                    node_label,
+                                    p_values.first,
+                                    precision);
+                        }
+                        else {
+                            this->_write_node_annotations<double>(p_values.second,
+                                    node_label,
+                                    p_values.first,
+                                    precision);
+                        }
+                    }
+                    node_label << ",node_freq="
+                               << this->get_node_frequency(node_split_set)
+                               << "]";
+                    (*node)->set_label(node_label.str());
+                }
+                else {
+                    // Set bit for this leaf node's index
+                    (*node)->split_.set_leaf_bit((*node)->get_index());
+
+                    Split split = (*node)->split_;
+                    std::ostringstream label;
+                    label.precision(precision);
+                    unsigned int leaf_index = split.get_leaf_indices().at(0);
+                    ECOEVOLITY_ASSERT(split == this->leaf_splits_.at(leaf_index));
+                    label << this->leaf_labels_.at(leaf_index) << "[&";
+                    split_parameter_map = this->get_split(split)->get_parameter_map();
+                    SampleSummary<double> leaf_height_summary(split_parameter_map.at("height"));
+                    bool first_pass = true;
+                    for (auto p_values : split_parameter_map) {
+                        if (! first_pass) {
+                            label << ",";
+                        }
+                        first_pass = false;
+                        if (p_values.first == "height") {
+                            this->_write_node_annotations<double>(p_values.second,
+                                    label,
+                                    "index_height",
+                                    precision);
+                            label << ",";
+                            this->_write_node_annotations<double>(p_values.second,
+                                    label,
+                                    "split_height",
+                                    precision);
+                        }
+                        else {
+                            this->_write_node_annotations<double>(p_values.second,
+                                    label,
+                                    p_values.first,
+                                    precision);
+                        }
+                    }
+                    label << "]";
+                    (*node)->set_label(label.str());
+                }
+                if ((*node)->has_parent()) {
+                    (*node)->get_parent()->split_.add_split((*node)->split_);
+                }
+            }
+        }
+
+        void _process_node_splits(
+                const Split & split,
+                const TopologySamples & topo_sample,
+                std::shared_ptr<NodeType> root_node,
+                const std::vector< std::shared_ptr<NodeType> > & leaf_nodes,
+                std::map< std::set<Split>, std::shared_ptr<PositiveRealParameter> > & split_set_to_height_parameter_map,
+                const bool use_median_heights = false) const {
+            for (auto s : topo_sample.get_node_split_set(split)) {
+                if (s.get_leaf_node_count() < 2) {
+                    // We have a leaf; do not process
+                    continue;
+                }
+                std::shared_ptr<HeightSamples> height_sample = this->get_height(
+                        topo_sample.get_height_split_set(s));
+                std::vector<double> index_heights;
+                double index_height = std::numeric_limits<double>::quiet_NaN();
+                if (height_sample) {
+                    index_heights = height_sample->get_heights();
+                    SampleSummary<double> index_height_summary(index_heights);
+                    index_height = index_height_summary.mean();
+                    if (use_median_heights) {
+                        index_height = index_height_summary.median();
+                    }
+                }
+                std::shared_ptr<NodeType> new_node = std::make_shared<NodeType>(index_height);
+                if (split_set_to_height_parameter_map.count(topo_sample.get_height_split_set(s)) < 1) {
+                    split_set_to_height_parameter_map[topo_sample.get_height_split_set(s)] = new_node->get_height_parameter();
+                }
+                else {
+                    new_node->set_height_parameter(split_set_to_height_parameter_map.at(topo_sample.get_height_split_set(s)));
+                }
+                std::vector<unsigned int> leaf_indices = s.get_leaf_indices();
+                std::shared_ptr<NodeType> grand_parent_node = leaf_nodes.at(leaf_indices.at(0))->get_parent();
+                for (auto leaf_idx : leaf_indices) {
+                    ECOEVOLITY_ASSERT(leaf_nodes.at(leaf_idx)->get_parent() == grand_parent_node);
+                    leaf_nodes.at(leaf_idx)->remove_parent();
+                    leaf_nodes.at(leaf_idx)->add_parent(new_node);
+                }
+                grand_parent_node->add_child(new_node);
+
+                this->_process_node_splits(s,
+                        topo_sample,
+                        root_node,
+                        leaf_nodes,
+                        split_set_to_height_parameter_map,
+                        use_median_heights);
+            }
+        }
+
+        void _write_to_nexus(
+                std::vector< std::shared_ptr<NodeType> > trees,
+                std::ostream & out,
+                const unsigned int precision = 12) const {
+            out.precision(precision);
+            out<< "#NEXUS\n\n"
+                << "BEGIN TAXA;\n"
+                << "    DIMENSIONS NTAX=" << this->leaf_labels_.size() << ";\n"
+                << "    TAXLABELS\n";
+            for (auto label : this->leaf_labels_) {
+                out << "        " << label << "\n";
+            }
+            out << "    ;\n"
+                << "END;\n\n"
+                << "BEGIN TREES;\n";
+            unsigned int tree_idx = 0;
+            for (auto t : trees) {
+                out << "    TREE tree" << ++tree_idx << " = [&R] "
+                    << t->to_parentheses(precision, true)
+                    << ";\n";
+            }
+            out << "END;" << std::endl;
+        }
+
 
     public:
 
@@ -1810,7 +1835,6 @@ class TreeSample {
 
         void write_summary_of_target_tree(
                 std::ostream & out,
-                const bool use_median_heights = false,
                 const std::string & margin = "",
                 const unsigned int precision = 12) const {
             if (! this->target_tree_provided_) {
@@ -1824,6 +1848,10 @@ class TreeSample {
                     this->get_tree_lengths(),
                     target_tree_length);
             bool target_is_a_map_tree = this->is_a_map_tree(this->target_topology_);
+            std::shared_ptr<NodeType> root_node = this->target_tree_.get_root_ptr();
+            this->_annotate_nodes(this->target_topology_sample_,
+                    root_node,
+                    precision);
             std::string indent = string_util::get_indent(1);
             out.precision(precision);
             out << margin << "count: " << this->get_topology_count(split_set) << "\n"
@@ -1836,9 +1864,7 @@ class TreeSample {
                 << margin << "number_of_heights_credibility_level: " << this->get_number_of_heights_credibility_level(split_set.size()) << "\n"
                 << margin << "tree_length: " << target_tree_length << "\n"
                 << margin << "tree_length_percentile: " << target_tree_length_percentile << "\n"
-                << margin << "newick: " << this->to_parentheses(split_set,
-                    use_median_heights,
-                    precision) << "\n";
+                << margin << "newick: " << root_node->to_parentheses(precision, true) << "\n";
 
             std::string item_margin = margin + indent + indent;
 
@@ -1948,240 +1974,95 @@ class TreeSample {
                     << margin << "  frequency: " << (topo_samples->get_sample_size() /
                             (double)this->get_sample_size()) << "\n"
                     << margin << "  newick: " << this->to_parentheses(
-                            topo_samples->get_split_set(),
+                            *topo_samples,
                             use_median_heights,
                             precision) << "\n";
             }
         }
 
-        std::string to_parentheses(const std::set< std::set<Split> > & split_set,
+        std::shared_ptr<NodeType> get_tree(
+                const TopologySamples & topo_sample,
                 const bool use_median_heights = false,
                 const unsigned int precision = 12) const {
-            std::map<std::string, std::vector<double> > constrained_params;
-            for (auto param : this->constrained_node_parameters_) {
-                constrained_params[param] = this->get_split(this->root_split_)->get_values(param);
-            }
-            std::vector<std::string> parameter_keys;
             std::map<std::string, std::vector<double> > split_parameter_map;
             split_parameter_map = this->get_split(this->root_split_)->get_parameter_map();
-            std::ostringstream root_label;
-            root_label.precision(precision);
-            root_label << "[&height_index=" << split_set.size() - 1;
-            for (auto p_values : split_parameter_map) {
-                parameter_keys.push_back(p_values.first);
-                root_label << ",";
-                if (p_values.first == "height") {
-                    this->_write_node_annotations<double>(p_values.second,
-                            root_label,
-                            "index_height",
-                            precision);
-                    root_label << ",";
-                    this->_write_node_annotations<double>(p_values.second,
-                            root_label,
-                            "split_height",
-                            precision);
-                }
-                else {
-                    this->_write_node_annotations<double>(p_values.second,
-                            root_label,
-                            p_values.first,
-                            precision);
-                }
-            }
-            // Leave this off, so we can append node summaries below
-            // root_label << "]";
             SampleSummary<double> root_height_summary(split_parameter_map.at("height"));
             double root_height = root_height_summary.mean();
             if (use_median_heights) {
                 root_height = root_height_summary.median();
             }
-            std::shared_ptr<Node> root_node = std::make_shared<Node>(
-                    root_label.str(), root_height);
+            std::shared_ptr<NodeType> root_node = std::make_shared<NodeType>(
+                    root_height);
 
-            std::vector< std::shared_ptr<Node> > leaf_nodes;
+            std::vector< std::shared_ptr<NodeType> > leaf_nodes;
             for (unsigned int i = 0; i < this->leaf_splits_.size(); ++i) {
-                std::ostringstream label;
-                label.precision(precision);
-                label << this->leaf_labels_.at(i) << "[&";
                 unsigned int leaf_index = this->leaf_splits_.at(i).get_leaf_indices().at(0);
                 ECOEVOLITY_ASSERT(leaf_index == i);
+                std::ostringstream label;
+                label << this->leaf_labels_.at(i);
                 split_parameter_map = this->get_split(this->leaf_splits_.at(i))->get_parameter_map();
                 SampleSummary<double> leaf_height_summary(split_parameter_map.at("height"));
                 double leaf_height = leaf_height_summary.mean();
                 if (use_median_heights) {
                     leaf_height = leaf_height_summary.median();
                 }
-                bool first_pass = true;
-                for (auto p_values : split_parameter_map) {
-                    if (! first_pass) {
-                        label << ",";
-                    }
-                    first_pass = false;
-                    if (p_values.first == "height") {
-                        this->_write_node_annotations<double>(p_values.second,
-                                label,
-                                "index_height",
-                                precision);
-                        label << ",";
-                        this->_write_node_annotations<double>(p_values.second,
-                                label,
-                                "split_height",
-                                precision);
-                    }
-                    else {
-                        this->_write_node_annotations<double>(p_values.second,
-                                label,
-                                p_values.first,
-                                precision);
-                    }
-                }
-                label << "]";
-                std::shared_ptr<Node> leaf_nd = std::make_shared<Node>(
+                std::shared_ptr<NodeType> leaf_nd = std::make_shared<NodeType>(
                             leaf_index, label.str(), leaf_height);
                 leaf_nodes.push_back(leaf_nd);
                 root_node->add_child(leaf_nd);
             }
-
-            std::vector< std::shared_ptr<HeightSamples> > height_samples;
-            height_samples.reserve(split_set.size());
-            for (auto s_set : split_set) {
-                if (this->heights_map_.count(s_set) > 0) {
-                    height_samples.push_back(this->get_height(s_set));
-                }
-                else {
-                    std::shared_ptr<HeightSamples> hs = std::make_shared<HeightSamples>();
-                    hs->set_split_set(s_set);
-                    height_samples.push_back(hs);
-                }
-            }
-
-            height_samples = HeightSamples::reverse_sort_by_nesting(height_samples);
-
-            std::vector< std::set<Split> > height_keys;
-            height_keys.reserve(height_samples.size());
-            for (auto hs : height_samples) {
-                height_keys.push_back(hs->get_split_set());
-            }
-            ECOEVOLITY_ASSERT((height_keys.at(0).size() == 1)
-                    && (height_keys.at(0).count(this->root_split_) > 0));
-            int height_idx = height_keys.size() - 2;
-            for (unsigned int key_idx = 1; key_idx < height_keys.size(); ++key_idx) {
-                std::shared_ptr<HeightSamples> height_sample = this->get_height(height_keys.at(key_idx));
-                std::vector<double> index_heights;
-                double index_height = std::numeric_limits<double>::quiet_NaN();
-                if (height_sample) {
-                    index_heights = height_sample->get_heights();
-                    SampleSummary<double> index_height_summary(index_heights);
-                    index_height = index_height_summary.mean();
-                    if (use_median_heights) {
-                        index_height = index_height_summary.median();
-                    }
-                }
-                for (auto split : height_keys.at(key_idx)) {
-                    std::ostringstream node_label;
-                    node_label.precision(precision);
-                    node_label << "[&height_index=" << height_idx
-                        // << ",index_n=" << this->get_height_count(height_keys.at(key_idx))
-                        << ",index_freq=" << this->get_height_frequency(height_keys.at(key_idx))
-                        // << ",split_n=" << this->get_split_count(split)
-                        << ",split_freq=" << this->get_split_frequency(split)
-                        << ",";
-                    this->_write_node_annotations<double>(index_heights,
-                            node_label,
-                            "index_height",
-                            precision);
-                    split_parameter_map.clear();
-                    for (auto param_key : parameter_keys) {
-                        split_parameter_map[param_key] = {};
-                    }
-                    std::shared_ptr<SplitSamples> split_sample = this->get_split(split);
-                    if (split_sample) {
-                        split_parameter_map = split_sample->get_parameter_map();
-                    }
-                    for (auto p_values : split_parameter_map) {
-                        node_label << ",";
-                        if (p_values.first == "height") {
-                            this->_write_node_annotations<double>(p_values.second,
-                                    node_label,
-                                    "split_height",
-                                    precision);
-                        }
-                        else if (constrained_params.count(p_values.first) > 0) {
-                            this->_write_node_annotations<double>(
-                                    constrained_params.at(p_values.first),
-                                    node_label,
-                                    p_values.first,
-                                    precision);
-                        }
-                        else {
-                            this->_write_node_annotations<double>(p_values.second,
-                                    node_label,
-                                    p_values.first,
-                                    precision);
-                        }
-                    }
-                    // Leave this off so we can append node summaries below
-                    // node_label << "]";
-                    std::shared_ptr<Node> new_node = std::make_shared<Node>(
-                            node_label.str(), index_height);
-                    std::vector<unsigned int> leaf_indices = split.get_leaf_indices();
-                    std::shared_ptr<Node> grand_parent_node = leaf_nodes.at(leaf_indices.at(0))->get_parent();
-                    for (auto leaf_idx : leaf_indices) {
-                        ECOEVOLITY_ASSERT(leaf_nodes.at(leaf_idx)->get_parent() == grand_parent_node);
-                        leaf_nodes.at(leaf_idx)->remove_parent();
-                        leaf_nodes.at(leaf_idx)->add_parent(new_node);
-                        grand_parent_node->add_child(new_node);
-                    }
-                }
-                --height_idx;
-            }
-
-
-            // Do a preorder traversal of tree in order to append to the node
-            // label comments of all internal nodes.
-            // We didn't know the splits that descend from each node as we
-            // built the tree above; knowing the descendant splits is necessary
-            // for looking up the NodeSamples
+            std::map< std::set<Split>, std::shared_ptr<PositiveRealParameter> > split_set_to_height_parameter_map;
+            this->_process_node_splits(this->root_split_,
+                    topo_sample,
+                    root_node,
+                    leaf_nodes,
+                    split_set_to_height_parameter_map,
+                    use_median_heights);
+            ECOEVOLITY_ASSERT(root_node->get_leaf_node_count() == this->get_number_of_leaves());
             root_node->resize_splits(this->get_number_of_leaves());
-            std::vector< std::shared_ptr<Node> > pre_ordered_nodes = root_node->get_nodes();
-            for (auto node = pre_ordered_nodes.rbegin();
-                    node != pre_ordered_nodes.rend();
-                    ++node) {
-                if (! (*node)->is_leaf()) {
-                    // Get splits that descend from this node and use them to
-                    // get summaries of node samples
-                    std::set<Split> node_split_set;
-                    for (auto child : (*node)->get_all_children()) {
-                        node_split_set.insert(child->split_);
-                    }
-                    // Add node probability to the node label comment
-                    // annotations.
-                    // Note: we could summarize other parameters conditional on
-                    // each node (e.g., height, pop size), but we already
-                    // report height conditional on each shared height and all
-                    // parameters conditional on each split, so it seems like
-                    // overkill.
-                    // If we are ever interested in including annotations of
-                    // node-conditional summaries of parameters, this is where
-                    // we can add them.
-                    std::ostringstream l;
-                    l.precision(precision);
-                    l << (*node)->get_label()
-                      << ",node_freq="
-                      << this->get_node_frequency(node_split_set)
-                      << "]";
-                    (*node)->set_label(l.str());
-                }
-                else {
-                    // Set bit for this leaf node's index
-                    (*node)->split_.set_leaf_bit((*node)->get_index());
-                }
-                if ((*node)->has_parent()) {
-                    (*node)->get_parent()->split_.add_split((*node)->split_);
-                }
+            ECOEVOLITY_ASSERT(root_node->get_internal_node_count() == topo_sample.get_number_of_non_leaf_splits());
+
+            this->_annotate_nodes(topo_sample,
+                    root_node,
+                    precision);
+            return root_node;
+        }
+
+        std::shared_ptr<NodeType> get_tree(
+                const std::set< std::set<Split> > & split_set,
+                const bool use_median_heights = false,
+                const unsigned int precision = 12) const {
+            if (this->get_topology_count(split_set) < 1) {
+                throw EcoevolityError("TreeSample::get_tree called with unsampled topology");
             }
+            return this->get_tree(
+                    this->get_topology(split_set),
+                    use_median_heights,
+                    precision);
+        }
+
+        std::string to_parentheses(
+                const TopologySamples & topo_sample,
+                const bool use_median_heights = false,
+                const unsigned int precision = 12) const {
+
+            std::shared_ptr<NodeType> root_node = this->get_tree(topo_sample,
+                    use_median_heights,
+                    precision);
             return root_node->to_parentheses(precision, true);
         }
+
+        // std::string to_parentheses(const std::set< std::set<Split> > & split_set,
+        //         const bool use_median_heights = false,
+        //         const unsigned int precision = 12) const {
+        //     if (this->get_topology_count(split_set) < 1) {
+        //         throw EcoevolityError("TreeSample::to_parentheses called with unsampled topology");
+        //     }
+        //     return this->to_parentheses(
+        //             this->get_topology_count(split_set),
+        //             use_median_heights,
+        //             precision);
+        // }
 
         void write_summary_of_leaf_labels(std::ostream & out,
                 const std::string & margin = "") const {
@@ -2222,7 +2103,6 @@ class TreeSample {
             if (this->target_tree_provided_) {
                 out << "summary_of_target_tree:\n";
                 this->write_summary_of_target_tree(out,
-                    use_median_heights,
                     indent,
                     precision);
             }
@@ -2238,39 +2118,31 @@ class TreeSample {
                 std::ostream & out,
                 const bool use_median_heights = false,
                 const unsigned int precision = 12) const {
-            out.precision(precision);
-            out<< "#NEXUS\n\n"
-                << "BEGIN TAXA;\n"
-                << "    DIMENSIONS NTAX=" << this->leaf_labels_.size() << ";\n"
-                << "    TAXLABELS\n";
-            for (auto label : this->leaf_labels_) {
-                out << "        " << label << "\n";
-            }
-            out << "    ;\n"
-                << "END;\n\n"
-                << "BEGIN TREES;\n";
-            unsigned int tree_idx = 0;
+            std::vector< std::shared_ptr<NodeType> > trees;
             while (split_sets_start != split_sets_end) {
-                out << "    TREE tree" << ++tree_idx << " = [&R] "
-                    << this->to_parentheses(*(split_sets_start++),
-                            use_median_heights,
-                            precision)
-                    << ";\n";
+                std::shared_ptr<NodeType> t = this->get_tree(
+                        *(split_sets_start++),
+                        use_median_heights,
+                        precision);
+                trees.push_back(t);
             }
-            out << "END;" << std::endl;
+            this->_write_to_nexus(
+                    trees,
+                    out,
+                    precision);
         }
 
         void write_target_tree_to_nexus(
                 std::ostream & out,
-                const bool use_median_heights = false,
                 const unsigned int precision = 12) const {
-            std::vector< std::set< std::set<Split > > > target_tree_vec = {
-                this->target_topology_};
-            this->write_to_nexus(
-                    target_tree_vec.begin(),
-                    target_tree_vec.end(),
+            std::shared_ptr<NodeType> root_node = this->target_tree_.get_root_ptr();
+            this->_annotate_nodes(this->target_topology_sample_,
+                    root_node,
+                    precision);
+            std::vector< std::shared_ptr<NodeType> > target_tree_vec = {root_node};
+            this->_write_to_nexus(
+                    target_tree_vec,
                     out,
-                    use_median_heights,
                     precision);
         }
 
@@ -2278,19 +2150,21 @@ class TreeSample {
                 std::ostream & out,
                 const bool use_median_heights = false,
                 const unsigned int precision = 12) const {
-            std::vector< std::set< std::set<Split > > > split_sets;
+            std::vector< std::shared_ptr<NodeType> > trees;
             unsigned int map_count = this->topologies_.at(0)->get_sample_size();
             for (auto topo_samples : this->topologies_) {
                 if (topo_samples->get_sample_size() < map_count) {
                     break;
                 }
-                split_sets.push_back(topo_samples->get_split_set());
+                std::shared_ptr<NodeType> t = this->get_tree(
+                        *topo_samples,
+                        use_median_heights,
+                        precision);
+                trees.push_back(t);
             }
-            this->write_to_nexus(
-                    split_sets.begin(),
-                    split_sets.end(),
+            this->_write_to_nexus(
+                    trees,
                     out,
-                    use_median_heights,
                     precision);
         }
 };

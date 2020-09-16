@@ -191,8 +191,8 @@ TEST_CASE("Testing working example", "[sumphycoeval]") {
                 2);
         std::stringstream expected_target_stream;
         std::stringstream expected_map_stream;
-        ts.write_map_trees_to_nexus(expected_target_stream, false, 18);
-        ts.write_target_tree_to_nexus(expected_map_stream, false, 18);
+        ts.write_map_trees_to_nexus(expected_map_stream, false, 18);
+        ts.write_target_tree_to_nexus(expected_target_stream, 18);
 
         std::stringstream target_stream;
         std::ifstream target_file_in_stream(t_out_path);
@@ -210,6 +210,5 @@ TEST_CASE("Testing working example", "[sumphycoeval]") {
 
         REQUIRE(expected_target_stream.str() == target_stream.str());
         REQUIRE(expected_map_stream.str() == map_stream.str());
-
     }
 }
