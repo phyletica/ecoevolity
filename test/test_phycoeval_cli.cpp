@@ -44,7 +44,7 @@ TEST_CASE("Testing phycoeval cli with 5 leaves, full model, unconstrained sizes"
                 height_alpha_shape,
                 height_alpha_scale);
 
-        unsigned int chain_length = 800000;
+        unsigned int chain_length = 2000000;
         unsigned int sample_frequency = 20;
         unsigned int nsamples = (chain_length / sample_frequency) + 1;
 
