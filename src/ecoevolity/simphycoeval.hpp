@@ -227,10 +227,11 @@ int simphycoeval_main(int argc, char * argv[]) {
     }
     std::cerr << "Number of simulation replicates: " << nreps << std::endl;
     const unsigned int topo_mcmc_gens_per_rep = options.get("topo_mcmc_gens_per_rep");
-    if (topo_mcmc_gens_per_rep < 0) {
-        throw EcoevolityError(
-                "Number of topology MCMC generations per replicate cannot be negative");
-    }
+    // This check will always be true, because the option is unsigned
+    // if (topo_mcmc_gens_per_rep < 0) {
+    //     throw EcoevolityError(
+    //             "Number of topology MCMC generations per replicate cannot be negative");
+    // }
 
     const double singleton_sample_probability = options.get(
             "singleton_sample_probability");
@@ -447,7 +448,8 @@ int simphycoeval_main(int argc, char * argv[]) {
     std::string logging_delimiter = "\t";
 
     // Prepare prior settings for writting configs for simulated datasets
-    for (auto prior_settings : prior_settings_vector) {
+    for (unsigned int prior_i = 0; prior_i < num_prior_configs; ++prior_i) {
+        PopulationTreeSettings & prior_settings = prior_settings_vector.at(prior_i);
         if (prior_settings.tree_model_settings.starting_tree_settings.get_tree_source() ==
                 StartingTreeSettings::Source::path) {
             std::string starting_tree_path = settings.tree_model_settings.starting_tree_settings.get_tree_path();
@@ -538,6 +540,15 @@ int simphycoeval_main(int argc, char * argv[]) {
                         rng,
                         singleton_sample_probability,
                         true);
+            }
+            else if (max_one_variable_site_per_locus) {
+                std::pair<BiallelicData, unsigned int> data_nloci =
+                    tree.simulate_data_set_max_one_variable_site_per_locus(
+                            rng,
+                            locus_size,
+                            singleton_sample_probability,
+                            true);
+                sim_alignment = data_nloci.first;
             }
             else {
                 std::pair<BiallelicData, unsigned int> data_nloci =

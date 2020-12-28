@@ -1478,7 +1478,7 @@ class GeneralTreeDataSettings {
         bool constant_sites_removed() const {
             return this->constant_sites_removed_;
         }
-        void set_constant_sites_removed(bool b) {
+        void set_constant_sites_removed(const bool b) {
             this->constant_sites_removed_ = b;
         }
         void update_from_config(const YAML::Node& node,
