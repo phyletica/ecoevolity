@@ -154,6 +154,18 @@ int simphycoeval_main(int argc, char * argv[]) {
             .help("Constrain model to its starting state. All model parameters "
                   "(e.g., the topology, node heights, etc.) are held constant "
                   "at their initial values for all simulation replicates.");
+    parser.add_option("--min-div-diff")
+            .action("store")
+            .type("double")
+            .dest("min_div_diff")
+            .set_default("-1.0")
+            .help("The minimum difference allowed between divergence times. "
+                  "If given a positive number for this option and the model is "
+                  "not fixed, any sampled trees with "
+                  "divergence times closer than this value are rejected and "
+                  "written to a file of rejected trees. "
+                  "Default: No minimum divergence difference (no trees are "
+                  "rejected).");
     parser.add_option("--parameters-only")
             .action("store_true")
             .dest("parameters_only")
@@ -235,6 +247,9 @@ int simphycoeval_main(int argc, char * argv[]) {
 
     const double singleton_sample_probability = options.get(
             "singleton_sample_probability");
+
+    const double min_div_diff = options.get(
+            "min_div_diff");
 
     const unsigned int locus_size = options.get("locus_size");
     if (locus_size < 1) {
@@ -417,6 +432,11 @@ int simphycoeval_main(int argc, char * argv[]) {
         std::cerr << "Sampling topology: false" << std::endl;
     }
 
+    if ( (! fix_model) && (min_div_diff > 0.0) ) {
+        std::cerr << "Rejecting trees with divergence times closer than: "
+                  << min_div_diff << std::endl;
+    }
+
     if (using_prior_config) {
         // Not used but creating instance to vet settings
         std::cerr << "Vetting model for analyses of simulated data sets..." << std::endl;
@@ -477,10 +497,14 @@ int simphycoeval_main(int argc, char * argv[]) {
     std::string true_trees_path = path::join(
             output_dir,
             output_prefix + "true-trees.phy");
+    std::string rejected_trees_path = path::join(
+            output_dir,
+            output_prefix + "rejected-trees.phy");
     check_simphy_output_path(true_params_path);
     check_simphy_output_path(true_trees_path);
     std::ofstream true_params_stream;
     std::ofstream true_trees_stream;
+    std::ofstream rejected_trees_stream;
     if (! simulate_sequences) {
         true_params_stream.open(true_params_path);
         true_trees_stream.open(true_trees_path);
@@ -500,23 +524,42 @@ int simphycoeval_main(int argc, char * argv[]) {
     time(&start);
 
     std::cerr << "Starting simulations..." << std::endl;
+    unsigned int rejected_tree_count = 0;
     for (unsigned int i = 0; i < nreps; ++i) {
-        std::cerr << "Simulating data set " << (i + 1) << " of " << nreps << "\n";
-        if (sampling_topology && (! fix_model)) {
-            for (unsigned int mcmc_i = 0;
-                    mcmc_i < topo_mcmc_gens_per_rep;
-                    ++mcmc_i) {
-                for (unsigned int move_i = 0;
-                        move_i < n_moves_per_generation;
-                        ++move_i) {
-                    for (auto op : topology_operators) {
-                        op->operate(rng, &tree, 1, 1);
+        bool reject_tree = true;
+        while (reject_tree) {
+            reject_tree = false;
+            std::cerr << "Simulating data set " << (i + 1) << " of " << nreps << "\n";
+            if (sampling_topology && (! fix_model)) {
+                for (unsigned int mcmc_i = 0;
+                        mcmc_i < topo_mcmc_gens_per_rep;
+                        ++mcmc_i) {
+                    for (unsigned int move_i = 0;
+                            move_i < n_moves_per_generation;
+                            ++move_i) {
+                        for (auto op : topology_operators) {
+                            op->operate(rng, &tree, 1, 1);
+                        }
                     }
                 }
             }
-        }
-        if (! fix_model) {
-            tree.draw_from_prior(rng);
+            if (! fix_model) {
+                tree.draw_from_prior(rng);
+
+                if ((min_div_diff > 0.0) &&
+                        (tree.get_min_height_diff() < min_div_diff)) {
+                    reject_tree = true;
+                    if (rejected_tree_count < 1) {
+                        check_simphy_output_path(rejected_trees_path);
+                        rejected_trees_stream.open(rejected_trees_path);
+                        rejected_trees_stream.precision(logging_precision);
+                        rejected_trees_stream << "[&R]"
+                                << tree.to_parentheses(true, logging_precision)
+                                << ";" << std::endl;
+                    }
+                    ++rejected_tree_count;
+                }
+            }
         }
 
         if (simulate_sequences) {
@@ -611,6 +654,13 @@ int simphycoeval_main(int argc, char * argv[]) {
     if (! simulate_sequences) {
         true_params_stream.close();
         true_trees_stream.close();
+    }
+    if (rejected_tree_count > 0) {
+        rejected_trees_stream.close();
+        std::cerr << "Rejected trees written to: "
+                 << rejected_trees_path << std::endl;
+        std::cerr << "Number of trees rejected: "
+                 << rejected_tree_count << std::endl;
     }
 
     time(&finish);
