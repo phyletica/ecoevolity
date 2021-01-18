@@ -180,7 +180,7 @@ TEST_CASE("Testing simphycoeval cli tree rejecting",
                 0,
                 1e-6);
 
-        REQUIRE(rejected_trees.size() > 0);
+        REQUIRE(rejected_trees.size() > 1);
 
         for (auto t : rejected_trees) {
             double min_diff = 9999999999.0;

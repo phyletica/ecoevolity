@@ -553,10 +553,10 @@ int simphycoeval_main(int argc, char * argv[]) {
                         check_simphy_output_path(rejected_trees_path);
                         rejected_trees_stream.open(rejected_trees_path);
                         rejected_trees_stream.precision(logging_precision);
-                        rejected_trees_stream << "[&R]"
-                                << tree.to_parentheses(true, logging_precision)
-                                << ";" << std::endl;
                     }
+                    rejected_trees_stream << "[&R]"
+                            << tree.to_parentheses(true, logging_precision)
+                            << ";" << std::endl;
                     ++rejected_tree_count;
                 }
             }
