@@ -1703,6 +1703,20 @@ class BaseTree {
             return this->node_heights_.at(height_index);
         }
 
+        double get_min_height_diff() const {
+            double min_diff = std::numeric_limits<double>::infinity();
+            double last_time = this->node_heights_.at(0)->get_value();
+            for (unsigned int i = 1; i < this->node_heights_.size(); ++i) {
+                double diff = this->node_heights_.at(i)->get_value() - last_time;
+                ECOEVOLITY_ASSERT(diff > 0.0);
+                if (diff < min_diff) {
+                    min_diff = diff;
+                }
+                last_time = this->node_heights_.at(i)->get_value();
+            }
+            return min_diff;
+        }
+
         std::shared_ptr<NodeType> get_youngest_parent(const unsigned int height_index) const {
             if (height_index == (this->node_heights_.size() - 1)) {
                 throw EcoevolityError("called get_height_index_of_youngest_parent with root index");
