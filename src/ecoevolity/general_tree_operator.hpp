@@ -237,7 +237,7 @@ class GeneralTreeOperatorInterface : public GeneralTreeOperatorTemplate<TreeType
                 return;
             }
 
-            tree->compute_log_likelihood_and_prior(true);
+            tree->compute_log_likelihood_and_prior(nthreads);
 
             // std::cout << "lnl after comp: " << tree->get_log_likelihood_value() << "\n";
         
