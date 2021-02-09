@@ -159,9 +159,10 @@ class BasePopulationTree : public BaseTree<PopulationNode> {
         BasePopulationTree(
                 const NxsFullTreeDescription & tree_description,
                 NxsTaxaBlock * taxa_block,
-                const double ultrametricity_tolerance
+                const double ultrametricity_tolerance,
+                const double multiplier = -1.0
             ) : BaseTree<PopulationNode>(tree_description, taxa_block,
-                        ultrametricity_tolerance) { }
+                        ultrametricity_tolerance, multiplier) { }
 
         void init(
                 std::string path, 
