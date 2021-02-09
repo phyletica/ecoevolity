@@ -964,11 +964,13 @@ class TreeSample {
         TreeSample(
                 const std::vector<std::string> & paths,
                 const std::string & ncl_file_format,
-                unsigned int skip = 0,
-                double ultrametricity_tolerance = 1e-6) {
+                const unsigned int skip = 0,
+                const double ultrametricity_tolerance = 1e-6,
+                const double multiplier = -1.0) {
             for (auto path : paths) {
                 this->add_trees(path, ncl_file_format, skip,
-                        ultrametricity_tolerance);
+                        ultrametricity_tolerance,
+                        multiplier);
             }
         }
         TreeSample(
@@ -976,20 +978,23 @@ class TreeSample {
                 const std::vector<std::string> & paths,
                 const std::string & target_ncl_file_format,
                 const std::string & ncl_file_format,
-                unsigned int skip = 0,
-                double ultrametricity_tolerance = 1e-6) {
+                const unsigned int skip = 0,
+                const double ultrametricity_tolerance = 1e-6,
+                const double multiplier = -1.0) {
             this->set_target_tree(target_tree_path, target_ncl_file_format);
             for (auto path : paths) {
                 this->add_trees(path, ncl_file_format, skip,
-                        ultrametricity_tolerance);
+                        ultrametricity_tolerance,
+                        multiplier);
             }
         }
 
         void add_trees(
                 const std::string & path,
                 const std::string & ncl_file_format,
-                unsigned int skip = 0,
-                double ultrametricity_tolerance = 1e-6) {
+                const unsigned int skip = 0,
+                const double ultrametricity_tolerance = 1e-6,
+                const double multiplier = -1.0) {
             this->source_paths_.push_back(path);
             std::ifstream in_stream;
             in_stream.open(path);
@@ -1002,7 +1007,8 @@ class TreeSample {
                 this->add_trees(in_stream,
                         ncl_file_format,
                         skip,
-                        ultrametricity_tolerance);
+                        ultrametricity_tolerance,
+                        multiplier);
             }
             catch(...) {
                 std::cerr << "ERROR: Problem parsing tree file path: "
@@ -1014,8 +1020,9 @@ class TreeSample {
         void add_trees(
                 std::istream & tree_stream,
                 const std::string & ncl_file_format,
-                unsigned int skip = 0,
-                double ultrametricity_tolerance = 1e-6) {
+                const unsigned int skip = 0,
+                const double ultrametricity_tolerance = 1e-6,
+                const double multiplier = -1.0) {
             this->source_num_skipped_.push_back(skip);
             unsigned int source_index = this->source_sample_sizes_.size();
             this->source_sample_sizes_.push_back(0);
@@ -1043,7 +1050,8 @@ class TreeSample {
                 const NxsFullTreeDescription & tree_description = tree_block->GetFullTreeDescription(i);
                 tree_type t(tree_description,
                         taxa_block,
-                        ultrametricity_tolerance);
+                        ultrametricity_tolerance,
+                        multiplier);
                 this->_add_tree(t, i, source_index);
             }
             nexus_reader.DeleteBlocksFromFactories();

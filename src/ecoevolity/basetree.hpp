@@ -551,10 +551,14 @@ class BaseTree {
         }
         BaseTree(const NxsFullTreeDescription & tree_description,
                 NxsTaxaBlock * taxa_block,
-                const double ultrametricity_tolerance) {
+                const double ultrametricity_tolerance,
+                const double multiplier = -1.0) {
             this->build_from_ncl_tree_description_(tree_description,
                     taxa_block,
                     ultrametricity_tolerance);
+            if (multiplier > 0.0) {
+                this->scale_tree(multiplier);
+            }
         }
 
         typedef std::shared_ptr<NodeType> NodePtr;
@@ -2347,8 +2351,9 @@ inline void get_trees(
         std::istream & tree_stream,
         const std::string & ncl_file_format,
         std::vector<TreeType> & trees,
-        unsigned int skip = 0,
-        double ultrametricity_tolerance = 1e-6
+        const unsigned int skip = 0,
+        const double ultrametricity_tolerance = 1e-6,
+        const double multiplier = -1.0
         ) {
     MultiFormatReader nexus_reader(-1, NxsReader::WARNINGS_TO_STDERR);
     try {
@@ -2373,7 +2378,8 @@ inline void get_trees(
         const NxsFullTreeDescription & tree_description = tree_block->GetFullTreeDescription(i);
         TreeType t(tree_description,
                 taxa_block,
-                ultrametricity_tolerance);
+                ultrametricity_tolerance,
+                multiplier);
         trees.push_back(t);
     }
     nexus_reader.DeleteBlocksFromFactories();
@@ -2383,15 +2389,17 @@ template<class TreeType>
 inline std::vector<TreeType> get_trees(
         std::istream & tree_stream,
         const std::string & ncl_file_format,
-        unsigned int skip = 0,
-        double ultrametricity_tolerance = 1e-6
+        const unsigned int skip = 0,
+        const double ultrametricity_tolerance = 1e-6,
+        const double multiplier = -1.0
         ) {
     std::vector<TreeType> trees;
     get_trees<TreeType>(tree_stream,
             ncl_file_format,
             trees,
             skip,
-            ultrametricity_tolerance);
+            ultrametricity_tolerance,
+            multiplier);
     return trees;
 }
 
@@ -2400,8 +2408,9 @@ inline void get_trees(
         const std::string & path,
         const std::string & ncl_file_format,
         std::vector<TreeType> & trees,
-        unsigned int skip = 0,
-        double ultrametricity_tolerance = 1e-6
+        const unsigned int skip = 0,
+        const double ultrametricity_tolerance = 1e-6,
+        const double multiplier = -1.0
         ) {
     std::ifstream in_stream;
     in_stream.open(path);
@@ -2415,7 +2424,8 @@ inline void get_trees(
                 ncl_file_format,
                 trees,
                 skip,
-                ultrametricity_tolerance);
+                ultrametricity_tolerance,
+                multiplier);
     }
     catch(...) {
         std::cerr << "ERROR: Problem parsing tree file path: "
@@ -2428,15 +2438,17 @@ template<class TreeType>
 inline std::vector<TreeType> get_trees(
         const std::string & path,
         const std::string & ncl_file_format,
-        unsigned int skip = 0,
-        double ultrametricity_tolerance = 1e-6
+        const unsigned int skip = 0,
+        const double ultrametricity_tolerance = 1e-6,
+        const double multiplier = -1.0
         ) {
     std::vector<TreeType> trees;
     get_trees<TreeType>(path,
             ncl_file_format,
             trees,
             skip,
-            ultrametricity_tolerance);
+            ultrametricity_tolerance,
+            multiplier);
     return trees;
 }
 
@@ -2445,15 +2457,17 @@ inline void get_trees(
         const std::vector<std::string> & paths,
         const std::string & ncl_file_format,
         std::vector<TreeType> & trees,
-        unsigned int skip = 0,
-        double ultrametricity_tolerance = 1e-6
+        const unsigned int skip = 0,
+        const double ultrametricity_tolerance = 1e-6,
+        const double multiplier = -1.0
         ) {
     for (auto path : paths) {
         get_trees<TreeType>(path,
                 ncl_file_format,
                 trees,
                 skip,
-                ultrametricity_tolerance);
+                ultrametricity_tolerance,
+                multiplier);
     }
 }
 
@@ -2461,15 +2475,17 @@ template<class TreeType>
 inline std::vector<TreeType> get_trees(
         const std::vector<std::string> & paths,
         const std::string & ncl_file_format,
-        unsigned int skip = 0,
-        double ultrametricity_tolerance = 1e-6
+        const unsigned int skip = 0,
+        const double ultrametricity_tolerance = 1e-6,
+        const double multiplier = -1.0
         ) {
     std::vector<TreeType> trees;
     get_trees<TreeType>(paths,
             ncl_file_format,
             trees,
             skip,
-            ultrametricity_tolerance);
+            ultrametricity_tolerance,
+            multiplier);
     return trees;
 }
 

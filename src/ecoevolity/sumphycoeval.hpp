@@ -102,6 +102,13 @@ int sumphycoeval_main(int argc, char * argv[]) {
                   "standard deviation of split frequencies among MCMC "
                   "samples. Default: 0.1. This is only used if more than "
                   "one tree log file is provided.");
+    parser.add_option("-m" "--multiplier")
+            .action("store")
+            .type("double")
+            .dest("multiplier")
+            .set_default("-1.0")
+            .help("Scale all trees by multiplying their branch lengths by this "
+                  "number. Default: Do not rescale trees.");
     parser.add_option("-n", "--newick-target")
             .action("store_true")
             .dest("newick_target_tree")
@@ -189,6 +196,7 @@ int sumphycoeval_main(int argc, char * argv[]) {
     }
 
     const bool use_median_heights = options.get("use_median_heights");
+    const double multiplier = options.get("multiplier");
     const double min_split_freq = options.get("min_split_freq");
     if ((min_split_freq < 0.0) || (min_split_freq >=1.0)) {
         throw EcoevolityError("\'--min-split-freq\' must be between 0 and 1\n");
@@ -218,6 +226,8 @@ int sumphycoeval_main(int argc, char * argv[]) {
         }
     }
 
+    const double ultrametricity_tolerance = 1e-6;
+
     time_t start;
     time_t finish;
     time(&start);
@@ -230,13 +240,17 @@ int sumphycoeval_main(int argc, char * argv[]) {
                 log_paths,
                 target_tree_format,
                 "nexus",
-                burnin);
+                burnin,
+                ultrametricity_tolerance,
+                multiplier);
     }
     else {
         tree_sample = treesum::TreeSample<PopulationNode>(
                 log_paths,
                 "nexus",
-                burnin);
+                burnin,
+                ultrametricity_tolerance,
+                multiplier);
     }
 
     if (writing_target_to_nexus) {
