@@ -4081,6 +4081,7 @@ TEST_CASE("Testing SplitLumpNodesRevJumpSampler with 7 leaves and fixed root",
         tree.compute_log_likelihood_and_prior(true);
 
         std::map< std::set< std::set<Split> >, unsigned int> split_counts;
+        std::vector<unsigned int> ndiv_counts(6, 0);
 
         unsigned long long int niterations = 5000000000;
         unsigned int sample_freq = 100;
@@ -4098,6 +4099,7 @@ TEST_CASE("Testing SplitLumpNodesRevJumpSampler with 7 leaves and fixed root",
                 else {
                     split_counts[splits] = 1;
                 }
+                ++ndiv_counts[tree.get_number_of_node_heights() - 1];
                 ++sample_count;
                 if (sample_count % report_freq == 0) {
                     std::cout << "Sampled " << sample_count << " of " << nsamples << std::endl;
@@ -4109,6 +4111,11 @@ TEST_CASE("Testing SplitLumpNodesRevJumpSampler with 7 leaves and fixed root",
 
         // niterations is likely beyond limit of unsigned int
         // REQUIRE(op.get_number_of_attempts() == niterations);
+
+        std::cout << "Tree class counts:\n";
+        for (unsigned int i = 0; i < ndiv_counts.size(); ++i) {
+            std::cout << i + 1 << " : " << ndiv_counts.at(i) << "\n";
+        }
 
         // TODO: Figure this out
         unsigned int num_tree_models = split_counts.size();
