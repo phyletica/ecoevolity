@@ -150,7 +150,7 @@ TEST_CASE("Testing SplitLumpNodesRevJumpSampler with 6 leaves and fixed root",
             std::cout << "  prop error: " << s_e.second << "\n";
         }
 
-        write_r_script(split_counts, "../6-leaf-general-tree-test-beta-suite.r");
+        write_r_script(split_counts, 6, "../6-leaf-general-tree-test-beta-suite.r");
 
         REQUIRE(total_trees_sampled == nsamples);
 
@@ -300,7 +300,7 @@ TEST_CASE("Testing SplitLumpNodesRevJumpSampler with 7 leaves and fixed root",
             std::cout << "  prop error: " << s_e.second << "\n";
         }
 
-        write_r_script(split_counts, "../7-leaf-general-tree-test-beta-suite.r");
+        write_r_script(split_counts, 7, "../7-leaf-general-tree-test-beta-suite.r");
 
         REQUIRE(total_trees_sampled == nsamples);
 

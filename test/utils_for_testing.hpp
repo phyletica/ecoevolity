@@ -6,7 +6,8 @@
 #include "ecoevolity/path.hpp"
 
 inline void write_r_script(const std::vector<unsigned int> & counts,
-        const std::string & path) {
+        const std::string & path,
+        const std::vector<unsigned int> num_topologies_by_ndivs = {}) {
     std::pair<std::string, std::string> prefix_ext = path::splitext(path::basename(path));
     std::ofstream os;
     os.open(path);
@@ -19,6 +20,18 @@ inline void write_r_script(const std::vector<unsigned int> & counts,
        << "    lines(k, binom_probs, type = 'l')\n"
        << "}\n\n";
 
+    if (num_topologies_by_ndivs.size() > 0) {
+        os << "num_topologies_by_ndivs = c(";
+        for (unsigned int i = 0; i < num_topologies_by_ndivs.size(); ++i) {
+            if (i == 0) {
+                os << num_topologies_by_ndivs.at(i);
+            }
+            else {
+                os << ", " << num_topologies_by_ndivs.at(i);
+            }
+        }
+        os << ")\n";
+    }
     os << "counts = c(";
     for (unsigned int i = 0; i < counts.size(); ++i) {
         if (i == 0) {
@@ -52,13 +65,16 @@ inline void write_r_script(const std::vector<unsigned int> & counts,
 
 inline void write_r_script(
         const std::map< std::set< std::set<Split> >, unsigned int> & split_counts,
+        const unsigned int number_of_leaves,
         const std::string & path) {
     std::vector<unsigned int> counts;
+    std::vector<unsigned int> num_topologies_by_ndivs(number_of_leaves - 1, 0);
     counts.reserve(split_counts.size());
     for (auto splitset_count : split_counts) {
         counts.push_back(splitset_count.second);
+        ++num_topologies_by_ndivs[splitset_count.first.size()];
     }
-    write_r_script(counts, path);
+    write_r_script(counts, path, num_topologies_by_ndivs);
 }
 
 #endif

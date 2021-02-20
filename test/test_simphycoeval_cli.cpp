@@ -504,7 +504,7 @@ TEST_CASE("Testing simphycoeval cli with 5 leaves, full model, unconstrained siz
         /*     std::cout << "  prop error: " << s_e.second << "\n"; */
         /* } */
 
-        write_r_script(split_counts, "../simphyco-5-leaf-general-tree-test-full-model-free-pop-sizes.r");
+        write_r_script(split_counts, 5, "../simphyco-5-leaf-general-tree-test-full-model-free-pop-sizes.r");
 
         // We should sample every possible tree
         REQUIRE(split_counts.size() == 336);

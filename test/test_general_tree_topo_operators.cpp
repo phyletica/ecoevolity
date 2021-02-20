@@ -132,7 +132,7 @@ TEST_CASE("Testing NeighborHeightNodePermute with 6 leaves",
             std::cout << "  prop error: " << s_e.second << "\n";
         }
 
-        write_r_script(split_counts, "../6-leaf-NeighborHeightNodePermute-test.r");
+        write_r_script(split_counts, 6, "../6-leaf-NeighborHeightNodePermute-test.r");
 
         REQUIRE(total_trees_sampled == nsamples);
 
@@ -267,7 +267,7 @@ TEST_CASE("Testing NeighborHeightNodeSwap with 6 leaves",
             std::cout << "  prop error: " << s_e.second << "\n";
         }
 
-        write_r_script(split_counts, "../6-leaf-NeighborHeightNodeSwap-test.r");
+        write_r_script(split_counts, 6, "../6-leaf-NeighborHeightNodeSwap-test.r");
 
         REQUIRE(total_trees_sampled == nsamples);
 
@@ -401,7 +401,7 @@ TEST_CASE("Testing NeighborHeightNodeSwapAll with 6 leaves",
             std::cout << "  prop error: " << s_e.second << "\n";
         }
 
-        write_r_script(split_counts, "../6-leaf-NeighborHeightNodeSwapAll-test.r");
+        write_r_script(split_counts, 6, "../6-leaf-NeighborHeightNodeSwapAll-test.r");
 
         REQUIRE(total_trees_sampled == nsamples);
 
@@ -536,7 +536,7 @@ TEST_CASE("Testing NodeHeightSlideBumpSwapScaler with 6 leaves",
             std::cout << "  prop error: " << s_e.second << "\n";
         }
 
-        write_r_script(split_counts, "../6-leaf-NodeHeightSlideBumpSwapScaler-test.r");
+        write_r_script(split_counts, 6, "../6-leaf-NodeHeightSlideBumpSwapScaler-test.r");
 
         REQUIRE(total_trees_sampled == nsamples);
 
@@ -671,7 +671,7 @@ TEST_CASE("Testing NodeHeightSlideBumpSwapAllScaler with 6 leaves",
             std::cout << "  prop error: " << s_e.second << "\n";
         }
 
-        write_r_script(split_counts, "../6-leaf-NodeHeightSlideBumpSwapAllScaler-test.r");
+        write_r_script(split_counts, 6, "../6-leaf-NodeHeightSlideBumpSwapAllScaler-test.r");
 
         REQUIRE(total_trees_sampled == nsamples);
 
@@ -807,7 +807,7 @@ TEST_CASE("Testing NodeHeightSlideBumpPermuteScaler with 6 leaves",
             std::cout << "  prop error: " << s_e.second << "\n";
         }
 
-        write_r_script(split_counts, "../6-leaf-NodeHeightSlideBumpPermuteScaler-test.r");
+        write_r_script(split_counts, 6, "../6-leaf-NodeHeightSlideBumpPermuteScaler-test.r");
 
         REQUIRE(total_trees_sampled == nsamples);
 
@@ -1011,7 +1011,7 @@ TEST_CASE("Testing NodeHeightSlideBumpSwapMover with 6 leaves",
             std::cout << "  prop error: " << s_e.second << "\n";
         }
 
-        write_r_script(split_counts, "../6-leaf-NodeHeightSlideBumpSwapMover-test.r");
+        write_r_script(split_counts, 6, "../6-leaf-NodeHeightSlideBumpSwapMover-test.r");
 
         REQUIRE(total_trees_sampled == nsamples);
 
@@ -1215,7 +1215,7 @@ TEST_CASE("Testing NodeHeightSlideBumpSwapAllMover with 6 leaves",
             std::cout << "  prop error: " << s_e.second << "\n";
         }
 
-        write_r_script(split_counts, "../6-leaf-NodeHeightSlideBumpSwapAllMover-test.r");
+        write_r_script(split_counts, 6, "../6-leaf-NodeHeightSlideBumpSwapAllMover-test.r");
 
         REQUIRE(total_trees_sampled == nsamples);
 
@@ -1419,7 +1419,7 @@ TEST_CASE("Testing NodeHeightSlideBumpPermuteMover with 6 leaves",
             std::cout << "  prop error: " << s_e.second << "\n";
         }
 
-        write_r_script(split_counts, "../6-leaf-NodeHeightSlideBumpPermuteMover-test.r");
+        write_r_script(split_counts, 6, "../6-leaf-NodeHeightSlideBumpPermuteMover-test.r");
 
         REQUIRE(total_trees_sampled == nsamples);
 

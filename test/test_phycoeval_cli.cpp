@@ -296,7 +296,7 @@ TEST_CASE("Testing phycoeval cli with 5 leaves, full model, unconstrained sizes"
         /*     std::cout << "  prop error: " << s_e.second << "\n"; */
         /* } */
 
-        write_r_script(split_counts, "../phyco-5-leaf-general-tree-test-full-model-free-pop-sizes.r");
+        write_r_script(split_counts, 5, "../phyco-5-leaf-general-tree-test-full-model-free-pop-sizes.r");
 
         // We should sample every possible tree
         REQUIRE(split_counts.size() == 336);
