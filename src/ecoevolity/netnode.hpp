@@ -66,7 +66,7 @@ class PopulationNetNode: public BaseNetNode<PopulationNetNode>{
         void add_ln_relative_population_size_prior_density(
                 double& density,
                 std::vector< std::shared_ptr<PositiveRealParameter> >& parameters,
-                std::set< std::shared_ptr<DerivedNodeT> > & visited_nodes) const {
+                std::set< std::shared_ptr<PopulationNetNode> > & visited_nodes) const {
             visited_nodes.insert(this->shared_from_this());
             bool parameter_found = false;
             for (auto parameter_iter : parameters) {
@@ -88,7 +88,7 @@ class PopulationNetNode: public BaseNetNode<PopulationNetNode>{
 
         void get_all_population_size_parameters(
                 std::vector< std::shared_ptr<PositiveRealParameter> >& parameters,
-                std::set< std::shared_ptr<DerivedNodeT> > & visited_nodes) const {
+                std::set< std::shared_ptr<PopulationNetNode> > & visited_nodes) const {
             visited_nodes.insert(this->shared_from_this());
             bool parameter_found = false;
             for (auto parameter_iter : parameters) {
@@ -111,7 +111,7 @@ class PopulationNetNode: public BaseNetNode<PopulationNetNode>{
         void scale_all_population_sizes(
                 double scale,
                 std::vector< std::shared_ptr<PositiveRealParameter> >& parameters,
-                std::set< std::shared_ptr<DerivedNodeT> > & visited_nodes,
+                std::set< std::shared_ptr<PopulationNetNode> > & visited_nodes,
                 unsigned int & number_of_free_parameters_scaled) {
             visited_nodes.insert(this->shared_from_this());
             bool parameter_found = false;
@@ -248,7 +248,7 @@ class PopulationNetNode: public BaseNetNode<PopulationNetNode>{
             return this->bottom_pattern_probs_.get_allele_count();
         }
 
-        unsigned int get_leaf_allele_count(std::set< std::shared_ptr<DerivedNodeT> > & visited_nodes) const {
+        unsigned int get_leaf_allele_count(std::set< std::shared_ptr<PopulationNetNode> > & visited_nodes) const {
             visited_nodes.insert(this->shared_from_this());
             if (this->is_leaf()) {
                 return this->get_allele_count();
@@ -262,7 +262,7 @@ class PopulationNetNode: public BaseNetNode<PopulationNetNode>{
             return n;
         }
         unsigned int get_leaf_allele_count() const {
-            std::set< std::shared_ptr<derivednodet> > visited_nodes;
+            std::set< std::shared_ptr<PopulationNetNode> > visited_nodes;
             return this->get_leaf_allele_count(visited_nodes);
         }
 
@@ -274,7 +274,7 @@ class PopulationNetNode: public BaseNetNode<PopulationNetNode>{
             this->bottom_pattern_probs_.reset(allele_count);
             this->top_pattern_probs_.reset(allele_count);
         }
-        void resize_all(std::set< std::shared_ptr<DerivedNodeT> > & visited_nodes) {
+        void resize_all(std::set< std::shared_ptr<PopulationNetNode> > & visited_nodes) {
             visited_nodes.insert(this->shared_from_this());
             this->resize(this->get_leaf_allele_count());
             for (auto child_iter: this->children_) {
@@ -284,7 +284,7 @@ class PopulationNetNode: public BaseNetNode<PopulationNetNode>{
             }
         }
         void resize_all() {
-            std::set< std::shared_ptr<derivednodet> > visited_nodes;
+            std::set< std::shared_ptr<PopulationNetNode> > visited_nodes;
             this->resize_all(visited_nodes);
         }
 
@@ -384,7 +384,7 @@ class PopulationNetNode: public BaseNetNode<PopulationNetNode>{
         }
         std::vector< std::shared_ptr<PositiveRealParameter> > get_all_population_size_parameters() const {
             std::vector< std::shared_ptr<PositiveRealParameter> > parameters;
-            std::set< std::shared_ptr<derivednodet> > visited_nodes;
+            std::set< std::shared_ptr<PopulationNetNode> > visited_nodes;
             // parameters.reserve(this->get_node_count());
             this->get_all_population_size_parameters(
                     parameters, visited_nodes);
@@ -396,7 +396,7 @@ class PopulationNetNode: public BaseNetNode<PopulationNetNode>{
             this->make_all_dirty();
         }
         void set_all_population_size_parameters(std::shared_ptr<PositiveRealParameter> size,
-                std::set< std::shared_ptr<DerivedNodeT> > & visited_nodes) {
+                std::set< std::shared_ptr<PopulationNetNode> > & visited_nodes) {
             visited_nodes.insert(this->shared_from_this());
             this->population_size_ = size;
             this->make_dirty();
@@ -407,12 +407,12 @@ class PopulationNetNode: public BaseNetNode<PopulationNetNode>{
             }
         }
         void set_all_population_size_parameters(std::shared_ptr<PositiveRealParameter> size) {
-            std::set< std::shared_ptr<derivednodet> > visited_nodes;
+            std::set< std::shared_ptr<PopulationNetNode> > visited_nodes;
             this->set_all_population_size_parameters(size, visited_nodes);
         }
         void set_all_population_size_parameters() {
             std::shared_ptr<PositiveRealParameter> size = this->population_size_;
-            std::set< std::shared_ptr<derivednodet> > visited_nodes;
+            std::set< std::shared_ptr<PopulationNetNode> > visited_nodes;
             this->set_all_population_size_parameters(size, visited_nodes);
         }
 
@@ -421,7 +421,7 @@ class PopulationNetNode: public BaseNetNode<PopulationNetNode>{
             this->make_all_dirty();
         }
         void set_all_population_sizes(double size,
-                std::set< std::shared_ptr<DerivedNodeT> > & visited_nodes) {
+                std::set< std::shared_ptr<PopulationNetNode> > & visited_nodes) {
             visited_nodes.insert(this->shared_from_this());
             this->population_size_->set_value(size);
             this->make_dirty();
@@ -432,7 +432,7 @@ class PopulationNetNode: public BaseNetNode<PopulationNetNode>{
             }
         }
         void set_all_population_sizes(double size) {
-            std::set< std::shared_ptr<derivednodet> > visited_nodes;
+            std::set< std::shared_ptr<PopulationNetNode> > visited_nodes;
             this->set_all_population_sizes(size, visited_nodes);
         }
         void update_population_size(double size) {
@@ -440,7 +440,7 @@ class PopulationNetNode: public BaseNetNode<PopulationNetNode>{
             this->make_all_dirty();
         }
         void update_all_population_sizes(double size,
-                std::set< std::shared_ptr<DerivedNodeT> > & visited_nodes) {
+                std::set< std::shared_ptr<PopulationNetNode> > & visited_nodes) {
             visited_nodes.insert(this->shared_from_this());
             this->population_size_->update_value(size);
             this->make_dirty();
@@ -451,7 +451,7 @@ class PopulationNetNode: public BaseNetNode<PopulationNetNode>{
             }
         }
         void update_all_population_sizes(double size) {
-            std::set< std::shared_ptr<derivednodet> > visited_nodes;
+            std::set< std::shared_ptr<PopulationNetNode> > visited_nodes;
             this->update_all_population_sizes(size, visited_nodes);
         }
 
@@ -462,7 +462,7 @@ class PopulationNetNode: public BaseNetNode<PopulationNetNode>{
             this->population_size_->restore();
             this->make_all_dirty();
         }
-        void store_all_population_sizes(std::set< std::shared_ptr<DerivedNodeT> > & visited_nodes) {
+        void store_all_population_sizes(std::set< std::shared_ptr<PopulationNetNode> > & visited_nodes) {
             visited_nodes.insert(this->shared_from_this());
             this->population_size_->store();
             for (auto child_iter: this->children_) {
@@ -471,7 +471,7 @@ class PopulationNetNode: public BaseNetNode<PopulationNetNode>{
                 }
             }
         }
-        void restore_all_population_sizes(std::set< std::shared_ptr<DerivedNodeT> > & visited_nodes) {
+        void restore_all_population_sizes(std::set< std::shared_ptr<PopulationNetNode> > & visited_nodes) {
             visited_nodes.insert(this->shared_from_this());
             this->population_size_->restore();
             this->make_dirty();
@@ -482,18 +482,18 @@ class PopulationNetNode: public BaseNetNode<PopulationNetNode>{
             }
         }
         void store_all_population_sizes() {
-            std::set< std::shared_ptr<derivednodet> > visited_nodes;
+            std::set< std::shared_ptr<PopulationNetNode> > visited_nodes;
             this->store_all_population_sizes(visited_nodes);
         }
         void restore_all_population_sizes() {
-            std::set< std::shared_ptr<derivednodet> > visited_nodes;
+            std::set< std::shared_ptr<PopulationNetNode> > visited_nodes;
             this->restore_all_population_sizes(visited_nodes);
         }
 
         void store_population_size_pointer() {
             this->stored_population_size_ = this->population_size_;
         }
-        void store_all_population_size_pointers(std::set< std::shared_ptr<DerivedNodeT> > & visited_nodes) {
+        void store_all_population_size_pointers(std::set< std::shared_ptr<PopulationNetNode> > & visited_nodes) {
             visited_nodes.insert(this->shared_from_this());
             this->stored_population_size_ = this->population_size_;
             for (auto child_iter: this->children_) {
@@ -503,7 +503,7 @@ class PopulationNetNode: public BaseNetNode<PopulationNetNode>{
             }
         }
         void store_all_population_size_pointers() {
-            std::set< std::shared_ptr<derivednodet> > visited_nodes;
+            std::set< std::shared_ptr<PopulationNetNode> > visited_nodes;
             this->store_all_population_size_pointers(visited_nodes);
         }
 
@@ -511,7 +511,7 @@ class PopulationNetNode: public BaseNetNode<PopulationNetNode>{
             this->population_size_ = this->stored_population_size_;
             this->make_all_dirty();
         }
-        void restore_all_population_size_pointers(std::set< std::shared_ptr<DerivedNodeT> > & visited_nodes) {
+        void restore_all_population_size_pointers(std::set< std::shared_ptr<PopulationNetNode> > & visited_nodes) {
             visited_nodes.insert(this->shared_from_this());
             this->population_size_ = this->stored_population_size_;
             this->make_dirty();
@@ -522,7 +522,7 @@ class PopulationNetNode: public BaseNetNode<PopulationNetNode>{
             }
         }
         void restore_all_population_size_pointers() {
-            std::set< std::shared_ptr<derivednodet> > visited_nodes;
+            std::set< std::shared_ptr<PopulationNetNode> > visited_nodes;
             this->restore_all_population_size_pointers(visited_nodes);
         }
 
@@ -548,7 +548,7 @@ class PopulationNetNode: public BaseNetNode<PopulationNetNode>{
             this->make_all_dirty();
         }
         void set_all_population_size_priors(std::shared_ptr<ContinuousProbabilityDistribution> prior,
-                std::set< std::shared_ptr<DerivedNodeT> > & visited_nodes) {
+                std::set< std::shared_ptr<PopulationNetNode> > & visited_nodes) {
             visited_nodes.insert(this->shared_from_this());
             this->population_size_->set_prior(prior);
             this->make_dirty();
@@ -559,39 +559,56 @@ class PopulationNetNode: public BaseNetNode<PopulationNetNode>{
             }
         }
         void set_all_population_size_priors(std::shared_ptr<ContinuousProbabilityDistribution> prior) {
-            std::set< std::shared_ptr<derivednodet> > visited_nodes;
+            std::set< std::shared_ptr<PopulationNetNode> > visited_nodes;
             this->set_all_population_size_priors(prior, visited_nodes);
         }
-
-        //////////////////////////////////////////////////////////////////////////////////////////////////
 
         void fix_population_size() {
             this->population_size_->fix();
             this->make_dirty();
         }
-        void fix_all_population_sizes() {
+        void fix_all_population_sizes(
+                std::set< std::shared_ptr<PopulationNetNode> > & visited_nodes) {
+            visited_nodes.insert(this->shared_from_this());
             this->population_size_->fix();
             this->make_dirty();
             for (auto child_iter: this->children_) {
-                child_iter->fix_all_population_sizes();
+                if (visited_nodes.count(child_iter) < 1) {
+                    child_iter->fix_all_population_sizes(visited_nodes);
+                }
             }
         }
+        void fix_all_population_sizes() {
+            std::set< std::shared_ptr<PopulationNetNode> > visited_nodes;
+            this->fix_all_population_sizes(visited_nodes);
+        }
+
         void estimate_population_size() {
             this->population_size_->estimate();
             this->make_dirty();
         }
-        void estimate_all_population_sizes() {
+        void estimate_all_population_sizes(
+                std::set< std::shared_ptr<PopulationNetNode> > & visited_nodes) {
+            visited_nodes.insert(this->shared_from_this());
             this->population_size_->estimate();
             for (auto child_iter: this->children_) {
-                child_iter->estimate_all_population_sizes();
+                if (visited_nodes.count(child_iter) < 1) {
+                    child_iter->estimate_all_population_sizes(visited_nodes);
+                }
             }
         }
+        void estimate_all_population_sizes() {
+            std::set< std::shared_ptr<PopulationNetNode> > visited_nodes;
+            this->estimate_all_population_sizes(visited_nodes);
+        }
+
+        ////////////////////////////////////////
 
         double calculate_ln_relative_population_size_prior_density() const {
             double d = 0.0;
             std::vector< std::shared_ptr<PositiveRealParameter> > parameters;
             parameters.reserve(this->get_node_count());
-            std::set< std::shared_ptr<derivednodet> > visited_nodes;
+            std::set< std::shared_ptr<PopulationNetNode> > visited_nodes;
             this->add_ln_relative_population_size_prior_density(d, parameters, visited_nodes);
             return d;
         }
@@ -600,7 +617,7 @@ class PopulationNetNode: public BaseNetNode<PopulationNetNode>{
             std::vector< std::shared_ptr<PositiveRealParameter> > parameters;
             parameters.reserve(this->get_node_count());
             unsigned int number_of_free_parameters_scaled = 0;
-            std::set< std::shared_ptr<derivednodet> > visited_nodes;
+            std::set< std::shared_ptr<PopulationNetNode> > visited_nodes;
             this->scale_all_population_sizes(
                     scale,
                     parameters,
