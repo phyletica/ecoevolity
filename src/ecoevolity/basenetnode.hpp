@@ -58,11 +58,19 @@ class BaseNetNode : public std::enable_shared_from_this<DerivedNodeT> {
         std::shared_ptr<PositiveRealParameter> stored_height_ = std::make_shared<PositiveRealParameter>(0.0);
         bool is_dirty_ = true;
 
+        void visit(
+                std::set< std::shared_ptr<const DerivedNodeT> > & visited_nodes) const {
+            if (this->has_multiple_parents()) {
+                ECOEVOLITY_ASSERT(visited_nodes.count(this->shared_from_this()) < 1);
+                visited_nodes.insert(this->shared_from_this());
+            }
+        }
+
         void add_ln_relative_node_height_prior_density(
                 double& density,
                 std::vector< std::shared_ptr<PositiveRealParameter> >& parameters,
                 std::set< std::shared_ptr<const DerivedNodeT> > & visited_nodes) const {
-            visited_nodes.insert(this->shared_from_this());
+            this->visit(visited_nodes);
             bool parameter_found = false;
             for (auto parameter_iter : parameters) {
                 if (parameter_iter == this->height_) {
@@ -216,6 +224,9 @@ class BaseNetNode : public std::enable_shared_from_this<DerivedNodeT> {
 
         // bool has_parent() const { return this->parent_.expired() ? false : true; }
         bool has_parent() const { return !this->parents_.empty(); }
+        bool has_multiple_parents() const {
+            return (this->parents_.size() > 1);
+        }
         // bool is_root() const { return this->parent_.expired() ? true : false; }
         bool is_root() const { return this->parents_.empty(); }
 
@@ -507,7 +518,7 @@ class BaseNetNode : public std::enable_shared_from_this<DerivedNodeT> {
 
         void scale(const double multiplier, std::set< std::shared_ptr<const DerivedNodeT> > & visited_nodes) {
             this->set_height(this->get_height() * multiplier);
-            visited_nodes.insert(this->shared_from_this());
+            this->visit(visited_nodes);
             for (auto child_iter: this->children_) {
                 if (visited_nodes.count(child_iter) < 1) {
                     child_iter->_scale(multiplier, visited_nodes);
@@ -531,7 +542,7 @@ class BaseNetNode : public std::enable_shared_from_this<DerivedNodeT> {
         void get_node(const std::string& label,
                 std::shared_ptr<DerivedNodeT>& node_ptr,
                 std::set< std::shared_ptr<const DerivedNodeT> > & visited_nodes) {
-            visited_nodes.insert(this->shared_from_this());
+            this->visit(visited_nodes);
             if (node_ptr != nullptr) {
                 return;
             }
@@ -557,7 +568,7 @@ class BaseNetNode : public std::enable_shared_from_this<DerivedNodeT> {
         }
         void store_all_heights(std::set< std::shared_ptr<const DerivedNodeT> > & visited_nodes) {
             this->height_->store();
-            visited_nodes.insert(this->shared_from_this());
+            this->visit(visited_nodes);
             for (auto child_iter: this->children_) {
                 if (visited_nodes.count(child_iter) < 1) {
                     child_iter->store_all_heights(visited_nodes);
@@ -579,7 +590,7 @@ class BaseNetNode : public std::enable_shared_from_this<DerivedNodeT> {
         void restore_all_heights(std::set< std::shared_ptr<const DerivedNodeT> > & visited_nodes) {
             this->height_->restore();
             this->make_dirty();
-            visited_nodes.insert(this->shared_from_this());
+            this->visit(visited_nodes);
             for (auto child_iter: this->children_) {
                 if (visited_nodes.count(child_iter) < 1) {
                     child_iter->restore_all_heights(visited_nodes);
@@ -599,7 +610,7 @@ class BaseNetNode : public std::enable_shared_from_this<DerivedNodeT> {
         }
         void store_all_height_pointers(std::set< std::shared_ptr<const DerivedNodeT> > & visited_nodes) {
             this->stored_height_ = this->height_;
-            visited_nodes.insert(this->shared_from_this());
+            this->visit(visited_nodes);
             for (auto child_iter: this->children_) {
                 if (visited_nodes.count(child_iter) < 1) {
                     child_iter->store_all_height_pointers(visited_nodes);
@@ -620,7 +631,7 @@ class BaseNetNode : public std::enable_shared_from_this<DerivedNodeT> {
         }
         void restore_all_height_pointers(std::set< std::shared_ptr<const DerivedNodeT> > & visited_nodes) {
             this->height_ = this->stored_height_;
-            visited_nodes.insert(this->shared_from_this());
+            this->visit(visited_nodes);
             this->make_dirty();
             for (auto child_iter: this->children_) {
                 if (visited_nodes.count(child_iter) < 1) {
@@ -655,7 +666,7 @@ class BaseNetNode : public std::enable_shared_from_this<DerivedNodeT> {
         void sum_clade_length(double & length,
                 std::set< std::shared_ptr<const DerivedNodeT> > & visited_nodes) const  {
             length += this->get_length();
-            visited_nodes.insert(this->shared_from_this());
+            this->visit(visited_nodes);
             for (auto child_iter: this->children_) {
                 if (visited_nodes.count(child_iter) < 1) {
                     child_iter->sum_clade_length(length, visited_nodes);
@@ -694,7 +705,7 @@ class BaseNetNode : public std::enable_shared_from_this<DerivedNodeT> {
 
         bool node_heights_are_valid(
                 std::set< std::shared_ptr<const DerivedNodeT> > & visited_nodes) const  {
-            visited_nodes.insert(this->shared_from_this());
+            this->visit(visited_nodes);
             if (! this->node_height_is_valid()) {
                 return false;
             }
@@ -734,7 +745,7 @@ class BaseNetNode : public std::enable_shared_from_this<DerivedNodeT> {
         }
 
         bool clade_has_dirt(std::set< std::shared_ptr<const DerivedNodeT> > & visited_nodes) const {
-            visited_nodes.insert(this->shared_from_this());
+            this->visit(visited_nodes);
             if (this->is_dirty()) {
                 return true;
             }
@@ -757,7 +768,7 @@ class BaseNetNode : public std::enable_shared_from_this<DerivedNodeT> {
         }
         void make_all_dirty(std::set< std::shared_ptr<const DerivedNodeT> > & visited_nodes) {
             this->is_dirty_ = true;
-            visited_nodes.insert(this->shared_from_this());
+            this->visit(visited_nodes);
             for (auto child_iter: this->children_) {
                 if (visited_nodes.count(child_iter) < 1) {
                     child_iter->make_all_dirty(visited_nodes);
@@ -773,7 +784,7 @@ class BaseNetNode : public std::enable_shared_from_this<DerivedNodeT> {
         }
         void make_all_clean(std::set< std::shared_ptr<const DerivedNodeT> > & visited_nodes) {
             this->is_dirty_ = false;
-            visited_nodes.insert(this->shared_from_this());
+            this->visit(visited_nodes);
             for (auto child_iter: this->children_) {
                 if (visited_nodes.count(child_iter) < 1) {
                     child_iter->make_all_clean(visited_nodes);
@@ -787,7 +798,7 @@ class BaseNetNode : public std::enable_shared_from_this<DerivedNodeT> {
 
         unsigned int get_node_count(std::set< std::shared_ptr<const DerivedNodeT> > & visited_nodes) const {
             unsigned int n = 1;
-            visited_nodes.insert(this->shared_from_this());
+            this->visit(visited_nodes);
             for (auto child_iter: this->children_) {
                 if (visited_nodes.count(child_iter) < 1) {
                     n += child_iter->get_node_count(visited_nodes);
@@ -800,7 +811,7 @@ class BaseNetNode : public std::enable_shared_from_this<DerivedNodeT> {
             return this->get_node_count(visited_nodes);
         }
         unsigned int get_leaf_node_count(std::set< std::shared_ptr<const DerivedNodeT> > & visited_nodes) const {
-            visited_nodes.insert(this->shared_from_this());
+            this->visit(visited_nodes);
             if (this->is_leaf()) {
                 return 1;
             }
@@ -817,7 +828,7 @@ class BaseNetNode : public std::enable_shared_from_this<DerivedNodeT> {
             return this->get_leaf_node_count(visited_nodes);
         }
         unsigned int get_internal_node_count(std::set< std::shared_ptr<const DerivedNodeT> > & visited_nodes) const {
-            visited_nodes.insert(this->shared_from_this());
+            this->visit(visited_nodes);
             if (this->is_leaf()) {
                 return 0;
             }
@@ -834,7 +845,7 @@ class BaseNetNode : public std::enable_shared_from_this<DerivedNodeT> {
             return this->get_internal_node_count(visited_nodes);
         }
         unsigned int get_polytomy_node_count(std::set< std::shared_ptr<const DerivedNodeT> > & visited_nodes) const {
-            visited_nodes.insert(this->shared_from_this());
+            this->visit(visited_nodes);
             if (this->is_polytomy()) {
                 return 1;
             }
@@ -853,7 +864,7 @@ class BaseNetNode : public std::enable_shared_from_this<DerivedNodeT> {
         unsigned int get_mapped_node_count(
                 std::shared_ptr<PositiveRealParameter> node_height_pointer,
                 std::set< std::shared_ptr<const DerivedNodeT> > & visited_nodes) const {
-            visited_nodes.insert(this->shared_from_this());
+            this->visit(visited_nodes);
             if (this->get_height_parameter() == node_height_pointer) {
                 return 1;
             }
@@ -873,7 +884,7 @@ class BaseNetNode : public std::enable_shared_from_this<DerivedNodeT> {
         unsigned int get_mapped_polytomy_node_count(
                 std::shared_ptr<PositiveRealParameter> node_height_pointer,
                 std::set< std::shared_ptr<const DerivedNodeT> > & visited_nodes) const {
-            visited_nodes.insert(this->shared_from_this());
+            this->visit(visited_nodes);
             if ((this->get_height_parameter() == node_height_pointer) &&
                     (this->is_polytomy())) {
                 return 1;
@@ -894,7 +905,7 @@ class BaseNetNode : public std::enable_shared_from_this<DerivedNodeT> {
 
         void get_nodes(std::vector< std::shared_ptr<DerivedNodeT> >& nodes,
                 std::set< std::shared_ptr<const DerivedNodeT> > & visited_nodes) {
-            visited_nodes.insert(this->shared_from_this());
+            this->visit(visited_nodes);
             nodes.push_back(this->shared_from_this());
             for (auto child_iter: this->children_) {
                 if (visited_nodes.count(child_iter) < 1) {
@@ -927,7 +938,7 @@ class BaseNetNode : public std::enable_shared_from_this<DerivedNodeT> {
             while(! q.empty()) {
                 nd = q.front(); q.pop();
                 nodes.push_back(nd);
-                visited_nodes.insert(nd);
+                this->visit(visited_nodes);
                 if (! nd->is_leaf()) {
                     for (auto child : nd->children_) {
                         if (visited_nodes.count(child) < 1) {
@@ -940,7 +951,7 @@ class BaseNetNode : public std::enable_shared_from_this<DerivedNodeT> {
 
         void get_internal_nodes(std::vector< std::shared_ptr<DerivedNodeT> >& internal_nodes,
                 std::set< std::shared_ptr<const DerivedNodeT> > & visited_nodes) {
-            visited_nodes.insert(this->shared_from_this());
+            this->visit(visited_nodes);
             if (! this->is_leaf()) {
                 internal_nodes.push_back(this->shared_from_this());
             }
@@ -963,7 +974,7 @@ class BaseNetNode : public std::enable_shared_from_this<DerivedNodeT> {
 
         void get_polytomy_nodes(std::vector< std::shared_ptr<DerivedNodeT> >& polytomy_nodes,
                 std::set< std::shared_ptr<const DerivedNodeT> > & visited_nodes) {
-            visited_nodes.insert(this->shared_from_this());
+            this->visit(visited_nodes);
             if (this->is_polytomy()) {
                 polytomy_nodes.push_back(this->shared_from_this());
             }
@@ -986,7 +997,7 @@ class BaseNetNode : public std::enable_shared_from_this<DerivedNodeT> {
         void get_mapped_nodes(std::vector< std::shared_ptr<DerivedNodeT> >& mapped_nodes,
                 std::shared_ptr<PositiveRealParameter> node_height_pointer,
                 std::set< std::shared_ptr<const DerivedNodeT> > & visited_nodes) {
-            visited_nodes.insert(this->shared_from_this());
+            this->visit(visited_nodes);
             if (this->get_height_parameter() == node_height_pointer) {
                 mapped_nodes.push_back(this->shared_from_this());
             }
@@ -1011,7 +1022,7 @@ class BaseNetNode : public std::enable_shared_from_this<DerivedNodeT> {
         void get_mapped_polytomy_nodes(std::vector< std::shared_ptr<DerivedNodeT> >& mapped_nodes,
                 std::shared_ptr<PositiveRealParameter> node_height_pointer,
                 std::set< std::shared_ptr<const DerivedNodeT> > & visited_nodes) {
-            visited_nodes.insert(this->shared_from_this());
+            this->visit(visited_nodes);
             if ((this->get_height_parameter() == node_height_pointer) &&
                     (this->is_polytomy())) {
                 mapped_nodes.push_back(this->shared_from_this());
@@ -1036,7 +1047,7 @@ class BaseNetNode : public std::enable_shared_from_this<DerivedNodeT> {
 
         void get_leaves(std::vector< std::shared_ptr<DerivedNodeT> >& leaves,
                 std::set< std::shared_ptr<const DerivedNodeT> > & visited_nodes) {
-            visited_nodes.insert(this->shared_from_this());
+            this->visit(visited_nodes);
             if (this->is_leaf()) {
                 leaves.push_back(this->shared_from_this());
             }
@@ -1059,7 +1070,7 @@ class BaseNetNode : public std::enable_shared_from_this<DerivedNodeT> {
 
         void get_leaf_labels(std::vector<std::string>& leaf_labels,
                 std::set< std::shared_ptr<const DerivedNodeT> > & visited_nodes) const {
-            visited_nodes.insert(this->shared_from_this());
+            this->visit(visited_nodes);
             if (this->is_leaf()) {
                 leaf_labels.push_back(this->get_label());
             }
@@ -1082,7 +1093,7 @@ class BaseNetNode : public std::enable_shared_from_this<DerivedNodeT> {
 
         void get_leaf_label_set(std::set<std::string>& leaf_labels,
                 std::set< std::shared_ptr<const DerivedNodeT> > & visited_nodes) const {
-            visited_nodes.insert(this->shared_from_this());
+            this->visit(visited_nodes);
             if (this->is_leaf()) {
                 leaf_labels.insert(this->get_label());
             }
@@ -1111,7 +1122,7 @@ class BaseNetNode : public std::enable_shared_from_this<DerivedNodeT> {
         }
         void set_all_node_height_priors(std::shared_ptr<ContinuousProbabilityDistribution> prior,
                 std::set< std::shared_ptr<const DerivedNodeT> > & visited_nodes) {
-            visited_nodes.insert(this->shared_from_this());
+            this->visit(visited_nodes);
             this->height_->set_prior(prior);
             this->make_dirty();
             for (auto child_iter: this->children_) {
@@ -1129,7 +1140,7 @@ class BaseNetNode : public std::enable_shared_from_this<DerivedNodeT> {
             this->height_->fix();
         }
         void fix_all_node_heights(std::set< std::shared_ptr<const DerivedNodeT> > & visited_nodes) {
-            visited_nodes.insert(this->shared_from_this());
+            this->visit(visited_nodes);
             this->height_->fix();
             for (auto child_iter: this->children_) {
                 if (visited_nodes.count(child_iter) < 1) {
@@ -1146,7 +1157,7 @@ class BaseNetNode : public std::enable_shared_from_this<DerivedNodeT> {
             this->height_->estimate();
         }
         void estimate_all_node_heights(std::set< std::shared_ptr<const DerivedNodeT> > & visited_nodes) {
-            visited_nodes.insert(this->shared_from_this());
+            this->visit(visited_nodes);
             this->height_->estimate();
             for (auto child_iter: this->children_) {
                 if (visited_nodes.count(child_iter) < 1) {
@@ -1164,7 +1175,7 @@ class BaseNetNode : public std::enable_shared_from_this<DerivedNodeT> {
         }
 
         bool all_node_heights_are_fixed(std::set< std::shared_ptr<const DerivedNodeT> > & visited_nodes) const {
-            visited_nodes.insert(this->shared_from_this());
+            this->visit(visited_nodes);
             if (! this->node_height_is_fixed()) {
                 return false;
             }
