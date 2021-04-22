@@ -36,20 +36,39 @@ BiallelicPatternProbabilityMatrix::BiallelicPatternProbabilityMatrix(
     if (allele_count > 0) {
         this->set_pattern_probability(allele_count, red_allele_count, 1.0);
     }
+    else {
+        this->prob_missing_ = 1.0;
+        this->pattern_prob_matrix_.clear();
+        this->allele_count_ = allele_count;
+    }
 }
 
 BiallelicPatternProbabilityMatrix::BiallelicPatternProbabilityMatrix(
                 unsigned int allele_count,
                 const std::vector<double>& pattern_probs) {
+    if (allele_count == 0) {
+        ECOEVOLITY_ASSERT(pattern_probs.size() == 0);
+        this->prob_missing_ = 1.0;
+        this->pattern_prob_matrix_.clear();
+        this->allele_count_ = allele_count;
+        return;
+    }
     if (pattern_probs.size() != ((((allele_count + 1) * (allele_count + 2))/2) - 1)) {
         throw EcoevolityError(
                 "Allele count and pattern probability vector size mismatch in BiallelicPatternProbabilityMatrix constructor");
     }
     this->allele_count_ = allele_count;
     this->pattern_prob_matrix_ = pattern_probs;
+    this->prob_missing_ = 0.0;
 }
 
 void BiallelicPatternProbabilityMatrix::resize(unsigned int allele_count) {
+    if (allele_count == 0) {
+        this->prob_missing_ = 1.0;
+        this->pattern_prob_matrix_.clear();
+        this->allele_count_ = allele_count;
+        return;
+    }
     if (this->get_allele_count() == allele_count) {
         ECOEVOLITY_ASSERT(this->pattern_prob_matrix_.size() ==
                 ((((allele_count + 1) * (allele_count + 2))/2) - 1));
@@ -59,19 +78,28 @@ void BiallelicPatternProbabilityMatrix::resize(unsigned int allele_count) {
     this->pattern_prob_matrix_.resize(
             ((((allele_count + 1) * (allele_count + 2))/2) - 1),
             0);
+    this->prob_missing_ = 0.0;
 }
 
 void BiallelicPatternProbabilityMatrix::reset(unsigned int allele_count) {
+    if (allele_count == 0) {
+        this->prob_missing_ = 1.0;
+        this->pattern_prob_matrix_.clear();
+        this->allele_count_ = allele_count;
+        return;
+    }
     if (this->get_allele_count() == allele_count) {
         ECOEVOLITY_ASSERT(this->pattern_prob_matrix_.size() ==
                 ((((allele_count + 1) * (allele_count + 2))/2) - 1));
         std::fill(this->pattern_prob_matrix_.begin(), this->pattern_prob_matrix_.end(), 0);
+        this->prob_missing_ = 0.0;
         return;
     }
     this->allele_count_ = allele_count;
     this->pattern_prob_matrix_.assign(
             ((((allele_count + 1) * (allele_count + 2))/2) - 1),
             0);
+    this->prob_missing_ = 0.0;
 }
 
 void BiallelicPatternProbabilityMatrix::copy(
@@ -79,11 +107,15 @@ void BiallelicPatternProbabilityMatrix::copy(
     this->resize(m.get_allele_count());
     ECOEVOLITY_ASSERT(this->get_allele_count() == m.get_allele_count());
     this->pattern_prob_matrix_ = m.get_pattern_prob_matrix();
+    this->prob_missing_ = m.prob_missing_;
 }
 
 double BiallelicPatternProbabilityMatrix::get_pattern_probability(
         unsigned int allele_count,
         unsigned int red_allele_count) const {
+    if (allele_count == 0) {
+        return this->prob_missing_;
+    }
     int i = (((allele_count * (allele_count + 1))/2) - 1 + red_allele_count);
     if ((i < 0) || (i >= (int)this->pattern_prob_matrix_.size())) {
         throw std::out_of_range("Allele pattern is out of range of matrix");
@@ -95,6 +127,10 @@ void BiallelicPatternProbabilityMatrix::set_pattern_probability(
         unsigned int allele_count,
         unsigned int red_allele_count,
         double probability) {
+    if (allele_count == 0) {
+        this->prob_missing_ = probability;
+        return;
+    }
     int i = (((allele_count * (allele_count + 1))/2) - 1 + red_allele_count);
     if ((i < 0) || (i >= (int)this->pattern_prob_matrix_.size())) {
         throw std::out_of_range("Allele pattern is out of range of matrix");
