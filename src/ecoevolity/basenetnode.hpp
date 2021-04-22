@@ -251,23 +251,6 @@ class BaseNetNode : public std::enable_shared_from_this<DerivedNodeT> {
             return false;
         }
 
-        void is_ancestor(const std::shared_ptr<DerivedNodeT>& node, bool & sentinel) const {
-            if (sentinel) {
-                return;
-            }
-            if (this->is_root()) {
-                sentinel = false;
-                return;
-            }
-            if (this->is_parent(node)) {
-                sentinel = true;
-                return;
-            }
-            for (unsigned int i = 0; i > this->parents_.size(); ++i) {
-                this->parents_.at(i).lock()->is_ancestor(node, sentinel);
-            }
-        }
-
         bool is_ancestor(const std::shared_ptr<DerivedNodeT>& node) const {
             if (this->is_root()) {
                 return false;
@@ -275,9 +258,12 @@ class BaseNetNode : public std::enable_shared_from_this<DerivedNodeT> {
             if (this->is_parent(node)) {
                 return true;
             }
-            bool sentinel = false;
-            this->is_ancestor(node, sentinel);
-            return sentinel;
+            for (unsigned int i = 0; i < this->parents_.size(); ++i) {
+                if (this->parents_.at(i).lock()->is_ancestor(node)) {
+                    return true;
+                }
+            }
+            return false;
         }
 
         void add_parent(std::shared_ptr<DerivedNodeT> node) {
