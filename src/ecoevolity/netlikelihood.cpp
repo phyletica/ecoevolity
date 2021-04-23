@@ -90,6 +90,97 @@ void compute_top_of_branch_partials(
     node.copy_top_pattern_probs(m);
 }
 
+/**
+ * @brief   Take conditional probabilities at the top of a daugther branch with
+ *          two parents and propagate them to the conditional probabilites at
+ *          the bottom of each parent branch.
+ *
+ * For each possible allele pattern at the top of the daughter branch, we need
+ * to consider all the ways the alleles can be split between the parents and
+ * calc the prob of each. For example, let's say the probability that an allele
+ * came from the left / right parent is 4/12 / 8/12, respectively, and we have
+ * the following conditional probs at the top of the daugher branch:
+ *
+ *   Daughter prob  Ways to split                       Prob (over 1728)
+ *   0,0 = 1/12
+ *                  0,0 | 0,0 = 1/12                    144
+ *   1,0 = 1/12
+ *                  1,0 | 0,0 = 1/12 * 4/12             48
+ *                  0,0 | 1,0 = 1/12 * 8/12             96
+ *   0,1 = 1/12
+ *                  0,1 | 0,0 = 1/12 * 4/12             48
+ *                  0,0 | 0,1 = 1/12 * 8/12             96
+ *   2,0 = 2/12
+ *                  2,0 | 0,0 = 2/12 * 4/12 * 4/12      32
+ *                  0,0 | 2,0 = 2/12 * 8/12 * 8/12      128
+ *                  1,0 | 1,0 = 2(2/12 * 4/12 * 8/12)   128
+ *                              x 2 above because 2
+ *                              ways for red alleles
+ *                              to end up in each
+ *                              parent
+ *   1,1 = 3/12
+ *                  1,1 | 0,0 = 3/12 * 4/12 * 4/12      48
+ *                  0,0 | 1,1 = 3/12 * 8/12 * 8/12      192
+ *                  1,0 | 0,1 = 3/12 * 4/12 * 8/12      96
+ *                  0,1 | 1,0 = 3/12 * 4/12 * 8/12      96
+ *   0,2 = 4/12
+ *                  0,2 | 0,0 = 4/12 * 4/12 * 4/12      64
+ *                  0,0 | 0,2 = 4/12 * 8/12 * 8/12      256
+ *                  0,1 | 0,1 = 2(4/12 * 4/12 * 8/12)   256
+ *                              x 2 above because 2
+ *                              ways for green alleles
+ *                              to end up in each
+ *                              parent
+ *                                                      Total = 1728/1728
+ *
+ * From above, we can calculate the conditional probability of all possible
+ * allele patterns at the bottom of each parent branch (which is the goal of
+ * this function)
+ *
+ *   Left parent bottom probs (over 1728)
+ *   0,0 = 144+96+96+128+192+256 = 912
+ *   1,0 = 48+128+96             = 272
+ *   0,1 = 48+96+256             = 400
+ *   2,0 = 32                    = 32
+ *   1,1 = 48                    = 48
+ *   0,2 = 64                    = 64
+ *   total                       = 1728 / 1728
+ *
+ *   Right parent bottom probs (over 1728)
+ *   0,0 = 144+48+48+32+48+64    = 384
+ *   1,0 = 96+128+96             = 320
+ *   0,1 = 96+96+256             = 448
+ *   2,0 = 128                   = 128
+ *   1,1 = 192                   = 192
+ *   0,2 = 256                   = 256
+ *   total                       = 1728 / 1728
+ */
+void split_top_of_branch_partials(
+        const unsigned int max_num_alleles,
+        const double top_child_prob_no_alleles,
+        const std::vector<double> & top_child_partials,
+        const double prob_to_parent1,
+        const double prob_to_parent2,
+        double & bottom_parent1_prob_no_alleles,
+        double & bottom_parent2_prob_no_alleles,
+        std::vector<double> & bottom_parent1_partials,
+        std::vector<double> & bottom_parent2_partials) {
+    for (unsigned int n_alleles = 0;
+            n_alleles <= max_num_alleles;
+            ++n_alleles) {
+        for (unsigned int n_red = 0;
+                n_red <= n_alleles;
+                ++n_red) {
+            unsigned int n_green = n_alleles - n_red;
+            // Here we have the daughters allele pattern
+            // Now, we need to consider all ways it can be divvied to the
+            // parents
+            if (allele_count == 0) {
+            }
+        }
+    }
+}
+
 void merge_top_of_branch_partials(
         const unsigned int allele_count_child1,
         const unsigned int allele_count_child2,
