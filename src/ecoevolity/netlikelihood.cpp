@@ -157,25 +157,40 @@ void compute_top_of_branch_partials(
  */
 void split_top_of_branch_partials(
         const unsigned int max_num_alleles,
-        const double top_child_prob_no_alleles,
-        const std::vector<double> & top_child_partials,
+        const BiallelicPatternProbabilityMatrix & top_child_partials,
         const double prob_to_parent1,
         const double prob_to_parent2,
-        double & bottom_parent1_prob_no_alleles,
-        double & bottom_parent2_prob_no_alleles,
-        std::vector<double> & bottom_parent1_partials,
-        std::vector<double> & bottom_parent2_partials) {
-    for (unsigned int n_alleles = 0;
-            n_alleles <= max_num_alleles;
-            ++n_alleles) {
-        for (unsigned int n_red = 0;
-                n_red <= n_alleles;
-                ++n_red) {
-            unsigned int n_green = n_alleles - n_red;
-            // Here we have the daughters allele pattern
-            // Now, we need to consider all ways it can be divvied to the
-            // parents
-            if (allele_count == 0) {
+        BiallelicPatternProbabilityMatrix & bottom_parent1_partials,
+        BiallelicPatternProbabilityMatrix & bottom_parent2_partials) {
+
+    bottom_parent1_partials.reset(max_num_alleles);
+    bottom_parent2_partials.reset(max_num_alleles);
+    bottom_parent1_partials.set_pattern_probability(0, 0,
+            top_child_partials.get_pattern_prob_matrix(0, 0)),
+    bottom_parent2_partials.set_pattern_probability(0, 0,
+            top_child_partials.get_pattern_prob_matrix(0, 0)),
+
+    unsigned int n_alleles, n_red, n_green, n_r_p1, n_r_p2, n_g_p1, n_g_p2;
+    double p;
+    for (n_alleles = 1; n_alleles <= max_num_alleles; ++n_alleles) {
+        for (n_red = 0; n_red <= n_alleles; ++n_red) {
+            n_green = n_alleles - n_red;
+            for (n_r_p1 = 0; n_r_p1 <= n_red; ++n_r_p1) {
+                n_r_p2 = n_red - n_r_p1;
+                for (n_g_p1 = 0; n_g_p1 <= n_green; ++n_g_p1) {
+                    n_g_p2 = n_green - n_g_p1;
+                    p = (top_child_partials.get_pattern_probability(n_alleles, n_red)
+                            * std::pow(prob_to_parent1, (n_r_p1 + n_g_p1))
+                            * std::pow(prob_to_parent2, (n_r_p2 + n_g_p2)))
+                    bottom_parent1_partials.set_pattern_probability(
+                            (n_r_p1 + n_g_p1), n_r_p1,
+                            (bottom_parent1_partials.get_pattern_probability(
+                                    (n_r_p1 + n_g_p1), n_r_p1) + p));
+                    bottom_parent2_partials.set_pattern_probability(
+                            (n_r_p2 + n_g_p2), n_r_p2,
+                            (bottom_parent2_partials.get_pattern_probability(
+                                    (n_r_p2 + n_g_p2), n_r_p2) + p));
+                }
             }
         }
     }
