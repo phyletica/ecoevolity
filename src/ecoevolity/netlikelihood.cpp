@@ -19,6 +19,8 @@
 
 #include "netlikelihood.hpp"
 
+namespace netlikelihood {
+
 const static MatrixExponentiator matrix_exponentiator;
 
 void compute_leaf_partials(
@@ -167,9 +169,9 @@ void split_top_of_branch_partials(
     bottom_parent1_partials.reset(max_num_alleles);
     bottom_parent2_partials.reset(max_num_alleles);
     bottom_parent1_partials.set_pattern_probability(0, 0,
-            top_child_partials.get_pattern_prob_matrix(0, 0)),
+            top_child_partials.get_pattern_probability(0, 0));
     bottom_parent2_partials.set_pattern_probability(0, 0,
-            top_child_partials.get_pattern_prob_matrix(0, 0)),
+            top_child_partials.get_pattern_probability(0, 0));
 
     unsigned int n_alleles, n_red, n_green, n_r_p1, n_r_p2, n_g_p1, n_g_p2;
     double p;
@@ -182,7 +184,7 @@ void split_top_of_branch_partials(
                     n_g_p2 = n_green - n_g_p1;
                     p = (top_child_partials.get_pattern_probability(n_alleles, n_red)
                             * std::pow(prob_to_parent1, (n_r_p1 + n_g_p1))
-                            * std::pow(prob_to_parent2, (n_r_p2 + n_g_p2)))
+                            * std::pow(prob_to_parent2, (n_r_p2 + n_g_p2)));
                     bottom_parent1_partials.set_pattern_probability(
                             (n_r_p1 + n_g_p1), n_r_p1,
                             (bottom_parent1_partials.get_pattern_probability(
@@ -677,4 +679,6 @@ double get_log_likelihood(
     }
     return log_likelihood;
 #endif
+}
+
 }

@@ -32,6 +32,8 @@
 #include "error.hpp"
 #include "assert.hpp"
 
+namespace netlikelihood {
+
 void compute_leaf_partials(
         PopulationNode& node,
         const unsigned int red_allele_count,
@@ -46,6 +48,14 @@ void compute_top_of_branch_partials(
         const double mutation_rate, 
         const double ploidy
         );
+
+void split_top_of_branch_partials(
+        const unsigned int max_num_alleles,
+        const BiallelicPatternProbabilityMatrix & top_child_partials,
+        const double prob_to_parent1,
+        const double prob_to_parent2,
+        BiallelicPatternProbabilityMatrix & bottom_parent1_partials,
+        BiallelicPatternProbabilityMatrix & bottom_parent2_partials);
 
 void merge_top_of_branch_partials(
         const unsigned int allele_count_child1,
@@ -140,5 +150,6 @@ double get_log_likelihood(
         double& constant_log_likelihood_correction,
         unsigned int nthreads = 1
         );
+}
 
 #endif
