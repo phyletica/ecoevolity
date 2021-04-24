@@ -87,6 +87,7 @@ void compute_top_of_branch_partials(
             node.get_bottom_pattern_probs());
     // Get average probs after outer for loop finishes, and copy
     // the final average probs to the top patterns
+    m.set_pattern_probability(0, 0, node.get_bottom_pattern_probability(0, 0));
     node.copy_top_pattern_probs(m);
 }
 
@@ -203,6 +204,17 @@ void merge_top_of_branch_partials(
         std::vector<double> & top_partials_child2,
         unsigned int & merged_allele_count,
         std::vector<double> & merged_pattern_probs) {
+    // TODO: Need to update to accommodate probability of no alleles at the top
+    // of the branches (in phylonetwork, we can no longer assume at least one
+    // lineage exists at the top of a branch).
+    //
+    // The probability merged 0,0 pattern probability (i.e., the bottom of the
+    // parent gets no alleles from any of the daughters) is simply the product
+    // of the 0,0 pattern at the top of each daughter.
+    //
+    // We also need to account for 0,0 patterns for the probability of all
+    // other pattern probabilities too (for example, we could end up with 1,1
+    // pattern from only one child instead of both)
     for (unsigned int n = 1; n <= allele_count_child1; ++n) {
         double b_nr = 1.0;
         for (unsigned int r = 0; r <= n; ++r) {
