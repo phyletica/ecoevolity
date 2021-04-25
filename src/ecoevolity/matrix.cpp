@@ -32,6 +32,7 @@ BiallelicPatternProbabilityMatrix::BiallelicPatternProbabilityMatrix(
 BiallelicPatternProbabilityMatrix::BiallelicPatternProbabilityMatrix(
                 unsigned int allele_count,
                 unsigned int red_allele_count) {
+    ECOEVOLITY_ASSERT(red_allele_count <= allele_count);
     this->reset(allele_count);
     if (allele_count > 0) {
         this->set_pattern_probability(allele_count, red_allele_count, 1.0);
@@ -113,6 +114,7 @@ void BiallelicPatternProbabilityMatrix::copy(
 double BiallelicPatternProbabilityMatrix::get_pattern_probability(
         unsigned int allele_count,
         unsigned int red_allele_count) const {
+    ECOEVOLITY_ASSERT(red_allele_count <= allele_count);
     if (allele_count == 0) {
         return this->prob_missing_;
     }
@@ -127,6 +129,7 @@ void BiallelicPatternProbabilityMatrix::set_pattern_probability(
         unsigned int allele_count,
         unsigned int red_allele_count,
         double probability) {
+    ECOEVOLITY_ASSERT(red_allele_count <= allele_count);
     if (allele_count == 0) {
         this->prob_missing_ = probability;
         return;
