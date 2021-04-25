@@ -168,14 +168,10 @@ void split_top_of_branch_partials(
 
     bottom_parent1_partials.reset(max_num_alleles);
     bottom_parent2_partials.reset(max_num_alleles);
-    bottom_parent1_partials.set_pattern_probability(0, 0,
-            top_child_partials.get_pattern_probability(0, 0));
-    bottom_parent2_partials.set_pattern_probability(0, 0,
-            top_child_partials.get_pattern_probability(0, 0));
 
     unsigned int n_alleles, n_red, n_green, n_r_p1, n_r_p2, n_g_p1, n_g_p2;
-    double p;
-    for (n_alleles = 1; n_alleles <= max_num_alleles; ++n_alleles) {
+    double p, nr_choose_nrp1, ng_choose_ngp1;
+    for (n_alleles = 0; n_alleles <= max_num_alleles; ++n_alleles) {
         for (n_red = 0; n_red <= n_alleles; ++n_red) {
             n_green = n_alleles - n_red;
             for (n_r_p1 = 0; n_r_p1 <= n_red; ++n_r_p1) {
@@ -185,6 +181,33 @@ void split_top_of_branch_partials(
                     p = (top_child_partials.get_pattern_probability(n_alleles, n_red)
                             * std::pow(prob_to_parent1, (n_r_p1 + n_g_p1))
                             * std::pow(prob_to_parent2, (n_r_p2 + n_g_p2)));
+                    if ((n_r_p1 > 0) && (n_r_p2 > 0)) {
+                        // If red alleles went to both parents we need to
+                        // account for all the ways one parent can choose its
+                        // red alleles from the child. We only have to worry
+                        // about one parent (and it doesn't matter which one),
+                        // because the other always gets what is left over.
+                        // This is:
+                        //   "number of red alleles"
+                        //   choose
+                        //   "number of reds chosen by parent 1"
+                        nr_choose_nrp1 = std::exp(
+                                std::lgamma(n_red + 1)
+                                - std::lgamma(n_r_p1 + 1)
+                                - std::lgamma(n_red - n_r_p1 + 1));
+                        p *= nr_choose_nrp1;
+                    }
+                    if ((n_g_p1 > 0) && (n_g_p2 > 0)) {
+                        // If green alleles went to both parents we need to
+                        // account for the combinatorics like we did for the
+                        // red alleles above.
+                        ng_choose_ngp1 = std::exp(
+                                std::lgamma(n_green + 1)
+                                - std::lgamma(n_g_p1 + 1)
+                                - std::lgamma(n_green - n_g_p1 + 1));
+                        p *= ng_choose_ngp1;
+                    }
+                    // std::cout << n_g_p1 << "," << n_r_p1 << " | " << n_g_p2 << "," << n_r_p2 << " " << p << "\n";
                     bottom_parent1_partials.set_pattern_probability(
                             (n_r_p1 + n_g_p1), n_r_p1,
                             (bottom_parent1_partials.get_pattern_probability(

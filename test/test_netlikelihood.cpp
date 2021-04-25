@@ -77,8 +77,8 @@ TEST_CASE("Testing split_top_of_branch_partials",
         top_child_partials.set_pattern_probability(2, 2, 4/12.0);
         BiallelicPatternProbabilityMatrix bottom_parent1_partials;
         BiallelicPatternProbabilityMatrix bottom_parent2_partials;
-        double prob_to_parent1 = 4/12;
-        double prob_to_parent2 = 8/12;
+        double prob_to_parent1 = 4/12.0;
+        double prob_to_parent2 = 8/12.0;
         netlikelihood::split_top_of_branch_partials(
                 max_num_alleles,
                 top_child_partials,
@@ -87,19 +87,19 @@ TEST_CASE("Testing split_top_of_branch_partials",
                 bottom_parent1_partials,
                 bottom_parent2_partials);
 
-        REQUIRE(bottom_parent1_partials.get_pattern_probability(0,0) == Approx(912/1728.0).epsilon(1e-8));
-        REQUIRE(bottom_parent1_partials.get_pattern_probability(1,0) == Approx(272/1728.0).epsilon(1e-8));
-        REQUIRE(bottom_parent1_partials.get_pattern_probability(1,1) == Approx(400/1728.0).epsilon(1e-8));
-        REQUIRE(bottom_parent1_partials.get_pattern_probability(2,0) == Approx(32/1728.0).epsilon(1e-8));
-        REQUIRE(bottom_parent1_partials.get_pattern_probability(2,1) == Approx(48/1728.0).epsilon(1e-8));
-        REQUIRE(bottom_parent1_partials.get_pattern_probability(2,2) == Approx(64/1728.0).epsilon(1e-8));
+        REQUIRE(bottom_parent1_partials.get_pattern_probability(0,0) == Approx(912/1728.0).epsilon(1e-10));
+        REQUIRE(bottom_parent1_partials.get_pattern_probability(1,0) == Approx(272/1728.0).epsilon(1e-10));
+        REQUIRE(bottom_parent1_partials.get_pattern_probability(1,1) == Approx(400/1728.0).epsilon(1e-10));
+        REQUIRE(bottom_parent1_partials.get_pattern_probability(2,0) == Approx(32/1728.0).epsilon(1e-10));
+        REQUIRE(bottom_parent1_partials.get_pattern_probability(2,1) == Approx(48/1728.0).epsilon(1e-10));
+        REQUIRE(bottom_parent1_partials.get_pattern_probability(2,2) == Approx(64/1728.0).epsilon(1e-10));
 
-        REQUIRE(bottom_parent2_partials.get_pattern_probability(0,0) == Approx(384/1728.0).epsilon(1e-8));
-        REQUIRE(bottom_parent2_partials.get_pattern_probability(1,0) == Approx(320/1728.0).epsilon(1e-8));
-        REQUIRE(bottom_parent2_partials.get_pattern_probability(1,1) == Approx(448/1728.0).epsilon(1e-8));
-        REQUIRE(bottom_parent2_partials.get_pattern_probability(2,0) == Approx(128/1728.0).epsilon(1e-8));
-        REQUIRE(bottom_parent2_partials.get_pattern_probability(2,1) == Approx(192/1728.0).epsilon(1e-8));
-        REQUIRE(bottom_parent2_partials.get_pattern_probability(2,2) == Approx(256/1728.0).epsilon(1e-8));
+        REQUIRE(bottom_parent2_partials.get_pattern_probability(0,0) == Approx(384/1728.0).epsilon(1e-10));
+        REQUIRE(bottom_parent2_partials.get_pattern_probability(1,0) == Approx(320/1728.0).epsilon(1e-10));
+        REQUIRE(bottom_parent2_partials.get_pattern_probability(1,1) == Approx(448/1728.0).epsilon(1e-10));
+        REQUIRE(bottom_parent2_partials.get_pattern_probability(2,0) == Approx(128/1728.0).epsilon(1e-10));
+        REQUIRE(bottom_parent2_partials.get_pattern_probability(2,1) == Approx(192/1728.0).epsilon(1e-10));
+        REQUIRE(bottom_parent2_partials.get_pattern_probability(2,2) == Approx(256/1728.0).epsilon(1e-10));
     }
 }
 
