@@ -103,6 +103,209 @@ TEST_CASE("Testing split_top_of_branch_partials",
     }
 }
 
+
+/**
+ * The probability that an allele came from the left / right parent is 9/15 /
+ * 6/15, respectively, and we have the following conditional probs at the top
+ * of the daugher branch:
+ *
+ *   Daughter prob  Ways to split               Prob (over 759375)
+ *   ngreen,nred
+ *   0,0 = 1/15
+ *                  0,0 | 0,0 = 1               50625
+ *   1,0 = 1/15
+ *                  1,0 | 0,0 = 1 * 9           30375
+ *                  0,0 | 1,0 = 1 * 6           20250
+ *   0,1 = 1/15
+ *                  0,1 | 0,0 = 1 * 9           30375
+ *                  0,0 | 0,1 = 1 * 6           20250
+ *   2,0 = 1/15
+ *                  2,0 | 0,0 = 1 * 9^2         18225
+ *                  0,0 | 2,0 = 1 * 6^2         8100
+ *                  1,0 | 1,0 = 2(1 * 9 * 6)    24300
+ *   1,1 = 1/15
+ *                  1,1 | 0,0 = 1 * 9^2         18225
+ *                  0,0 | 1,1 = 1 * 6^2         8100
+ *                  1,0 | 0,1 = 1 * 9 * 6       12150
+ *                  0,1 | 1,0 = 1 * 9 * 6       12150
+ *   0,2 = 1/15
+ *                  0,2 | 0,0 = 1 * 9^2         18225
+ *                  0,0 | 0,2 = 1 * 6^2         8100
+ *                  0,1 | 0,1 = 2(1 * 9 * 6)    24300
+ *   3,0 = 1/15
+ *                  3,0 | 0,0 = 1 * 9^3         10935
+ *                  2,0 | 1,0 = 3(1 * 9^2 * 6)  21870
+ *                  1,0 | 2,0 = 3(1 * 9 * 6^2)  14580
+ *                  0,0 | 3,0 = 1 * 6^3         3240
+ *   2,1 = 1/15
+ *                  2,1 | 0,0 = 1 * 9^3         10935
+ *                  1,1 | 1,0 = 2(1 * 9^2 * 6)  14580
+ *                  0,1 | 2,0 = 1 * 9 * 6^2     4860
+ *                  2,0 | 0,1 = 1 * 9^2 * 6     7290
+ *                  0,0 | 2,1 = 1 * 6^3         3240
+ *                  1,0 | 1,1 = 2(1 * 9 & 6^2)  9720
+ *   1,2 = 1/15
+ *                  1,2 | 0,0 = 1 * 9^3         10935
+ *                  1,1 | 0,1 = 2(1 * 9^2 * 6)  14580
+ *                  1,0 | 0,2 = 1 * 9 * 6^2     4860
+ *                  0,2 | 1,0 = 1 * 9^2 * 6     7290
+ *                  0,0 | 1,2 = 1 * 6^3         3240
+ *                  0,1 | 1,1 = 2(1 * 9 * 6^2)  9720
+ *   0,3 = 1/15
+ *                  0,3 | 0,0 = 9^3             10935
+ *                  0,2 | 0,1 = 3(9^2 * 6)      21870
+ *                  0,1 | 0,2 = 3(9 * 6^2)      14580
+ *                  0,0 | 0,3 = 6^3             3240
+ *   4,0 = 1/15
+ *                  4,0 | 0,0 = 9^4             6561
+ *                  3,0 | 1,0 = 4(9^3 * 6)      17496
+ *                  2,0 | 2,0 = 6(9^2 * 6^2)    17496
+ *                  1,0 | 3,0 = 4(9 * 6^3)      7776
+ *                  0,0 | 4,0 = 6^4             1296
+ *   3,1 = 1/15
+ *                  3,1 | 0,0 = 9^4             6561
+ *                  0,0 | 3,1 = 6^4             1296
+ *                  3,0 | 0,1 = 9^3 * 6         4374
+ *                  0,1 | 3,0 = 9 * 6^3         1944
+ *                  2,1 | 1,0 = 3(9^3 * 6)      13122
+ *                  1,0 | 2,1 = 3(9 * 6^3)      5832
+ *                  1,1 | 2,0 = 3(9^2 * 6^2)    8748
+ *                  2,0 | 1,1 = 3(9^2 * 6^2)    8748
+ *   2,2 = 1/15
+ *                  2,2 | 0,0 = 9^4             6561
+ *                  0,0 | 2,2 = 6^4             1296
+ *                  2,1 | 0,1 = 2(9^3 * 6)      8748
+ *                  0,1 | 2,1 = 2(9 * 6^3)      3888
+ *                  1,2 | 1,0 = 2(9^3 * 6)      8748
+ *                  1,0 | 1,2 = 2(9 * 6^3)      3888
+ *                  2,0 | 0,2 = 9^2 * 6^2       2916
+ *                  0,2 | 2,0 = 9^2 * 6^2       2916
+ *                  1,1 | 1,1 = 2*2(9^2 * 6^2)  11664
+ *   1,3 = 1/15
+ *                  1,3 | 0,0 = 9^4             6561
+ *                  0,0 | 1,3 = 6^4             1296
+ *                  0,3 | 1,0 = 9^3 * 6         4374
+ *                  1,0 | 0,3 = 9 * 6^3         1944
+ *                  1,2 | 0,1 = 3(9^3 * 6)      13122
+ *                  0,1 | 1,2 = 3(9 * 6^3)      5832
+ *                  1,1 | 0,2 = 3(9^2 * 6^2)    8748
+ *                  0,2 | 1,1 = 3(9^2 * 6^2)    8748
+ *   0,4 = 1/15
+ *                  0,4 | 0,0 = 9^4             6561
+ *                  0,3 | 0,1 = 4(9^3 * 6)      17496
+ *                  0,2 | 0,2 = 6(9^2 * 6^2)    17496
+ *                  0,1 | 0,3 = 4(9 * 6^3)      7776
+ *                  0,0 | 0,4 = 6^4             1296
+ *                                              Total = 759375
+ *
+ * From above, we can calculate the conditional probability of all possible
+ * allele patterns at the bottom of each parent branch (which is the goal of
+ * this function)
+ *
+ *   Left parent:
+ *     0,0 134865
+ *     0,1 115425
+ *     0,2 76545
+ *     0,3 32805
+ *     0,4 6561
+ *     1,0 115425
+ *     1,1 76545
+ *     1,2 32805
+ *     1,3 6561
+ *     2,0 76545
+ *     2,1 32805
+ *     2,2 6561
+ *     3,0 32805
+ *     3,1 6561
+ *     4,0 6561
+ *     Total = 759375
+ *
+ *   Rigth parent:
+ *     0,0 242595
+ *     0,1 144180
+ *     0,2 56700
+ *     0,3 12960
+ *     0,4 1296
+ *     1,0 144180
+ *     1,1 56700
+ *     1,2 12960
+ *     1,3 1296
+ *     2,0 56700
+ *     2,1 12960
+ *     2,2 1296
+ *     3,0 12960
+ *     3,1 1296
+ *     4,0 1296
+ *     Total = 759375
+ */
+TEST_CASE("Testing split_top_of_branch_partials with more alleles",
+        "[SplitTopOfBranchPartials]") {
+
+    SECTION("Testing split_top_of_branch_partials") {
+        unsigned int max_num_alleles = 4;
+        BiallelicPatternProbabilityMatrix top_child_partials;
+        top_child_partials.resize(max_num_alleles);
+        top_child_partials.set_pattern_probability(0, 0, 1/15.0);
+        top_child_partials.set_pattern_probability(1, 0, 1/15.0);
+        top_child_partials.set_pattern_probability(1, 1, 1/15.0);
+        top_child_partials.set_pattern_probability(2, 0, 1/15.0);
+        top_child_partials.set_pattern_probability(2, 1, 1/15.0);
+        top_child_partials.set_pattern_probability(2, 2, 1/15.0);
+        top_child_partials.set_pattern_probability(3, 0, 1/15.0);
+        top_child_partials.set_pattern_probability(3, 1, 1/15.0);
+        top_child_partials.set_pattern_probability(3, 2, 1/15.0);
+        top_child_partials.set_pattern_probability(3, 3, 1/15.0);
+        top_child_partials.set_pattern_probability(4, 0, 1/15.0);
+        top_child_partials.set_pattern_probability(4, 1, 1/15.0);
+        top_child_partials.set_pattern_probability(4, 2, 1/15.0);
+        top_child_partials.set_pattern_probability(4, 3, 1/15.0);
+        top_child_partials.set_pattern_probability(4, 4, 1/15.0);
+        BiallelicPatternProbabilityMatrix bottom_parent1_partials;
+        BiallelicPatternProbabilityMatrix bottom_parent2_partials;
+        double prob_to_parent1 = 9/15.0;
+        double prob_to_parent2 = 6/15.0;
+        netlikelihood::split_top_of_branch_partials(
+                max_num_alleles,
+                top_child_partials,
+                prob_to_parent1,
+                prob_to_parent2,
+                bottom_parent1_partials,
+                bottom_parent2_partials);
+
+        REQUIRE(bottom_parent1_partials.get_pattern_probability(0,0) == Approx(134865/759375.0).epsilon(1e-10));
+        REQUIRE(bottom_parent1_partials.get_pattern_probability(0,1) == Approx(115425/759375.0).epsilon(1e-10));
+        REQUIRE(bottom_parent1_partials.get_pattern_probability(0,2) == Approx(76545/759375.0).epsilon(1e-10));
+        REQUIRE(bottom_parent1_partials.get_pattern_probability(0,3) == Approx(32805/759375.0).epsilon(1e-10));
+        REQUIRE(bottom_parent1_partials.get_pattern_probability(0,4) == Approx(6561/759375.0).epsilon(1e-10));
+        REQUIRE(bottom_parent1_partials.get_pattern_probability(1,0) == Approx(115425/759375.0).epsilon(1e-10));
+        REQUIRE(bottom_parent1_partials.get_pattern_probability(1,1) == Approx(76545/759375.0).epsilon(1e-10));
+        REQUIRE(bottom_parent1_partials.get_pattern_probability(1,2) == Approx(32805/759375.0).epsilon(1e-10));
+        REQUIRE(bottom_parent1_partials.get_pattern_probability(1,3) == Approx(6561/759375.0).epsilon(1e-10));
+        REQUIRE(bottom_parent1_partials.get_pattern_probability(2,0) == Approx(76545/759375.0).epsilon(1e-10));
+        REQUIRE(bottom_parent1_partials.get_pattern_probability(2,1) == Approx(32805/759375.0).epsilon(1e-10));
+        REQUIRE(bottom_parent1_partials.get_pattern_probability(2,2) == Approx(6561/759375.0).epsilon(1e-10));
+        REQUIRE(bottom_parent1_partials.get_pattern_probability(3,0) == Approx(32805/759375.0).epsilon(1e-10));
+        REQUIRE(bottom_parent1_partials.get_pattern_probability(3,1) == Approx(6561/759375.0).epsilon(1e-10));
+        REQUIRE(bottom_parent1_partials.get_pattern_probability(4,0) == Approx(6561/759375.0).epsilon(1e-10));
+
+        REQUIRE(bottom_parent2_partials.get_pattern_probability(0,0) == Approx(242595/759375.0).epsilon(1e-10));
+        REQUIRE(bottom_parent2_partials.get_pattern_probability(0,1) == Approx(144180/759375.0).epsilon(1e-10));
+        REQUIRE(bottom_parent2_partials.get_pattern_probability(0,2) == Approx(56700/759375.0).epsilon(1e-10));
+        REQUIRE(bottom_parent2_partials.get_pattern_probability(0,3) == Approx(12960/759375.0).epsilon(1e-10));
+        REQUIRE(bottom_parent2_partials.get_pattern_probability(0,4) == Approx(1296/759375.0).epsilon(1e-10));
+        REQUIRE(bottom_parent2_partials.get_pattern_probability(1,0) == Approx(144180/759375.0).epsilon(1e-10));
+        REQUIRE(bottom_parent2_partials.get_pattern_probability(1,1) == Approx(56700/759375.0).epsilon(1e-10));
+        REQUIRE(bottom_parent2_partials.get_pattern_probability(1,2) == Approx(12960/759375.0).epsilon(1e-10));
+        REQUIRE(bottom_parent2_partials.get_pattern_probability(1,3) == Approx(1296/759375.0).epsilon(1e-10));
+        REQUIRE(bottom_parent2_partials.get_pattern_probability(2,0) == Approx(56700/759375.0).epsilon(1e-10));
+        REQUIRE(bottom_parent2_partials.get_pattern_probability(2,1) == Approx(12960/759375.0).epsilon(1e-10));
+        REQUIRE(bottom_parent2_partials.get_pattern_probability(2,2) == Approx(1296/759375.0).epsilon(1e-10));
+        REQUIRE(bottom_parent2_partials.get_pattern_probability(3,0) == Approx(12960/759375.0).epsilon(1e-10));
+        REQUIRE(bottom_parent2_partials.get_pattern_probability(3,1) == Approx(1296/759375.0).epsilon(1e-10));
+        REQUIRE(bottom_parent2_partials.get_pattern_probability(4,0) == Approx(1296/759375.0).epsilon(1e-10));
+    }
+}
+
 /**
  * The probability that an allele came from the left / right parent is 4/12 /
  * 8/12, respectively, and we have the following conditional probs at the top
