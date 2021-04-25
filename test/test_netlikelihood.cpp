@@ -273,35 +273,35 @@ TEST_CASE("Testing split_top_of_branch_partials with more alleles",
                 bottom_parent2_partials);
 
         REQUIRE(bottom_parent1_partials.get_pattern_probability(0,0) == Approx(134865/759375.0).epsilon(1e-10));
-        REQUIRE(bottom_parent1_partials.get_pattern_probability(0,1) == Approx(115425/759375.0).epsilon(1e-10));
-        REQUIRE(bottom_parent1_partials.get_pattern_probability(0,2) == Approx(76545/759375.0).epsilon(1e-10));
-        REQUIRE(bottom_parent1_partials.get_pattern_probability(0,3) == Approx(32805/759375.0).epsilon(1e-10));
-        REQUIRE(bottom_parent1_partials.get_pattern_probability(0,4) == Approx(6561/759375.0).epsilon(1e-10));
+        REQUIRE(bottom_parent1_partials.get_pattern_probability(1,1) == Approx(115425/759375.0).epsilon(1e-10));
+        REQUIRE(bottom_parent1_partials.get_pattern_probability(2,2) == Approx(76545/759375.0).epsilon(1e-10));
+        REQUIRE(bottom_parent1_partials.get_pattern_probability(3,3) == Approx(32805/759375.0).epsilon(1e-10));
+        REQUIRE(bottom_parent1_partials.get_pattern_probability(4,4) == Approx(6561/759375.0).epsilon(1e-10));
         REQUIRE(bottom_parent1_partials.get_pattern_probability(1,0) == Approx(115425/759375.0).epsilon(1e-10));
-        REQUIRE(bottom_parent1_partials.get_pattern_probability(1,1) == Approx(76545/759375.0).epsilon(1e-10));
-        REQUIRE(bottom_parent1_partials.get_pattern_probability(1,2) == Approx(32805/759375.0).epsilon(1e-10));
-        REQUIRE(bottom_parent1_partials.get_pattern_probability(1,3) == Approx(6561/759375.0).epsilon(1e-10));
+        REQUIRE(bottom_parent1_partials.get_pattern_probability(2,1) == Approx(76545/759375.0).epsilon(1e-10));
+        REQUIRE(bottom_parent1_partials.get_pattern_probability(3,2) == Approx(32805/759375.0).epsilon(1e-10));
+        REQUIRE(bottom_parent1_partials.get_pattern_probability(4,3) == Approx(6561/759375.0).epsilon(1e-10));
         REQUIRE(bottom_parent1_partials.get_pattern_probability(2,0) == Approx(76545/759375.0).epsilon(1e-10));
-        REQUIRE(bottom_parent1_partials.get_pattern_probability(2,1) == Approx(32805/759375.0).epsilon(1e-10));
-        REQUIRE(bottom_parent1_partials.get_pattern_probability(2,2) == Approx(6561/759375.0).epsilon(1e-10));
+        REQUIRE(bottom_parent1_partials.get_pattern_probability(3,1) == Approx(32805/759375.0).epsilon(1e-10));
+        REQUIRE(bottom_parent1_partials.get_pattern_probability(4,2) == Approx(6561/759375.0).epsilon(1e-10));
         REQUIRE(bottom_parent1_partials.get_pattern_probability(3,0) == Approx(32805/759375.0).epsilon(1e-10));
-        REQUIRE(bottom_parent1_partials.get_pattern_probability(3,1) == Approx(6561/759375.0).epsilon(1e-10));
+        REQUIRE(bottom_parent1_partials.get_pattern_probability(4,1) == Approx(6561/759375.0).epsilon(1e-10));
         REQUIRE(bottom_parent1_partials.get_pattern_probability(4,0) == Approx(6561/759375.0).epsilon(1e-10));
 
         REQUIRE(bottom_parent2_partials.get_pattern_probability(0,0) == Approx(242595/759375.0).epsilon(1e-10));
-        REQUIRE(bottom_parent2_partials.get_pattern_probability(0,1) == Approx(144180/759375.0).epsilon(1e-10));
-        REQUIRE(bottom_parent2_partials.get_pattern_probability(0,2) == Approx(56700/759375.0).epsilon(1e-10));
-        REQUIRE(bottom_parent2_partials.get_pattern_probability(0,3) == Approx(12960/759375.0).epsilon(1e-10));
-        REQUIRE(bottom_parent2_partials.get_pattern_probability(0,4) == Approx(1296/759375.0).epsilon(1e-10));
+        REQUIRE(bottom_parent2_partials.get_pattern_probability(1,1) == Approx(144180/759375.0).epsilon(1e-10));
+        REQUIRE(bottom_parent2_partials.get_pattern_probability(2,2) == Approx(56700/759375.0).epsilon(1e-10));
+        REQUIRE(bottom_parent2_partials.get_pattern_probability(3,3) == Approx(12960/759375.0).epsilon(1e-10));
+        REQUIRE(bottom_parent2_partials.get_pattern_probability(4,4) == Approx(1296/759375.0).epsilon(1e-10));
         REQUIRE(bottom_parent2_partials.get_pattern_probability(1,0) == Approx(144180/759375.0).epsilon(1e-10));
-        REQUIRE(bottom_parent2_partials.get_pattern_probability(1,1) == Approx(56700/759375.0).epsilon(1e-10));
-        REQUIRE(bottom_parent2_partials.get_pattern_probability(1,2) == Approx(12960/759375.0).epsilon(1e-10));
-        REQUIRE(bottom_parent2_partials.get_pattern_probability(1,3) == Approx(1296/759375.0).epsilon(1e-10));
+        REQUIRE(bottom_parent2_partials.get_pattern_probability(2,1) == Approx(56700/759375.0).epsilon(1e-10));
+        REQUIRE(bottom_parent2_partials.get_pattern_probability(3,2) == Approx(12960/759375.0).epsilon(1e-10));
+        REQUIRE(bottom_parent2_partials.get_pattern_probability(4,3) == Approx(1296/759375.0).epsilon(1e-10));
         REQUIRE(bottom_parent2_partials.get_pattern_probability(2,0) == Approx(56700/759375.0).epsilon(1e-10));
-        REQUIRE(bottom_parent2_partials.get_pattern_probability(2,1) == Approx(12960/759375.0).epsilon(1e-10));
-        REQUIRE(bottom_parent2_partials.get_pattern_probability(2,2) == Approx(1296/759375.0).epsilon(1e-10));
+        REQUIRE(bottom_parent2_partials.get_pattern_probability(3,1) == Approx(12960/759375.0).epsilon(1e-10));
+        REQUIRE(bottom_parent2_partials.get_pattern_probability(4,2) == Approx(1296/759375.0).epsilon(1e-10));
         REQUIRE(bottom_parent2_partials.get_pattern_probability(3,0) == Approx(12960/759375.0).epsilon(1e-10));
-        REQUIRE(bottom_parent2_partials.get_pattern_probability(3,1) == Approx(1296/759375.0).epsilon(1e-10));
+        REQUIRE(bottom_parent2_partials.get_pattern_probability(4,1) == Approx(1296/759375.0).epsilon(1e-10));
         REQUIRE(bottom_parent2_partials.get_pattern_probability(4,0) == Approx(1296/759375.0).epsilon(1e-10));
     }
 }
@@ -386,7 +386,7 @@ TEST_CASE("Testing merge_top_of_branch_partials with no missing prob",
         BiallelicPatternProbabilityMatrix merged(max_n_alleles_merged, merged_probs);
         REQUIRE(merged.get_pattern_probability(0,0) == 0.0);
         REQUIRE(merged.get_pattern_probability(1,0) == 0.0);
-        REQUIRE(merged.get_pattern_probability(0,1) == 0.0);
+        REQUIRE(merged.get_pattern_probability(1,1) == 0.0);
         REQUIRE(merged.get_pattern_probability(2,0) == Approx(4/144.0).epsilon(1e-8));
         REQUIRE(merged.get_pattern_probability(2,1) == Approx(11/144.0).epsilon(1e-8));
         REQUIRE(merged.get_pattern_probability(2,2) == Approx(6/144.0).epsilon(1e-8));
