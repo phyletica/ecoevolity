@@ -373,17 +373,39 @@ TEST_CASE("Testing merge_top_of_branch_partials with no missing prob",
         std::vector<double> top_ch2_partials = top_child2_partials.get_pattern_prob_matrix();
 
         std::vector<double> merged_probs;
+        double merged_prob_no_alleles;
 
         unsigned int max_n_alleles_merged;
         netlikelihood::merge_top_of_branch_partials(
                 max_num_alleles,
                 max_num_alleles,
+                top_child1_partials.get_pattern_probability(0,0),
+                top_child2_partials.get_pattern_probability(0,0),
                 top_ch1_partials,
                 top_ch2_partials,
                 max_n_alleles_merged,
-                merged_probs);
+                merged_probs,
+                merged_prob_no_alleles,
+                false);
         REQUIRE(max_n_alleles_merged == 4);
         BiallelicPatternProbabilityMatrix merged(max_n_alleles_merged, merged_probs);
+
+        std::cout << "0,0 : " << merged.get_pattern_probability(0,0) * 144 << "\n";
+        std::cout << "1,0 : " << merged.get_pattern_probability(1,0) * 144 << "\n";
+        std::cout << "1,1 : " << merged.get_pattern_probability(1,1) * 144 << "\n";
+        std::cout << "2,0 : " << merged.get_pattern_probability(2,0) * 144 << "\n";
+        std::cout << "2,1 : " << merged.get_pattern_probability(2,1) * 144 << "\n";
+        std::cout << "2,2 : " << merged.get_pattern_probability(2,2) * 144 << "\n";
+        std::cout << "3,0 : " << merged.get_pattern_probability(3,0) * 144 << "\n";
+        std::cout << "3,1 : " << merged.get_pattern_probability(3,1) * 144 << "\n";
+        std::cout << "3,2 : " << merged.get_pattern_probability(3,2) * 144 << "\n";
+        std::cout << "3,3 : " << merged.get_pattern_probability(3,3) * 144 << "\n";
+        std::cout << "4,0 : " << merged.get_pattern_probability(4,0) * 144 << "\n";
+        std::cout << "4,1 : " << merged.get_pattern_probability(4,1) * 144 << "\n";
+        std::cout << "4,2 : " << merged.get_pattern_probability(4,2) * 144 << "\n";
+        std::cout << "4,3 : " << merged.get_pattern_probability(4,3) * 144 << "\n";
+        std::cout << "4,4 : " << merged.get_pattern_probability(4,4) * 144 << "\n";
+
         REQUIRE(merged.get_pattern_probability(0,0) == 0.0);
         REQUIRE(merged.get_pattern_probability(1,0) == 0.0);
         REQUIRE(merged.get_pattern_probability(1,1) == 0.0);
@@ -469,17 +491,23 @@ TEST_CASE("Testing merge_top_of_branch_partials with missing probs",
         std::vector<double> top_ch2_partials = top_child2_partials.get_pattern_prob_matrix();
 
         std::vector<double> merged_probs;
+        double merged_prob_no_alleles;
 
         unsigned int max_n_alleles_merged;
         netlikelihood::merge_top_of_branch_partials(
                 max_num_alleles,
                 max_num_alleles,
+                top_child1_partials.get_pattern_probability(0,0),
+                top_child2_partials.get_pattern_probability(0,0),
                 top_ch1_partials,
                 top_ch2_partials,
                 max_n_alleles_merged,
-                merged_probs);
+                merged_probs,
+                merged_prob_no_alleles,
+                false);
         REQUIRE(max_n_alleles_merged == 4);
         BiallelicPatternProbabilityMatrix merged(max_n_alleles_merged, merged_probs);
+        merged.set_pattern_probability(0, 0, merged_prob_no_alleles);
         REQUIRE(merged.get_pattern_probability(0,0) == Approx(2/144.0).epsilon(1e-8));
         REQUIRE(merged.get_pattern_probability(1,0) == Approx(6/144.0).epsilon(1e-8));
         REQUIRE(merged.get_pattern_probability(1,1) == Approx(5/144.0).epsilon(1e-8));

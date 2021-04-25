@@ -60,10 +60,14 @@ void split_top_of_branch_partials(
 void merge_top_of_branch_partials(
         const unsigned int allele_count_child1,
         const unsigned int allele_count_child2,
+        const double prob_no_alleles_child1,
+        const double prob_no_alleles_child2,
         std::vector<double> & top_partials_child1,
         std::vector<double> & top_partials_child2,
         unsigned int & merged_allele_count,
-        std::vector<double> & merged_pattern_probs);
+        std::vector<double> & merged_pattern_probs,
+        double & merged_prob_no_alleles,
+        const bool do_binomial_scaling = true);
 
 void compute_internal_partials(
         PopulationNode& node);

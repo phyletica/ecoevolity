@@ -165,6 +165,9 @@ void split_top_of_branch_partials(
         const double prob_to_parent2,
         BiallelicPatternProbabilityMatrix & bottom_parent1_partials,
         BiallelicPatternProbabilityMatrix & bottom_parent2_partials) {
+    // TODO: Do we need to rescale probabilities by binomial coefficients
+    // before and after splitting like we do before and after merging in
+    // merge_top_of_branch_partials?
 
     bottom_parent1_partials.reset(max_num_alleles);
     bottom_parent2_partials.reset(max_num_alleles);
@@ -225,34 +228,30 @@ void split_top_of_branch_partials(
 void merge_top_of_branch_partials(
         const unsigned int allele_count_child1,
         const unsigned int allele_count_child2,
+        const double prob_no_alleles_child1,
+        const double prob_no_alleles_child2,
         std::vector<double> & top_partials_child1,
         std::vector<double> & top_partials_child2,
         unsigned int & merged_allele_count,
-        std::vector<double> & merged_pattern_probs) {
-    // TODO: Need to update to accommodate probability of no alleles at the top
-    // of the branches (in phylonetwork, we can no longer assume at least one
-    // lineage exists at the top of a branch).
-    //
-    // The probability merged 0,0 pattern probability (i.e., the bottom of the
-    // parent gets no alleles from any of the daughters) is simply the product
-    // of the 0,0 pattern at the top of each daughter.
-    //
-    // We also need to account for 0,0 patterns for the probability of all
-    // other pattern probabilities too (for example, we could end up with 1,1
-    // pattern from only one child instead of both)
-    for (unsigned int n = 1; n <= allele_count_child1; ++n) {
-        double b_nr = 1.0;
-        for (unsigned int r = 0; r <= n; ++r) {
-            top_partials_child1.at(((n*(n+1))/2)-1+r) *= b_nr;
-            b_nr *= ((double)n - r)/(r+1);
-        }
-    }
+        std::vector<double> & merged_pattern_probs,
+        double & merged_prob_no_alleles,
+        const bool do_binomial_scaling) {
 
-    for (unsigned int n = 1; n <= allele_count_child2; ++n) {
-        double b_nr = 1.0;
-        for (unsigned int r = 0; r <= n; ++r) {
-            top_partials_child2.at(((n*(n+1))/2)-1+r) *= b_nr;
-            b_nr *= ((double)n - r)/(r+1);
+    if (do_binomial_scaling) {
+        for (unsigned int n = 1; n <= allele_count_child1; ++n) {
+            double b_nr = 1.0;
+            for (unsigned int r = 0; r <= n; ++r) {
+                top_partials_child1.at(((n*(n+1))/2)-1+r) *= b_nr;
+                b_nr *= ((double)n - r)/(r+1);
+            }
+        }
+
+        for (unsigned int n = 1; n <= allele_count_child2; ++n) {
+            double b_nr = 1.0;
+            for (unsigned int r = 0; r <= n; ++r) {
+                top_partials_child2.at(((n*(n+1))/2)-1+r) *= b_nr;
+                b_nr *= ((double)n - r)/(r+1);
+            }
         }
     }
 
@@ -260,27 +259,49 @@ void merge_top_of_branch_partials(
     merged_pattern_probs.assign(
             ((((allele_count + 1) * (allele_count + 2))/2) - 1),
             0);
-    for (unsigned int n1 = 1; n1 <= allele_count_child1; ++n1) {
-        for (unsigned int r1 = 0; r1 <= n1; ++r1) {
-            double f11 = top_partials_child1.at(n1*(n1+1)/2-1+r1);
-            for (unsigned int n2 = 1; n2 <= allele_count_child2; ++n2) {
-                for (unsigned int r2 = 0; r2 <= n2; ++r2) {
-                    merged_pattern_probs.at((n1+n2)*(n1+n2+1)/2-1+(r1+r2)) += f11 * top_partials_child2.at(n2*(n2+1)/2-1+r2);
+    merged_prob_no_alleles = 0.0;
+    unsigned int n1, r1, n2, r2;
+    double top_prob_child1, top_prob_child2;
+    for (n1 = 0; n1 <= allele_count_child1; ++n1) {
+        for (r1 = 0; r1 <= n1; ++r1) {
+            if (n1 == 0) {
+                top_prob_child1 = prob_no_alleles_child1;
+            } else {
+                top_prob_child1 = top_partials_child1.at(n1*(n1+1)/2-1+r1);
+            }
+            for (n2 = 0; n2 <= allele_count_child2; ++n2) {
+                for (r2 = 0; r2 <= n2; ++r2) {
+                    if (n2 == 0) {
+                        top_prob_child2 = prob_no_alleles_child2;
+                    } else {
+                        top_prob_child2 = top_partials_child2.at(n2*(n2+1)/2-1+r2);
+                    }
+                    if ((n1 + n2) < 1) {
+                        merged_prob_no_alleles += top_prob_child1 * top_prob_child2;
+                    }
+                    else {
+                        merged_pattern_probs.at((n1+n2)*(n1+n2+1)/2-1+(r1+r2)) += top_prob_child1 * top_prob_child2;
+                    }
                 }
             }
         }
     }
 
-    for (unsigned int n = 1; n <= allele_count; ++n) {
-        double b_nr = 1.0;
-        for (unsigned int r = 0; r <= n; ++r) {
-            double f_nr = merged_pattern_probs.at(n*(n+1)/2-1+r);
-            f_nr /= b_nr;
-            // TODO: better way to fix this?
-            f_nr = std::max(f_nr, 0.0);
-            merged_pattern_probs.at(n*(n+1)/2-1+r) = f_nr;
-            b_nr *= ((double)n - r)/(r+1);
+    // TODO: Does this rescaling need to be done differenly now that some
+    // pattern probabilities include the possibility of getting no alleles from
+    // one parent?
+    if (do_binomial_scaling) {
+        for (unsigned int n = 1; n <= allele_count; ++n) {
+            double b_nr = 1.0;
+            for (unsigned int r = 0; r <= n; ++r) {
+                double f_nr = merged_pattern_probs.at(n*(n+1)/2-1+r);
+                f_nr /= b_nr;
+                // TODO: better way to fix this?
+                f_nr = std::max(f_nr, 0.0);
+                merged_pattern_probs.at(n*(n+1)/2-1+r) = f_nr;
+                b_nr *= ((double)n - r)/(r+1);
 
+            }
         }
     }
     merged_allele_count = allele_count;
@@ -313,22 +334,30 @@ void compute_internal_partials(
     unsigned int merged_allele_count = node.get_child(indices_of_children_with_alleles.at(0))->get_allele_count();
 
     std::vector<double> merged_pattern_probs = node.get_child(indices_of_children_with_alleles.at(0))->get_top_pattern_probs().get_pattern_prob_matrix();
+    double merged_prob_no_alleles = node.get_child(indices_of_children_with_alleles.at(0))->get_top_pattern_probability(0,0);
 
     for (unsigned int i = 1; i < node.get_number_of_children(); ++i) {
         std::vector<double> pattern_probs_child1 = merged_pattern_probs;
+        double prob_no_alleles_child1 = merged_prob_no_alleles;
         unsigned int allele_count_child1 = merged_allele_count;
         unsigned int allele_count_child2 = node.get_child(indices_of_children_with_alleles.at(i))->get_allele_count();
+        double prob_no_alleles_child2 = node.get_child(indices_of_children_with_alleles.at(i))->get_top_pattern_probability(0,0);
         std::vector<double> pattern_probs_child2 = node.get_child(
                 indices_of_children_with_alleles.at(i))->get_top_pattern_probs().get_pattern_prob_matrix();
         merge_top_of_branch_partials(
                 allele_count_child1,
                 allele_count_child2,
+                prob_no_alleles_child1,
+                prob_no_alleles_child2,
                 pattern_probs_child1,
                 pattern_probs_child2,
                 merged_allele_count,
-                merged_pattern_probs);
+                merged_pattern_probs,
+                merged_prob_no_alleles,
+                true);
     }
     BiallelicPatternProbabilityMatrix m(merged_allele_count, merged_pattern_probs);
+    m.set_pattern_probability(0, 0, merged_prob_no_alleles);
     node.copy_bottom_pattern_probs(m);
 }
 
