@@ -58,6 +58,7 @@ class PopulationNetNode: public BaseNetNode<PopulationNetNode>{
     protected:
         typedef BaseNetNode<PopulationNetNode> BaseClass;
         int population_index_ = -1;
+        Probability parent_inheritance_proportion_ = 1.0;
         BiallelicPatternProbabilityMatrix bottom_pattern_probs_;
         BiallelicPatternProbabilityMatrix top_pattern_probs_;
         std::shared_ptr<PositiveRealParameter> population_size_ = std::make_shared<PositiveRealParameter>(0.001);
@@ -243,6 +244,64 @@ class PopulationNetNode: public BaseNetNode<PopulationNetNode>{
             }
         }
 
+        // Overriding adding/removing parents to make sure we can't have more
+        // than two parents and that the parent_inheritance_proportion gets
+        // updated
+        void add_parent(std::shared_ptr<PopulationNetNode> node) {
+            if (this->get_number_of_parents() > 1) {
+                throw EcoevolityError("PopulationNetNode::add_parent(), tried to add 3rd parent");
+            }
+            if (this->has_parent()) {
+                this->parent_inheritance_proportion_.set_value(0.5);
+            }
+            BaseNetNode::add_parent(node);
+        }
+        void add_parent(std::shared_ptr<PopulationNetNode> node, double inheritance_proportion) {
+            ECOEVOLITY_ASSERT(this->get_number_of_parents() < 2);
+            if (! this->has_parent()) {
+                ECOEVOLITY_ASSERT(inheritance_proportion == 1.0);
+                this->parent_inheritance_proportion_.set_value(1.0);
+                this->add_parent(node);
+                return;
+            }
+            this->parent_inheritance_proportion_.set_value(1.0 - inheritance_proportion);
+            this->add_parent(node);
+        }
+
+        std::shared_ptr<PopulationNetNode> remove_parent() {
+            this->parent_inheritance_proportion_.set_value(1.0);
+            return BaseNetNode::remove_parent();
+        }
+        void remove_parent(std::shared_ptr<PopulationNetNode> node) {
+            this->parent_inheritance_proportion_.set_value(1.0);
+            BaseNetNode::remove_parent(node);
+        }
+        std::shared_ptr<PopulationNetNode> remove_parent(const unsigned int index) {
+            this->parent_inheritance_proportion_.set_value(1.0);
+            return BaseNetNode::remove_parent(index);
+        }
+
+        double get_inheritance_proportion(unsigned int parent_index) const {
+            if (parent_index == 0) {
+                return this->parent_inheritance_proportion_.get_value();
+            }
+            if (parent_index == 1) {
+                return (1.0 - this->parent_inheritance_proportion_.get_value());
+            }
+            throw EcoevolityError("PopulationNetNode::get_inheritance_proportion() called with index greater than 1");
+        }
+        void set_inheritance_proportion(unsigned int parent_index, double proportion) {
+            if (parent_index == 0) {
+                this->parent_inheritance_proportion_.set_value(proportion);
+                return;
+            }
+            if (parent_index == 1) {
+                this->parent_inheritance_proportion_.set_value(1.0 - proportion);
+                return;
+            }
+            throw EcoevolityError("PopulationNetNode::set_inheritance_proportion() called with index greater than 1");
+        }
+
         // methods for accessing/changing pattern probabilities
         unsigned int get_allele_count() const {
             return this->bottom_pattern_probs_.get_allele_count();
@@ -292,16 +351,31 @@ class PopulationNetNode: public BaseNetNode<PopulationNetNode>{
             return std::make_shared<PopulationNetNode>(*this);
         }
 
-        // std::shared_ptr<PopulationNetNode> get_clade_clone() const {
-        //     if (this->is_leaf()) {
-        //         return this->get_clone();
-        //     }
-        //     std::shared_ptr<PopulationNetNode> n = this->get_clone();
-        //     for (auto child_iter: this->children_) {
-        //         n->add_child(child_iter->get_clade_clone());
-        //     }
-        //     return n;
-        // }
+        std::shared_ptr<PopulationNetNode> get_clade_clone(
+                std::map< std::shared_ptr<const PopulationNetNode>, std::shared_ptr<PopulationNetNode> > & visited_nodes
+                ) const {
+            std::shared_ptr<PopulationNetNode> n = this->get_clone();
+            if (this->has_multiple_parents()) {
+                ECOEVOLITY_ASSERT(visited_nodes.count(this->shared_from_this()) < 1);
+                visited_nodes[this->shared_from_this()] = n;
+            }
+            if (this->is_leaf()) {
+                return n;
+            }
+            for (auto child_iter: this->children_) {
+                if (visited_nodes.count(child_iter) > 0) {
+                    n->add_child(visited_nodes.at(child_iter));
+                }
+                else {
+                    n->add_child(child_iter->get_clade_clone());
+                }
+            }
+            return n;
+        }
+        std::shared_ptr<PopulationNetNode> get_clade_clone() const {
+            std::map< std::shared_ptr<const PopulationNetNode>, std::shared_ptr<PopulationNetNode> > visited_nodes;
+            return this->get_clade_clone(visited_nodes);
+        }
 
         const BiallelicPatternProbabilityMatrix& get_bottom_pattern_probs() const{
             return this->bottom_pattern_probs_;
