@@ -1,5 +1,6 @@
 #include "catch.hpp"
 #include "ecoevolity/netlikelihood.hpp"
+#include "utils_for_testing.hpp"
 
 
 /**
@@ -338,8 +339,8 @@ TEST_CASE("Testing split_top_of_branch_partials with more alleles",
  *   0,2 = (2/12 * 3/12)                                                  = 6
  *   3,0 = (1/12 * 2/12) + (2/12 * 4/12)                                  = 10
  *   2,1 = (2/12 * 3/12) + (2/12 * 2/12) + (3/12 * 4/12) + (1/12 * 2/12)  = 24
- *   1,2 = (1/12 * 1/12) + (4/12 + 4/12) + (3/12 * 3/12) + (2/12 * 2/12)  = 30
- *   0,3 = (4/12 * 3/12) + (1/12 + 2/12)                                  = 14
+ *   1,2 = (1/12 * 1/12) + (4/12 * 4/12) + (3/12 * 3/12) + (2/12 * 2/12)  = 30
+ *   0,3 = (4/12 * 3/12) + (1/12 * 2/12)                                  = 14
  *   4,0 = (2/12 * 2/12)                                                  = 4
  *   3,1 = (2/12 * 2/12) + (2/12 * 3/12)                                  = 10
  *   2,2 = (2/12 * 1/12) + (2/12 * 4/12) + (3/12 * 2/12)                  = 16
@@ -420,6 +421,137 @@ TEST_CASE("Testing merge_top_of_branch_partials with no missing prob",
         REQUIRE(merged.get_pattern_probability(4,1) == Approx(10/144.0).epsilon(1e-8));
         REQUIRE(merged.get_pattern_probability(4,2) == Approx(16/144.0).epsilon(1e-8));
         REQUIRE(merged.get_pattern_probability(4,3) == Approx(11/144.0).epsilon(1e-8));
+        REQUIRE(merged.get_pattern_probability(4,4) == Approx(4/144.0).epsilon(1e-8));
+    }
+}
+
+/**
+ * The probability that an allele came from the left / right parent is 4/12 /
+ * 8/12, respectively, and we have the following conditional probs at the top
+ * of the daugher branch:
+ *
+ *   Child 1
+ *   ngreen,nred
+ *   0,0 = 0
+ *   1,0 = 1/12
+ *   0,1 = 2/12
+ *   2,0 = 2/12
+ *   1,1 = 3/12
+ *   0,2 = 4/12
+ *
+ *   Child 2
+ *   ngreen,nred
+ *   0,0 = 0
+ *   1,0 = 4/12
+ *   0,1 = 3/12
+ *   2,0 = 2/12
+ *   1,1 = 2/12
+ *   0,2 = 1/12
+ *
+ * Below, the factor under terms is the hypergeometric probability:
+ *
+ *   ((n1 choose r1) * (n2 choose r2)) / (n choose r)
+ *
+ * See Eq. 19 in Bryant et al. 2012
+ *   
+ *
+ *   Merged
+ *   0,0 = 0
+ *   1,0 = 0
+ *   0,1 = 0
+ *   2,0 = (1/12 * 4/12)                                                  = 4
+ *   1,1 = (1/12 * 3/12) + (2/12 * 4/12)                                  = 5.5
+ *            * 1/2            * 1/2
+ *   0,2 = (2/12 * 3/12)                                                  = 6
+ *   3,0 = (1/12 * 2/12) + (2/12 * 4/12)                                  = 10
+ *   2,1 = (2/12 * 3/12) + (2/12 * 2/12) + (3/12 * 4/12) + (1/12 * 2/12)  = 38/3
+ *            * 1/3            * 1/3           * 2/3           * 2/3
+ *   1,2 = (1/12 * 1/12) + (4/12 * 4/12) + (3/12 * 3/12) + (2/12 * 2/12)  = 43/3
+ *            * 1/3           * 1/3            * 2/3           * 2/3
+ *   0,3 = (4/12 * 3/12) + (1/12 * 2/12)                                  = 14
+ *   4,0 = (2/12 * 2/12)                                                  = 4
+ *   3,1 = (2/12 * 2/12) + (2/12 * 3/12)                                  = 5
+ *            * 1/2           * 1/2
+ *   2,2 = (2/12 * 1/12) + (2/12 * 4/12) + (3/12 * 2/12)                  = 34/6
+ *            * 1/6           * 1/6            * 4/6
+ *   1,3 = (4/12 * 2/12) + (1/12 * 3/12)                                  = 5.5
+ *            * 1/2           * 1/2
+ *   0,4 = (4/12 * 1/12)                                                  = 4
+ *   TOTAL                                                                = 144/144
+ */
+TEST_CASE("Testing merge_top_of_branch_partials with no missing prob and rescaling",
+        "[MergeTopOfBranchPartials]") {
+
+    SECTION("Testing merge_top_of_branch_partials") {
+        unsigned int max_num_alleles = 2;
+        BiallelicPatternProbabilityMatrix top_child1_partials;
+        top_child1_partials.resize(max_num_alleles);
+        top_child1_partials.set_pattern_probability(0, 0, 0.0);
+        top_child1_partials.set_pattern_probability(1, 0, 1/12.0);
+        top_child1_partials.set_pattern_probability(1, 1, 2/12.0);
+        top_child1_partials.set_pattern_probability(2, 0, 2/12.0);
+        top_child1_partials.set_pattern_probability(2, 1, 3/12.0);
+        top_child1_partials.set_pattern_probability(2, 2, 4/12.0);
+        BiallelicPatternProbabilityMatrix top_child2_partials;
+        top_child2_partials.resize(max_num_alleles);
+        top_child2_partials.set_pattern_probability(0, 0, 0.0);
+        top_child2_partials.set_pattern_probability(1, 0, 4/12.0);
+        top_child2_partials.set_pattern_probability(1, 1, 3/12.0);
+        top_child2_partials.set_pattern_probability(2, 0, 2/12.0);
+        top_child2_partials.set_pattern_probability(2, 1, 2/12.0);
+        top_child2_partials.set_pattern_probability(2, 2, 1/12.0);
+
+        std::vector<double> top_ch1_partials = top_child1_partials.get_pattern_prob_matrix();
+        std::vector<double> top_ch2_partials = top_child2_partials.get_pattern_prob_matrix();
+
+        std::vector<double> merged_probs;
+        double merged_prob_no_alleles;
+
+        unsigned int max_n_alleles_merged;
+        netlikelihood::merge_top_of_branch_partials(
+                max_num_alleles,
+                max_num_alleles,
+                top_child1_partials.get_pattern_probability(0,0),
+                top_child2_partials.get_pattern_probability(0,0),
+                top_ch1_partials,
+                top_ch2_partials,
+                max_n_alleles_merged,
+                merged_probs,
+                merged_prob_no_alleles,
+                true);
+        REQUIRE(max_n_alleles_merged == 4);
+        BiallelicPatternProbabilityMatrix merged(max_n_alleles_merged, merged_probs);
+
+        std::cout << "0,0 : " << merged.get_pattern_probability(0,0) * 144 << "\n";
+        std::cout << "1,0 : " << merged.get_pattern_probability(1,0) * 144 << "\n";
+        std::cout << "1,1 : " << merged.get_pattern_probability(1,1) * 144 << "\n";
+        std::cout << "2,0 : " << merged.get_pattern_probability(2,0) * 144 << "\n";
+        std::cout << "2,1 : " << merged.get_pattern_probability(2,1) * 144 << "\n";
+        std::cout << "2,2 : " << merged.get_pattern_probability(2,2) * 144 << "\n";
+        std::cout << "3,0 : " << merged.get_pattern_probability(3,0) * 144 << "\n";
+        std::cout << "3,1 : " << merged.get_pattern_probability(3,1) * 144 << "\n";
+        std::cout << "3,2 : " << merged.get_pattern_probability(3,2) * 144 << "\n";
+        std::cout << "3,3 : " << merged.get_pattern_probability(3,3) * 144 << "\n";
+        std::cout << "4,0 : " << merged.get_pattern_probability(4,0) * 144 << "\n";
+        std::cout << "4,1 : " << merged.get_pattern_probability(4,1) * 144 << "\n";
+        std::cout << "4,2 : " << merged.get_pattern_probability(4,2) * 144 << "\n";
+        std::cout << "4,3 : " << merged.get_pattern_probability(4,3) * 144 << "\n";
+        std::cout << "4,4 : " << merged.get_pattern_probability(4,4) * 144 << "\n";
+
+        REQUIRE(merged.get_pattern_probability(0,0) == 0.0);
+        REQUIRE(merged.get_pattern_probability(1,0) == 0.0);
+        REQUIRE(merged.get_pattern_probability(1,1) == 0.0);
+        REQUIRE(merged.get_pattern_probability(2,0) == Approx(4/144.0).epsilon(1e-8));
+        REQUIRE(merged.get_pattern_probability(2,1) == Approx(5.5/144.0).epsilon(1e-8));
+        REQUIRE(merged.get_pattern_probability(2,2) == Approx(6/144.0).epsilon(1e-8));
+        REQUIRE(merged.get_pattern_probability(3,0) == Approx(10/144.0).epsilon(1e-8));
+        REQUIRE(merged.get_pattern_probability(3,1) == Approx(38.0/3.0/144.0).epsilon(1e-8));
+        REQUIRE(merged.get_pattern_probability(3,2) == Approx(43.0/3.0/144.0).epsilon(1e-8));
+        REQUIRE(merged.get_pattern_probability(3,3) == Approx(14/144.0).epsilon(1e-8));
+        REQUIRE(merged.get_pattern_probability(4,0) == Approx(4/144.0).epsilon(1e-8));
+        REQUIRE(merged.get_pattern_probability(4,1) == Approx(5/144.0).epsilon(1e-8));
+        REQUIRE(merged.get_pattern_probability(4,2) == Approx(34.0/6.0/144.0).epsilon(1e-8));
+        REQUIRE(merged.get_pattern_probability(4,3) == Approx(5.5/144.0).epsilon(1e-8));
         REQUIRE(merged.get_pattern_probability(4,4) == Approx(4/144.0).epsilon(1e-8));
     }
 }
@@ -522,6 +654,120 @@ TEST_CASE("Testing merge_top_of_branch_partials with missing probs",
         REQUIRE(merged.get_pattern_probability(4,1) == Approx(5/144.0).epsilon(1e-8));
         REQUIRE(merged.get_pattern_probability(4,2) == Approx(9/144.0).epsilon(1e-8));
         REQUIRE(merged.get_pattern_probability(4,3) == Approx(7/144.0).epsilon(1e-8));
+        REQUIRE(merged.get_pattern_probability(4,4) == Approx(4/144.0).epsilon(1e-8));
+    }
+}
+
+/**
+ * The probability that an allele came from the left / right parent is 4/12 /
+ * 8/12, respectively, and we have the following conditional probs at the top
+ * of the daugher branch:
+ *
+ *   Child 1
+ *   ngreen,nred
+ *   0,0 = 1/12
+ *   1,0 = 1/12
+ *   0,1 = 1/12
+ *   2,0 = 2/12
+ *   1,1 = 3/12
+ *   0,2 = 4/12
+ *
+ *   Child 2
+ *   ngreen,nred
+ *   0,0 = 2/12
+ *   1,0 = 4/12
+ *   0,1 = 3/12
+ *   2,0 = 1/12
+ *   1,1 = 1/12
+ *   0,2 = 1/12
+ *
+ * Below, the factor under terms is the hypergeometric probability:
+ *
+ *   ((n1 choose r1) * (n2 choose r2)) / (n choose r)
+ *
+ * See Eq. 19 in Bryant et al. 2012
+ *
+ *   Merged
+ *   0,0 = (1 * 2)                                  = 2
+ *   1,0 = (1 * 2) + (4 * 1)                        = 6
+ *   0,1 = (1 * 2) + (3 * 1)                        = 5
+ *   2,0 = (2 * 2) + (1 * 1) + (1 * 4)              = 9
+ *   1,1 = (3 * 2) + (1 * 1) + (1 * 3) + (1 * 4)    = 10.5
+ *                              * 1/2     * 1/2
+ *   0,2 = (4 * 2) + (1 * 1) + (1 * 3)              = 12
+ *   3,0 = (2 * 4) + (1 * 1)                        = 9
+ *   2,1 = (2 * 3) + (1 * 1) + (3 * 4) + (1 * 1)    = 33/3
+ *          * 1/3     * 1/3     * 2/3     * 2/3
+ *   1,2 = (1 * 1) + (4 * 4) + (3 * 3) + (1 * 1)    = 37/3
+ *          * 1/3     * 1/3     * 2/3     * 2/3
+ *   0,3 = (4 * 3) + (1 * 1)                        = 13
+ *   4,0 = (2 * 1)                                  = 2
+ *   3,1 = (2 * 1) + (1 * 3)                        = 2.5
+ *          * 1/2     * 1/2
+ *   2,2 = (2 * 1) + (4 * 1) + (3 * 1)              = 3
+ *          * 1/6     * 1/6     * 4/6
+ *   1,3 = (3 * 1) + (1 * 4)                        = 3.5
+ *          * 1/2     * 1/2
+ *   0,4 = (4 * 1)                                  = 4
+ *   TOTAL                                          = 144/144
+ */
+TEST_CASE("Testing merge_top_of_branch_partials with missing probs and scaling",
+        "[MergeTopOfBranchPartials]") {
+
+    SECTION("Testing merge_top_of_branch_partials") {
+        unsigned int max_num_alleles = 2;
+        BiallelicPatternProbabilityMatrix top_child1_partials;
+        top_child1_partials.resize(max_num_alleles);
+        top_child1_partials.set_pattern_probability(0, 0, 1/12.0);
+        top_child1_partials.set_pattern_probability(1, 0, 1/12.0);
+        top_child1_partials.set_pattern_probability(1, 1, 1/12.0);
+        top_child1_partials.set_pattern_probability(2, 0, 2/12.0);
+        top_child1_partials.set_pattern_probability(2, 1, 3/12.0);
+        top_child1_partials.set_pattern_probability(2, 2, 4/12.0);
+        BiallelicPatternProbabilityMatrix top_child2_partials;
+        top_child2_partials.resize(max_num_alleles);
+        top_child2_partials.set_pattern_probability(0, 0, 2/12.0);
+        top_child2_partials.set_pattern_probability(1, 0, 4/12.0);
+        top_child2_partials.set_pattern_probability(1, 1, 3/12.0);
+        top_child2_partials.set_pattern_probability(2, 0, 1/12.0);
+        top_child2_partials.set_pattern_probability(2, 1, 1/12.0);
+        top_child2_partials.set_pattern_probability(2, 2, 1/12.0);
+
+        std::vector<double> top_ch1_partials = top_child1_partials.get_pattern_prob_matrix();
+        std::vector<double> top_ch2_partials = top_child2_partials.get_pattern_prob_matrix();
+
+        std::vector<double> merged_probs;
+        double merged_prob_no_alleles;
+
+        unsigned int max_n_alleles_merged;
+        netlikelihood::merge_top_of_branch_partials(
+                max_num_alleles,
+                max_num_alleles,
+                top_child1_partials.get_pattern_probability(0,0),
+                top_child2_partials.get_pattern_probability(0,0),
+                top_ch1_partials,
+                top_ch2_partials,
+                max_n_alleles_merged,
+                merged_probs,
+                merged_prob_no_alleles,
+                true);
+        REQUIRE(max_n_alleles_merged == 4);
+        BiallelicPatternProbabilityMatrix merged(max_n_alleles_merged, merged_probs);
+        merged.set_pattern_probability(0, 0, merged_prob_no_alleles);
+        REQUIRE(merged.get_pattern_probability(0,0) == Approx(2/144.0).epsilon(1e-8));
+        REQUIRE(merged.get_pattern_probability(1,0) == Approx(6/144.0).epsilon(1e-8));
+        REQUIRE(merged.get_pattern_probability(1,1) == Approx(5/144.0).epsilon(1e-8));
+        REQUIRE(merged.get_pattern_probability(2,0) == Approx(9/144.0).epsilon(1e-8));
+        REQUIRE(merged.get_pattern_probability(2,1) == Approx(10.5/144.0).epsilon(1e-8));
+        REQUIRE(merged.get_pattern_probability(2,2) == Approx(12/144.0).epsilon(1e-8));
+        REQUIRE(merged.get_pattern_probability(3,0) == Approx(9/144.0).epsilon(1e-8));
+        REQUIRE(merged.get_pattern_probability(3,1) == Approx(11/144.0).epsilon(1e-8));
+        REQUIRE(merged.get_pattern_probability(3,2) == Approx(37.0/3.0/144.0).epsilon(1e-8));
+        REQUIRE(merged.get_pattern_probability(3,3) == Approx(13/144.0).epsilon(1e-8));
+        REQUIRE(merged.get_pattern_probability(4,0) == Approx(2/144.0).epsilon(1e-8));
+        REQUIRE(merged.get_pattern_probability(4,1) == Approx(2.5/144.0).epsilon(1e-8));
+        REQUIRE(merged.get_pattern_probability(4,2) == Approx(3/144.0).epsilon(1e-8));
+        REQUIRE(merged.get_pattern_probability(4,3) == Approx(3.5/144.0).epsilon(1e-8));
         REQUIRE(merged.get_pattern_probability(4,4) == Approx(4/144.0).epsilon(1e-8));
     }
 }
