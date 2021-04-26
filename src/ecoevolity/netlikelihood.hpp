@@ -68,7 +68,7 @@ void merge_top_of_branch_partials(
         unsigned int & merged_allele_count,
         std::vector<double> & merged_pattern_probs,
         double & merged_prob_no_alleles,
-        const bool do_binomial_scaling = true);
+        const bool do_hypergeom_scaling = true);
 
 void compute_internal_partials(
         PopulationNode& node);

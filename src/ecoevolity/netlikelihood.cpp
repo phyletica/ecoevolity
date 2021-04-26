@@ -165,9 +165,9 @@ void split_top_of_branch_partials(
         const double prob_to_parent2,
         BiallelicPatternProbabilityMatrix & bottom_parent1_partials,
         BiallelicPatternProbabilityMatrix & bottom_parent2_partials) {
-    // TODO: Do we need to rescale probabilities by binomial coefficients
-    // before and after splitting like we do before and after merging in
-    // merge_top_of_branch_partials?
+    // TODO: Do we need to rescale probabilities by hypergeometric
+    // probabilities before and after splitting like we do before and after
+    // merging in merge_top_of_branch_partials?
 
     bottom_parent1_partials.reset(max_num_alleles);
     bottom_parent2_partials.reset(max_num_alleles);
@@ -229,9 +229,9 @@ void merge_top_of_branch_partials(
         unsigned int & merged_allele_count,
         std::vector<double> & merged_pattern_probs,
         double & merged_prob_no_alleles,
-        const bool do_binomial_scaling) {
+        const bool do_hypergeom_scaling) {
 
-    if (do_binomial_scaling) {
+    if (do_hypergeom_scaling) {
         for (unsigned int n = 1; n <= allele_count_child1; ++n) {
             double b_nr = 1.0;
             for (unsigned int r = 0; r <= n; ++r) {
@@ -281,10 +281,7 @@ void merge_top_of_branch_partials(
         }
     }
 
-    // TODO: Does this rescaling need to be done differenly now that some
-    // pattern probabilities include the possibility of getting no alleles from
-    // one parent?
-    if (do_binomial_scaling) {
+    if (do_hypergeom_scaling) {
         for (unsigned int n = 1; n <= allele_count; ++n) {
             double b_nr = 1.0;
             for (unsigned int r = 0; r <= n; ++r) {
