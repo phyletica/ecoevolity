@@ -194,20 +194,14 @@ void split_top_of_branch_partials(
                         //   "number of red alleles"
                         //   choose
                         //   "number of reds chosen by parent 1"
-                        nr_choose_nrp1 = std::exp(
-                                std::lgamma(n_red + 1)
-                                - std::lgamma(n_r_p1 + 1)
-                                - std::lgamma(n_red - n_r_p1 + 1));
+                        nr_choose_nrp1 = std::exp(ln_n_choose_k(n_red, n_r_p1));
                         p *= nr_choose_nrp1;
                     }
                     if ((n_g_p1 > 0) && (n_g_p2 > 0)) {
                         // If green alleles went to both parents we need to
                         // account for the combinatorics like we did for the
                         // red alleles above.
-                        ng_choose_ngp1 = std::exp(
-                                std::lgamma(n_green + 1)
-                                - std::lgamma(n_g_p1 + 1)
-                                - std::lgamma(n_green - n_g_p1 + 1));
+                        ng_choose_ngp1 = std::exp(ln_n_choose_k(n_green, n_g_p1));
                         p *= ng_choose_ngp1;
                     }
                     // std::cout << n_g_p1 << "," << n_r_p1 << " | " << n_g_p2 << "," << n_r_p2 << " " << p << "\n";

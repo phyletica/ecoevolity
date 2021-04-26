@@ -31,6 +31,7 @@
 #include "matrix.hpp"
 #include "error.hpp"
 #include "assert.hpp"
+#include "math_util.hpp"
 
 namespace netlikelihood {
 
