@@ -24,7 +24,7 @@ namespace netlikelihood {
 const static MatrixExponentiator matrix_exponentiator;
 
 void compute_leaf_partials(
-        PopulationNode& node,
+        PopulationNetNode& node,
         const unsigned int red_allele_count,
         const unsigned int allele_count,
         const bool markers_are_dominant
@@ -64,7 +64,7 @@ void compute_leaf_partials(
 }
 
 void compute_top_of_branch_partials(
-        PopulationNode& node,
+        PopulationNetNode& node,
         const double u,
         const double v,
         const double mutation_rate, 
@@ -171,6 +171,9 @@ void split_top_of_branch_partials(
 
     bottom_parent1_partials.reset(max_num_alleles);
     bottom_parent2_partials.reset(max_num_alleles);
+    if (max_num_alleles < 1) {
+        return;
+    }
 
     unsigned int n_alleles, n_red, n_green, n_r_p1, n_r_p2, n_g_p1, n_g_p2;
     double p, nr_choose_nrp1, ng_choose_ngp1;
@@ -299,7 +302,31 @@ void merge_top_of_branch_partials(
 }
 
 void compute_internal_partials(
-        PopulationNode& node) {
+        PopulationNetNode& node,
+        std::set< std::shared_ptr<const PopulationNetNode> > & retic_nodes_visited) {
+
+    if ((node.get_number_of_children() == 1) && (node.get_child(0)->has_multiple_parents())) {
+        // Handle reticulation
+        ECOEVOLITY_ASSERT(node.get_child(0)->get_number_of_parents() == 2);
+        if (retic_nodes_visited.count(node.get_child(0)->get_parent(0)) > 0) {
+            return;
+        }
+        BiallelicPatternProbabilityMatrix bottom_parent1_partials;
+        BiallelicPatternProbabilityMatrix bottom_parent2_partials;
+        split_top_of_branch_partials(
+                node.get_child(0)->get_allele_count(),
+                node.get_child(0)->get_top_pattern_probs(),
+                node.get_child(0)->get_inheritance_proportion(0),
+                node.get_child(0)->get_inheritance_proportion(1),
+                bottom_parent1_partials,
+                bottom_parent2_partials);
+        node.get_child(0)->get_parent(0)->copy_bottom_pattern_probs(bottom_parent1_partials);
+        node.get_child(0)->get_parent(1)->copy_bottom_pattern_probs(bottom_parent2_partials);
+        retic_nodes_visited.insert(node.get_child(0)->get_parent(0));
+        retic_nodes_visited.insert(node.get_child(0)->get_parent(1));
+        return;
+    }
+
     unsigned int number_of_children_with_alleles = 0;
     std::vector<unsigned int> indices_of_children_with_alleles;
     for (unsigned int child_idx = 0; child_idx < node.get_number_of_children(); ++child_idx) {
@@ -307,6 +334,8 @@ void compute_internal_partials(
             ++number_of_children_with_alleles;
             indices_of_children_with_alleles.push_back(child_idx);
         }
+        // Make sure we don't have any reticulating nodes
+        ECOEVOLITY_ASSERT(! node.get_child(child_idx)->has_multiple_parents());
     }
     if (number_of_children_with_alleles < 1) {
         // std::ostringstream message;
@@ -353,14 +382,15 @@ void compute_internal_partials(
 }
 
 void compute_pattern_partials(
-        PopulationNode& node,
+        PopulationNetNode& node,
         const std::vector<unsigned int>& red_allele_counts,
         const std::vector<unsigned int>& allele_counts,
         const double u,
         const double v,
         const double mutation_rate,
         const double ploidy,
-        const bool markers_are_dominant
+        const bool markers_are_dominant,
+        std::set< std::shared_ptr<const PopulationNetNode> > & retic_nodes_visited
         ) {
     ECOEVOLITY_ASSERT(red_allele_counts.size() == allele_counts.size());
     if (node.is_leaf()) {
@@ -372,6 +402,9 @@ void compute_pattern_partials(
         return;
     }
     else if (node.get_number_of_children() == 1) {
+        if (retic_nodes_visited.count(node.get_child(0)->get_parent(0)) > 1) {
+            return;
+        }
         compute_pattern_partials(*node.get_child(0),
                 red_allele_counts,
                 allele_counts,
@@ -379,9 +412,10 @@ void compute_pattern_partials(
                 v,
                 mutation_rate,
                 ploidy,
-                markers_are_dominant);
+                markers_are_dominant,
+                retic_nodes_visited);
         compute_top_of_branch_partials(*node.get_child(0), u, v, mutation_rate, ploidy);
-        compute_internal_partials(node);
+        compute_internal_partials(node, retic_nodes_visited);
         return;
     }
     else if (node.get_number_of_children() > 1) {
@@ -393,10 +427,11 @@ void compute_pattern_partials(
                     v,
                     mutation_rate,
                     ploidy,
-                    markers_are_dominant);
+                    markers_are_dominant,
+                    retic_nodes_visited);
             compute_top_of_branch_partials(*node.get_child(child_idx), u, v, mutation_rate, ploidy);
         }
-        compute_internal_partials(node);
+        compute_internal_partials(node, retic_nodes_visited);
         return;
     }
     std::ostringstream message;
@@ -407,7 +442,7 @@ void compute_pattern_partials(
 }
 
 std::vector< std::vector<double> > compute_root_probabilities(
-        const PopulationNode& root,
+        const PopulationNetNode& root,
         const double u,
         const double v,
         const double mutation_rate,
@@ -448,7 +483,7 @@ std::vector< std::vector<double> > compute_root_probabilities(
 }
 
 double compute_root_likelihood(
-        const PopulationNode& root,
+        const PopulationNetNode& root,
         const double u,
         const double v,
         const double mutation_rate,
@@ -506,7 +541,7 @@ double compute_root_likelihood(
 }
 
 double compute_pattern_likelihood(
-        PopulationNode& root,
+        PopulationNetNode& root,
         const std::vector<unsigned int>& red_allele_counts,
         const std::vector<unsigned int>& allele_counts,
         const double u,
@@ -515,6 +550,7 @@ double compute_pattern_likelihood(
         const double ploidy,
         const bool markers_are_dominant
         ) {
+    std::set< std::shared_ptr<const PopulationNetNode> > retic_nodes_visited;
     compute_pattern_partials(root,
             red_allele_counts,
             allele_counts,
@@ -522,12 +558,13 @@ double compute_pattern_likelihood(
             v,
             mutation_rate,
             ploidy,
-            markers_are_dominant);
+            markers_are_dominant,
+            retic_nodes_visited);
     return compute_root_likelihood(root, u, v, mutation_rate, ploidy);
 }
 
 void compute_constant_pattern_log_likelihood_correction(
-        PopulationNode& root,
+        PopulationNetNode& root,
         const std::vector< std::vector<unsigned int> > & unique_allele_counts,
         const std::vector<unsigned int> & unique_allele_count_weights,
         const double u,
@@ -576,7 +613,7 @@ void compute_constant_pattern_log_likelihood_correction(
 }
 
 double get_log_likelihood_for_pattern_range(
-        PopulationNode& root,
+        PopulationNetNode& root,
         const std::vector< std::vector<unsigned int> >& red_allele_count_matrix,
         const std::vector< std::vector<unsigned int> >& allele_count_matrix,
         const std::vector<unsigned int>& pattern_weights,
@@ -612,7 +649,7 @@ double get_log_likelihood_for_pattern_range(
 }
 
 double get_log_likelihood(
-        PopulationNode& root,
+        PopulationNetNode& root,
         const std::vector< std::vector<unsigned int> >& red_allele_count_matrix,
         const std::vector< std::vector<unsigned int> >& allele_count_matrix,
         const std::vector<unsigned int>& pattern_weights,
@@ -666,7 +703,7 @@ double get_log_likelihood(
     const unsigned int batch_size = npatterns / nthreads;
     unsigned int start_idx = 0;
     std::vector< std::future<double> > threads(nthreads - 1);
-    std::vector< std::shared_ptr<PopulationNode> > root_clones(nthreads - 1);
+    std::vector< std::shared_ptr<PopulationNetNode> > root_clones(nthreads - 1);
 
     // Launch nthreads - 1 threads
     for (unsigned int i = 0; i < (nthreads - 1); ++i) {
