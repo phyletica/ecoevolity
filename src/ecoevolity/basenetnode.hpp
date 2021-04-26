@@ -1206,32 +1206,33 @@ class BaseNetNode : public std::enable_shared_from_this<DerivedNodeT> {
             return d;
         }
 
-        // std::string to_parentheses(unsigned int precision = 12,
-        //         const bool label_internal_nodes = false) const {
-        //     std::ostringstream s;
-        //     s.precision(precision);
-        //     if (this->is_leaf()) {
-        //         s << this->get_label();
-        //     }
-        //     else {
-        //         unsigned int child_idx = 0;
-        //         s << "(";
-        //         for (auto child_iter: this->children_) {
-        //             if (child_idx > 0) {
-        //                 s << ",";
-        //             }
-        //             s << child_iter->to_parentheses(precision,
-        //                     label_internal_nodes);
-        //             ++child_idx;
-        //         }
-        //         s << ")";
-        //         if (label_internal_nodes) {
-        //             s << this->get_label();
-        //         }
-        //     }
-        //     s << ":" << this->get_length();
-        //     return s.str();
-        // }
+        // TODO:: This needs to be updated to handle reticulating nodes
+        std::string to_parentheses(unsigned int precision = 12,
+                const bool label_internal_nodes = false) const {
+            std::ostringstream s;
+            s.precision(precision);
+            if (this->is_leaf()) {
+                s << this->get_label();
+            }
+            else {
+                unsigned int child_idx = 0;
+                s << "(";
+                for (auto child_iter: this->children_) {
+                    if (child_idx > 0) {
+                        s << ",";
+                    }
+                    s << child_iter->to_parentheses(precision,
+                            label_internal_nodes);
+                    ++child_idx;
+                }
+                s << ")";
+                if (label_internal_nodes) {
+                    s << this->get_label();
+                }
+            }
+            s << ":" << this->get_length();
+            return s.str();
+        }
 
         std::string get_comment_data_string(
                 unsigned int precision = 12) const {
