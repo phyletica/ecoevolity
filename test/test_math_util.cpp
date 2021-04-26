@@ -3,6 +3,73 @@
 #include "ecoevolity/math_util.hpp"
 #include "ecoevolity/stats_util.hpp"
 
+TEST_CASE("Testing n_choose_k_base overflow", "[math_util]") {
+    SECTION("Testing overflow error") {
+        // std::cout << "max int: " << std::numeric_limits<int>::max() << "\n";
+        // std::cout << "max unsigned int: " << std::numeric_limits<unsigned int>::max() << "\n";
+        REQUIRE(n_choose_k_base<int>(34, 15) == 1855967520);
+        REQUIRE_THROWS_AS(n_choose_k_base<int>(34, 16), EcoevolityNumericLimitError &);
+        REQUIRE(n_choose_k_base<unsigned int>(35, 16) == 4059928950);
+        REQUIRE_THROWS_AS(n_choose_k_base<unsigned int>(35, 17), EcoevolityNumericLimitError &);
+    }
+}
+
+TEST_CASE("Testing n_choose_k", "[math_util]") {
+    SECTION("Testing n_choose_k") {
+        REQUIRE(n_choose_k(0, 0) == 1);
+        REQUIRE(n_choose_k(1, 0) == 1);
+        REQUIRE(n_choose_k(1, 1) == 1);
+        REQUIRE(n_choose_k(2, 0) == 1);
+        REQUIRE(n_choose_k(2, 1) == 2);
+        REQUIRE(n_choose_k(2, 2) == 1);
+        REQUIRE(n_choose_k(3, 0) == 1);
+        REQUIRE(n_choose_k(3, 1) == 3);
+        REQUIRE(n_choose_k(3, 2) == 3);
+        REQUIRE(n_choose_k(3, 3) == 1);
+        REQUIRE(n_choose_k(4, 0) == 1);
+        REQUIRE(n_choose_k(4, 1) == 4);
+        REQUIRE(n_choose_k(4, 2) == 6);
+        REQUIRE(n_choose_k(4, 3) == 4);
+        REQUIRE(n_choose_k(4, 4) == 1);
+        REQUIRE(n_choose_k(5, 0) == 1);
+        REQUIRE(n_choose_k(5, 1) == 5);
+        REQUIRE(n_choose_k(5, 2) == 10);
+        REQUIRE(n_choose_k(5, 3) == 10);
+        REQUIRE(n_choose_k(5, 4) == 5);
+        REQUIRE(n_choose_k(5, 5) == 1);
+        REQUIRE(n_choose_k(9, 3) == 84);
+        REQUIRE(n_choose_k(35, 16) == 4059928950);
+    }
+}
+
+TEST_CASE("Testing ln_n_choose_k", "[math_util]") {
+    SECTION("Testing ln_n_choose_k") {
+        REQUIRE(std::exp(ln_n_choose_k(0, 0)) == Approx(1.0).epsilon(1e-10));
+        REQUIRE(std::exp(ln_n_choose_k(1, 0)) == Approx(1.0).epsilon(1e-10));
+        REQUIRE(std::exp(ln_n_choose_k(1, 1)) == Approx(1.0).epsilon(1e-10));
+        REQUIRE(std::exp(ln_n_choose_k(2, 0)) == Approx(1.0).epsilon(1e-10));
+        REQUIRE(std::exp(ln_n_choose_k(2, 1)) == Approx(2.0).epsilon(1e-10));
+        REQUIRE(std::exp(ln_n_choose_k(2, 2)) == Approx(1.0).epsilon(1e-10));
+        REQUIRE(std::exp(ln_n_choose_k(3, 0)) == Approx(1.0).epsilon(1e-10));
+        REQUIRE(std::exp(ln_n_choose_k(3, 1)) == Approx(3.0).epsilon(1e-10));
+        REQUIRE(std::exp(ln_n_choose_k(3, 2)) == Approx(3.0).epsilon(1e-10));
+        REQUIRE(std::exp(ln_n_choose_k(3, 3)) == Approx(1.0).epsilon(1e-10));
+        REQUIRE(std::exp(ln_n_choose_k(4, 0)) == Approx(1.0).epsilon(1e-10));
+        REQUIRE(std::exp(ln_n_choose_k(4, 1)) == Approx(4.0).epsilon(1e-10));
+        REQUIRE(std::exp(ln_n_choose_k(4, 2)) == Approx(6.0).epsilon(1e-10));
+        REQUIRE(std::exp(ln_n_choose_k(4, 3)) == Approx(4.0).epsilon(1e-10));
+        REQUIRE(std::exp(ln_n_choose_k(4, 4)) == Approx(1.0).epsilon(1e-10));
+        REQUIRE(std::exp(ln_n_choose_k(5, 0)) == Approx(1.0).epsilon(1e-10));
+        REQUIRE(std::exp(ln_n_choose_k(5, 1)) == Approx(5.0).epsilon(1e-10));
+        REQUIRE(std::exp(ln_n_choose_k(5, 2)) == Approx(10.0).epsilon(1e-10));
+        REQUIRE(std::exp(ln_n_choose_k(5, 3)) == Approx(10.0).epsilon(1e-10));
+        REQUIRE(std::exp(ln_n_choose_k(5, 4)) == Approx(5.0).epsilon(1e-10));
+        REQUIRE(std::exp(ln_n_choose_k(5, 5)) == Approx(1.0).epsilon(1e-10));
+        REQUIRE(std::exp(ln_n_choose_k(9, 3)) == Approx(84.0).epsilon(1e-10));
+        REQUIRE(std::exp(ln_n_choose_k(35, 16)) == Approx(4059928950.0).epsilon(1e-10));
+    }
+}
+
 TEST_CASE("Testing get_uniform_model_log_prior_probability with n=1, split_weight=1.0",
         "[math_util]") {
     SECTION("Testing n=1, weight=1.0") {

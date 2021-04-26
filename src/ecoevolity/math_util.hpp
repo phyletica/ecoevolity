@@ -30,6 +30,37 @@
 #include "error.hpp"
 
 
+inline double ln_n_choose_k(unsigned int n, unsigned int k) {
+    return (std::lgamma(n + 1)
+            - std::lgamma(k + 1)
+            - std::lgamma(n - k + 1));
+}
+
+template <typename T>
+inline T n_choose_k_base(unsigned int n, unsigned int k) {
+    ECOEVOLITY_ASSERT(k <= n);
+    if ((k == 0) || (k == n)) {
+        return 1;
+    }
+    T c = 1;
+    unsigned int i;
+    if (k > (n - k)) {
+        k = n - k;
+    }
+
+    for (i = 1; i <= k; ++i, --n) {
+        if ((c / i) > (std::numeric_limits<T>::max() / n)) {
+            throw EcoevolityNumericLimitError("Overflow during multiplication in n_choose_k_base");
+        }
+        c = c / i * n + c % i * n / i;
+    }
+    return c;
+}
+
+inline unsigned long long int n_choose_k(unsigned int n, unsigned int k) {
+    return n_choose_k_base<unsigned long long int>(n, k);
+}
+
 template <typename T>
 inline double weighted_mean(
         const std::vector<T> & values,
