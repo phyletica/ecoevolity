@@ -3,13 +3,14 @@
 #include "ecoevolity/stats_util.hpp"
 
 
-TEST_CASE("Testing simulations against likelihood for one pop with 2 alleles",
-        "[BasePopulationNetwork]") {
+TEST_CASE("phylonet; Testing simulations against likelihood for one pop with 2,1 pattern",
+        /* "[BasePopulationNetwork]") { */
+        "[xx]") {
 
     SECTION("Testing sims v likelihood for one pop with 2 alleles") {
         double pop_size = 0.1;
 
-        std::string nex_path = "data/singleton-n2-1site.nex";
+        std::string nex_path = "data/singleton-2-1.nex";
         // Need to keep constant characters
         BasePopulationNetwork tree(nex_path, ' ',
                 true,   // population_name_is_prefix
@@ -36,7 +37,11 @@ TEST_CASE("Testing simulations against likelihood for one pop with 2 alleles",
         tree.set_mutation_rate(1.0);
 
         double ln_l = tree.compute_log_likelihood();
+        double ln_l_correction = tree.get_likelihood_correction();
+        double raw_ln_l = ln_l - ln_l_correction;
         double l = std::exp(ln_l);
+        double raw_l = std::exp(raw_ln_l);
+        double l_correction = std::exp(ln_l_correction);
 
         RandomNumberGenerator rng = RandomNumberGenerator(123);
 
@@ -55,23 +60,80 @@ TEST_CASE("Testing simulations against likelihood for one pop with 2 alleles",
             if (pattern.first.at(0) == 1) {
                 ++het_count;
             }
-            /* std::cout << "\nnalleles:\n"; */
-            /* for (auto ac : allele_counts) { */
-            /*     std::cout << ac << "\n"; */
-            /* } */
-            /* std::cout << "nreds:\n"; */
-            /* for (auto rc : red_allele_counts) { */
-            /*     std::cout << rc << "\n"; */
-            /* } */
         }
         double approx_l = het_count / (double)nsamples;
         std::cout << "approx like: " << approx_l << "\n";
         std::cout << "like: " << l << "\n";
-        // TODO: The 2,0 and 2,2 patterns match simulations, but the likelihood
-        // of the 2,1 pattern is half what it is in the simulations.
-        // Setting the pop size super high confirms the sims are correct; you
-        // see 2,0 and 2,2 each 25% of the time, and 2,1 50% of the time.
-        REQUIRE(approx_l == Approx(l*2.0).epsilon(0.001));
+        std::cout << "like correction: " << l_correction << "\n";
+        std::cout << "raw like: " << raw_l << "\n";
+        REQUIRE(approx_l == Approx(raw_l).epsilon(0.001));
+    }
+}
+
+TEST_CASE("phylonet; Testing simulations against likelihood for one pop with 3,1 pattern",
+        /* "[BasePopulationNetwork]") { */
+        "[xx]") {
+
+    SECTION("Testing sims v likelihood for one pop with 2 alleles") {
+        double pop_size = 0.1;
+
+        std::string nex_path = "data/singleton-3-1.nex";
+        // Need to keep constant characters
+        BasePopulationNetwork tree(nex_path, ' ',
+                true,   // population_name_is_prefix
+                false,  // diploid
+                false,  // dominant
+                false,  // constant sites removed
+                true,   // validate
+                true,  // strict on constant
+                true,  // strict on missing
+                true,  // strict on triallelic
+                2.0,    // ploidy
+                false    // store charset info
+                );
+        REQUIRE(tree.get_leaf_node_count() == 1);
+        tree.estimate_mutation_rate();
+
+        tree.set_root_population_size(pop_size);
+        tree.get_root_ptr()->get_child(0)->set_population_size(pop_size);
+
+        tree.set_root_height(0.01);
+
+        tree.set_freq_1(0.5);
+
+        tree.set_mutation_rate(1.0);
+
+        double ln_l = tree.compute_log_likelihood();
+        double ln_l_correction = tree.get_likelihood_correction();
+        double raw_ln_l = ln_l - ln_l_correction;
+        double l = std::exp(ln_l);
+        double raw_l = std::exp(raw_ln_l);
+        double l_correction = std::exp(ln_l_correction);
+
+        RandomNumberGenerator rng = RandomNumberGenerator(123);
+
+        unsigned int nsamples = 1000000;
+
+        unsigned int het_count = 0;
+        for (unsigned int i = 0; i < nsamples; ++i) {
+            auto pattern_tree = tree.simulate_biallelic_site(
+                    0,
+                    rng,
+                    false);
+            auto pattern = pattern_tree.first;
+            /* std::vector<unsigned int> red_allele_counts = pattern.first; */
+            /* std::vector<unsigned int> allele_counts = pattern.second; */
+            /* if (red_allele_counts.at(0) == 1) { */
+            if (pattern.first.at(0) == 1) {
+                ++het_count;
+            }
+        }
+        double approx_l = het_count / (double)nsamples;
+        std::cout << "approx like: " << approx_l << "\n";
+        std::cout << "like: " << l << "\n";
+        std::cout << "like correction: " << l_correction << "\n";
+        std::cout << "raw like: " << raw_l << "\n";
+        REQUIRE(approx_l == Approx(raw_l).epsilon(0.001));
     }
 }
 
@@ -83,7 +145,7 @@ TEST_CASE("Testing simulations against likelihood for one pop with 2 alleles",
 // u = 1.0
 // v = 1.0
 // log likelihood = -31.77866581319647
-TEST_CASE("Testing simple likelihood of BasePopulationNetwork", "[BasePopulationNetwork]") {
+TEST_CASE("phylonet; Testing simple likelihood of BasePopulationNetwork", "[BasePopulationNetwork]") {
 
     SECTION("Testing constructor and likelihood calc") {
         std::string nex_path = "data/diploid-standard-data-ntax5-nchar5.nex";
@@ -108,7 +170,7 @@ TEST_CASE("Testing simple likelihood of BasePopulationNetwork", "[BasePopulation
         REQUIRE(tree.get_degree_of_root() == 2);
     }
 }
-TEST_CASE("Testing threaded likelihood of BasePopulationNetwork", "[BasePopulationNetwork]") {
+TEST_CASE("phylonet; Testing threaded likelihood of BasePopulationNetwork", "[BasePopulationNetwork]") {
 
     SECTION("Testing constructor and threaded likelihood calc") {
         std::string nex_path = "data/diploid-standard-data-ntax5-nchar5.nex";
@@ -133,7 +195,7 @@ TEST_CASE("Testing threaded likelihood of BasePopulationNetwork", "[BasePopulati
         REQUIRE(tree.get_degree_of_root() == 2);
     }
 }
-TEST_CASE("Testing over-threaded likelihood of BasePopulationNetwork", "[BasePopulationNetwork]") {
+TEST_CASE("phylonet; Testing over-threaded likelihood of BasePopulationNetwork", "[BasePopulationNetwork]") {
 
     SECTION("Testing constructor and over-threaded likelihood calc") {
         std::string nex_path = "data/diploid-standard-data-ntax5-nchar5.nex";
@@ -168,7 +230,7 @@ TEST_CASE("Testing over-threaded likelihood of BasePopulationNetwork", "[BasePop
 // v = 1.0
 // log likelihood             = -248.93254688526213
 // log likelihood correction  = -135.97095011239867
-TEST_CASE("Testing hemi129.nex likelihood (0.01, 10.0, 1.0, 1.0)", "[BasePopulationNetwork]") {
+TEST_CASE("phylonet; Testing hemi129.nex likelihood (0.01, 10.0, 1.0, 1.0)", "[BasePopulationNetwork]") {
 
     SECTION("Testing likelihood calc") {
         std::string nex_path = "data/hemi129.nex";
@@ -195,7 +257,7 @@ TEST_CASE("Testing hemi129.nex likelihood (0.01, 10.0, 1.0, 1.0)", "[BasePopulat
         REQUIRE(tree.get_degree_of_root() == 2);
     }
 }
-TEST_CASE("Testing hemi129.nex threaded likelihood (0.01, 10.0, 1.0, 1.0)", "[BasePopulationNetwork]") {
+TEST_CASE("phylonet; Testing hemi129.nex threaded likelihood (0.01, 10.0, 1.0, 1.0)", "[BasePopulationNetwork]") {
 
     SECTION("Testing threaded likelihood calc") {
         std::string nex_path = "data/hemi129.nex";
@@ -232,7 +294,7 @@ TEST_CASE("Testing hemi129.nex threaded likelihood (0.01, 10.0, 1.0, 1.0)", "[Ba
 // v = 1.0
 // Log likelihood            = -7099.716015109998
 // Log likelihood correction = -3317.567573476714
-TEST_CASE("Testing aflp_25.nex likelihood (0.01, 10.0, 1.0, 1.0)", "[BasePopulationNetwork]") {
+TEST_CASE("phylonet; Testing aflp_25.nex likelihood (0.01, 10.0, 1.0, 1.0)", "[BasePopulationNetwork]") {
 
     SECTION("Testing likelihood calc") {
         std::string nex_path = "data/aflp_25.nex";
@@ -251,7 +313,7 @@ TEST_CASE("Testing aflp_25.nex likelihood (0.01, 10.0, 1.0, 1.0)", "[BasePopulat
         REQUIRE(tree.get_degree_of_root() == 2);
     }
 }
-TEST_CASE("Testing aflp_25.nex threaded likelihood (0.01, 10.0, 1.0, 1.0)", "[BasePopulationNetwork]") {
+TEST_CASE("phylonet; Testing aflp_25.nex threaded likelihood (0.01, 10.0, 1.0, 1.0)", "[BasePopulationNetwork]") {
 
     SECTION("Testing threaded likelihood calc") {
         std::string nex_path = "data/aflp_25.nex";
@@ -281,7 +343,7 @@ TEST_CASE("Testing aflp_25.nex threaded likelihood (0.01, 10.0, 1.0, 1.0)", "[Ba
 // v = 1.0
 // Log likelihood            = -6986.120524781545
 // Log likelihood correction = -3317.567573476714
-TEST_CASE("Testing aflp_25.nex likelihood (0.01, 10.0, 1.0, 1.0, dominant)", "[BasePopulationNetwork]") {
+TEST_CASE("phylonet; Testing aflp_25.nex likelihood (0.01, 10.0, 1.0, 1.0, dominant)", "[BasePopulationNetwork]") {
 
     SECTION("Testing likelihood calc") {
         std::string nex_path = "data/aflp_25.nex";
@@ -297,7 +359,7 @@ TEST_CASE("Testing aflp_25.nex likelihood (0.01, 10.0, 1.0, 1.0, dominant)", "[B
         REQUIRE_THROWS_AS(tree.fold_patterns(), EcoevolityBiallelicDataError &);
     }
 }
-TEST_CASE("Testing aflp_25.nex threaded likelihood (0.01, 10.0, 1.0, 1.0, dominant)", "[BasePopulationNetwork]") {
+TEST_CASE("phylonet; Testing aflp_25.nex threaded likelihood (0.01, 10.0, 1.0, 1.0, dominant)", "[BasePopulationNetwork]") {
 
     SECTION("Testing threaded likelihood calc") {
         std::string nex_path = "data/aflp_25.nex";
@@ -325,7 +387,7 @@ TEST_CASE("Testing aflp_25.nex threaded likelihood (0.01, 10.0, 1.0, 1.0, domina
 // v = 1.0
 // Log likelihood            = -328.39238828878365
 // Log likelihood correction = -135.97095011239867
-TEST_CASE("Testing hemi129.nex likelihood (0.0, 10.0, 1.0, 1.0)", "[BasePopulationNetwork]") {
+TEST_CASE("phylonet; Testing hemi129.nex likelihood (0.0, 10.0, 1.0, 1.0)", "[BasePopulationNetwork]") {
 
     SECTION("Testing likelihood calc") {
         std::string nex_path = "data/hemi129.nex";
@@ -352,7 +414,7 @@ TEST_CASE("Testing hemi129.nex likelihood (0.0, 10.0, 1.0, 1.0)", "[BasePopulati
         REQUIRE(tree.get_degree_of_root() == 2);
     }
 }
-TEST_CASE("Testing hemi129.nex threaded likelihood (0.0, 10.0, 1.0, 1.0)", "[BasePopulationNetwork]") {
+TEST_CASE("phylonet; Testing hemi129.nex threaded likelihood (0.0, 10.0, 1.0, 1.0)", "[BasePopulationNetwork]") {
 
     SECTION("Testing threaded likelihood calc") {
         std::string nex_path = "data/hemi129.nex";
@@ -389,7 +451,7 @@ TEST_CASE("Testing hemi129.nex threaded likelihood (0.0, 10.0, 1.0, 1.0)", "[Bas
 // v = 1.0
 // Log likelihood            = -7256.501742344454
 // Log likelihood correction = -3317.567573476714
-TEST_CASE("Testing aflp_25.nex likelihood (0.0, 10.0, 1.0, 1.0)", "[BasePopulationNetwork]") {
+TEST_CASE("phylonet; Testing aflp_25.nex likelihood (0.0, 10.0, 1.0, 1.0)", "[BasePopulationNetwork]") {
 
     SECTION("Testing likelihood calc") {
         std::string nex_path = "data/aflp_25.nex";
@@ -408,7 +470,7 @@ TEST_CASE("Testing aflp_25.nex likelihood (0.0, 10.0, 1.0, 1.0)", "[BasePopulati
         REQUIRE(tree.get_degree_of_root() == 2);
     }
 }
-TEST_CASE("Testing aflp_25.nex threaded likelihood (0.0, 10.0, 1.0, 1.0)", "[BasePopulationNetwork]") {
+TEST_CASE("phylonet; Testing aflp_25.nex threaded likelihood (0.0, 10.0, 1.0, 1.0)", "[BasePopulationNetwork]") {
 
     SECTION("Testing threaded likelihood calc") {
         std::string nex_path = "data/aflp_25.nex";
@@ -438,7 +500,7 @@ TEST_CASE("Testing aflp_25.nex threaded likelihood (0.0, 10.0, 1.0, 1.0)", "[Bas
 // v = 1.0
 // Log likelihood            = -7223.362711937651
 // Log likelihood correction = -3317.567573476714
-TEST_CASE("Testing aflp_25.nex likelihood (0.0, 10.0, 1.0, 1.0, dominant)", "[BasePopulationNetwork]") {
+TEST_CASE("phylonet; Testing aflp_25.nex likelihood (0.0, 10.0, 1.0, 1.0, dominant)", "[BasePopulationNetwork]") {
 
     SECTION("Testing likelihood calc") {
         std::string nex_path = "data/aflp_25.nex";
@@ -454,7 +516,7 @@ TEST_CASE("Testing aflp_25.nex likelihood (0.0, 10.0, 1.0, 1.0, dominant)", "[Ba
         REQUIRE_THROWS_AS(tree.fold_patterns(), EcoevolityBiallelicDataError &);
     }
 }
-TEST_CASE("Testing aflp_25.nex threaded likelihood (0.0, 10.0, 1.0, 1.0, dominant)", "[BasePopulationNetwork]") {
+TEST_CASE("phylonet; Testing aflp_25.nex threaded likelihood (0.0, 10.0, 1.0, 1.0, dominant)", "[BasePopulationNetwork]") {
 
     SECTION("Testing threaded likelihood calc") {
         std::string nex_path = "data/aflp_25.nex";
@@ -480,7 +542,7 @@ TEST_CASE("Testing aflp_25.nex threaded likelihood (0.0, 10.0, 1.0, 1.0, dominan
 // v = 1.0
 // Log likelihood            = -227.41048391087554
 // Log likelihood correction = -135.97095011239867
-TEST_CASE("Testing hemi129.nex likelihood (0.2, 10.0, 1.0, 1.0)", "[BasePopulationNetwork]") {
+TEST_CASE("phylonet; Testing hemi129.nex likelihood (0.2, 10.0, 1.0, 1.0)", "[BasePopulationNetwork]") {
 
     SECTION("Testing likelihood calc") {
         std::string nex_path = "data/hemi129.nex";
@@ -507,7 +569,7 @@ TEST_CASE("Testing hemi129.nex likelihood (0.2, 10.0, 1.0, 1.0)", "[BasePopulati
         REQUIRE(tree.get_degree_of_root() == 2);
     }
 }
-TEST_CASE("Testing hemi129.nex threaded likelihood (0.2, 10.0, 1.0, 1.0)", "[BasePopulationNetwork]") {
+TEST_CASE("phylonet; Testing hemi129.nex threaded likelihood (0.2, 10.0, 1.0, 1.0)", "[BasePopulationNetwork]") {
 
     SECTION("Testing threaded likelihood calc") {
         std::string nex_path = "data/hemi129.nex";
@@ -544,7 +606,7 @@ TEST_CASE("Testing hemi129.nex threaded likelihood (0.2, 10.0, 1.0, 1.0)", "[Bas
 // v = 1.0
 // Log likelihood            = -7304.180743441677
 // Log likelihood correction = -3317.567573476714
-TEST_CASE("Testing aflp_25.nex likelihood (0.2, 10.0, 1.0, 1.0)", "[BasePopulationNetwork]") {
+TEST_CASE("phylonet; Testing aflp_25.nex likelihood (0.2, 10.0, 1.0, 1.0)", "[BasePopulationNetwork]") {
 
     SECTION("Testing likelihood calc") {
         std::string nex_path = "data/aflp_25.nex";
@@ -563,7 +625,7 @@ TEST_CASE("Testing aflp_25.nex likelihood (0.2, 10.0, 1.0, 1.0)", "[BasePopulati
         REQUIRE(tree.get_degree_of_root() == 2);
     }
 }
-TEST_CASE("Testing aflp_25.nex threaded likelihood (0.2, 10.0, 1.0, 1.0)", "[BasePopulationNetwork]") {
+TEST_CASE("phylonet; Testing aflp_25.nex threaded likelihood (0.2, 10.0, 1.0, 1.0)", "[BasePopulationNetwork]") {
 
     SECTION("Testing threaded likelihood calc") {
         std::string nex_path = "data/aflp_25.nex";
@@ -593,7 +655,7 @@ TEST_CASE("Testing aflp_25.nex threaded likelihood (0.2, 10.0, 1.0, 1.0)", "[Bas
 // v = 1.0
 // Log likelihood            = -7405.145951634711
 // Log likelihood correction = -3317.567573476714
-TEST_CASE("Testing aflp_25.nex likelihood (0.2, 10.0, 1.0, 1.0, dominant)", "[BasePopulationNetwork]") {
+TEST_CASE("phylonet; Testing aflp_25.nex likelihood (0.2, 10.0, 1.0, 1.0, dominant)", "[BasePopulationNetwork]") {
 
     SECTION("Testing likelihood calc") {
         std::string nex_path = "data/aflp_25.nex";
@@ -609,7 +671,7 @@ TEST_CASE("Testing aflp_25.nex likelihood (0.2, 10.0, 1.0, 1.0, dominant)", "[Ba
         REQUIRE_THROWS_AS(tree.fold_patterns(), EcoevolityBiallelicDataError &);
     }
 }
-TEST_CASE("Testing aflp_25.nex threaded likelihood (0.2, 10.0, 1.0, 1.0, dominant)", "[BasePopulationNetwork]") {
+TEST_CASE("phylonet; Testing aflp_25.nex threaded likelihood (0.2, 10.0, 1.0, 1.0, dominant)", "[BasePopulationNetwork]") {
 
     SECTION("Testing threaded likelihood calc") {
         std::string nex_path = "data/aflp_25.nex";
@@ -638,7 +700,7 @@ TEST_CASE("Testing aflp_25.nex threaded likelihood (0.2, 10.0, 1.0, 1.0, dominan
 // v = 10.0 / 19.0
 // Log likelihood            = -327.7437811413033
 // Log likelihood correction = -135.97095011239867
-TEST_CASE("Testing hemi129.nex likelihood (0.03, 10.0, 10.0, 10.0/19.0)", "[BasePopulationNetwork]") {
+TEST_CASE("phylonet; Testing hemi129.nex likelihood (0.03, 10.0, 10.0, 10.0/19.0)", "[BasePopulationNetwork]") {
 
     SECTION("Testing likelihood calc") {
         std::string nex_path = "data/hemi129.nex";
@@ -664,7 +726,7 @@ TEST_CASE("Testing hemi129.nex likelihood (0.03, 10.0, 10.0, 10.0/19.0)", "[Base
         REQUIRE(tree.get_degree_of_root() == 2);
     }
 }
-TEST_CASE("Testing hemi129.nex threaded likelihood (0.03, 10.0, 10.0, 10.0/19.0)", "[BasePopulationNetwork]") {
+TEST_CASE("phylonet; Testing hemi129.nex threaded likelihood (0.03, 10.0, 10.0, 10.0/19.0)", "[BasePopulationNetwork]") {
 
     SECTION("Testing threaded likelihood calc") {
         std::string nex_path = "data/hemi129.nex";
@@ -700,7 +762,7 @@ TEST_CASE("Testing hemi129.nex threaded likelihood (0.03, 10.0, 10.0, 10.0/19.0)
 // v = 10.0 / 19.0
 // Log likelihood            = -6472.856486972301
 // Log likelihood correction = -3317.567573476714
-TEST_CASE("Testing aflp_25.nex likelihood (0.03, 10.0, 10.0, 10.0/19.0)", "[BasePopulationNetwork]") {
+TEST_CASE("phylonet; Testing aflp_25.nex likelihood (0.03, 10.0, 10.0, 10.0/19.0)", "[BasePopulationNetwork]") {
 
     SECTION("Testing likelihood calc") {
         std::string nex_path = "data/aflp_25.nex";
@@ -722,7 +784,7 @@ TEST_CASE("Testing aflp_25.nex likelihood (0.03, 10.0, 10.0, 10.0/19.0)", "[Base
         REQUIRE(tree.get_degree_of_root() == 2);
     }
 }
-TEST_CASE("Testing aflp_25.nex threaded likelihood (0.03, 10.0, 10.0, 10.0/19.0)", "[BasePopulationNetwork]") {
+TEST_CASE("phylonet; Testing aflp_25.nex threaded likelihood (0.03, 10.0, 10.0, 10.0/19.0)", "[BasePopulationNetwork]") {
 
     SECTION("Testing threaded likelihood calc") {
         std::string nex_path = "data/aflp_25.nex";
@@ -755,7 +817,7 @@ TEST_CASE("Testing aflp_25.nex threaded likelihood (0.03, 10.0, 10.0, 10.0/19.0)
 // v = 10.0 / 19.0
 // Log likelihood            = -6494.774924871097
 // Log likelihood correction = -3317.567573476714
-TEST_CASE("Testing aflp_25.nex likelihood (0.03, 10.0, 10.0, 10.0/19.0, dominant)", "[BasePopulationNetwork]") {
+TEST_CASE("phylonet; Testing aflp_25.nex likelihood (0.03, 10.0, 10.0, 10.0/19.0, dominant)", "[BasePopulationNetwork]") {
 
     SECTION("Testing likelihood calc") {
         std::string nex_path = "data/aflp_25.nex";
@@ -772,7 +834,7 @@ TEST_CASE("Testing aflp_25.nex likelihood (0.03, 10.0, 10.0, 10.0/19.0, dominant
         REQUIRE_THROWS_AS(tree.fold_patterns(), EcoevolityBiallelicDataError &);
     }
 }
-TEST_CASE("Testing aflp_25.nex threaded likelihood (0.03, 10.0, 10.0, 10.0/19.0, dominant)", "[BasePopulationNetwork]") {
+TEST_CASE("phylonet; Testing aflp_25.nex threaded likelihood (0.03, 10.0, 10.0, 10.0/19.0, dominant)", "[BasePopulationNetwork]") {
 
     SECTION("Testing threaded likelihood calc") {
         std::string nex_path = "data/aflp_25.nex";
@@ -800,7 +862,7 @@ TEST_CASE("Testing aflp_25.nex threaded likelihood (0.03, 10.0, 10.0, 10.0/19.0,
 // v = 10.0
 // Log likelihood            = -265.0023534261969
 // Log likelihood correction = -135.97095011239867
-TEST_CASE("Testing hemi129.nex likelihood (0.03, 10.0, 10.0/19.0, 10.0)", "[BasePopulationNetwork]") {
+TEST_CASE("phylonet; Testing hemi129.nex likelihood (0.03, 10.0, 10.0/19.0, 10.0)", "[BasePopulationNetwork]") {
 
     SECTION("Testing likelihood calc") {
         std::string nex_path = "data/hemi129.nex";
@@ -826,7 +888,7 @@ TEST_CASE("Testing hemi129.nex likelihood (0.03, 10.0, 10.0/19.0, 10.0)", "[Base
         REQUIRE(tree.get_degree_of_root() == 2);
     }
 }
-TEST_CASE("Testing hemi129.nex threaded likelihood (0.03, 10.0, 10.0/19.0, 10.0)", "[BasePopulationNetwork]") {
+TEST_CASE("phylonet; Testing hemi129.nex threaded likelihood (0.03, 10.0, 10.0/19.0, 10.0)", "[BasePopulationNetwork]") {
 
     SECTION("Testing threaded likelihood calc") {
         std::string nex_path = "data/hemi129.nex";
@@ -862,7 +924,7 @@ TEST_CASE("Testing hemi129.nex threaded likelihood (0.03, 10.0, 10.0/19.0, 10.0)
 // v = 10.0
 // Log likelihood            = -10163.468886613919
 // Log likelihood correction = -3317.567573476714
-TEST_CASE("Testing aflp_25.nex likelihood (0.03, 10.0, 10.0/19.0, 10.0)", "[BasePopulationNetwork]") {
+TEST_CASE("phylonet; Testing aflp_25.nex likelihood (0.03, 10.0, 10.0/19.0, 10.0)", "[BasePopulationNetwork]") {
 
     SECTION("Testing likelihood calc") {
         std::string nex_path = "data/aflp_25.nex";
@@ -884,7 +946,7 @@ TEST_CASE("Testing aflp_25.nex likelihood (0.03, 10.0, 10.0/19.0, 10.0)", "[Base
         REQUIRE(tree.get_degree_of_root() == 2);
     }
 }
-TEST_CASE("Testing aflp_25.nex threaded likelihood (0.03, 10.0, 10.0/19.0, 10.0)", "[BasePopulationNetwork]") {
+TEST_CASE("phylonet; Testing aflp_25.nex threaded likelihood (0.03, 10.0, 10.0/19.0, 10.0)", "[BasePopulationNetwork]") {
 
     SECTION("Testing threaded likelihood calc") {
         std::string nex_path = "data/aflp_25.nex";
@@ -917,7 +979,7 @@ TEST_CASE("Testing aflp_25.nex threaded likelihood (0.03, 10.0, 10.0/19.0, 10.0)
 // v = 10.0
 // Log likelihood            = -10999.288193543642
 // Log likelihood correction = -3317.567573476714
-TEST_CASE("Testing aflp_25.nex likelihood (0.03, 10.0, 10.0/19.0, 10.0, dominant)", "[BasePopulationNetwork]") {
+TEST_CASE("phylonet; Testing aflp_25.nex likelihood (0.03, 10.0, 10.0/19.0, 10.0, dominant)", "[BasePopulationNetwork]") {
 
     SECTION("Testing likelihood calc") {
         std::string nex_path = "data/aflp_25.nex";
@@ -934,7 +996,7 @@ TEST_CASE("Testing aflp_25.nex likelihood (0.03, 10.0, 10.0/19.0, 10.0, dominant
         REQUIRE_THROWS_AS(tree.fold_patterns(), EcoevolityBiallelicDataError &);
     }
 }
-TEST_CASE("Testing aflp_25.nex threaded likelihood (0.03, 10.0, 10.0/19.0, 10.0, dominant)", "[BasePopulationNetwork]") {
+TEST_CASE("phylonet; Testing aflp_25.nex threaded likelihood (0.03, 10.0, 10.0/19.0, 10.0, dominant)", "[BasePopulationNetwork]") {
 
     SECTION("Testing threaded likelihood calc") {
         std::string nex_path = "data/aflp_25.nex";
@@ -963,7 +1025,7 @@ TEST_CASE("Testing aflp_25.nex threaded likelihood (0.03, 10.0, 10.0/19.0, 10.0,
 // v = 10.0
 // Log likelihood            = -224.40177558289847
 // Log likelihood correction = -135.97095011239867
-TEST_CASE("Testing hemi129.nex likelihood (0.03, 111.1, 10.0/19.0, 10.0)", "[BasePopulationNetwork]") {
+TEST_CASE("phylonet; Testing hemi129.nex likelihood (0.03, 111.1, 10.0/19.0, 10.0)", "[BasePopulationNetwork]") {
 
     SECTION("Testing likelihood calc") {
         std::string nex_path = "data/hemi129.nex";
@@ -982,7 +1044,7 @@ TEST_CASE("Testing hemi129.nex likelihood (0.03, 111.1, 10.0/19.0, 10.0)", "[Bas
         REQUIRE(tree.get_degree_of_root() == 2);
     }
 }
-TEST_CASE("Testing hemi129.nex threaded likelihood (0.03, 111.1, 10.0/19.0, 10.0)", "[BasePopulationNetwork]") {
+TEST_CASE("phylonet; Testing hemi129.nex threaded likelihood (0.03, 111.1, 10.0/19.0, 10.0)", "[BasePopulationNetwork]") {
 
     SECTION("Testing threaded likelihood calc") {
         std::string nex_path = "data/hemi129.nex";
@@ -1011,7 +1073,7 @@ TEST_CASE("Testing hemi129.nex threaded likelihood (0.03, 111.1, 10.0/19.0, 10.0
 // v = 10.0
 // Log likelihood            = -8158.88094671241
 // Log likelihood correction = -3317.567573476714
-TEST_CASE("Testing aflp_25.nex likelihood (0.03, 111.1, 10.0/19.0, 10.0)", "[BasePopulationNetwork]") {
+TEST_CASE("phylonet; Testing aflp_25.nex likelihood (0.03, 111.1, 10.0/19.0, 10.0)", "[BasePopulationNetwork]") {
 
     SECTION("Testing likelihood calc") {
         std::string nex_path = "data/aflp_25.nex";
@@ -1026,7 +1088,7 @@ TEST_CASE("Testing aflp_25.nex likelihood (0.03, 111.1, 10.0/19.0, 10.0)", "[Bas
         REQUIRE(tree.get_degree_of_root() == 2);
     }
 }
-TEST_CASE("Testing aflp_25.nex threaded likelihood (0.03, 111.1, 10.0/19.0, 10.0)", "[BasePopulationNetwork]") {
+TEST_CASE("phylonet; Testing aflp_25.nex threaded likelihood (0.03, 111.1, 10.0/19.0, 10.0)", "[BasePopulationNetwork]") {
 
     SECTION("Testing threaded likelihood calc") {
         std::string nex_path = "data/aflp_25.nex";
@@ -1052,7 +1114,7 @@ TEST_CASE("Testing aflp_25.nex threaded likelihood (0.03, 111.1, 10.0/19.0, 10.0
 // v = 10.0
 // Log likelihood            = -8034.250341980543
 // Log likelihood correction = -3317.567573476714
-TEST_CASE("Testing aflp_25.nex likelihood (0.03, 111.1, 10.0/19.0, 10.0, dominant)", "[BasePopulationNetwork]") {
+TEST_CASE("phylonet; Testing aflp_25.nex likelihood (0.03, 111.1, 10.0/19.0, 10.0, dominant)", "[BasePopulationNetwork]") {
 
     SECTION("Testing likelihood calc") {
         std::string nex_path = "data/aflp_25.nex";
@@ -1067,7 +1129,7 @@ TEST_CASE("Testing aflp_25.nex likelihood (0.03, 111.1, 10.0/19.0, 10.0, dominan
         REQUIRE(tree.get_degree_of_root() == 2);
     }
 }
-TEST_CASE("Testing aflp_25.nex threaded likelihood (0.03, 111.1, 10.0/19.0, 10.0, dominant)", "[BasePopulationNetwork]") {
+TEST_CASE("phylonet; Testing aflp_25.nex threaded likelihood (0.03, 111.1, 10.0/19.0, 10.0, dominant)", "[BasePopulationNetwork]") {
 
     SECTION("Testing threaded likelihood calc") {
         std::string nex_path = "data/aflp_25.nex";
@@ -1096,7 +1158,7 @@ TEST_CASE("Testing aflp_25.nex threaded likelihood (0.03, 111.1, 10.0/19.0, 10.0
 // With constant sites inclucded and m_bUseNonPolymorphic = true
 // Log likelihood            = -55.01646493341547
 // Log likelihood correction = -6.87935580446044
-TEST_CASE("Testing affect of constant sites on likelihood of BasePopulationNetwork", "[BasePopulationNetwork]") {
+TEST_CASE("phylonet; Testing affect of constant sites on likelihood of BasePopulationNetwork", "[BasePopulationNetwork]") {
 
     SECTION("Testing haploid-standard-full-constant.nex") {
         std::string nex_path = "data/haploid-standard-full-constant.nex";
@@ -1138,7 +1200,7 @@ TEST_CASE("Testing affect of constant sites on likelihood of BasePopulationNetwo
     }
 }
 
-TEST_CASE("Testing affect of constant sites on threaded likelihood of BasePopulationNetwork", "[BasePopulationNetwork]") {
+TEST_CASE("phylonet; Testing affect of constant sites on threaded likelihood of BasePopulationNetwork", "[BasePopulationNetwork]") {
 
     SECTION("Testing haploid-standard-full-constant.nex") {
         std::string nex_path = "data/haploid-standard-full-constant.nex";
@@ -1181,7 +1243,7 @@ TEST_CASE("Testing affect of constant sites on threaded likelihood of BasePopula
 }
 
 
-TEST_CASE("Testing coalesce_in_branch for 2 lineages and theta of 1.0",
+TEST_CASE("phylonet; Testing coalesce_in_branch for 2 lineages and theta of 1.0",
         "[BasePopulationNetwork]") {
 
     SECTION("Testing coalesce_in_branch") {
@@ -1230,7 +1292,7 @@ TEST_CASE("Testing coalesce_in_branch for 2 lineages and theta of 1.0",
     }
 }
 
-TEST_CASE("Testing coalesce_in_branch for 2 lineages and theta of 3.7",
+TEST_CASE("phylonet; Testing coalesce_in_branch for 2 lineages and theta of 3.7",
         "[BasePopulationNetwork]") {
 
     SECTION("Testing coalesce_in_branch") {
@@ -1279,7 +1341,7 @@ TEST_CASE("Testing coalesce_in_branch for 2 lineages and theta of 3.7",
     }
 }
 
-TEST_CASE("Testing coalesce_in_branch for 2 lineages and theta of 0.17",
+TEST_CASE("phylonet; Testing coalesce_in_branch for 2 lineages and theta of 0.17",
         "[BasePopulationNetwork]") {
 
     SECTION("Testing coalesce_in_branch") {
@@ -1328,7 +1390,7 @@ TEST_CASE("Testing coalesce_in_branch for 2 lineages and theta of 0.17",
     }
 }
 
-TEST_CASE("Testing coalesce_in_branch for 3 lineages and theta of 1.0",
+TEST_CASE("phylonet; Testing coalesce_in_branch for 3 lineages and theta of 1.0",
         "[BasePopulationNetwork]") {
 
     SECTION("Testing coalesce_in_branch") {
@@ -1376,7 +1438,7 @@ TEST_CASE("Testing coalesce_in_branch for 3 lineages and theta of 1.0",
     }
 }
 
-TEST_CASE("Testing coalesce_in_branch for 3 lineages and theta of 1.47",
+TEST_CASE("phylonet; Testing coalesce_in_branch for 3 lineages and theta of 1.47",
         "[BasePopulationNetwork]") {
 
     SECTION("Testing coalesce_in_branch") {
@@ -1424,7 +1486,7 @@ TEST_CASE("Testing coalesce_in_branch for 3 lineages and theta of 1.47",
     }
 }
 
-TEST_CASE("Testing coalesce_in_branch for 3 lineages and theta of 0.17",
+TEST_CASE("phylonet; Testing coalesce_in_branch for 3 lineages and theta of 0.17",
         "[BasePopulationNetwork]") {
 
     SECTION("Testing coalesce_in_branch") {
@@ -1472,7 +1534,7 @@ TEST_CASE("Testing coalesce_in_branch for 3 lineages and theta of 0.17",
     }
 }
 
-TEST_CASE("Testing coalesce_in_branch for 10 lineages and theta of 1.0",
+TEST_CASE("phylonet; Testing coalesce_in_branch for 10 lineages and theta of 1.0",
         "[BasePopulationNetwork]") {
 
     SECTION("Testing coalesce_in_branch") {
@@ -1520,7 +1582,7 @@ TEST_CASE("Testing coalesce_in_branch for 10 lineages and theta of 1.0",
     }
 }
 
-TEST_CASE("Testing coalesce_in_branch for 10 lineages and theta of 1.47",
+TEST_CASE("phylonet; Testing coalesce_in_branch for 10 lineages and theta of 1.47",
         "[BasePopulationNetwork]") {
 
     SECTION("Testing coalesce_in_branch") {
@@ -1568,7 +1630,7 @@ TEST_CASE("Testing coalesce_in_branch for 10 lineages and theta of 1.47",
     }
 }
 
-TEST_CASE("Testing coalesce_in_branch for 10 lineages and theta of 0.17",
+TEST_CASE("phylonet; Testing coalesce_in_branch for 10 lineages and theta of 0.17",
         "[BasePopulationNetwork]") {
 
     SECTION("Testing coalesce_in_branch") {
@@ -1617,7 +1679,7 @@ TEST_CASE("Testing coalesce_in_branch for 10 lineages and theta of 0.17",
 }
 
 
-TEST_CASE("Testing scaling of simulate_gene_tree for pair",
+TEST_CASE("phylonet; Testing scaling of simulate_gene_tree for pair",
         "[BasePopulationNetwork]") {
 
     SECTION("Testing pair") {
@@ -1723,7 +1785,7 @@ TEST_CASE("Testing scaling of simulate_gene_tree for pair",
     }
 }
 
-TEST_CASE("Testing dataset simulation", "[BasePopulationNetwork]") {
+TEST_CASE("phylonet; Testing dataset simulation", "[BasePopulationNetwork]") {
     SECTION("Testing simulate_biallelic_data_set for fully fixed pair") {
         std::string nex_path = "data/aflp_25.nex";
         // Need to keep constant characters to get expected
@@ -1796,7 +1858,7 @@ TEST_CASE("Testing dataset simulation", "[BasePopulationNetwork]") {
     }
 }
 
-TEST_CASE("Testing complete linked dataset simulation", "[BasePopulationNetwork]") {
+TEST_CASE("phylonet; Testing complete linked dataset simulation", "[BasePopulationNetwork]") {
     SECTION("Testing simulate_complete_biallelic_data_set for fully fixed pair") {
         std::string nex_path = "data/aflp_25.nex";
         // Need to keep constant characters to get expected
@@ -1886,7 +1948,7 @@ TEST_CASE("Testing complete linked dataset simulation", "[BasePopulationNetwork]
     }
 }
 
-TEST_CASE("Testing complete linked dataset simulation one locus", "[BasePopulationNetwork]") {
+TEST_CASE("phylonet; Testing complete linked dataset simulation one locus", "[BasePopulationNetwork]") {
     SECTION("Testing simulate_complete_biallelic_data_set for fully fixed pair") {
         std::string nex_path = "data/aflp_25.nex";
         // Need to keep constant characters to get expected
@@ -1971,7 +2033,7 @@ TEST_CASE("Testing complete linked dataset simulation one locus", "[BasePopulati
     }
 }
 
-TEST_CASE("Testing linked dataset simulation", "[BasePopulationNetwork]") {
+TEST_CASE("phylonet; Testing linked dataset simulation", "[BasePopulationNetwork]") {
     SECTION("Testing simulate_linked_biallelic_data_set for fully fixed pair") {
         std::string nex_path = "data/hemi129-with-missing.nex";
         // Need to keep constant characters to get expected
@@ -2087,7 +2149,7 @@ TEST_CASE("Testing linked dataset simulation", "[BasePopulationNetwork]") {
     }
 }
 
-TEST_CASE("Testing linked dataset simulation with aflp dataset", "[BasePopulationNetwork]") {
+TEST_CASE("phylonet; Testing linked dataset simulation with aflp dataset", "[BasePopulationNetwork]") {
     SECTION("Testing simulate_linked_biallelic_data_set for fully fixed pair") {
         std::string nex_path = "data/aflp_25.nex";
         // Need to keep constant characters to get expected
@@ -2203,7 +2265,7 @@ TEST_CASE("Testing linked dataset simulation with aflp dataset", "[BasePopulatio
     }
 }
 
-TEST_CASE("Testing singleton acquisition bias", "[BasePopulationNetwork]") {
+TEST_CASE("phylonet; Testing singleton acquisition bias", "[BasePopulationNetwork]") {
     SECTION("Testing for fully fixed pair") {
         std::string nex_path = "data/aflp_25.nex";
         // Need to keep constant characters to get expected
@@ -2309,7 +2371,7 @@ TEST_CASE("Testing singleton acquisition bias", "[BasePopulationNetwork]") {
     }
 }
 
-TEST_CASE("Testing singleton acquisition bias with charsets", "[BasePopulationNetwork]") {
+TEST_CASE("phylonet; Testing singleton acquisition bias with charsets", "[BasePopulationNetwork]") {
     SECTION("Testing for fully fixed pair") {
         std::string nex_path = "data/aflp_25.nex";
         // Need to keep constant characters to get expected
@@ -2565,7 +2627,7 @@ TEST_CASE("Testing singleton acquisition bias with charsets", "[BasePopulationNe
     }
 }
 
-TEST_CASE("Testing scaling of dataset simulation for singleton",
+TEST_CASE("phylonet; Testing scaling of dataset simulation for singleton",
         "[BasePopulationNetwork]") {
 
     SECTION("Testing simulate_biallelic_data_set for fully fixed singleton") {
@@ -2629,7 +2691,7 @@ TEST_CASE("Testing scaling of dataset simulation for singleton",
     }
 }
 
-TEST_CASE("Testing scaling of dataset simulation for singleton with charsets",
+TEST_CASE("phylonet; Testing scaling of dataset simulation for singleton with charsets",
         "[BasePopulationNetwork]") {
 
     SECTION("Testing simulate_biallelic_data_set for fully fixed singleton") {
@@ -2714,7 +2776,7 @@ TEST_CASE("Testing scaling of dataset simulation for singleton with charsets",
     }
 }
 
-TEST_CASE("Testing scaling of simulation of loci for singleton",
+TEST_CASE("phylonet; Testing scaling of simulation of loci for singleton",
         "[BasePopulationNetwork]") {
 
     SECTION("Testing simulate_complete_biallelic_data_set for fully fixed singleton") {
@@ -2779,7 +2841,7 @@ TEST_CASE("Testing scaling of simulation of loci for singleton",
     }
 }
 
-TEST_CASE("Testing scaling of simulation of one variable site per locus for singleton",
+TEST_CASE("phylonet; Testing scaling of simulation of one variable site per locus for singleton",
         "[BasePopulationNetwork]") {
 
     SECTION("Testing simulate_data_set_max_one_variable_site_per_locus for fully fixed singleton") {
@@ -2854,7 +2916,7 @@ TEST_CASE("Testing scaling of simulation of one variable site per locus for sing
     }
 }
 
-TEST_CASE("Testing scaling of simulation of one variable site per locus for singleton with charsets",
+TEST_CASE("phylonet; Testing scaling of simulation of one variable site per locus for singleton with charsets",
         "[BasePopulationNetwork]") {
 
     SECTION("Testing one SNP per locus for fully fixed singleton") {
@@ -2957,7 +3019,7 @@ TEST_CASE("Testing scaling of simulation of one variable site per locus for sing
 }
 
 
-TEST_CASE("Testing errors when trying to sim loci with a template with constant characters removed",
+TEST_CASE("phylonet; Testing errors when trying to sim loci with a template with constant characters removed",
         "[BasePopulationNetwork]") {
 
     SECTION("Testing for fully fixed singleton") {
@@ -3009,7 +3071,7 @@ TEST_CASE("Testing errors when trying to sim loci with a template with constant 
     }
 }
 
-TEST_CASE("Testing BaseTree::get_height_of_youngest_parent()", "[BaseTree]") {
+TEST_CASE("phylonet; Testing BaseTree::get_height_of_youngest_parent()", "[BaseTree]") {
     SECTION("Testing get_height_of_youngest_parent") {
         std::shared_ptr<NetNode> root = std::make_shared<NetNode>("root", 0.1);
         std::shared_ptr<NetNode> internal1 = std::make_shared<NetNode>("internal1", 0.08);
@@ -3079,7 +3141,7 @@ TEST_CASE("Testing BaseTree::get_height_of_youngest_parent()", "[BaseTree]") {
     }
 }
 
-TEST_CASE("Testing BaseTree::get_height_of_oldest_child()", "[BaseTree]") {
+TEST_CASE("phylonet; Testing BaseTree::get_height_of_oldest_child()", "[BaseTree]") {
     SECTION("Testing get_height_of_oldest_child") {
         std::shared_ptr<NetNode> root = std::make_shared<NetNode>("root", 0.1);
         std::shared_ptr<NetNode> internal1 = std::make_shared<NetNode>("internal1", 0.08);
@@ -3144,7 +3206,7 @@ TEST_CASE("Testing BaseTree::get_height_of_oldest_child()", "[BaseTree]") {
     }
 }
 
-TEST_CASE("Testing BaseTree::store_splits()", "[BaseTree]") {
+TEST_CASE("phylonet; Testing BaseTree::store_splits()", "[BaseTree]") {
     SECTION("Testing store_splits") {
         std::shared_ptr<NetNode> root = std::make_shared<NetNode>(14, "root", 0.1);
         std::shared_ptr<NetNode> internal1 = std::make_shared<NetNode>(12, "internal1", 0.08);

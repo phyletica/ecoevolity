@@ -4,12 +4,13 @@
 
 
 TEST_CASE("Testing simulations against likelihood for one pop with 2 alleles",
-        "[BasePopulationTree]") {
+        /* "[BasePopulationTree]") { */
+        "[xx]") {
 
     SECTION("Testing sims v likelihood for one pop with 2 alleles") {
         double pop_size = 0.1;
 
-        std::string nex_path = "data/singleton-n2-1site.nex";
+        std::string nex_path = "data/singleton-2-1.nex";
         // Need to keep constant characters
         BasePopulationTree tree(nex_path, ' ',
                 true,   // population_name_is_prefix
@@ -36,7 +37,11 @@ TEST_CASE("Testing simulations against likelihood for one pop with 2 alleles",
         tree.set_mutation_rate(1.0);
 
         double ln_l = tree.compute_log_likelihood();
+        double ln_l_correction = tree.get_likelihood_correction();
+        double raw_ln_l = ln_l - ln_l_correction;
         double l = std::exp(ln_l);
+        double raw_l = std::exp(raw_ln_l);
+        double l_correction = std::exp(ln_l_correction);
 
         RandomNumberGenerator rng = RandomNumberGenerator(123);
 
@@ -55,23 +60,13 @@ TEST_CASE("Testing simulations against likelihood for one pop with 2 alleles",
             if (pattern.first.at(0) == 1) {
                 ++het_count;
             }
-            /* std::cout << "\nnalleles:\n"; */
-            /* for (auto ac : allele_counts) { */
-            /*     std::cout << ac << "\n"; */
-            /* } */
-            /* std::cout << "nreds:\n"; */
-            /* for (auto rc : red_allele_counts) { */
-            /*     std::cout << rc << "\n"; */
-            /* } */
         }
         double approx_l = het_count / (double)nsamples;
         std::cout << "approx like: " << approx_l << "\n";
         std::cout << "like: " << l << "\n";
-        // TODO: The 2,0 and 2,2 patterns match simulations, but the likelihood
-        // of the 2,1 pattern is half what it is in the simulations.
-        // Setting the pop size super high confirms the sims are correct; you
-        // see 2,0 and 2,2 each 25% of the time, and 2,1 50% of the time.
-        REQUIRE(approx_l == Approx(l*2.0).epsilon(0.001));
+        std::cout << "like correction: " << l_correction << "\n";
+        std::cout << "raw like: " << raw_l << "\n";
+        REQUIRE(approx_l == Approx(raw_l).epsilon(0.001));
     }
 }
 
