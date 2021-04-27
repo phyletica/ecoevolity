@@ -3,6 +3,78 @@
 #include "ecoevolity/stats_util.hpp"
 
 
+TEST_CASE("Testing simulations against likelihood for one pop with 2 alleles",
+        "[BasePopulationTree]") {
+
+    SECTION("Testing sims v likelihood for one pop with 2 alleles") {
+        double pop_size = 0.1;
+
+        std::string nex_path = "data/singleton-n2-1site.nex";
+        // Need to keep constant characters
+        BasePopulationTree tree(nex_path, ' ',
+                true,   // population_name_is_prefix
+                false,  // diploid
+                false,  // dominant
+                false,  // constant sites removed
+                true,   // validate
+                true,  // strict on constant
+                true,  // strict on missing
+                true,  // strict on triallelic
+                2.0,    // ploidy
+                false    // store charset info
+                );
+        REQUIRE(tree.get_leaf_node_count() == 1);
+        tree.estimate_mutation_rate();
+
+        tree.set_root_population_size(pop_size);
+        tree.get_root_ptr()->get_child(0)->set_population_size(pop_size);
+
+        tree.set_root_height(0.01);
+
+        tree.set_freq_1(0.5);
+
+        tree.set_mutation_rate(1.0);
+
+        double ln_l = tree.compute_log_likelihood();
+        double l = std::exp(ln_l);
+
+        RandomNumberGenerator rng = RandomNumberGenerator(123);
+
+        unsigned int nsamples = 1000000;
+
+        unsigned int het_count = 0;
+        for (unsigned int i = 0; i < nsamples; ++i) {
+            auto pattern_tree = tree.simulate_biallelic_site(
+                    0,
+                    rng,
+                    false);
+            auto pattern = pattern_tree.first;
+            /* std::vector<unsigned int> red_allele_counts = pattern.first; */
+            /* std::vector<unsigned int> allele_counts = pattern.second; */
+            /* if (red_allele_counts.at(0) == 1) { */
+            if (pattern.first.at(0) == 1) {
+                ++het_count;
+            }
+            /* std::cout << "\nnalleles:\n"; */
+            /* for (auto ac : allele_counts) { */
+            /*     std::cout << ac << "\n"; */
+            /* } */
+            /* std::cout << "nreds:\n"; */
+            /* for (auto rc : red_allele_counts) { */
+            /*     std::cout << rc << "\n"; */
+            /* } */
+        }
+        double approx_l = het_count / (double)nsamples;
+        std::cout << "approx like: " << approx_l << "\n";
+        std::cout << "like: " << l << "\n";
+        // TODO: The 2,0 and 2,2 patterns match simulations, but the likelihood
+        // of the 2,1 pattern is half what it is in the simulations.
+        // Setting the pop size super high confirms the sims are correct; you
+        // see 2,0 and 2,2 each 25% of the time, and 2,1 50% of the time.
+        REQUIRE(approx_l == Approx(l*2.0).epsilon(0.001));
+    }
+}
+
 TEST_CASE("Testing BaseTree::draw_from_prior", "[BaseTree]") {
     SECTION("Testing BaseTree::draw_from_prior") {
         RandomNumberGenerator rng = RandomNumberGenerator(9487503);
