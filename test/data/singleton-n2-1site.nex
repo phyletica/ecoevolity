@@ -1,0 +1,18 @@
+#NEXUS
+
+BEGIN TAXA;
+    DIMENSIONS NTAX=2;
+    TAXLABELS
+        sp1_a
+        sp1_b
+  ;
+END;
+
+BEGIN CHARACTERS;
+    DIMENSIONS NCHAR=1;
+    FORMAT DATATYPE=STANDARD SYMBOLS="01" MISSING=? GAP=-;
+    MATRIX
+        sp1_a     0
+        sp1_b     1
+    ;
+END;

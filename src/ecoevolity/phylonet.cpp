@@ -1371,7 +1371,7 @@ BiallelicData BasePopulationNetwork::simulate_biallelic_data_set(
         bool validate) const {
     ECOEVOLITY_DEBUG(
         this->check_internal_node_indices();
-        std::cerr << "DEBUG: simulate_biallelic_data_set: Node indices are valid\n";
+        // std::cerr << "DEBUG: simulate_biallelic_data_set: Node indices are valid\n";
     )
     BiallelicData sim_data = this->data_.get_empty_copy();
     const bool filtering_constant_sites = this->constant_sites_removed_;
@@ -1428,7 +1428,7 @@ BiallelicData BasePopulationNetwork::simulate_linked_biallelic_data_set(
         bool validate) const {
     ECOEVOLITY_DEBUG(
         this->check_internal_node_indices();
-        std::cerr << "DEBUG: simulate_linked_biallelic_data_set: Node indices are valid\n";
+        // std::cerr << "DEBUG: simulate_linked_biallelic_data_set: Node indices are valid\n";
     )
     ECOEVOLITY_ASSERT(this->data_.has_seq_loci_info());
     BiallelicData sim_data = this->data_.get_empty_copy();
@@ -1516,7 +1516,7 @@ BasePopulationNetwork::simulate_complete_biallelic_data_set(
         bool validate) const {
     ECOEVOLITY_DEBUG(
         this->check_internal_node_indices();
-        std::cerr << "DEBUG: simulate_complete_biallelic_data_set: Node indices are valid\n";
+        // std::cerr << "DEBUG: simulate_complete_biallelic_data_set: Node indices are valid\n";
     )
     ECOEVOLITY_ASSERT(locus_size > 0);
     BiallelicData sim_data = this->data_.get_empty_copy();
@@ -1597,7 +1597,7 @@ BasePopulationNetwork::simulate_data_set_max_one_variable_site_per_locus(
         bool validate) const {
     ECOEVOLITY_DEBUG(
         this->check_internal_node_indices();
-        std::cerr << "DEBUG: simulate_data_set_max_one_variable_site_per_locus: Node indices are valid\n";
+        // std::cerr << "DEBUG: simulate_data_set_max_one_variable_site_per_locus: Node indices are valid\n";
     )
     ECOEVOLITY_ASSERT(locus_size > 0);
     BiallelicData sim_data = this->data_.get_empty_copy();
