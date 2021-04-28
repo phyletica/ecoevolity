@@ -242,9 +242,9 @@ void BasePopulationNetwork::log_state(std::ostream& out,
         return;
     }
     // Only output leaf pop sizes
-    for (auto label : this->data_.get_population_labels()) {
-        out << delimiter << this->get_node(label)->get_population_size();
-    }
+    // for (auto label : this->data_.get_population_labels()) {
+    //     out << delimiter << this->get_node(label)->get_population_size();
+    // }
     out << std::endl;
 }
 
@@ -947,102 +947,8 @@ std::shared_ptr<PositiveRealParameter> BasePopulationNetwork::get_root_populatio
     return this->root_->get_population_size_parameter();
 }
 
-void BasePopulationNetwork::set_population_sizes(
-        std::shared_ptr<PopulationNetNode> node,
-        const std::vector<double> & sizes) {
-    node->set_population_size(sizes.at(node->get_index()));
-    for (unsigned int i = 0; i < node->get_number_of_children(); ++i) {
-        this->set_population_sizes(node->get_child(i), sizes);
-    }
-}
-
-void BasePopulationNetwork::get_population_sizes(
-        std::shared_ptr<PopulationNetNode> node,
-        std::vector<double> & sizes) const {
-    sizes.at(node->get_index()) = node->get_population_size();
-    for (unsigned int i = 0; i < node->get_number_of_children(); ++i) {
-        this->get_population_sizes(node->get_child(i), sizes);
-    }
-}
-
-std::vector<double> BasePopulationNetwork::get_population_sizes() const {
-    std::vector<double> sizes(this->get_node_count(), 0.0);
-    this->get_population_sizes(this->root_, sizes);
-    return sizes;
-}
-
 std::vector< std::shared_ptr<PositiveRealParameter> > BasePopulationNetwork::get_pointers_to_population_sizes() const {
     return this->root_->get_all_population_size_parameters();
-}
-
-void BasePopulationNetwork::set_population_sizes(
-        const std::vector<double> & sizes) {
-    ECOEVOLITY_ASSERT(sizes.size() == this->get_node_count());
-    this->set_population_sizes(this->root_, sizes);
-}
-
-std::vector<double> BasePopulationNetwork::get_population_sizes_as_proportions() const {
-    unsigned int num_nodes = this->get_node_count();
-    std::vector<double> sizes(num_nodes, 0.0);
-    this->get_population_sizes(this->root_, sizes);
-    double sum_size = std::accumulate(sizes.begin(), sizes.end(), 0.0);
-    for (unsigned int i = 0; i < sizes.size(); ++i) {
-        sizes.at(i) /= sum_size;
-    }
-    return sizes;
-}
-
-std::vector<double> BasePopulationNetwork::get_population_sizes_as_multipliers() const {
-    unsigned int num_nodes = this->get_node_count();
-    std::vector<double> sizes(num_nodes, 0.0);
-    this->get_population_sizes(this->root_, sizes);
-    double sum_size = std::accumulate(sizes.begin(), sizes.end(), 0.0);
-    double mean_size = sum_size / (double)num_nodes;
-    for (unsigned int i = 0; i < sizes.size(); ++i) {
-        sizes.at(i) /= mean_size;
-    }
-    return sizes;
-}
-
-void BasePopulationNetwork::set_population_sizes_as_proportions(const std::vector<double> & proportions) {
-    unsigned int nnodes = this->get_node_count();
-    ECOEVOLITY_ASSERT(proportions.size() == nnodes);
-    ECOEVOLITY_ASSERT_APPROX_EQUAL(
-            std::accumulate(proportions.begin(), proportions.end(), 0.0),
-            1.0);
-    std::vector<double> sizes(nnodes, 0.0);
-    this->get_population_sizes(this->root_, sizes);
-    double sum_size = std::accumulate(sizes.begin(), sizes.end(), 0.0);
-    std::vector<double> new_sizes = proportions;
-    for (unsigned int i = 0; i < new_sizes.size(); ++i) {
-        new_sizes.at(i) *= sum_size;
-    }
-    this->set_population_sizes(new_sizes);
-}
-
-double BasePopulationNetwork::get_mean_population_size() const {
-    unsigned int num_nodes = this->get_node_count();
-    std::vector<double> sizes(num_nodes, 0.0);
-    this->get_population_sizes(this->root_, sizes);
-    double sum_size = std::accumulate(sizes.begin(), sizes.end(), 0.0);
-    return sum_size / (double)num_nodes;
-}
-
-double BasePopulationNetwork::get_leaf_mean_population_size() const {
-    unsigned int num_nodes = this->get_node_count();
-    std::vector<double> sizes(num_nodes, 0.0);
-    this->get_population_sizes(this->root_, sizes);
-    unsigned int nleaves = this->get_leaf_node_count();
-    double sum_size = 0.0;
-    for (unsigned int i = 0; i < nleaves; ++i) {
-        sum_size += sizes.at(i);
-    }
-    return sum_size / (double)nleaves;
-}
-
-void BasePopulationNetwork::set_mean_population_size(double size) {
-    double scale = size / this->get_mean_population_size();
-    this->scale_all_population_sizes(scale);
 }
 
 

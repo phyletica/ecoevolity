@@ -91,14 +91,6 @@ class BasePopulationNetwork : public BaseTree<PopulationNetNode> {
                 unsigned int red_allele_count,
                 unsigned int allele_count) const;
 
-        void set_population_sizes(
-                std::shared_ptr<PopulationNetNode> node,
-                const std::vector<double> & sizes);
-        
-        void get_population_sizes(
-                std::shared_ptr<PopulationNetNode> node,
-                std::vector<double> & sizes) const;
-
         void update_unique_allele_counts();
 
         void update_leaf_label_indices();
@@ -270,18 +262,7 @@ class BasePopulationNetwork : public BaseTree<PopulationNetNode> {
         virtual double get_root_population_size() const;
         virtual std::shared_ptr<PositiveRealParameter> get_root_population_size_parameter() const;
 
-        std::vector<double> get_population_sizes() const;
         std::vector< std::shared_ptr<PositiveRealParameter> > get_pointers_to_population_sizes() const;
-
-        double get_mean_population_size() const;
-        virtual void set_mean_population_size(double size);
-
-        double get_leaf_mean_population_size() const;
-
-        std::vector<double> get_population_sizes_as_proportions() const;
-        std::vector<double> get_population_sizes_as_multipliers() const;
-        virtual void set_population_sizes_as_proportions(const std::vector<double> & proportions);
-        virtual void set_population_sizes(const std::vector<double> & sizes);
 
         double get_likelihood_correction(bool force = false);
 
