@@ -4,8 +4,7 @@
 
 
 TEST_CASE("phylonet; Testing simulations against likelihood for one pop with 2,1 pattern",
-        /* "[BasePopulationNetwork]") { */
-        "[xx]") {
+        "[BasePopulationNetwork]") {
 
     SECTION("Testing sims v likelihood for one pop with 2 alleles") {
         double pop_size = 0.1;
@@ -27,8 +26,7 @@ TEST_CASE("phylonet; Testing simulations against likelihood for one pop with 2,1
         REQUIRE(tree.get_leaf_node_count() == 1);
         tree.estimate_mutation_rate();
 
-        tree.set_root_population_size(pop_size);
-        tree.get_root_ptr()->get_child(0)->set_population_size(pop_size);
+        tree.set_all_population_sizes(pop_size);
 
         tree.set_root_height(0.01);
 
@@ -71,10 +69,9 @@ TEST_CASE("phylonet; Testing simulations against likelihood for one pop with 2,1
 }
 
 TEST_CASE("phylonet; Testing simulations against likelihood for one pop with 3,1 pattern",
-        /* "[BasePopulationNetwork]") { */
-        "[xx]") {
+        "[BasePopulationNetwork]") {
 
-    SECTION("Testing sims v likelihood for one pop with 2 alleles") {
+    SECTION("Testing sims v likelihood for one pop with 3 alleles") {
         double pop_size = 0.1;
 
         std::string nex_path = "data/singleton-3-1.nex";
@@ -94,8 +91,7 @@ TEST_CASE("phylonet; Testing simulations against likelihood for one pop with 3,1
         REQUIRE(tree.get_leaf_node_count() == 1);
         tree.estimate_mutation_rate();
 
-        tree.set_root_population_size(pop_size);
-        tree.get_root_ptr()->get_child(0)->set_population_size(pop_size);
+        tree.set_all_population_sizes(pop_size);
 
         tree.set_root_height(0.01);
 
@@ -129,6 +125,224 @@ TEST_CASE("phylonet; Testing simulations against likelihood for one pop with 3,1
             }
         }
         double approx_l = het_count / (double)nsamples;
+        std::cout << "approx like: " << approx_l << "\n";
+        std::cout << "like: " << l << "\n";
+        std::cout << "like correction: " << l_correction << "\n";
+        std::cout << "raw like: " << raw_l << "\n";
+        REQUIRE(approx_l == Approx(raw_l).epsilon(0.001));
+    }
+}
+
+TEST_CASE("phylonet; Testing simulations against likelihood for 2,1;2,2 pattern",
+        "[BasePopulationNetwork]") {
+
+    SECTION("Testing sims v likelihood for 2 pops with 2,1;2,2") {
+        double pop_size = 0.1;
+
+        std::string nex_path = "data/s2_2-1_2-2.nex";
+        // Need to keep constant characters
+        BasePopulationNetwork tree(nex_path, ' ',
+                true,   // population_name_is_prefix
+                false,  // diploid
+                false,  // dominant
+                false,  // constant sites removed
+                true,   // validate
+                true,  // strict on constant
+                true,  // strict on missing
+                true,  // strict on triallelic
+                2.0,    // ploidy
+                false    // store charset info
+                );
+        REQUIRE(tree.get_leaf_node_count() == 2);
+        REQUIRE(tree.get_node_count() == 3);
+        tree.estimate_mutation_rate();
+
+        tree.set_all_population_sizes(pop_size);
+
+        tree.set_root_height(0.02);
+
+        tree.set_freq_1(0.5);
+
+        tree.set_mutation_rate(1.0);
+
+        double ln_l = tree.compute_log_likelihood();
+        double ln_l_correction = tree.get_likelihood_correction();
+        double raw_ln_l = ln_l - ln_l_correction;
+        double l = std::exp(ln_l);
+        double raw_l = std::exp(raw_ln_l);
+        double l_correction = std::exp(ln_l_correction);
+
+        RandomNumberGenerator rng = RandomNumberGenerator(123);
+
+        unsigned int nsamples = 1000000;
+
+        std::vector<unsigned int> allele_counts = tree.get_data().get_allele_counts(0);
+        std::vector<unsigned int> red_allele_counts = tree.get_data().get_red_allele_counts(0);
+
+        unsigned int pattern_count = 0;
+        for (unsigned int i = 0; i < nsamples; ++i) {
+            auto sim_pattern_tree = tree.simulate_biallelic_site(
+                    0,
+                    rng,
+                    false);
+            auto sim_pattern = sim_pattern_tree.first;
+            REQUIRE(sim_pattern.second == allele_counts);
+            /* std::vector<unsigned int> red_allele_counts = pattern.first; */
+            /* std::vector<unsigned int> allele_counts = pattern.second; */
+            /* if (red_allele_counts.at(0) == 1) { */
+            if (sim_pattern.first == red_allele_counts) {
+                ++pattern_count;
+            }
+        }
+        double approx_l = pattern_count / (double)nsamples;
+        std::cout << "approx like: " << approx_l << "\n";
+        std::cout << "like: " << l << "\n";
+        std::cout << "like correction: " << l_correction << "\n";
+        std::cout << "raw like: " << raw_l << "\n";
+        REQUIRE(approx_l == Approx(raw_l).epsilon(0.001));
+    }
+}
+
+TEST_CASE("phylonet; Testing simulations against likelihood for network with 2,1;2,2 pattern",
+        /* "[BasePopulationNetwork]") { */
+        "[xx]") {
+
+    SECTION("Testing sims v likelihood for 2 retic pops with 2,1;2,2") {
+        double pop_size = 0.1;
+
+        std::string nex_path = "data/s2_2-1_2-2.nex";
+        // Need to keep constant characters
+        BasePopulationNetwork default_tree(nex_path, ' ',
+                true,   // population_name_is_prefix
+                false,  // diploid
+                false,  // dominant
+                false,  // constant sites removed
+                true,   // validate
+                true,  // strict on constant
+                true,  // strict on missing
+                true,  // strict on triallelic
+                2.0,    // ploidy
+                false    // store charset info
+                );
+
+        BiallelicData data = default_tree.get_data();
+
+        std::shared_ptr<PopulationNetNode> root = default_tree.get_root_ptr()->get_clade_clone();
+        REQUIRE(root->get_leaf_node_count() == 2);
+        REQUIRE(root->get_node_count() == 3);
+        std::shared_ptr<PopulationNetNode> child0 = root->get_child(0);        
+        std::shared_ptr<PopulationNetNode> child1 = root->get_child(1);        
+
+        root->set_height(0.1);
+        root->set_label("root");
+        std::shared_ptr<PopulationNetNode> internal0 = std::make_shared<PopulationNetNode>(3, "internal0", 0.02);
+        std::shared_ptr<PopulationNetNode> internal1 = std::make_shared<PopulationNetNode>(4, "internal1", 0.04);
+        internal0->add_child(child0);
+        internal0->add_parent(root);
+        internal0->add_parent(internal1);
+        internal1->add_child(child1);
+        internal1->add_parent(root);
+        child0->remove_parent(root);
+        child1->remove_parent(root);
+
+        REQUIRE(root->get_leaf_node_count() == 2);
+        REQUIRE(root->get_node_count() == 5);
+
+
+        REQUIRE(internal0->get_number_of_children() == 1);
+        REQUIRE(internal0->get_number_of_parents() == 2);
+        REQUIRE(internal1->get_number_of_children() == 2);
+        REQUIRE(internal1->get_number_of_parents() == 1);
+        REQUIRE(root->get_number_of_children() == 2);
+        REQUIRE(root->get_number_of_parents() == 0);
+        REQUIRE(child0->get_number_of_children() == 0);
+        REQUIRE(child0->get_number_of_parents() == 1);
+        REQUIRE(child1->get_number_of_children() == 0);
+        REQUIRE(child1->get_number_of_parents() == 1);
+
+        REQUIRE(root->is_root());
+        REQUIRE(! root->is_leaf());
+        REQUIRE(! child0->is_root());
+        REQUIRE(child0->is_leaf());
+        REQUIRE(! child1->is_root());
+        REQUIRE(child1->is_leaf());
+        REQUIRE(! internal0->is_root());
+        REQUIRE(! internal0->is_leaf());
+        REQUIRE(! internal1->is_root());
+        REQUIRE(! internal1->is_leaf());
+
+        REQUIRE(root->is_child(internal0));
+        REQUIRE(root->is_child(internal1));
+        REQUIRE(! root->is_child(child0));
+        REQUIRE(! root->is_child(child1));
+        REQUIRE(internal0->is_child(child0));
+        REQUIRE(! internal0->is_child(child1));
+        REQUIRE(! internal0->is_child(root));
+        REQUIRE(internal1->is_child(child1));
+        REQUIRE(internal1->is_child(internal0));
+        REQUIRE(! internal1->is_child(child0));
+        REQUIRE(! internal1->is_child(root));
+
+        REQUIRE(internal0->is_parent(root));
+        REQUIRE(internal0->is_parent(internal1));
+        REQUIRE(internal1->is_parent(root));
+        REQUIRE(child0->is_parent(internal0));
+        REQUIRE(! child0->is_parent(root));
+        REQUIRE(child1->is_parent(internal1));
+        REQUIRE(! child1->is_parent(root));
+
+        root->set_all_population_sizes(pop_size);
+
+        std::cout << root->to_parentheses(2, true) << "\n";
+
+        BasePopulationNetwork tree(root);
+        tree.set_data(data, false);
+
+        std::vector<double> expected_heights = {0.02, 0.04, 0.1};
+        REQUIRE(tree.get_node_heights() == expected_heights);
+
+        // Turning off gene flow
+        internal0->set_inheritance_proportion(0, 1.0);
+
+
+        tree.estimate_mutation_rate();
+
+        tree.set_all_population_sizes(pop_size);
+
+        tree.set_freq_1(0.5);
+
+        tree.set_mutation_rate(1.0);
+
+        double ln_l = tree.compute_log_likelihood();
+        double ln_l_correction = tree.get_likelihood_correction();
+        double raw_ln_l = ln_l - ln_l_correction;
+        double l = std::exp(ln_l);
+        double raw_l = std::exp(raw_ln_l);
+        double l_correction = std::exp(ln_l_correction);
+
+        RandomNumberGenerator rng = RandomNumberGenerator(123);
+
+        unsigned int nsamples = 1000000;
+
+        std::vector<unsigned int> allele_counts = tree.get_data().get_allele_counts(0);
+        std::vector<unsigned int> red_allele_counts = tree.get_data().get_red_allele_counts(0);
+
+        unsigned int pattern_count = 0;
+        for (unsigned int i = 0; i < nsamples; ++i) {
+            auto sim_pattern_tree = tree.simulate_biallelic_site(
+                    0,
+                    rng,
+                    false);
+            auto sim_pattern = sim_pattern_tree.first;
+            REQUIRE(sim_pattern.second == allele_counts);
+            /* std::vector<unsigned int> red_allele_counts = pattern.first; */
+            /* std::vector<unsigned int> allele_counts = pattern.second; */
+            /* if (red_allele_counts.at(0) == 1) { */
+            if (sim_pattern.first == red_allele_counts) {
+                ++pattern_count;
+            }
+        }
+        double approx_l = pattern_count / (double)nsamples;
         std::cout << "approx like: " << approx_l << "\n";
         std::cout << "like: " << l << "\n";
         std::cout << "like correction: " << l_correction << "\n";

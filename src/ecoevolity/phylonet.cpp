@@ -766,7 +766,7 @@ void BasePopulationNetwork::update_leaf_label_indices() {
 
 void BasePopulationNetwork::set_data(const BiallelicData & data, bool constant_sites_removed) {
     const std::vector< std::shared_ptr<PopulationNetNode> >& leaves = this->root_->get_leaves();
-    ECOEVOLITY_ASSERT(this->data_.get_number_of_populations() == leaves.size());
+    ECOEVOLITY_ASSERT(data.get_number_of_populations() == leaves.size());
     for (unsigned int i = 0; i < leaves.size(); ++i) {
         if (leaves.at(i)->get_allele_count() != data.get_max_allele_count(leaves.at(i)->get_index())) {
             leaves.at(i)->resize(data.get_max_allele_count(leaves.at(i)->get_index()));
@@ -1109,7 +1109,7 @@ double BasePopulationNetwork::compute_log_prior_density_of_population_sizes() co
 
 void BasePopulationNetwork::simulate_gene_tree(
         const std::shared_ptr<PopulationNetNode> node,
-        std::unordered_map<unsigned int, std::vector< std::shared_ptr<GeneTreeSimNode> > > & branch_lineages,
+        std::unordered_map<std::shared_ptr<const PopulationNetNode>, std::vector< std::shared_ptr<GeneTreeSimNode> > > & branch_lineages,
         std::set< std::shared_ptr<const PopulationNetNode> > & retic_nodes_visited,
         const unsigned int pattern_index,
         RandomNumberGenerator & rng,
@@ -1118,112 +1118,99 @@ void BasePopulationNetwork::simulate_gene_tree(
     // std::cout << "Top of simulate_gene_tree\n";
     // std::cout << "node index: " << node->get_index() << "\n";
     // std::cout << "node label: " << node->get_label() << "\n";
+    if (retic_nodes_visited.count(node) > 0) {
+        return;
+    }
     std::vector< std::shared_ptr<GeneTreeSimNode> > lineages;
     if (node->has_children()) {
-        if ((node->get_number_of_children() == 1) && (node->get_child(0)->has_multiple_parents())) {
-            // Handle reticulation
-            ECOEVOLITY_ASSERT(! node->is_root());
-            // Make sure node wasn't taken care of when it's neighbor was
-            // processed
-            if (retic_nodes_visited.count(node) < 1) {
-                std::shared_ptr<PopulationNetNode> child = node->get_child(0);
-                std::shared_ptr<PopulationNetNode> parent1 = child->get_parent(0);
-                std::shared_ptr<PopulationNetNode> parent2 = child->get_parent(1);
-                unsigned int child_idx = child->get_index();
-                if (branch_lineages.count(child_idx) < 1) {
-                    this->simulate_gene_tree(child,
-                            branch_lineages,
-                            retic_nodes_visited,
-                            pattern_index,
-                            rng,
-                            use_max_allele_counts);
+        // Handle internal branch: must get uncoalesced lineages from children
+        // std::cout << "Has children!\n";
+        for (unsigned int i = 0;
+                i < node->get_number_of_children();
+                ++i) {
+            this->simulate_gene_tree(node->get_child(i),
+                    branch_lineages,
+                    retic_nodes_visited,
+                    pattern_index,
+                    rng,
+                    use_max_allele_counts);
+        }
+
+        if (node->get_number_of_parents() < 1) {
+            // At root node: coalesce until 1 gene lineage and return
+            // std::cout << "At root!\n";
+            ECOEVOLITY_ASSERT(branch_lineages.size() == 1);
+            ECOEVOLITY_ASSERT(branch_lineages.count(node) > 0);
+            if (branch_lineages.at(node).size() < 2) {
+                return;
+            }
+            double node_height = this->get_node_height_in_subs_per_site(*node);
+            this->coalesce_in_branch(
+                    branch_lineages.at(node),
+                    this->get_node_theta(*node),
+                    rng,
+                    node_height,
+                    std::numeric_limits<double>::infinity(),
+                    node->get_index()
+                    );
+            ECOEVOLITY_ASSERT(branch_lineages.at(node).size() == 1);
+            return;
+        }
+        // Internal branch that is not the root: Coalesce from bottom to top of
+        // branch
+        // std::cout << "Internal node that's not root!\n";
+        for (auto gene_lineage : branch_lineages.at(node)) {
+            lineages.push_back(gene_lineage);
+        }
+        branch_lineages.at(node).clear();
+
+        if (lineages.size() < 1) {
+            return;
+        }
+
+        if (node->has_multiple_parents()) {
+            ECOEVOLITY_ASSERT(node->get_number_of_parents() == 2);
+            ECOEVOLITY_ASSERT(retic_nodes_visited.count(node) < 1);
+            retic_nodes_visited.insert(node);
+            std::vector< std::shared_ptr<GeneTreeSimNode> > lineages_for_branch_0;
+            std::vector< std::shared_ptr<GeneTreeSimNode> > lineages_for_branch_1;
+            for (auto gene_lineage : lineages) {
+                double u = rng.uniform_real();
+                if (u < node->get_inheritance_proportion(0)) {
+                    lineages_for_branch_0.push_back(gene_lineage);
+                } else {
+                    lineages_for_branch_1.push_back(gene_lineage);
                 }
-                std::vector< std::shared_ptr<GeneTreeSimNode> > lineages_to_parent1;
-                std::vector< std::shared_ptr<GeneTreeSimNode> > lineages_to_parent2;
-                for (unsigned int i = 0; i < branch_lineages.at(child_idx).size(); ++i) {
-                    double u = rng.uniform_real();
-                    if (u < child->get_inheritance_proportion(0)) {
-                        lineages_to_parent1.push_back(branch_lineages.at(child_idx).at(i));
-                    } else {
-                        lineages_to_parent2.push_back(branch_lineages.at(child_idx).at(i));
-                    }
-                }
-                branch_lineages.at(child_idx).clear();
+            }
+            double node_height = this->get_node_height_in_subs_per_site(*node);
+            double br_len_to_parent_0 = this->get_node_length_in_subs_per_site(*node, 0);
+            double br_len_to_parent_1 = this->get_node_length_in_subs_per_site(*node, 1);
 
-                double node_length_p1 = this->get_node_length_in_subs_per_site(*parent1);
-                double node_height_p1 = this->get_node_height_in_subs_per_site(*parent1);
+            if (lineages_for_branch_0.size() > 0) {
                 this->coalesce_in_branch(
-                        lineages_to_parent1,
-                        this->get_node_theta(*parent1),
+                        lineages_for_branch_0,
+                        this->get_node_theta(*node, 0),
                         rng,
-                        node_height_p1,
-                        node_height_p1 + node_length_p1,
-                        parent1->get_index()
+                        node_height,
+                        node_height + br_len_to_parent_0,
+                        node->get_index()
                         );
-                branch_lineages[parent1->get_index()] = lineages_to_parent1;
+                branch_lineages[node->get_parent(0)] = lineages_for_branch_0;
+            }
 
-                double node_length_p2 = this->get_node_length_in_subs_per_site(*parent2);
-                double node_height_p2 = this->get_node_height_in_subs_per_site(*parent2);
+            if (lineages_for_branch_1.size() > 0) {
                 this->coalesce_in_branch(
-                        lineages_to_parent2,
-                        this->get_node_theta(*parent2),
+                        lineages_for_branch_1,
+                        this->get_node_theta(*node, 1),
                         rng,
-                        node_height_p2,
-                        node_height_p2 + node_length_p2,
-                        parent2->get_index()
+                        node_height,
+                        node_height + br_len_to_parent_1,
+                        node->get_index()
                         );
-                branch_lineages[parent2->get_index()] = lineages_to_parent2;
-
-                retic_nodes_visited.insert(parent1);
-                retic_nodes_visited.insert(parent2);
+                branch_lineages[node->get_parent(1)] = lineages_for_branch_1;
             }
         }
         else {
-            // Handle internal branch: must get uncoalesced lineages from children
-            // std::cout << "Has children!\n";
-            for (unsigned int i = 0;
-                    i < node->get_number_of_children();
-                    ++i) {
-                std::shared_ptr<PopulationNetNode> child = node->get_child(i);
-                unsigned int child_idx = child->get_index();
-                // std::cout << "child has index: " << "\n";
-                // std::cout << "child has nlineages: " << branch_lineages.count(child_idx) << "\n";
-                // ECOEVOLITY_ASSERT(child_idx >= 0);
-                if (branch_lineages.count(child_idx) < 1) {
-                    this->simulate_gene_tree(child,
-                            branch_lineages,
-                            retic_nodes_visited,
-                            pattern_index,
-                            rng,
-                            use_max_allele_counts);
-                }
-                for (unsigned int j = 0; j < branch_lineages.at(child_idx).size(); ++j) {
-                    lineages.push_back(branch_lineages.at(child_idx).at(j));
-                }
-                branch_lineages.at(child_idx).clear();
-            }
-            if (node->get_number_of_parents() < 1) {
-                // At root node: coalesce until 1 gene lineage and return
-                // std::cout << "At root!\n";
-                if (lineages.size() < 2) {
-                    branch_lineages[node->get_index()] = lineages;
-                    return;
-                }
-                double node_height = this->get_node_height_in_subs_per_site(*node);
-                this->coalesce_in_branch(
-                        lineages,
-                        this->get_node_theta(*node),
-                        rng,
-                        node_height,
-                        std::numeric_limits<double>::infinity(),
-                        node->get_index()
-                        );
-                branch_lineages[node->get_index()] = lineages;
-                return;
-            }
-            // Internal branch that is not the root: Coalesce from bottom to top of
-            // branch
-            // std::cout << "Internal node that's not root!\n";
             double node_length = this->get_node_length_in_subs_per_site(*node);
             double node_height = this->get_node_height_in_subs_per_site(*node);
             this->coalesce_in_branch(
@@ -1234,13 +1221,14 @@ void BasePopulationNetwork::simulate_gene_tree(
                     node_height + node_length,
                     node->get_index()
                     );
-            branch_lineages[node->get_index()] = lineages;
+            branch_lineages[node->get_parent()] = lineages;
         }
     }
     else {
         // Handle terminal branch: create genealogy tips and coalesce to top of
         // branch
         // std::cout << "Terminal node!\n";
+        ECOEVOLITY_ASSERT(! node->has_multiple_parents());
         unsigned int allele_count;
         if (use_max_allele_counts) {
             allele_count = this->data_.get_max_allele_count(
@@ -1273,7 +1261,7 @@ void BasePopulationNetwork::simulate_gene_tree(
                 node_height + node_length,
                 node->get_index()
                 );
-        branch_lineages[node->get_index()] = lineages;
+        branch_lineages[node->get_parent()] = lineages;
     }
 }
 

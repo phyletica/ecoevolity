@@ -4,8 +4,7 @@
 
 
 TEST_CASE("Testing simulations against likelihood for one pop with 2 alleles",
-        /* "[BasePopulationTree]") { */
-        "[xx]") {
+        "[BasePopulationTree]") {
 
     SECTION("Testing sims v likelihood for one pop with 2 alleles") {
         double pop_size = 0.1;

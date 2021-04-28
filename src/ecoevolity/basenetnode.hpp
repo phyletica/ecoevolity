@@ -58,14 +58,6 @@ class BaseNetNode : public std::enable_shared_from_this<DerivedNodeT> {
         std::shared_ptr<PositiveRealParameter> stored_height_ = std::make_shared<PositiveRealParameter>(0.0);
         bool is_dirty_ = true;
 
-        void visit(
-                std::set< std::shared_ptr<const DerivedNodeT> > & visited_nodes) const {
-            if (this->has_multiple_parents()) {
-                ECOEVOLITY_ASSERT(visited_nodes.count(this->shared_from_this()) < 1);
-                visited_nodes.insert(this->shared_from_this());
-            }
-        }
-
         void add_ln_relative_node_height_prior_density(
                 double& density,
                 std::vector< std::shared_ptr<PositiveRealParameter> >& parameters,
@@ -192,6 +184,14 @@ class BaseNetNode : public std::enable_shared_from_this<DerivedNodeT> {
 
         //Methods
 
+        void visit(
+                std::set< std::shared_ptr<const DerivedNodeT> > & visited_nodes) const {
+            if (this->has_multiple_parents()) {
+                ECOEVOLITY_ASSERT(visited_nodes.count(this->shared_from_this()) < 1);
+                visited_nodes.insert(this->shared_from_this());
+            }
+        }
+
         virtual void get_parameter_map(
                 std::map<std::string, double> & parameter_map) const {
             parameter_map["height"] = this->get_height();
@@ -291,12 +291,13 @@ class BaseNetNode : public std::enable_shared_from_this<DerivedNodeT> {
         }
 
         std::shared_ptr<DerivedNodeT> remove_parent() {
+            ECOEVOLITY_ASSERT(this->parents_.size() < 2);
             if (this->has_parent()) {
                 return this->remove_parent(0);
             }
             return nullptr;
         }
-        void remove_parent(std::shared_ptr<DerivedNodeT> node) {
+        unsigned int remove_parent(std::shared_ptr<DerivedNodeT> node) {
             if (!node) {
                 throw EcoevolityNullPointerError("BaseNetNode::remove_parent(), empty node given");
             }
@@ -306,9 +307,11 @@ class BaseNetNode : public std::enable_shared_from_this<DerivedNodeT> {
                     this->parents_.erase(this->parents_.begin() + i);
                     node->remove_child(this->shared_from_this());
                     node->make_dirty();
+                    this->make_dirty();
+                    return i;
                 }
             }
-            this->make_dirty();
+            throw EcoevolityError("BaseNetNode::remove_parent(node); Node is not parent!");
         }
         std::shared_ptr<DerivedNodeT> remove_parent(const unsigned int index) {
             if (index >= this->parents_.size()) {
@@ -333,10 +336,12 @@ class BaseNetNode : public std::enable_shared_from_this<DerivedNodeT> {
             std::shared_ptr<DerivedNodeT> grand_parent = this->get_parent();
             while (this->has_children()) {
                 std::shared_ptr<DerivedNodeT> child = this->get_child(0);
-                child->remove_parent();
+                child->remove_parent(this->shared_from_this());
                 child->add_parent(grand_parent);
             }
-            this->remove_parent();
+            while (this->has_parent()) {
+                this->remove_parent(0);
+            }
             grand_parent->make_dirty();
             return grand_parent->get_number_of_children();
         }
@@ -363,7 +368,7 @@ class BaseNetNode : public std::enable_shared_from_this<DerivedNodeT> {
             if (! this->has_children()) {
                 while (this->has_parent()) {
                     this->get_parent()->add_child(new_node);
-                    this->remove_parent();
+                    this->remove_parent(0);
                 }
             }
             else {
@@ -480,7 +485,7 @@ class BaseNetNode : public std::enable_shared_from_this<DerivedNodeT> {
                 if (this->children_.at(i) == node) {
                     this->children_.at(i).reset();
                     this->children_.erase(this->children_.begin() + i);
-                    node->remove_parent();
+                    node->remove_parent(this->shared_from_this());
                 }
             }
             this->make_dirty();
@@ -493,7 +498,7 @@ class BaseNetNode : public std::enable_shared_from_this<DerivedNodeT> {
             std::shared_ptr<DerivedNodeT> c = this->children_.at(index);
             this->children_.at(index).reset();
             this->children_.erase(this->children_.begin() + index);
-            c->remove_parent();
+            c->remove_parent(this->shared_from_this());
             this->make_dirty();
             return c;
         }
