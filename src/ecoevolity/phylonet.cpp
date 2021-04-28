@@ -1269,7 +1269,7 @@ std::shared_ptr<GeneTreeSimNode> BasePopulationNetwork::simulate_gene_tree(
         const unsigned int pattern_index,
         RandomNumberGenerator& rng,
         const bool use_max_allele_counts) const {
-    std::unordered_map<unsigned int, std::vector< std::shared_ptr<GeneTreeSimNode> > > branch_lineages;
+    std::unordered_map<std::shared_ptr<const PopulationNetNode>, std::vector< std::shared_ptr<GeneTreeSimNode> > > branch_lineages;
     std::set< std::shared_ptr<const PopulationNetNode> > retic_nodes_visited;
     branch_lineages.reserve(this->get_node_count());
     this->simulate_gene_tree(
@@ -1279,8 +1279,9 @@ std::shared_ptr<GeneTreeSimNode> BasePopulationNetwork::simulate_gene_tree(
             pattern_index,
             rng,
             use_max_allele_counts);
-    ECOEVOLITY_ASSERT(branch_lineages.at(this->root_->get_index()).size() == 1);
-    return branch_lineages.at(this->root_->get_index()).at(0);
+    ECOEVOLITY_ASSERT(branch_lineages.size() == 1);
+    ECOEVOLITY_ASSERT(branch_lineages.at(this->root_).size() == 1);
+    return branch_lineages.at(this->root_).at(0);
 }
 
 double BasePopulationNetwork::coalesce_in_branch(
@@ -1770,7 +1771,7 @@ double BasePopulationNetwork::compute_log_likelihood(
     }
     double constant_pattern_lnl_correction = 0.0;
     double log_likelihood = netlikelihood::get_log_likelihood(
-            this->get_mutable_root(),
+            this->get_root_ptr(),
             this->data_.get_red_allele_count_matrix(),
             this->data_.get_allele_count_matrix(),
             this->data_.get_pattern_weights(),

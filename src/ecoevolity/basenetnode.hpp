@@ -297,7 +297,7 @@ class BaseNetNode : public std::enable_shared_from_this<DerivedNodeT> {
             }
             return nullptr;
         }
-        unsigned int remove_parent(std::shared_ptr<DerivedNodeT> node) {
+        int remove_parent(std::shared_ptr<DerivedNodeT> node) {
             if (!node) {
                 throw EcoevolityNullPointerError("BaseNetNode::remove_parent(), empty node given");
             }
@@ -308,10 +308,10 @@ class BaseNetNode : public std::enable_shared_from_this<DerivedNodeT> {
                     node->remove_child(this->shared_from_this());
                     node->make_dirty();
                     this->make_dirty();
-                    return i;
+                    return (int)i;
                 }
             }
-            throw EcoevolityError("BaseNetNode::remove_parent(node); Node is not parent!");
+            return -1;
         }
         std::shared_ptr<DerivedNodeT> remove_parent(const unsigned int index) {
             if (index >= this->parents_.size()) {

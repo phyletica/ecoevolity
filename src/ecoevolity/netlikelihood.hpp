@@ -36,14 +36,14 @@
 namespace netlikelihood {
 
 void compute_leaf_partials(
-        PopulationNetNode& node,
+        std::shared_ptr<PopulationNetNode> node,
         const unsigned int red_allele_count,
         const unsigned int allele_count,
         const bool markers_are_dominant
         );
 
 void compute_top_of_branch_partials(
-        PopulationNetNode& node,
+        std::shared_ptr<PopulationNetNode> node,
         const double u,
         const double v,
         const double mutation_rate, 
@@ -71,11 +71,11 @@ void merge_top_of_branch_partials(
         const bool do_hypergeom_scaling = true);
 
 void compute_internal_partials(
-        PopulationNetNode& node,
+        std::shared_ptr<PopulationNetNode> node,
         std::set< std::shared_ptr<const PopulationNetNode> > & retic_nodes_visited);
 
 void compute_pattern_partials(
-        PopulationNetNode& node,
+        std::shared_ptr<PopulationNetNode> node,
         const std::vector<unsigned int>& red_allele_counts,
         const std::vector<unsigned int>& allele_counts,
         const double u,
@@ -87,7 +87,7 @@ void compute_pattern_partials(
         );
 
 std::vector< std::vector<double> > compute_root_probabilities(
-        const PopulationNetNode& root,
+        std::shared_ptr<PopulationNetNode> root,
         const double u,
         const double v,
         const double mutation_rate,
@@ -95,7 +95,7 @@ std::vector< std::vector<double> > compute_root_probabilities(
         );
 
 double compute_root_likelihood(
-        const PopulationNetNode& root,
+        std::shared_ptr<PopulationNetNode> root,
         const double u,
         const double v,
         const double mutation_rate,
@@ -103,7 +103,7 @@ double compute_root_likelihood(
         );
 
 double compute_pattern_likelihood(
-        PopulationNetNode& root,
+        std::shared_ptr<PopulationNetNode> root,
         const std::vector<unsigned int>& red_allele_counts,
         const std::vector<unsigned int>& allele_counts,
         const double u,
@@ -114,7 +114,7 @@ double compute_pattern_likelihood(
         );
 
 void compute_constant_pattern_log_likelihood_correction(
-        PopulationNetNode& root,
+        std::shared_ptr<PopulationNetNode> root,
         const std::vector< std::vector<unsigned int> > & unique_allele_counts,
         const std::vector<unsigned int> & unique_allele_count_weights,
         const double u,
@@ -127,7 +127,7 @@ void compute_constant_pattern_log_likelihood_correction(
         );
 
 double get_log_likelihood_for_pattern_range(
-        PopulationNetNode& root,
+        std::shared_ptr<PopulationNetNode> root,
         const std::vector< std::vector<unsigned int> >& red_allele_count_matrix,
         const std::vector< std::vector<unsigned int> >& allele_count_matrix,
         const std::vector<unsigned int>& pattern_weights,
@@ -141,7 +141,7 @@ double get_log_likelihood_for_pattern_range(
         );
 
 double get_log_likelihood(
-        PopulationNetNode& root,
+        std::shared_ptr<PopulationNetNode> root,
         const std::vector< std::vector<unsigned int> >& red_allele_count_matrix,
         const std::vector< std::vector<unsigned int> >& allele_count_matrix,
         const std::vector<unsigned int>& pattern_weights,

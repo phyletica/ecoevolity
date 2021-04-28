@@ -369,11 +369,11 @@ class BasePopulationNetwork : public BaseTree<PopulationNetNode> {
 
         void simulate_gene_tree(
                 const std::shared_ptr<PopulationNetNode> node,
-                std::unordered_map<unsigned int, std::vector< std::shared_ptr<GeneTreeSimNode> > > & branch_lineages,
+                std::unordered_map<std::shared_ptr<const PopulationNetNode>, std::vector< std::shared_ptr<GeneTreeSimNode> > > & branch_lineages,
                 std::set< std::shared_ptr<const PopulationNetNode> > & retic_nodes_visited,
                 const unsigned int pattern_index,
                 RandomNumberGenerator & rng,
-                const bool use_max_allele_counts = false) const;
+                const bool use_max_allele_counts) const;
 
         std::shared_ptr<GeneTreeSimNode> simulate_gene_tree(
                 const unsigned int pattern_index,
