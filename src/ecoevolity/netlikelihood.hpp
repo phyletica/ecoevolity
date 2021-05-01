@@ -44,6 +44,7 @@ void compute_leaf_partials(
 
 void compute_top_of_branch_partials(
         std::shared_ptr<PopulationNetNode> node,
+        const unsigned int branch_index,
         const double u,
         const double v,
         const double mutation_rate, 

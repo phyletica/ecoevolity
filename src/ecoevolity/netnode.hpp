@@ -351,6 +351,9 @@ class PopulationNetNode: public BaseNetNode<PopulationNetNode>{
             }
             throw EcoevolityError("PopulationNetNode::get_inheritance_proportion() called with index greater than 1");
         }
+        double get_inheritance_proportion(std::shared_ptr<PopulationNetNode> parent_node) const {
+            return this->get_inheritance_proportion(this->get_parent_index(parent_node));
+        }
         void set_inheritance_proportion(unsigned int parent_index, double proportion) {
             if (parent_index == 0) {
                 this->parent_inheritance_proportion_.set_value(proportion);
@@ -361,6 +364,13 @@ class PopulationNetNode: public BaseNetNode<PopulationNetNode>{
                 return;
             }
             throw EcoevolityError("PopulationNetNode::set_inheritance_proportion() called with index greater than 1");
+        }
+        void set_inheritance_proportion(
+                std::shared_ptr<PopulationNetNode> parent_node,
+                double proportion) {
+            this->set_inheritance_proportion(
+                    this->get_parent_index(parent_node),
+                    proportion);
         }
 
         // methods for accessing/changing pattern probabilities
@@ -449,12 +459,18 @@ class PopulationNetNode: public BaseNetNode<PopulationNetNode>{
         const BiallelicPatternProbabilityMatrix& get_bottom_pattern_probs(unsigned int branch_idx) const{
             return this->bottom_pattern_probs_.at(branch_idx);
         }
+        const BiallelicPatternProbabilityMatrix& get_bottom_pattern_probs(std::shared_ptr<PopulationNetNode> parent_node) const{
+            return this->get_bottom_pattern_probs(this->get_parent_index(parent_node));
+        }
         const BiallelicPatternProbabilityMatrix& get_bottom_pattern_probs() const{
             ECOEVOLITY_ASSERT(this->get_number_of_parents() < 2);
             return this->get_bottom_pattern_probs(0);
         }
         const BiallelicPatternProbabilityMatrix& get_top_pattern_probs(unsigned int branch_idx) const{
             return this->top_pattern_probs_.at(branch_idx);
+        }
+        const BiallelicPatternProbabilityMatrix& get_top_pattern_probs(std::shared_ptr<PopulationNetNode> parent_node) const{
+            return this->get_top_pattern_probs(this->get_parent_index(parent_node));
         }
         const BiallelicPatternProbabilityMatrix& get_top_pattern_probs() const{
             ECOEVOLITY_ASSERT(this->get_number_of_parents() < 2);
@@ -463,12 +479,18 @@ class PopulationNetNode: public BaseNetNode<PopulationNetNode>{
         BiallelicPatternProbabilityMatrix* clone_bottom_pattern_probs(unsigned int branch_idx) const{
             return this->bottom_pattern_probs_.at(branch_idx).clone();
         }
+        BiallelicPatternProbabilityMatrix* clone_bottom_pattern_probs(std::shared_ptr<PopulationNetNode> parent_node) const{
+            return this->clone_bottom_pattern_probs(this->get_parent_index(parent_node));
+        }
         BiallelicPatternProbabilityMatrix* clone_bottom_pattern_probs() const{
             ECOEVOLITY_ASSERT(this->get_number_of_parents() < 2);
             return clone_bottom_pattern_probs(0);
         }
         BiallelicPatternProbabilityMatrix* clone_top_pattern_probs(unsigned int branch_idx) const{
             return this->top_pattern_probs_.at(branch_idx).clone();
+        }
+        BiallelicPatternProbabilityMatrix* clone_top_pattern_probs(std::shared_ptr<PopulationNetNode> parent_node) const{
+            return this->clone_top_pattern_probs(this->get_parent_index(parent_node));
         }
         BiallelicPatternProbabilityMatrix* clone_top_pattern_probs() const{
             ECOEVOLITY_ASSERT(this->get_number_of_parents() < 2);
@@ -477,6 +499,9 @@ class PopulationNetNode: public BaseNetNode<PopulationNetNode>{
 
         void copy_bottom_pattern_probs(unsigned int branch_idx, const BiallelicPatternProbabilityMatrix& m) {
             this->bottom_pattern_probs_.at(branch_idx).copy(m);
+        }
+        void copy_bottom_pattern_probs(std::shared_ptr<PopulationNetNode> parent_node, const BiallelicPatternProbabilityMatrix& m) {
+            this->copy_bottom_pattern_probs(this->get_parent_index(parent_node), m);
         }
         void copy_bottom_pattern_probs(const BiallelicPatternProbabilityMatrix& m) {
             ECOEVOLITY_ASSERT(this->get_number_of_parents() < 2);
@@ -488,6 +513,9 @@ class PopulationNetNode: public BaseNetNode<PopulationNetNode>{
                         "PopulationNetNode:copy_top_pattern_probs(); allele counts must be the same between top and bottom of branch");
             }
             this->top_pattern_probs_.at(branch_idx).copy(m);
+        }
+        void copy_top_pattern_probs(std::shared_ptr<PopulationNetNode> parent_node, const BiallelicPatternProbabilityMatrix& m) {
+            this->copy_top_pattern_probs(this->get_parent_index(parent_node), m);
         }
         void copy_top_pattern_probs(const BiallelicPatternProbabilityMatrix& m) {
             ECOEVOLITY_ASSERT(this->get_number_of_parents() < 2);
@@ -503,6 +531,11 @@ class PopulationNetNode: public BaseNetNode<PopulationNetNode>{
             this->bottom_pattern_probs_.at(branch_idx).copy(bottom_probs);
             this->top_pattern_probs_.at(branch_idx).copy(top_probs);
         }
+        void copy_pattern_probs(std::shared_ptr<PopulationNetNode> parent_node,
+                const BiallelicPatternProbabilityMatrix& bottom_probs,
+                const BiallelicPatternProbabilityMatrix& top_probs) {
+            this->copy_pattern_probs(this->get_parent_index(parent_node), bottom_probs, top_probs);
+        }
         void copy_pattern_probs(
                 const BiallelicPatternProbabilityMatrix& bottom_probs,
                 const BiallelicPatternProbabilityMatrix& top_probs) {
@@ -515,6 +548,15 @@ class PopulationNetNode: public BaseNetNode<PopulationNetNode>{
                 unsigned int allele_count,
                 unsigned int red_allele_count) const {
             return this->bottom_pattern_probs_.at(branch_idx).get_pattern_probability(
+                    allele_count,
+                    red_allele_count);
+        }
+        double get_bottom_pattern_probability(
+                std::shared_ptr<PopulationNetNode> parent_node,
+                unsigned int allele_count,
+                unsigned int red_allele_count) const {
+            return this->get_bottom_pattern_probability(
+                    this->get_parent_index(parent_node),
                     allele_count,
                     red_allele_count);
         }
@@ -533,6 +575,15 @@ class PopulationNetNode: public BaseNetNode<PopulationNetNode>{
                     red_allele_count);
         }
         double get_top_pattern_probability(
+                std::shared_ptr<PopulationNetNode> parent_node,
+                unsigned int allele_count,
+                unsigned int red_allele_count) const {
+            return this->get_top_pattern_probability(
+                    this->get_parent_index(parent_node),
+                    allele_count,
+                    red_allele_count);
+        }
+        double get_top_pattern_probability(
                 unsigned int allele_count,
                 unsigned int red_allele_count) const {
             ECOEVOLITY_ASSERT(this->get_number_of_parents() < 2);
@@ -544,6 +595,17 @@ class PopulationNetNode: public BaseNetNode<PopulationNetNode>{
                 unsigned int red_allele_count,
                 double probability) {
             this->bottom_pattern_probs_.at(branch_idx).set_pattern_probability(
+                    allele_count,
+                    red_allele_count,
+                    probability);
+        }
+        void set_bottom_pattern_probability(
+                std::shared_ptr<PopulationNetNode> parent_node,
+                unsigned int allele_count,
+                unsigned int red_allele_count,
+                double probability) {
+            this->set_bottom_pattern_probability(
+                    this->get_parent_index(parent_node),
                     allele_count,
                     red_allele_count,
                     probability);
@@ -566,6 +628,17 @@ class PopulationNetNode: public BaseNetNode<PopulationNetNode>{
                     probability);
         }
         void set_top_pattern_probability(
+                std::shared_ptr<PopulationNetNode> parent_node,
+                unsigned int allele_count,
+                unsigned int red_allele_count,
+                double probability) {
+            this->set_top_pattern_probability(
+                    this->get_parent_index(parent_node),
+                    allele_count,
+                    red_allele_count,
+                    probability);
+        }
+        void set_top_pattern_probability(
                 unsigned int allele_count,
                 unsigned int red_allele_count,
                 double probability) {
@@ -576,28 +649,20 @@ class PopulationNetNode: public BaseNetNode<PopulationNetNode>{
         double get_population_size(unsigned int branch_idx) const {
             return this->population_sizes_.at(branch_idx)->get_value();
         }
+        double get_population_size(std::shared_ptr<PopulationNetNode> parent_node) const {
+            return this->get_population_size(this->get_parent_index(parent_node));
+        }
         double get_population_size() const {
             ECOEVOLITY_ASSERT(this->get_number_of_parents() < 2);
             return this->get_population_size(0);
         }
-        double get_population_size(std::shared_ptr<PopulationNetNode> parent_node) const {
-            bool parent_found = false;
-            unsigned int parent_index;
-            for (unsigned int i = 0; i < this->parents_.size(); ++i) {
-                if (this->parents_.at(i).lock() == parent_node) {
-                    parent_found = true;
-                    parent_index = i;
-                    break;
-                }
-            }
-            if (! parent_found) {
-                throw EcoevolityError("PopulationNetNode::get_population_size(parent_node); not a parent!");
-            }
-            return this->get_population_size(parent_index);
-        }
         std::shared_ptr<PositiveRealParameter> get_population_size_parameter(
                 unsigned int branch_idx) const {
             return this->population_sizes_.at(branch_idx);
+        }
+        std::shared_ptr<PositiveRealParameter> get_population_size_parameter(
+                std::shared_ptr<PopulationNetNode> parent_node) const {
+            return this->get_population_size_parameter(this->get_parent_index(parent_node));
         }
         std::shared_ptr<PositiveRealParameter> get_population_size_parameter() const {
             ECOEVOLITY_ASSERT(this->get_number_of_parents() < 2);
@@ -616,6 +681,13 @@ class PopulationNetNode: public BaseNetNode<PopulationNetNode>{
                 std::shared_ptr<PositiveRealParameter> size) {
             this->population_sizes_.at(branch_idx) = size;
             this->make_all_dirty();
+        }
+        void set_population_size_parameter(
+                std::shared_ptr<PopulationNetNode> parent_node,
+                std::shared_ptr<PositiveRealParameter> size) {
+            this->set_population_size_parameter(
+                    this->get_parent_index(parent_node),
+                    size);
         }
         void set_population_size_parameter(std::shared_ptr<PositiveRealParameter> size) {
             ECOEVOLITY_ASSERT(this->get_number_of_parents() < 2);
@@ -648,6 +720,11 @@ class PopulationNetNode: public BaseNetNode<PopulationNetNode>{
             this->population_sizes_.at(branch_index)->set_value(size);
             this->make_all_dirty();
         }
+        void set_population_size(
+                std::shared_ptr<PopulationNetNode> parent_node,
+                double size) {
+            this->set_population_size(this->get_parent_index(parent_node), size);
+        }
         void set_population_size(double size) {
             ECOEVOLITY_ASSERT(this->get_number_of_parents() < 2);
             this->set_population_size(0, size);
@@ -673,6 +750,11 @@ class PopulationNetNode: public BaseNetNode<PopulationNetNode>{
         void update_population_size(unsigned int branch_index, double size) {
             this->population_sizes_.at(branch_index)->update_value(size);
             this->make_all_dirty();
+        }
+        void update_population_size(
+                std::shared_ptr<PopulationNetNode> parent_node,
+                double size) {
+            this->update_population_size(this->get_parent_index(parent_node), size);
         }
         void update_population_size(double size) {
             ECOEVOLITY_ASSERT(this->get_number_of_parents() < 2);
@@ -904,6 +986,11 @@ class PopulationNetNode: public BaseNetNode<PopulationNetNode>{
 
         double get_population_size_relative_prior_ln_pdf(unsigned int branch_index) const {
             return this->population_sizes_.at(branch_index)->relative_prior_ln_pdf();
+        }
+        double get_population_size_relative_prior_ln_pdf(
+                std::shared_ptr<PopulationNetNode> parent_node) const {
+            return this->get_population_size_relative_prior_ln_pdf(
+                    this->get_parent_index(parent_node));
         }
         double get_population_size_relative_prior_ln_pdf() const {
             ECOEVOLITY_ASSERT(this->get_number_of_parents() < 2);

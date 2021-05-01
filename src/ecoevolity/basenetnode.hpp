@@ -262,6 +262,15 @@ class BaseNetNode : public std::enable_shared_from_this<DerivedNodeT> {
             return false;
         }
 
+        unsigned int get_parent_index(const std::shared_ptr<DerivedNodeT>& parent_node) const {
+            for (unsigned int i = 0; i < this->parents_.size(); ++i) {
+                if (this->parents_.at(i).lock() == parent_node) {
+                    return i;
+                }
+            }
+            throw EcoevolityError("BaseNetNode::get_parent_index(); node is not a parent");
+        }
+
         bool is_ancestor(const std::shared_ptr<DerivedNodeT>& node) const {
             if (this->is_root()) {
                 return false;
@@ -656,10 +665,7 @@ class BaseNetNode : public std::enable_shared_from_this<DerivedNodeT> {
             return this->parents_.at(index).lock()->get_height() - this->get_height();
         }
         double get_length(const std::shared_ptr<DerivedNodeT>& node) const {
-            if (! this->is_parent(node)) {
-                throw EcoevolityError("BaseNetNode::get_length(), passed node is not a parent");
-            }
-            return node->get_height() - this->get_height();
+            return this->get_length(this->get_parent_index(node));
         }
         double get_length() const {
             if (! this->has_parent()) {

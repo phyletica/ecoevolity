@@ -218,12 +218,22 @@ class BasePopulationNetwork : public BaseTree<PopulationNetNode> {
                     node.get_population_size(parent_index) *
                     this->get_mutation_rate());
         }
+        virtual double get_node_theta(const PopulationNetNode& node,
+                std::shared_ptr<PopulationNetNode> parent_node) const {
+            return this->get_node_theta(node,
+                    node.get_parent_index(parent_node));
+        }
         virtual double get_node_theta(const PopulationNetNode& node) const {
             ECOEVOLITY_ASSERT(node.get_number_of_parents() < 2);
             return this->get_node_theta(node, 0);
         }
         double get_node_length_in_subs_per_site(const PopulationNetNode& node, unsigned int parent_index) const {
             return (node.get_length(parent_index) * this->get_mutation_rate());
+        }
+        double get_node_length_in_subs_per_site(const PopulationNetNode& node,
+                std::shared_ptr<PopulationNetNode> parent_node) const {
+            return this->get_node_length_in_subs_per_site(node,
+                    node.get_parent_index(parent_node));
         }
         double get_node_length_in_subs_per_site(const PopulationNetNode& node) const {
             ECOEVOLITY_ASSERT(node.get_number_of_parents() < 2);

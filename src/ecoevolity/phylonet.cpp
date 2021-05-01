@@ -1044,7 +1044,7 @@ void BasePopulationNetwork::simulate_gene_tree(
 
         if (node->get_number_of_parents() < 1) {
             // At root node: coalesce until 1 gene lineage and return
-            // std::cout << "At root!\n";
+            // std::cout << "At root: " << branch_lineages.size() << "\n";
             ECOEVOLITY_ASSERT(branch_lineages.size() == 1);
             ECOEVOLITY_ASSERT(branch_lineages.count(node) > 0);
             if (branch_lineages.at(node).size() < 2) {
@@ -1068,7 +1068,9 @@ void BasePopulationNetwork::simulate_gene_tree(
         for (auto gene_lineage : branch_lineages.at(node)) {
             lineages.push_back(gene_lineage);
         }
+        // std::cout << "Cleared " << lineages.size() << " lineages for " << node->get_label() << "\n";
         branch_lineages.at(node).clear();
+        branch_lineages.erase(node);
 
         if (lineages.size() < 1) {
             return;
@@ -1101,7 +1103,15 @@ void BasePopulationNetwork::simulate_gene_tree(
                         node_height + br_len_to_parent_0,
                         node->get_index()
                         );
-                branch_lineages[node->get_parent(0)] = lineages_for_branch_0;
+                if (branch_lineages.count(node->get_parent(0)) < 1) {
+                    branch_lineages[node->get_parent(0)] = lineages_for_branch_0;
+                }
+                else {
+                    // std::cout << node->get_label() << " adding to " << node->get_parent(0)->get_label() << "\n";
+                    for (auto l : lineages_for_branch_0) {
+                        branch_lineages.at(node->get_parent(0)).push_back(l);
+                    }
+                }
             }
 
             if (lineages_for_branch_1.size() > 0) {
@@ -1113,7 +1123,16 @@ void BasePopulationNetwork::simulate_gene_tree(
                         node_height + br_len_to_parent_1,
                         node->get_index()
                         );
-                branch_lineages[node->get_parent(1)] = lineages_for_branch_1;
+                if (branch_lineages.count(node->get_parent(1)) < 1) {
+                    // std::cout << node->get_label() << " inserting " << node->get_parent(1)->get_label() << "\n";
+                    branch_lineages[node->get_parent(1)] = lineages_for_branch_1;
+                }
+                else {
+                    // std::cout << node->get_label() << " adding to " << node->get_parent(1)->get_label() << "\n";
+                    for (auto l : lineages_for_branch_1) {
+                        branch_lineages.at(node->get_parent(1)).push_back(l);
+                    }
+                }
             }
         }
         else {
@@ -1127,7 +1146,16 @@ void BasePopulationNetwork::simulate_gene_tree(
                     node_height + node_length,
                     node->get_index()
                     );
-            branch_lineages[node->get_parent()] = lineages;
+            if (branch_lineages.count(node->get_parent()) < 1) {
+                // std::cout << node->get_label() << " inserting " << node->get_parent()->get_label() << "\n";
+                branch_lineages[node->get_parent()] = lineages;
+            }
+            else {
+                // std::cout << node->get_label() << " adding to " << node->get_parent()->get_label() << "\n";
+                for (auto l : lineages) {
+                    branch_lineages.at(node->get_parent()).push_back(l);
+                }
+            }
         }
     }
     else {
@@ -1167,7 +1195,16 @@ void BasePopulationNetwork::simulate_gene_tree(
                 node_height + node_length,
                 node->get_index()
                 );
-        branch_lineages[node->get_parent()] = lineages;
+        if (branch_lineages.count(node->get_parent()) < 1) {
+            // std::cout << node->get_label() << " inserting " << node->get_parent()->get_label() << "\n";
+            branch_lineages[node->get_parent()] = lineages;
+        }
+        else {
+            // std::cout << node->get_label() << " adding to " << node->get_parent()->get_label() << "\n";
+            for (auto l : lineages) {
+                branch_lineages.at(node->get_parent()).push_back(l);
+            }
+        }
     }
 }
 

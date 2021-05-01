@@ -65,32 +65,35 @@ void compute_leaf_partials(
 
 void compute_top_of_branch_partials(
         std::shared_ptr<PopulationNetNode> node,
+        const unsigned int branch_index,
         const double u,
         const double v,
         const double mutation_rate, 
         const double ploidy
         ) {
     if (node->get_allele_count() == 0) {
-        node->copy_top_pattern_probs(node->get_bottom_pattern_probs());
+        for (unsigned int parent_idx = 0; parent_idx < node->get_number_of_parents(); ++parent_idx) {
+            node->copy_top_pattern_probs(parent_idx, node->get_bottom_pattern_probs(parent_idx));
+        }
         return;
     }
 
     // Nested for loops here over discrete lengths and pop sizes (percentiles
     // of discretized distributions). Average the probs inside the
     // internal for loop, and sum averaged probs in outer for loop
-    double theta = 2 * ploidy * node->get_population_size() * mutation_rate;
-    double length = node->get_length() * mutation_rate;
+    double theta = 2 * ploidy * node->get_population_size(branch_index) * mutation_rate;
+    double length = node->get_length(branch_index) * mutation_rate;
     BiallelicPatternProbabilityMatrix m = matrix_exponentiator.expQTtx(
             node->get_allele_count(),
             u,
             v,
             theta,
             length,
-            node->get_bottom_pattern_probs());
+            node->get_bottom_pattern_probs(branch_index));
     // Get average probs after outer for loop finishes, and copy
     // the final average probs to the top patterns
-    m.set_pattern_probability(0, 0, node->get_bottom_pattern_probability(0, 0));
-    node->copy_top_pattern_probs(m);
+    m.set_pattern_probability(0, 0, node->get_bottom_pattern_probability(branch_index, 0, 0));
+    node->copy_top_pattern_probs(branch_index, m);
 }
 
 /**
@@ -342,7 +345,7 @@ void compute_internal_partials(
         BiallelicPatternProbabilityMatrix bottom_partials_2;
         split_top_of_branch_partials(
                 node->get_child(0)->get_allele_count(),
-                node->get_child(0)->get_top_pattern_probs(),
+                node->get_child(0)->get_top_pattern_probs(node),
                 node->get_inheritance_proportion(0),
                 node->get_inheritance_proportion(1),
                 bottom_partials_1,
@@ -354,23 +357,27 @@ void compute_internal_partials(
     }
 
     if (number_of_children_with_alleles == 1) {
-        node->copy_bottom_pattern_probs(node->get_child(indices_of_children_with_alleles.at(0))->get_top_pattern_probs());
+        node->copy_bottom_pattern_probs(node->get_child(indices_of_children_with_alleles.at(0))->get_top_pattern_probs(node));
         return;
     }
 
     unsigned int merged_allele_count = node->get_child(indices_of_children_with_alleles.at(0))->get_allele_count();
 
-    std::vector<double> merged_pattern_probs = node->get_child(indices_of_children_with_alleles.at(0))->get_top_pattern_probs().get_pattern_prob_matrix();
-    double merged_prob_no_alleles = node->get_child(indices_of_children_with_alleles.at(0))->get_top_pattern_probability(0,0);
+    std::vector<double> merged_pattern_probs = node->get_child(
+            indices_of_children_with_alleles.at(0))->get_top_pattern_probs(node).get_pattern_prob_matrix();
+    double merged_prob_no_alleles = node->get_child(
+            indices_of_children_with_alleles.at(0))->get_top_pattern_probability(
+                    node, 0, 0);
 
     for (unsigned int i = 1; i < node->get_number_of_children(); ++i) {
         std::vector<double> pattern_probs_child1 = merged_pattern_probs;
         double prob_no_alleles_child1 = merged_prob_no_alleles;
         unsigned int allele_count_child1 = merged_allele_count;
         unsigned int allele_count_child2 = node->get_child(indices_of_children_with_alleles.at(i))->get_allele_count();
-        double prob_no_alleles_child2 = node->get_child(indices_of_children_with_alleles.at(i))->get_top_pattern_probability(0,0);
+        double prob_no_alleles_child2 = node->get_child(indices_of_children_with_alleles.at(i))->get_top_pattern_probability(node,0,0);
         std::vector<double> pattern_probs_child2 = node->get_child(
-                indices_of_children_with_alleles.at(i))->get_top_pattern_probs().get_pattern_prob_matrix();
+                indices_of_children_with_alleles.at(i))->get_top_pattern_probs(node
+                ).get_pattern_prob_matrix();
         merge_top_of_branch_partials(
                 allele_count_child1,
                 allele_count_child2,
@@ -421,7 +428,10 @@ void compute_pattern_partials(
                 ploidy,
                 markers_are_dominant,
                 retic_nodes_visited);
-        compute_top_of_branch_partials(node->get_child(0), u, v, mutation_rate, ploidy);
+        compute_top_of_branch_partials(
+                node->get_child(0),
+                node->get_child(0)->get_parent_index(node),
+                u, v, mutation_rate, ploidy);
         compute_internal_partials(node, retic_nodes_visited);
         return;
     }
@@ -436,7 +446,10 @@ void compute_pattern_partials(
                     ploidy,
                     markers_are_dominant,
                     retic_nodes_visited);
-            compute_top_of_branch_partials(node->get_child(child_idx), u, v, mutation_rate, ploidy);
+            compute_top_of_branch_partials(
+                    node->get_child(child_idx),
+                    node->get_child(child_idx)->get_parent_index(node),
+                    u, v, mutation_rate, ploidy);
         }
         compute_internal_partials(node, retic_nodes_visited);
         return;
