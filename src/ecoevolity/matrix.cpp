@@ -151,7 +151,7 @@ const std::vector<double>& BiallelicPatternProbabilityMatrix::get_pattern_prob_m
 
 std::string BiallelicPatternProbabilityMatrix::to_string() const {
     std::ostringstream ss;
-    for (unsigned int i = 1; i <= this->get_allele_count(); ++i) {
+    for (unsigned int i = 0; i <= this->get_allele_count(); ++i) {
         for (unsigned int j = 0; j <= i; ++j) {
             if (j > 0) {
                 ss << "\t";
