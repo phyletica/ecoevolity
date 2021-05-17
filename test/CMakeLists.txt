@@ -3,22 +3,13 @@ set(CMAKE_BUILD_TYPE Debug)
 
 include_directories("${SOURCE_DIR}" "${YAML_CPP_INCLUDE_DIR}" "${EXTERNAL_PROJECT_DIR}")
 
-# file(GLOB ECOEVOLITY_TEST_SOURCES "test_*.cpp")
-set(ECOEVOLITY_TEST_SOURCES
-    # "test_netnode.cpp"
-    # "test_netlikelihood.cpp"
-    # "test_math_util.cpp"
-    "test_phylonet.cpp"
-    # "test_tree.cpp"
-    )
+file(GLOB ECOEVOLITY_TEST_SOURCES "test_*.cpp")
 
 set(ECOEVOLITY_SOURCES
     "${ECOEVOLITY_SOURCE_DIR}/error.cpp"
     "${ECOEVOLITY_SOURCE_DIR}/matrix.cpp"
     "${ECOEVOLITY_SOURCE_DIR}/likelihood.cpp"
-    "${ECOEVOLITY_SOURCE_DIR}/netlikelihood.cpp"
     "${ECOEVOLITY_SOURCE_DIR}/tree.cpp"
-    "${ECOEVOLITY_SOURCE_DIR}/phylonet.cpp"
     "${ECOEVOLITY_SOURCE_DIR}/operator_schedule.cpp"
     "${ECOEVOLITY_SOURCE_DIR}/operator.cpp"
     "${ECOEVOLITY_SOURCE_DIR}/collection.cpp"
