@@ -243,6 +243,7 @@ void split_top_of_branch_partials(
         return;
     }
 
+    double total_p = 0.0;
     unsigned int n_alleles, n_red, n_green, n_r_p1, n_r_p2, n_g_p1, n_g_p2;
     double p, nr_choose_nrp1, ng_choose_ngp1;
     for (n_alleles = 0; n_alleles <= max_num_alleles; ++n_alleles) {
@@ -284,10 +285,21 @@ void split_top_of_branch_partials(
                             (n_r_p2 + n_g_p2), n_r_p2,
                             (bottom_partials_2.get_pattern_probability(
                                     (n_r_p2 + n_g_p2), n_r_p2) + p));
+                    total_p += p;
                 }
             }
         }
     }
+    bottom_partials_1.set_pattern_probability(0, 0,
+            (bottom_partials_1.get_pattern_probability(
+                    0, 0) / total_p));
+    bottom_partials_2.set_pattern_probability(0, 0,
+            (bottom_partials_2.get_pattern_probability(
+                    0, 0) / total_p));
+
+    ECOEVOLITY_DEBUG(
+        std::cerr << "split_top_of_branch_partials: total prob: " << total_p << "\n";
+    )
 }
 
 void merge_top_of_branch_partials(
