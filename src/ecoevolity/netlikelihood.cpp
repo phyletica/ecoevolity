@@ -72,9 +72,12 @@ void compute_top_of_branch_partials(
         const double ploidy
         ) {
     if (node->get_allele_count() == 0) {
-        for (unsigned int parent_idx = 0; parent_idx < node->get_number_of_parents(); ++parent_idx) {
-            node->copy_top_pattern_probs(parent_idx, node->get_bottom_pattern_probs(parent_idx));
-        }
+        node->copy_top_pattern_probs(branch_index, node->get_bottom_pattern_probs(branch_index));
+        ECOEVOLITY_DEBUG(
+            std::cerr << "compute_top_of_branch_partials: Node " << node->get_label() << "has no alleles\n";
+            std::cerr << "top " << branch_index << ":\n";
+            std::cerr << node->get_top_pattern_probs(branch_index).to_string() << "\n";
+        )
         return;
     }
 
@@ -94,6 +97,11 @@ void compute_top_of_branch_partials(
     // the final average probs to the top patterns
     m.set_pattern_probability(0, 0, node->get_bottom_pattern_probability(branch_index, 0, 0));
     node->copy_top_pattern_probs(branch_index, m);
+    ECOEVOLITY_DEBUG(
+        std::cerr << "compute_top_of_branch_partials: Node " << node->get_label() << "\n";
+        std::cerr << "top " << branch_index << ":\n";
+        std::cerr << node->get_top_pattern_probs(branch_index).to_string() << "\n";
+    )
 }
 
 /**
@@ -159,6 +167,63 @@ void compute_top_of_branch_partials(
  *   2,0 = 128                   = 128
  *   1,1 = 192                   = 192
  *   0,2 = 256                   = 256
+ *   total                       = 1728 / 1728
+ *
+ * And if the probability that an allele came from the left / right parent is
+ * 0/12 / 12/12, we have:
+ *
+ *   Daughter prob  Ways to split                       Prob (over 1728)
+ *   0,0 = 1/12
+ *                  0,0 | 0,0 = 1/12                    144
+ *   1,0 = 1/12
+ *                  1,0 | 0,0 = 1/12 * 0                0
+ *                  0,0 | 1,0 = 1/12 * 1                144
+ *   0,1 = 1/12
+ *                  0,1 | 0,0 = 1/12 * 0                0
+ *                  0,0 | 0,1 = 1/12 * 1                144
+ *   2,0 = 2/12
+ *                  2,0 | 0,0 = 2/12 * 0 * 0            0
+ *                  0,0 | 2,0 = 2/12 * 1 * 1            288
+ *                  1,0 | 1,0 = 2(2/12 * 0 * 1)         0
+ *                              x 2 above because 2
+ *                              ways for red alleles
+ *                              to end up in each
+ *                              parent
+ *   1,1 = 3/12
+ *                  1,1 | 0,0 = 3/12 * 0 * 0            0
+ *                  0,0 | 1,1 = 3/12 * 1 * 1            432
+ *                  1,0 | 0,1 = 3/12 * 0 * 1            0
+ *                  0,1 | 1,0 = 3/12 * 0 * 1            0
+ *   0,2 = 4/12
+ *                  0,2 | 0,0 = 4/12 * 0 * 0            0
+ *                  0,0 | 0,2 = 4/12 * 1 * 1            576
+ *                  0,1 | 0,1 = 2(4/12 * 0 * 1)         0
+ *                              x 2 above because 2
+ *                              ways for green alleles
+ *                              to end up in each
+ *                              parent
+ *                                                      Total = 1728/1728
+ *
+ * From above, we can calculate the conditional probability of all possible
+ * allele patterns at the bottom of each parent branch (which is the goal of
+ * this function)
+ *
+ *   Left parent bottom probs (over 1728)
+ *   0,0 = 144+144+144+288+432+576 = 1728
+ *   1,0 =                         = 0
+ *   0,1 =                         = 0
+ *   2,0 =                         = 0
+ *   1,1 =                         = 0
+ *   0,2 =                         = 0
+ *   total                         = 1728 / 1728
+ *
+ *   Right parent bottom probs (over 1728)
+ *   0,0 = 144                   = 144
+ *   1,0 = 144                   = 144
+ *   0,1 = 144                   = 144
+ *   2,0 = 288                   = 288
+ *   1,1 = 432                   = 432
+ *   0,2 = 576                   = 576
  *   total                       = 1728 / 1728
  */
 void split_top_of_branch_partials(
@@ -309,7 +374,9 @@ void compute_internal_partials(
         std::set< std::shared_ptr<const PopulationNetNode> > & retic_nodes_visited) {
 
     if (retic_nodes_visited.count(node) > 0) {
-        /* std::cout << "Already handled\n"; */
+        ECOEVOLITY_DEBUG(
+            std::cerr << "compute_internal_partials: Retic node " << node->get_label() << " already visited\n";
+        )
         return;
     }
     node->visit(retic_nodes_visited);
@@ -328,19 +395,23 @@ void compute_internal_partials(
         //         << "no children have alleles!";
         // throw EcoevolityError(message.str());
         BiallelicPatternProbabilityMatrix m(0, 0);
+        ECOEVOLITY_DEBUG(
+            std::cerr << "compute_internal_partials: Node " << node->get_label() << " has not children with alleles:\n";
+        )
         for (unsigned int i = 0; i < node->get_number_of_parents(); ++i) {
             node->copy_bottom_pattern_probs(i, m);
+            ECOEVOLITY_DEBUG(
+                std::cerr << "bottom " << i << ":\n";
+                std::cerr << node->get_bottom_pattern_probs(i).to_string() << "\n";
+            )
         }
         return;
     }
 
-    // TODO: Check simulation function for this problem.
     /* std::cout << "Processing " << node->get_label() << "\n"; */
     if ((node->get_number_of_children() == 1) && (node->has_multiple_parents())) {
         // Handle reticulation
-        /* std::cout << "Retic!\n"; */
         ECOEVOLITY_ASSERT(node->get_number_of_parents() == 2);
-        /* std::cout << "Handling it\n"; */
         BiallelicPatternProbabilityMatrix bottom_partials_1;
         BiallelicPatternProbabilityMatrix bottom_partials_2;
         split_top_of_branch_partials(
@@ -352,12 +423,24 @@ void compute_internal_partials(
                 bottom_partials_2);
         node->copy_bottom_pattern_probs(0, bottom_partials_1);
         node->copy_bottom_pattern_probs(1, bottom_partials_2);
-        retic_nodes_visited.insert(node);
+        /* retic_nodes_visited.insert(node); */
+        ECOEVOLITY_DEBUG(
+            std::cerr << "compute_internal_partials: Splitting retic node " << node->get_label() << "\n";
+            std::cerr << "bottom 0:\n";
+            std::cerr << node->get_bottom_pattern_probs(0).to_string() << "\n";
+            std::cerr << "bottom 1:\n";
+            std::cerr << node->get_bottom_pattern_probs(1).to_string() << "\n";
+        )
         return;
     }
 
     if (number_of_children_with_alleles == 1) {
         node->copy_bottom_pattern_probs(node->get_child(indices_of_children_with_alleles.at(0))->get_top_pattern_probs(node));
+        ECOEVOLITY_DEBUG(
+            std::cerr << "compute_internal_partials: Handling in-1-out-1 node " << node->get_label() << "\n";
+            std::cerr << "bottom:\n";
+            std::cerr << node->get_bottom_pattern_probs().to_string() << "\n";
+        )
         return;
     }
 
@@ -393,6 +476,11 @@ void compute_internal_partials(
     BiallelicPatternProbabilityMatrix m(merged_allele_count, merged_pattern_probs);
     m.set_pattern_probability(0, 0, merged_prob_no_alleles);
     node->copy_bottom_pattern_probs(m);
+    ECOEVOLITY_DEBUG(
+        std::cerr << "compute_internal_partials: Merging node " << node->get_label() << "\n";
+        std::cerr << "bottom:\n";
+        std::cerr << node->get_bottom_pattern_probs().to_string() << "\n";
+    )
 }
 
 void compute_pattern_partials(
@@ -406,6 +494,9 @@ void compute_pattern_partials(
         const bool markers_are_dominant,
         std::set< std::shared_ptr<const PopulationNetNode> > & retic_nodes_visited
         ) {
+    ECOEVOLITY_DEBUG(
+        std::cerr << "*** " << node->get_label() << " ***\n";
+    )
     ECOEVOLITY_ASSERT(red_allele_counts.size() == allele_counts.size());
     if (node->is_leaf()) {
         compute_leaf_partials(
@@ -413,10 +504,17 @@ void compute_pattern_partials(
                 red_allele_counts.at(node->get_index()),
                 allele_counts.at(node->get_index()),
                 markers_are_dominant);
+        ECOEVOLITY_DEBUG(
+            std::cerr << "Bottom of leaf " << node->get_label() << ":\n";
+            std::cerr << node->get_bottom_pattern_probs().to_string() << "\n";
+        )
         return;
     }
     else if (node->get_number_of_children() == 1) {
-        if (retic_nodes_visited.count(node) > 1) {
+        if (retic_nodes_visited.count(node) > 0) {
+            ECOEVOLITY_DEBUG(
+                std::cerr << "compute_pattern_partials: already visited retic node " << node->get_label() << "... Skipping!\n";
+            )
             return;
         }
         compute_pattern_partials(node->get_child(0),
