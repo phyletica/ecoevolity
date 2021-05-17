@@ -106,6 +106,108 @@ TEST_CASE("Testing split_top_of_branch_partials",
 
 
 /**
+ * The probability that an allele came from the left / right parent is 0 /
+ * 1, respectively, and we have the following conditional probs at the top
+ * of the daugher branch:
+ *
+ *   Daughter prob  Ways to split                       Prob (over 1728)
+ *   ngreen,nred
+ *   0,0 = 1/12
+ *                  0,0 | 0,0 = 1/12                    144
+ *   1,0 = 1/12
+ *                  1,0 | 0,0 = 1/12 * 0                0
+ *                  0,0 | 1,0 = 1/12 * 1                144
+ *   0,1 = 1/12
+ *                  0,1 | 0,0 = 1/12 * 0                0
+ *                  0,0 | 0,1 = 1/12 * 1                144
+ *   2,0 = 2/12
+ *                  2,0 | 0,0 = 2/12 * 0 * 0            0
+ *                  0,0 | 2,0 = 2/12 * 1 * 1            288
+ *                  1,0 | 1,0 = 2(2/12 * 0 * 1)         0
+ *                              x 2 above because 2
+ *                              ways for red alleles
+ *                              to end up in each
+ *                              parent
+ *   1,1 = 3/12
+ *                  1,1 | 0,0 = 3/12 * 0 * 0            0
+ *                  0,0 | 1,1 = 3/12 * 1 * 1            432
+ *                  1,0 | 0,1 = 3/12 * 0 * 1            0
+ *                  0,1 | 1,0 = 3/12 * 0 * 1            0
+ *   0,2 = 4/12
+ *                  0,2 | 0,0 = 4/12 * 0 * 0            0
+ *                  0,0 | 0,2 = 4/12 * 1 * 1            576
+ *                  0,1 | 0,1 = 2(4/12 * 0 * 1)         0
+ *                              x 2 above because 2
+ *                              ways for green alleles
+ *                              to end up in each
+ *                              parent
+ *                                                      Total = 1728/1728
+ *
+ * From above, we can calculate the conditional probability of all possible
+ * allele patterns at the bottom of each parent branch (which is the goal of
+ * this function)
+ *
+ *   Left parent bottom probs (over 1728)
+ *   0,0 = 144+144+144+288+432+576 = 1728
+ *   1,0 =                         = 0
+ *   0,1 =                         = 0
+ *   2,0 =                         = 0
+ *   1,1 =                         = 0
+ *   0,2 =                         = 0
+ *   total                         = 1728 / 1728
+ *
+ *   Right parent bottom probs (over 1728)
+ *   0,0 = 144                   = 144
+ *   1,0 = 144                   = 144
+ *   0,1 = 144                   = 144
+ *   2,0 = 288                   = 288
+ *   1,1 = 432                   = 432
+ *   0,2 = 576                   = 576
+ *   total                       = 1728 / 1728
+ */
+TEST_CASE("Testing split_top_of_branch_partials with all to one parent",
+        "[SplitTopOfBranchPartials]") {
+
+    SECTION("Testing split_top_of_branch_partials") {
+        unsigned int max_num_alleles = 2;
+        BiallelicPatternProbabilityMatrix top_child_partials;
+        top_child_partials.resize(max_num_alleles);
+        top_child_partials.set_pattern_probability(0, 0, 1/12.0);
+        top_child_partials.set_pattern_probability(1, 0, 1/12.0);
+        top_child_partials.set_pattern_probability(1, 1, 1/12.0);
+        top_child_partials.set_pattern_probability(2, 0, 2/12.0);
+        top_child_partials.set_pattern_probability(2, 1, 3/12.0);
+        top_child_partials.set_pattern_probability(2, 2, 4/12.0);
+        BiallelicPatternProbabilityMatrix bottom_parent1_partials;
+        BiallelicPatternProbabilityMatrix bottom_parent2_partials;
+        double prob_to_parent1 = 0.0;
+        double prob_to_parent2 = 1.0;
+        netlikelihood::split_top_of_branch_partials(
+                max_num_alleles,
+                top_child_partials,
+                prob_to_parent1,
+                prob_to_parent2,
+                bottom_parent1_partials,
+                bottom_parent2_partials);
+
+        REQUIRE(bottom_parent1_partials.get_pattern_probability(0,0) == Approx(1.0).epsilon(1e-10));
+        REQUIRE(bottom_parent1_partials.get_pattern_probability(1,0) == Approx(0.0).epsilon(1e-10));
+        REQUIRE(bottom_parent1_partials.get_pattern_probability(1,1) == Approx(0.0).epsilon(1e-10));
+        REQUIRE(bottom_parent1_partials.get_pattern_probability(2,0) == Approx(0.0).epsilon(1e-10));
+        REQUIRE(bottom_parent1_partials.get_pattern_probability(2,1) == Approx(0.0).epsilon(1e-10));
+        REQUIRE(bottom_parent1_partials.get_pattern_probability(2,2) == Approx(0.0).epsilon(1e-10));
+
+        REQUIRE(bottom_parent2_partials.get_pattern_probability(0,0) == Approx(144/1728.0).epsilon(1e-10));
+        REQUIRE(bottom_parent2_partials.get_pattern_probability(1,0) == Approx(144/1728.0).epsilon(1e-10));
+        REQUIRE(bottom_parent2_partials.get_pattern_probability(1,1) == Approx(144/1728.0).epsilon(1e-10));
+        REQUIRE(bottom_parent2_partials.get_pattern_probability(2,0) == Approx(288/1728.0).epsilon(1e-10));
+        REQUIRE(bottom_parent2_partials.get_pattern_probability(2,1) == Approx(432/1728.0).epsilon(1e-10));
+        REQUIRE(bottom_parent2_partials.get_pattern_probability(2,2) == Approx(576/1728.0).epsilon(1e-10));
+    }
+}
+
+
+/**
  * The probability that an allele came from the left / right parent is 9/15 /
  * 6/15, respectively, and we have the following conditional probs at the top
  * of the daugher branch:
