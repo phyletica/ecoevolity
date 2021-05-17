@@ -337,6 +337,7 @@ TEST_CASE("phylonet; Testing simulations against likelihood for network with 2,1
         ttree.set_freq_1(0.5);
         ttree.set_mutation_rate(1.0);
 
+        std::cout << "Net likelihood:\n";
         double ln_l = tree.compute_log_likelihood();
         double ln_l_correction = tree.get_likelihood_correction();
         double raw_ln_l = ln_l - ln_l_correction;
@@ -344,6 +345,7 @@ TEST_CASE("phylonet; Testing simulations against likelihood for network with 2,1
         double raw_l = std::exp(raw_ln_l);
         double l_correction = std::exp(ln_l_correction);
 
+        std::cout << "Tree likelihood:\n";
         double tln_l = ttree.compute_log_likelihood();
         double tln_l_correction = ttree.get_likelihood_correction();
         double traw_ln_l = tln_l - tln_l_correction;
