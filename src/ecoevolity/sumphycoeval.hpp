@@ -114,6 +114,11 @@ int sumphycoeval_main(int argc, char * argv[]) {
             .dest("newick_target_tree")
             .help("The target tree is in newick format. By default, the target "
                   "tree must be in nexus format.");
+    parser.add_option("--include-merged-target-heights")
+            .action("store_true")
+            .dest("include_merged_target_heights")
+            .help("Include a summary of merged heights from the target tree. "
+                  "If a target tree is not provided, this option is ignored.");
     parser.add_option("-f", "--force")
             .action("store_true")
             .dest("force")
@@ -201,6 +206,8 @@ int sumphycoeval_main(int argc, char * argv[]) {
     if ((min_split_freq < 0.0) || (min_split_freq >=1.0)) {
         throw EcoevolityError("\'--min-split-freq\' must be between 0 and 1\n");
     }
+    const bool include_merged_target_heights = (
+            options.get("include_merged_target_heights") && target_tree_provided);
     const double precision = 18;
 
     std::ofstream target_tree_out_stream;
@@ -277,6 +284,9 @@ int sumphycoeval_main(int argc, char * argv[]) {
             min_split_freq,
             "",
             precision);
+    if (include_merged_target_heights) {
+        tree_sample.write_summary_of_merged_target_heights(std::cout, "", precision);
+    }
 
     time(&finish);
     double duration = difftime(finish, start);
