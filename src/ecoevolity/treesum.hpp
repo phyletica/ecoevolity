@@ -2261,10 +2261,14 @@ class TreeSample {
             if (! this->target_tree_provided_) {
                 return;
             }
+            unsigned int nheights = this->target_tree_.get_number_of_node_heights();
+            if (nheights < 2) {
+                // No heights to merge
+                return;
+            }
             std::string indent = string_util::get_indent(1);
             out.precision(precision);
 
-            unsigned int nheights = this->target_tree_.get_number_of_node_heights();
             std::vector<unsigned int> sizes_of_mapped_polytomies;
             unsigned int number_of_resulting_merged_nodes;
             std::map< unsigned int, std::set< std::set<Split> > > height_index_to_node_set;
