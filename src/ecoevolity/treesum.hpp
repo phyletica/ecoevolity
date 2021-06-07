@@ -2270,7 +2270,7 @@ class TreeSample {
             out.precision(precision);
 
             std::vector<unsigned int> sizes_of_mapped_polytomies;
-            unsigned int number_of_resulting_merged_nodes;
+            unsigned int number_of_nodes_merged_up;
             std::map< unsigned int, std::set< std::set<Split> > > height_index_to_node_set;
 
             std::string item_margin = margin + indent + "  ";
@@ -2286,13 +2286,16 @@ class TreeSample {
 
                 this->target_tree_.merge_node_height_up(ht_idx,
                         sizes_of_mapped_polytomies,
-                        number_of_resulting_merged_nodes,
+                        number_of_nodes_merged_up,
                         true);
+                ECOEVOLITY_ASSERT(this->target_tree_.get_height(ht_idx) == older_height);
+                ECOEVOLITY_ASSERT(this->target_tree_.get_number_of_node_heights() == (nheights - 1));
+                unsigned int post_merge_num_nodes = this->target_tree_.get_mapped_node_count(ht_idx);
                 height_index_to_node_set.clear();
                 this->target_tree_.store_nodes_by_height_index(
                         height_index_to_node_set,
                         false); // Don't update split size (i.e., # of leaves)
-                ECOEVOLITY_ASSERT(height_index_to_node_set.at(ht_idx).size() == number_of_resulting_merged_nodes);
+                ECOEVOLITY_ASSERT(height_index_to_node_set.at(ht_idx).size() == post_merge_num_nodes);
                 double height_freq = this->get_node_height_frequency(height_index_to_node_set.at(ht_idx));
                 double height_count = this->get_node_height_count(height_index_to_node_set.at(ht_idx));
 
@@ -2302,7 +2305,7 @@ class TreeSample {
                 out << item_margin << "older_height: " << older_height << "\n";
                 out << item_margin << "younger_height_number_of_nodes: " << n_nodes_mapped << "\n";
                 out << item_margin << "older_height_number_of_nodes: " << older_n_nodes_mapped << "\n";
-                out << item_margin << "merged_height_number_of_nodes: " << number_of_resulting_merged_nodes << "\n";
+                out << item_margin << "merged_height_number_of_nodes: " << post_merge_num_nodes << "\n";
                 out << item_margin << "count: " << height_count << "\n";
                 out << item_margin << "frequency: " << height_freq << "\n";
 
