@@ -1612,7 +1612,7 @@ TEST_CASE("Basic testing", "[treesum]") {
     }
 }
 
-TEST_CASE("Basic merged target heights summary", "[xxx]") {
+TEST_CASE("Basic merged target heights summary", "[treesum]") {
     SECTION("Basic merged target heights") {
         std::vector<std::string> source_tree_paths {
                 "data/9-tip-gen-trees.nex",
