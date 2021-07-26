@@ -1,0 +1,3 @@
+sphinx
+recommonmark
+sphinxcontrib-bibtex<2.0.0
