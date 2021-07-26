@@ -39,9 +39,7 @@ events.
     :name: hometoc
 
     installation
-    background
-    biallelic-character-data
-    yaml-config
+    ecoevolity/index
     tutorials/index
     workshops/index
     changes
