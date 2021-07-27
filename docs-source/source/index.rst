@@ -19,15 +19,41 @@ About
 #####
 
 |Eco|_ is a software package for Bayesian inference of shared evolutionary
-events.
-|Pyco|_ is a companion Python package for summarizing the output of |eco|_.
-|Eco|_ and |pyco|_ are developed by the |phyleticalab|_.
+events developed by the |phyleticalab|_.
+The software comprises two primary sets of tools:
 
-..  .. image:: /_static/div-cartoon-compressed.png
-        :width: 100%
-        :alt: ecoevolity cartoon
-        :align: center
-        :target: index.html
+
+.. image:: /_static/ecoevolity-logo.svg
+    :width: 100%
+    :alt: ecoevolity logo
+    :align: center
+    :target: ecoevolity/index.html
+
+The |eco|_ tools (|eco|, simcoevolity, sumcoevolity, |dpprobs|) are for
+comparing divergence times among pairs of populations or species.
+:ref:`Click here for more details <ecohome>`.
+
+
+.. image:: /_static/phycoeval-logo-long.svg
+    :width: 100%
+    :alt: phycoeval logo
+    :align: center
+    :target: phycoeval/index.html
+
+The |phyco|_ tools (|phyco|, |simphyco|, |sumphyco|) provide a fully
+phylogenetic approach to jointly inferring a species tree, shared divergence
+times, and multifurcating divergences.
+:ref:`Click here for more details <phycohome>`.
+
+
+***********
+Pycoevolity
+***********
+
+|Pyco|_ is a companion Python package for
+preparing input data and
+summarizing the output of |eco|_.
+
 
 ..  ##########
     Navigation
@@ -39,8 +65,8 @@ events.
     :name: hometoc
 
     installation
-    ecoevolity/index
-    phycoeval/index
+    Ecoevolity <ecoevolity/index>
+    Phycoeval <phycoeval/index>
     tutorials/index
     workshops/index
     changes

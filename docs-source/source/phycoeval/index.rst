@@ -1,6 +1,8 @@
-#########
-Phycoeval
-#########
+.. _phycohome:
+
+#################
+|phyco_logo_long|
+#################
 
 .. toctree::
     :maxdepth: 1

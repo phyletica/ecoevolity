@@ -1,6 +1,8 @@
-##########
-Ecoevolity
-##########
+.. _ecohome:
+
+###############
+|eco_logo_long|
+###############
 
 .. toctree::
     :maxdepth: 1

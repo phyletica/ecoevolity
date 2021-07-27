@@ -288,6 +288,33 @@ rst_epilog = """
 .. |pyco-sumtimes| replace:: ``pyco-sumtimes``
 .. |pyco-sumevents| replace:: ``pyco-sumtimes``
 
+.. |phyco| replace:: phycoeval
+.. _phyco: http://phyletica.org/ecoevolity
+.. |Phyco| replace:: Phycoeval
+.. _Phyco: http://phyletica.org/ecoevolity
+.. |phyco_gh| replace:: phycoeval
+.. _phyco_gh: https://github.com/phyletica/ecoevolity
+.. |phyco_url| replace:: http://phyletica.org/ecoevolity
+.. |phyco_gh_url| replace:: https://github.com/phyletica/ecoevolity
+.. |phyco_copyright| replace:: **Copyright 2021-{this_year} Jamie R. Oaks**
+.. |cphyco| replace:: ``phycoeval`` 
+.. |simphyco| replace:: simphycoeval
+.. |Simphyco| replace:: Simphycoeval
+.. |csimphyco| replace:: ``simphycoeval``
+.. |sumphyco| replace:: sumphycoeval
+.. |Sumphyco| replace:: Sumphycoeval
+.. |csumphyco| replace:: ``sumphycoeval``
+
+.. |eco_logo_long| image:: /_static/ecoevolity-logo.svg
+                    :width: 95%
+                    :alt: Ecoevolity
+                    :target: index.html
+
+.. |phyco_logo_long| image:: /_static/phycoeval-logo-long.svg
+                    :width: 95%
+                    :alt: Phycoeval
+                    :target: index.html
+
 .. |Tracer| replace:: Tracer
 .. _Tracer: http://tree.bio.ed.ac.uk/software/tracer/
 
