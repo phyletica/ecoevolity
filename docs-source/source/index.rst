@@ -40,6 +40,7 @@ events.
 
     installation
     ecoevolity/index
+    phycoeval/index
     tutorials/index
     workshops/index
     changes

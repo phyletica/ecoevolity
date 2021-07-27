@@ -112,7 +112,7 @@ html_sidebars = {
 # documentation.
 #
 html_theme_options = {
-        'logo': 'ecoevolity-logo-compact.svg',
+        'logo': 'site-logo.svg',
         'github_user': 'phyletica',
         'github_repo': 'ecoevolity',
         'github_button': True,
