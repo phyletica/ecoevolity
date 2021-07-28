@@ -1,3 +1,5 @@
+|eco_logo_long|
+
 .. _background:
 
 ##########

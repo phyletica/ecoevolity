@@ -10,3 +10,4 @@
     background
     biallelic-character-data
     yaml-config
+    tutorials/index

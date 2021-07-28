@@ -1,3 +1,5 @@
+|phyco_logo_long|
+
 .. _phycodata:
 
 ########

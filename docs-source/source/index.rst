@@ -67,7 +67,6 @@ summarizing the output of |eco|_.
     installation
     Ecoevolity <ecoevolity/index>
     Phycoeval <phycoeval/index>
-    tutorials/index
     workshops/index
     changes
     license

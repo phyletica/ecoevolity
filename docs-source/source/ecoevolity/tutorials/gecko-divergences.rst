@@ -1,3 +1,4 @@
+|eco_logo_long|
 
 .. _gecko_div_tutorial:
 
