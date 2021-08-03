@@ -164,12 +164,7 @@ latex_elements = {
 \newcommand{\ncomparisons}{\ensuremath{\mathcal{N}\xspace}}
 \newcommand{\nevents}[1][]{\ensuremath{k_{#1}\xspace}}
 \newcommand{\nloci}[1][]{\ensuremath{m_{#1}\xspace}}
-\newcommand{\allelecount}[1][]{\ensuremath{\nodeallelecount{#1}{}}\xspace}
-\newcommand{\redallelecount}[1][]{\ensuremath{\noderedallelecount{#1}{}}\xspace}
-\newcommand{\leafallelecounts}[1][]{\ensuremath{\mathbf{n}_{#1}}\xspace}
-\newcommand{\leafredallelecounts}[1][]{\ensuremath{\mathbf{r}_{#1}}\xspace}
 \newcommand{\comparisondata}[1][]{\ensuremath{D_{#1}}\xspace}
-\newcommand{\alldata}[1][]{\ensuremath{\mathbf{D}}\xspace}
 \newcommand{\rgmurate}{\ensuremath{u}\xspace}
 \newcommand{\grmurate}{\ensuremath{v}\xspace}
 \newcommand{\murate}[1][]{\ensuremath{\mu_{#1}}\xspace}
@@ -199,6 +194,54 @@ latex_elements = {
 \newcommand{\rootrelativepopsize}{\ensuremath{R_{\epopsize[\rootpopindex]}}\xspace}
 \newcommand{\concentration}{\ensuremath{\alpha}\xspace}
 \newcommand{\basedistribution}{\ensuremath{H}\xspace}
+
+\newcommand{\tree}{\ensuremath{T}\xspace}
+\newcommand{\nTips}{\ensuremath{N}\xspace}
+\newcommand{\node}[1]{\ensuremath{t_{#1}}\xspace}
+\newcommand{\nodes}{\ensuremath{\boldsymbol{\node{}}}\xspace}
+\newcommand{\divTimeSymbol}{\tau}
+\newcommand{\divTime}[1]{\ensuremath{\divTimeSymbol_{#1}}\xspace}
+\newcommand{\divTimes}{\ensuremath{\boldsymbol{\divTime{}}}\xspace}
+\newcommand{\divTimeParentOf}[1]{\ensuremath{y({#1})}\xspace}
+\newcommand{\probChangeDimension}{\ensuremath{\psi}\xspace}
+\newcommand{\probBreakPolytomy}{\ensuremath{\Upsilon}\xspace}
+\newcommand{\nWaysToBreakPolytomy}{\ensuremathmath{k_b}\xspace}
+\newcommand{\bellNumber}{\ensuremath{B}\xspace}
+\newcommand{\stirling}[2]{\ensuremath{S_2}(#1, #2)\xspace}
+\newcommand{\treeClassPriorProb}[1]{\ensuremath{\pi_{\tree}(#1)}\xspace}
+\newcommand{\maxSlide}{\ensuremath{\delta_{\divTime{}}}\xspace}
+\newcommand{\uniformDeviate}{\ensuremath{u}\xspace}
+\newcommand{\probLumpOverProbSplit}{\ensuremath{\gamma_S}\xspace}
+\newcommand{\probLumpNeighborOverProbSplitNeighbor}{\ensuremath{\phi_S}\xspace}
+\newcommand{\probSplitOverProbLump}{\ensuremath{\gamma_M}\xspace}
+\newcommand{\probSplitNeighborOverProbLumpNeighbor}{\ensuremath{\phi_M}\xspace}
+\newcommand{\propdens}[1]{\ensuremath{g_{#1}}\xspace}
+\newcommand{\multipropdens}[1]{\ensuremath{\boldsymbol{g}_{#1}}\xspace}
+\newcommand{\nOf}[2][]{\ensuremath{n_{#1}(#2)}\xspace}
+\newcommand{\nDivs}{\ensuremath{\nOf[]{\divTime{}}}\xspace}
+\newcommand{\nNodes}{\ensuremath{\nOf{\node{}}}\xspace}
+\newcommand{\nTrees}{\ensuremath{\nOf{\tree{}}}\xspace}
+\newcommand{\nSharedDivs}{\ensuremath{\nOf[s]{\divTime{}}}\xspace}
+\newcommand{\nNodesMappedTo}[1]{\ensuremath{\nOf[]{\node{} \mapsto #1}}\xspace}
+\newcommand{\nPolyNodesMovingTo}[1]{\ensuremath{\nOf[p]{\node{} \Rightarrow #1}}\xspace}
+\newcommand{\nWaysToSplitAllPolytomies}{\ensuremath{\Phi}\xspace}
+\newcommand{\probDivTimePartition}{\ensuremath{\Xi}\xspace}
+\newcommand{\modelState}{\ensuremath{\Theta}\xspace}
+\newcommand{\multiplier}{\ensuremath{m}\xspace}
+\newcommand{\proposed}{\ensuremath{^{\prime}}\xspace}
+\newcommand{\tuningparameter}{\ensuremath{\lambda}\xspace}
+\newcommand{\uniformdeviate}{\ensuremath{u}\xspace}
+\newcommand{\observedallelecount}[1][]{\ensuremath{n_{#1}}\xspace}
+\newcommand{\observedredallelecount}[1][]{\ensuremath{r_{#1}}\xspace}
+\newcommand{\nodeallelecount}[2]{\ensuremath{n_{#1}^{#2}}}
+\newcommand{\noderedallelecount}[2]{\ensuremath{r_{#1}^{#2}}}
+\newcommand{\allelecount}[1][]{\ensuremath{\nodeallelecount{#1}{}}\xspace}
+\newcommand{\redallelecount}[1][]{\ensuremath{\noderedallelecount{#1}{}}\xspace}
+\newcommand{\leafallelecounts}[1][]{\ensuremath{\mathbf{n}_{#1}}\xspace}
+\newcommand{\leafredallelecounts}[1][]{\ensuremath{\mathbf{r}_{#1}}\xspace}
+\newcommand{\alldata}[1][]{\ensuremath{\mathbf{D}}\xspace}
+\newcommand{\allepopsizes}{\ensuremath{\boldsymbol{N_{e}}}\xspace}
+\newcommand{\alphaOfDivTimeBetaPrior}{\ensuremath{\alpha_\divTimeSymbol}}
 """,
 }
 
