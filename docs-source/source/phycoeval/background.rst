@@ -6,6 +6,29 @@
 Background
 ##########
 
+***********************
+The short story (tl;dr)
+***********************
+
+Many processes of diversification can cause
+simultaneous (and potentially multifurcating) divergences,
+but current phylogenetic methods for inferring rooted trees
+assume evolutionary lineages diverge independently (and only bifurcate).
+This leaves us without a good way to infer the patterns of shared
+divergences predicted by these processes.
+To solve this problem, we generalized the space of topologies considered during
+phylogenetic inference to include trees with shared or multifurcating
+divergences.
+This allows us to jointly infer relationships, divergence times, shared
+divergences, and multifurcating divergences, and test for patterns of
+divergences predicted by processes of diversification that simultaneously
+affect multiple lineages.
+
+
+****************
+The longer story
+****************
+
 Many processes of diversification can simultaneously affect multiple
 lineages.
 For example, below is an animation of three species of lizards co-occurring on
@@ -58,7 +81,7 @@ trees with :math:`\nTips - 1` independent, bifurcating divergences.
 When shared and/or multifurcating divergences were common in the system we
 want to study, such tree models are over-parameterized as
 :ref:`illustrated in the figure below <true_v_current_tree_model>`.
-**What is even worse, by assuming all divergences are independent and
+More importantly, **by assuming all divergences are independent and
 bifurcating, current phylogenetic methods do not allow us to test for patterns
 of shared or multifurcating divergences predicted by processes of
 diversification that are of interest across the life sciences**.
@@ -72,4 +95,15 @@ diversification that are of interest across the life sciences**.
 
     When shared or multifurcating divergences have occurred, current
     phylogenetic models are over-parameterized.
+
+
+.. _tree_model_space:
+
+.. figure:: /_static/four-leaf-labeled-trees-boxed-grid-cropped.png
+    :align: center
+    :width: 99%
+    :alt: Tree model space
+
+    The rooted topologies considered by current phylogenetic methods (within
+    box) and |phyco|'s generalized tree model.
 
