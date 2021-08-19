@@ -359,7 +359,9 @@ rst_epilog = """
                     :target: index.html
 
 .. |Tracer| replace:: Tracer
-.. _Tracer: http://tree.bio.ed.ac.uk/software/tracer/
+.. _Tracer: https://github.com/beast-dev/tracer/releases
+.. |Figtree| replace:: Figtree
+.. _Figtree: https://github.com/rambaut/figtree/releases
 
 .. |git| replace:: Git
 .. _git: http://git-scm.com/

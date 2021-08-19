@@ -30,7 +30,7 @@ Either installing |eco| and |pyco| directly or using the Docker image will work
 for this tutorial.
 
 While not required, you may want to install the program
-|Tracer|_ (http://tree.bio.ed.ac.uk/software/tracer/);
+|Tracer|_ (https://github.com/beast-dev/tracer/releases);
 it's a nice tool for visualizing the mixing and convergence behavior of Markov
 chain Monte Carlo (MCMC) analyses.
 

@@ -599,7 +599,7 @@ and |eco|_ will know that the data in the first two rows came from
 mcmc_settings
 *************
 
-The ``mcmc_settings`` simply specify how long to run the MCMC
+The ``mcmc_settings`` specify how long to run the MCMC
 chain, and how often to record a sample from it. For example::
 
     mcmc_settings:
