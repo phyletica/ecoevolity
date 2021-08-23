@@ -205,6 +205,8 @@ So, in summary, you can specify a specific starting tree using a newick string
 or a path to a newick or nexus formatted tree, or you can specify the MCMC
 chain start with the comb tree or a random bifurcating tree.
 
+.. _uniform_root_and_betas:
+
 tree_prior
 ==========
 
@@ -329,6 +331,8 @@ branch_parameters
                 gamma_distribution:
                     shape: 4.0
                     mean: 0.0002
+
+.. _phycopopsize:
 
 population_size
 ===============

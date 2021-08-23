@@ -143,11 +143,8 @@ The example data sets we'll be analyzing consist of 50 loci each comprising
 about 90 linked sites.
 
 
-Running |phyco|
-===============
-
-Setting up the configuration file
----------------------------------
+Setting up the |phyco| configuration file
+=========================================
 
 Once we have our nexus-formatted data ready, the next step in an |phyco|
 analysis is setting up the configuration file.
@@ -166,8 +163,9 @@ For detailed information about all the settings that can be included in an
 |phyco| config file,
 :ref:`click here <phycoconfigfile>`.
 
-In our directory, there is a |yaml|_-formatted config file named
-``phycoeval-config.yml``, which contains the following information::
+In the ``phycoeval-example-data`` directory, there is a |yaml|_-formatted
+config file named ``phycoeval-config.yml``, which contains the following
+information::
 
     ---
     data:
@@ -179,6 +177,22 @@ In our directory, there is a |yaml|_-formatted config file named
             population_name_is_prefix: false
             population_name_delimiter: ' '
             path: Cyrtodactylus-tutorial-data.nex
+    mutation_parameters:
+        mutation_rate:
+            value: 1.0
+            estimate: false
+        freq_1:
+            value: 0.5
+            estimate: false
+    branch_parameters:
+        population_size:
+            equal_population_sizes: true
+            value: 0.0005
+            estimate: true
+            prior:
+                gamma_distribution:
+                    shape: 4.0
+                    mean: 0.0005
     tree_model:
         tree_space: generalized
         starting_tree: comb
@@ -190,7 +204,77 @@ In our directory, there is a |yaml|_-formatted config file named
                         prior:
                             exponential_distribution:
                                 mean: 0.01
-    branch_parameters:
+    mcmc_settings:
+        chain_length: 7500
+        sample_frequency: 5
+
+Let's break this down to go over all the settings specified in this config.
+First, the ``data`` section.
+
+data
+----
+
+::
+
+    data:
+        ploidy: 2
+        constant_sites_removed: false
+        alignment:
+            genotypes_are_diploid: true
+            markers_are_dominant: false
+            population_name_is_prefix: false
+            population_name_delimiter: ' '
+            path: Cyrtodactylus-tutorial-data.nex
+
+This section tells |phyco| all about our data, including:
+
+#.  the geckos are diploid
+    (``ploidy: 2``),
+#.  we have not removed constant sites from the alignment,
+#.  each cell in the alignment represents the genotype of a diploid individual
+    (``genotypes_are_diploid: true``),
+#.  our nucleotide data are not dominant (i.e., we can distinguish heterozygous
+    genotypes for a site from either of the two homozygous genotypes),
+#.  the last part of every sequence label specifies the population/species it
+    belongs to (``population_name_is_prefix: false``),
+    and
+#.  the data are found in a file named ``Cyrtodactylus-tutorial-data.nex`` in
+    the current directory
+
+mutation_parameters
+-------------------
+
+The ``mutation_parameters`` section specifies that we wish to fix the rate of
+mutation to 1::
+
+        mutation_rate:
+            value: 1.0
+            estimate: false
+
+This means that time will be measured in expected substitutions per site,
+and effective population sizes will be scaled by the mutation rate
+(:math:`\epopsize\murate`).
+
+We also constrain the equilibrium frequencies of the two possible states for
+each character to be equal::
+
+        freq_1:
+            value: 0.5
+            estimate: false
+
+If you are analyzing nucleotide data, this is almost certainly what you want to
+do.
+|Phyco| assumes biallelic data, and there are many ways to convert 4-state
+nucleotide data into 2-states.
+If we don't constrain the frequencies to be equal, our results might vary
+depending on how choose to do this conversion.
+
+branch_parameters
+-----------------
+
+The ``branch_parameters`` section specifies how we wish to model
+the effective population sizes of branches across the tree::
+
         population_size:
             equal_population_sizes: true
             value: 0.0005
@@ -199,17 +283,127 @@ In our directory, there is a |yaml|_-formatted config file named
                 gamma_distribution:
                     shape: 4.0
                     mean: 0.0005
-    mutation_parameters:
-        freq_1:
-            value: 0.5
-            estimate: false
-        mutation_rate:
-            value: 1.0
-            estimate: false
-    mcmc_settings:
-        chain_length: 7500
-        sample_frequency: 5
+
+The ``equal_population_sizes: true`` setting specifies that
+all the branches share the same effective population size.
+We specify a starting value for this parameter (``value: 0.0005``),
+and that we wish to estimate it from the data.
+Lastly, we specify a gamma-distributed prior distribution on the population
+size with a shape and mean of 4 and 0.0005, respectively.
+Because the mutation rate is fixed to 1 (see ``mutation_parameters`` above),
+the effective population size is scaled by the mutation rate,
+so we are putting a prior on 
+:math:`\epopsize\murate`.
 
 
-Changing the prior on the root age
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tree_model
+----------
+
+Next, the ``tree_model`` section specifies how we want |phyco| to model trees::
+
+    tree_model:
+        tree_space: generalized
+        starting_tree: comb
+        tree_prior:
+            uniform_root_and_betas:
+                parameters:
+                    root_height:
+                        estimate: true
+                        prior:
+                            exponential_distribution:
+                                mean: 0.01
+
+This tells |phyco| to allow "generalized" trees with shared and multifurcating
+divergences (i.e., all possible non-reticulating tree models),
+and to begin the MCMC chain with the ``comb`` tree (the tree where
+all tips diverge from a single internal node).
+The only ``tree_prior`` implemented in |phyco| is the
+``uniform_root_and_betas`` tree prior,
+which is
+:ref:`described in more detal here <uniform_root_and_betas>`.
+
+Lastly, this section specified how to model the age of the root node
+(``root_height``).
+This config specifies that we want to allow the age of the root to vary
+(``estimate: true``),
+and we are placing an exponentially distributed prior distribution on
+it with a mean of 0.01.
+Given that the mutation rate is fixed to 1 (see ``mutation_parameters`` section
+above), this is in units of expected substitutions per site.
+
+How to calibrate time?
+======================
+
+.. collapse:: Scaling to absolute time...
+    
+    Currently in |phyco| there are only two ways to calibrate time to be in units
+    other than substitutions per site (e.g., years or millions of years).
+    You can place an informative prior distribution on either the
+    root age or the mutation rate (or both).
+    If you do this, it is important to remember that the ``root_height``,
+    ``mutation_rate``, and ``population_size`` are all interrelated.
+    So, changing the setting for one of them, probably requires adjusting
+    all three of these settings. Let's walk through an example to
+    make this clearer.
+    
+    Let's say we have prior data about the mutation rate of our Philippine
+    bent-toed geckos.
+    Based on these prior data, we are very confident the rate of mutation of our
+    RADseq loci is 0.001 substitutions per site per million years.
+    So, we decide to put an informative prior on the rate of mutation per million
+    years::
+    
+            mutation_rate:
+                value: 0.001
+                estimate: true
+                prior:
+                    gamma_distribution:
+                        shape: 100.0
+                        mean: 0.001
+    
+    That's great, but now we need to change our settings for the root age and
+    population size accordingly.
+    Time is now in millions of years, rather than expected substitutions
+    per site like it was above when :math:`\murate = 1`.
+    Above, when :math:`\murate = 1`, our prior expectation for the age of the root
+    was 0.01 substitutions per site.
+    Now, we expect the rate of mutation is 0.001 substitutions per million years,
+    so our new expectation for the age of the root is
+    :math:`0.01/0.001 = 10` million years.
+    So we should change our prior on the ``root_height`` to something like::
+    
+                        root_height:
+                            estimate: true
+                            prior:
+                                exponential_distribution:
+                                    mean: 10.0
+    
+    Also, when :math:`\murate = 1`,
+    our prior expectation for the mutation-scaled effective population size
+    (:math:`\epopsize\murate`) was 0.0005.
+    Now that we expect a rate of mutation of 0.001 substitutions per million
+    years, we have to adjust our prior on the population size:
+    
+    .. math::
+    
+        \epopsize \times \murate &= 0.0005 \\
+        \epopsize \times 0.001   &= 0.0005 \\
+        \epopsize &= \frac{0.0005}{0.001} \\
+        \epopsize &= 0.5
+    
+    So, we should also change our prior on ``population_size`` to something like::
+    
+            population_size:
+                equal_population_sizes: true
+                value: 0.5
+                estimate: true
+                prior:
+                    gamma_distribution:
+                        shape: 4.0
+                        mean: 0.5
+    
+    For more about specifying settings for population size parameter(s),
+    :ref:`see here <phycopopsize>`.
+
+Running |phyco|
+===============

@@ -34,7 +34,8 @@ import time
 # ones.
 extensions = ['sphinx.ext.imgmath',
     'sphinxcontrib.bibtex',
-    'sphinx.ext.githubpages']
+    'sphinx.ext.githubpages',
+    'sphinx_toolbox.collapse']
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']

@@ -1,3 +1,4 @@
 sphinx
 recommonmark
 sphinxcontrib-bibtex<2.0.0
+sphinx-toolbox
