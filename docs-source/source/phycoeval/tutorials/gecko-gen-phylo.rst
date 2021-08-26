@@ -46,15 +46,12 @@ chain Monte Carlo (MCMC) analyses,
 and
 |Figtree|_ is a nice tool for visualizing phylogenetic trees.
 
-The Data
-========
 
-We will be analyzing 50 RADseq loci from 7 insular populations of bent-toed
-geckos (*Cyrtodactylus*) from the Philippines.
-This is a small subset of the data analyzed in :cite:`Oaks2021phycoeval`.
+Getting the example files for this tutorial
+===========================================
 
-We will use ``git`` to download these data, along with a |phyco|
-configuration file.
+We will use ``git`` to download the data and |phyco| configuration file we need
+for this tutorial.
 To do this open your preferred shell (command-line) environment (e.g., Bash),
 and type the following two commands to download a directory ("folder")
 with the data
@@ -97,8 +94,9 @@ you should see the following files:
 
 #.  ``Cyrtodactylus-tutorial-data.nex``
 
-    This file contains nexus-formatted RADseq data from 7 *Cyrtodactylus*
-    lizards from 7 populations.
+    This file contains nexus-formatted RADseq data comprising 50 loci from 7
+    bent-toed geckos (*Cyrtodactylus*) from insular populations in the
+    Philippines.
     For detailed information about how to format nexus files for |phyco|,
     :ref:`click here <phycodata>`.
 
@@ -111,6 +109,14 @@ you should see the following files:
 
     You can ignore this file.
 
+
+The Data
+========
+
+We will be analyzing 50 RADseq loci from 7 insular populations of bent-toed
+geckos (*Cyrtodactylus*) from the Philippines.
+This is a small subset of the data analyzed in :cite:`Oaks2021phycoeval`.
+|Phyco|_ assumes our characters have two-states (bialleleic) and are unlinked.
 
 Biallelic characters
 --------------------
@@ -332,7 +338,7 @@ Given that the mutation rate is fixed to 1 (see ``mutation_parameters`` section
 above), this is in units of expected substitutions per site.
 
 How to calibrate time?
-======================
+----------------------
 
 .. collapse:: Scaling to absolute time...
     
@@ -405,5 +411,304 @@ How to calibrate time?
     For more about specifying settings for population size parameter(s),
     :ref:`see here <phycopopsize>`.
 
+
 Running |phyco|
 ===============
+
+Now that we have our nexus-formatted data file and
+|yaml|_-formatted config file ready,
+now we will use |phyco| to infer the phylogeny of our 7 geckos, including
+potentially shared or multifurcating divergences.
+First let's take a look at the help menu of |phyco|::
+
+    phycoeval -h
+
+If |phyco| is correctly installed, you should get output that looks something
+like::
+
+    ======================================================================
+                                  Phycoeval
+                      Estimating phylogenetic coevality
+    
+                                   Part of:
+                                  Ecoevolity
+           Version 0.3.2 (docs 7be2cdd: 2021-08-17T15:46:18-05:00)
+    ======================================================================
+    
+    Usage: phycoeval [OPTIONS] YAML-CONFIG-FILE
+    
+    Phycoeval: Estimating phylogenetic coevality
+    
+    Options:
+      --version             show program's version number and exit
+      -h, --help            show this help message and exit
+      --seed=SEED           Seed for random number generator. Default: Set from clock.
+      --ignore-data         Ignore data to sample from the prior distribution.
+                            Default: Use data to sample from the posterior distribution
+      --nthreads=NTHREADS   Number of threads to use for likelihood calculations.
+                            Default: 1 (no multithreading). If you are using the
+                            '--ignore-data' option, no likelihood calculations
+                            will be performed, and so no multithreading is used.
+      --prefix=PREFIX       Optional string to prefix all output files.
+      --relax-constant-sites
+                            By default, if you specify 'constant_sites_removed =
+                            true' and constant sites are found, phycoeval throws
+                            an error. With this option, phycoeval will
+                            automatically ignore the constant sites and only issue
+                            a warning (and correct for constant sites in the
+                            likelihood calculation). Please make sure you
+                            understand what you are doing when you use this option.
+      --relax-missing-sites
+                            By default, if a column is found for which there is no
+                            data for at least one population, phycoeval throws an
+                            error. With this option, phycoeval will automatically
+                            ignore such sites and only issue a warning.
+      --relax-triallelic-sites
+                            By default, if a DNA site is found for which there is
+                            more than two nucleotide states, phycoeval throws an
+                            error. With this option, phycoeval will automatically
+                            recode such sites as biallelic and only issue a
+                            warning. These sites are recoded by assigning state 0
+                            to the first nucleotide found and state 1 to all
+                            others. If you do not wish to recode such sites and
+                            prefer to ignore them, please remove all sites with
+                            more than two nucleotide states from your DNA
+                            alignments. NOTE: only alignments of nucleotides are
+                            affected by this option, not alignments of standard
+                            characters (i.e., 0, 1, 2).
+      --dry-run             Do not run analysis; only process and report settings.
+
+In addition to the settings in our YAML config file, this help menu shows us
+what options for |phyco| we can specify on the command line.
+**NOTE**: if you did not compile |eco| to allow multi-threading, you will not
+see the ``--nthreads`` example.
+
+
+let's try running an analysis with |phyco|::
+
+    phycoeval phycoeval-config.yml
+
+Oops, we got an error::
+
+    #######################################################################
+    ###############################  ERROR  ###############################
+    37 sites from the alignment in:
+        'Cyrtodactylus-tutorial-data.nex'
+    have no data for at least one population.
+    #######################################################################
+
+This error message is telling us that we have 37 sites (columns) in our
+character matrix for which we have no data for at least one population.
+Such sites can be common in RADseq loci, because most assemblers enforce
+thresholds on missing data at the locus level (not for each site).
+Rather than removing these sites ourselves, we can tell |phyco| to ignore
+them.
+
+Before we do that, let's talk about another common error you might see with
+your own data that will look something like (you won't get this error for the
+example data)::
+
+    #######################################################################
+    ###############################  ERROR  ###############################
+    7 sites from the alignment in:
+        'Cyrtodactylus-tutorial-data.nex'
+    have more than two character states.
+    #######################################################################
+
+This error message is telling us that we have 7 sites (columns) in our
+character matrix where there are more than two states represented across our
+samples.
+As discussed above, at this point, we have 2 options:
+
+#.  Remove any characters with more than two states.
+#.  Recode these sites as biallelic.
+
+The latter |phyco| will do for us if we specify the
+``--relax-triallelic-sites`` option in our command.
+When we use this option, |phyco| will consider the first state in a column as
+``0``, and any other state found in the column as ``1``.
+
+OK, let's try running |phyco| again, but tell it to ignore the
+37 sites for which at least one population has no data::
+
+    phycoeval --relax-missing-sites phycoeval-config.yml
+
+Now, you should be running!
+How long the analysis takes to run will depend on your computer, but
+it took about 2 minutes on my laptop.
+
+Checking the pre-MCMC screen output
+-----------------------------------
+
+While the analysis is running, let's scroll up in our console and look at the
+information |phyco| reported before the MCMC chain started sampling.
+This output goes by very quickly, but it's **very** important to read it
+over to make sure |phyco| is doing what you think it's doing.
+At the very top, you will see something like::
+
+    ======================================================================
+                                  Phycoeval
+                      Estimating phylogenetic coevality
+    
+                                   Part of:
+                                  Ecoevolity
+           Version 0.3.2 (docs 7be2cdd: 2021-08-17T15:46:18-05:00)
+    ======================================================================
+    
+    Seed: 1384420509
+    Using data in order to sample from the posterior distribution...
+    Config path: phycoeval-config.yml
+
+This gives us detailed information about the version of |eco| we are using
+(right down to the specific commit SHA).
+It also tells us what number was used to seed the random number generator; we
+would need to provide |phyco| this seed number using the ``--seed``
+command-line option in order to reproduce our results.
+The output is also telling us that |phyco| is using the data to sample from the
+posterior, as opposed to ignoring the data to sample from the prior.
+We can do the latter by specifying the ``--ignore-data`` command-line option.
+
+Next, |phyco| reports a fully specified YAML-formatted configuration file to
+the screen.
+It's always good to look this over to make sure |phyco| is configured as you
+expect.
+
+Next, you will see a summary of the data::
+
+    ----------------------------------------------------------------------
+    Summary of data from 'Cyrtodactylus-tutorial-data.nex':
+        Genotypes: diploid
+        Markers are dominant? false
+        Number of populations: 7
+        Number of sites: 4538
+        Number of variable sites: 102
+        Number of patterns: 29
+        Patterns folded? true
+        Population label (max # of alleles sampled):
+            philippinicusSibuyan (2)
+            philippinicusPanay (2)
+            philippinicusNegros (2)
+            philippinicusMindoroELR (2)
+            philippinicusMindoroRMB (2)
+            philippinicusTablas (2)
+            philippinicusLuzonCamarinesNorte (2)
+    ----------------------------------------------------------------------
+
+
+It is **very important** to look over this summary to make sure |phyco|
+"sees" your data the way you expect it should.
+Make sure the number of sites, the number of populations, and the number of
+alleles per population match your expectations!
+It is very easy to have typos in your population labels that result in extra
+tip populations/species you didn't intend.
+
+Next, |phyco| reports how many threads it is using and where it is
+logging information about sampled trees, parameter values, and MCMC
+operator statistics::
+
+    Number of threads: 1
+    Tree log path: phycoeval-config-trees-run-1.nex
+    State log path: phycoeval-config-state-run-1.log
+    Operator log path: phycoeval-config-operator-run-1.log
+
+
+Next, |phyco| reports a summary of the state of the MCMC chain to the screen for
+every 10th sample it's logging to the output files.
+After the chain finishes, |phyco| also reports statistics associated with all
+of the MCMC operators; this information is also logged to the file specified
+above as the ``Operator log path``.
+
+The Output Files
+----------------
+
+After the analysis finishes, type ``ls`` at the command line::
+
+    ls
+
+You should see three log files that were created by |phyco|:
+
+#.  ``phycoeval-config-trees-run-1.nex``
+#.  ``phycoeval-config-state-run-1.log``
+#.  ``phycoeval-config-operator-run-1.log``
+
+If you open the ``operator`` log with a plain text editor, you'll see this file
+contains information about the MCMC operators.
+If you have convergence or mixing issues, this information can be useful for
+troubleshooting.
+
+If you open the ``state`` file, you'll see it contains the log likelihood,
+prior, and parameter values associated with each MCMC sample.
+
+
+Running additional chains
+=========================
+
+Before we start summarizing the results, let's run a second chain so we can
+assess convergence and boost our posterior sample size.
+If you have multiple cores on your computer and you've compiled |eco|_ to
+allow multi-threading, let's tell |phyco| to use two threads for the
+second MCMC analysis::
+
+    phycoeval --nthreads 2 --relax-missing-sites phycoeval-config.yml
+
+Now's a good time to go grab a coffee, while you wait for the second chain to
+finish running.
+With 2 threads, it takes about 70 seconds on my laptop.
+
+After the chain finishes, if you use ``ls`` you should see the
+following ``run-2`` log files:
+
+#.  ``phycoeval-config-trees-run-2.nex``
+#.  ``phycoeval-config-state-run-2.log``
+#.  ``phycoeval-config-operator-run-2.log``
+
+Two MCMC chains is enough to proceed with this tutorial, but for
+"real" analyses, I recommend doing more.
+It increases your sample size from the posterior distribution and allows you to
+better assess convergence.
+
+
+Summarizing the Results
+=======================
+
+Assessing mixing and convergence
+--------------------------------
+
+Now, let's use the |pyco-sumchains| tool of the |pyco| packages to help assess
+the convergence of our chains and choose what number of samples we want to remove
+as "burn in"::
+
+    pyco-sumchains -s 100 ecoevolity-config-state-run-1.log ecoevolity-config-state-run-2.log
+
+|pyco-sumchains| removes an increasing number of samples
+from the beginning of the chains (i.e., burn in) and reports the effective
+sample size (ESS) and potential scale reduction factor (PSRF) for every
+continuous parameter and log likelihood score.
+The ``-s 100`` option tells |pyco-sumchains| to remove 100 samples at a time.
+After the table of ESS and PSRF values, it also reports a summary that can
+be useful::
+
+    Continuous parameter with lowest mean ESS: pop_size_Dalupiri2
+    Burnin value that maximized ESS of pop_size_Dalupiri2: 100 samples (ESS = 544.00)
+
+This tells us which parameter had the lowest mean ESS value
+across all the burn-in values.
+It also tells us what burn-in value was associated with the highest ESS for
+this parameter.
+
+If you want the ESS and PSRF table in a text file that you can open with Excel,
+simply use ``>`` to redirect the standard output::
+
+    pyco-sumchains -s 100 ecoevolity-config-state-run-1.log ecoevolity-config-state-run-2.log > pyco-sumchains-table.txt
+
+Once |pyco-sumchains| finishes you can open the ``pyco-sumchains-table.txt``
+file with Excel to see how the ESS and PSRF of each parameter changes as the
+burn in increases.
+
+If you have |Tracer|_ installed, you can use it to look at the convergence and
+mixing behavior of the chains.
+
+From my |pyco-sumchains| output and inspecting the chains in |Tracer|_,
+ignoring the fist 101 samples as burn-in seems conservative.
+That's the burn-in value I will use below when summarizing and plotting the
+results.
