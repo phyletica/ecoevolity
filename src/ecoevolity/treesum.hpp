@@ -1167,6 +1167,10 @@ class TreeSample {
             return this->source_sample_sizes_.at(source_index);
         }
 
+        unsigned int get_source_burnin(unsigned int source_index) const {
+            return this->source_num_skipped_.at(source_index);
+        }
+
         bool equal_source_sample_sizes() const {
             unsigned int n = this->source_sample_sizes_.at(0);
             for (unsigned int i = 1; i < this->source_sample_sizes_.size(); ++i) {
@@ -1192,6 +1196,15 @@ class TreeSample {
         }
         std::vector< std::vector<double> > get_tree_lengths_by_source() const {
             return this->_get_values_by_source(this->tree_lengths_);
+        }
+
+        const std::vector<double> & get_root_parameter_values(
+                const std::string & parameter_name) const {
+            return this->get_split(this->root_split_)->get_values(parameter_name);
+        }
+        std::vector< std::vector<double> > get_root_parameter_values_by_source(
+                const std::string & parameter_name) const {
+            return this->_get_values_by_source(this->get_root_parameter_values(parameter_name));
         }
 
         const std::vector< std::shared_ptr<TopologySamples> > & get_topologies() const {
