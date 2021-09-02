@@ -667,48 +667,94 @@ Two MCMC chains is enough to proceed with this tutorial, but for
 It increases your sample size from the posterior distribution and allows you to
 better assess convergence.
 
+I ran 2 additional chains (4 total) on my computer, however, you can proceed
+with the steps below with only 2.
+
 
 Summarizing the Results
 =======================
 
-Assessing mixing and convergence
+Assessing convergence and mixing
 --------------------------------
 
-Now, let's use the |pyco-sumchains| tool of the |pyco| packages to help assess
-the convergence of our chains and choose what number of samples we want to remove
-as "burn in"::
+Before summarizing our posterior sample of trees and other parameter values, we
+will use the |sumphyco| command-line tool to assess whether our MCMC chains
+converged and mixed well, and if so, how many samples should we ignore from the
+beginning of each chain before they converged (i.e., "burn-in" samples).
+If you enter the following command::
 
-    pyco-sumchains -s 100 ecoevolity-config-state-run-1.log ecoevolity-config-state-run-2.log
+    sumphycoeval -h
 
-|pyco-sumchains| removes an increasing number of samples
-from the beginning of the chains (i.e., burn in) and reports the effective
-sample size (ESS) and potential scale reduction factor (PSRF) for every
-continuous parameter and log likelihood score.
-The ``-s 100`` option tells |pyco-sumchains| to remove 100 samples at a time.
-After the table of ESS and PSRF values, it also reports a summary that can
-be useful::
+you should see the help menu of |sumphyco| printed to your terminal screen,
+showing all the command-line options available for this tool.
+The first option we will use to help assess convergence and mixing is the
+``-c`` option.
+This tells |sumphyco| that we want it to report statistics for assessing
+convergence and mixing for different levels of burn-in (i.e., ignoring
+different numbers of samples from the beginning of each MCMC chain).
+The number we provide after ``-c`` tells |sumphyco| the interval (in
+numbers of samples) we want between the different burn-in values.
+Enter the following command to have |sumphyco| create a tab-delimited table
+of convergence statistics where each row is ignoring a larger number of samples
+from the beginning of each chain, incrementing by 100 samples::
 
-    Continuous parameter with lowest mean ESS: pop_size_Dalupiri2
-    Burnin value that maximized ESS of pop_size_Dalupiri2: 100 samples (ESS = 544.00)
+    sumphycoeval -c 100 phycoeval-config-trees-run-?.nex > convergence-stats.tsv
 
-This tells us which parameter had the lowest mean ESS value
-across all the burn-in values.
-It also tells us what burn-in value was associated with the highest ESS for
-this parameter.
+After this command finishes, you can open the ``convergence-stats.tsv`` with
+a text editor or any spreadsheet program (e.g., Excel) to view the table of
+convergence statistics.
+It should look something like:
 
-If you want the ESS and PSRF table in a text file that you can open with Excel,
-simply use ``>`` to redirect the standard output::
+.. csv-table::
+    :file: ../../_static/convergence-stats.tsv
+    :widths: auto
+    :width: 99%
+    :header-rows: 1
+    :delim: tab
+    :align: left
+    :class: scrollwide
 
-    pyco-sumchains -s 100 ecoevolity-config-state-run-1.log ecoevolity-config-state-run-2.log > pyco-sumchains-table.txt
+Your numbers will be different, because MCMC is stochastic and you may have run
+more or fewer chains (I ran 4).
 
-Once |pyco-sumchains| finishes you can open the ``pyco-sumchains-table.txt``
-file with Excel to see how the ESS and PSRF of each parameter changes as the
-burn in increases.
+|Sumphyco| reports the effective
+sample size (ESS) and potential scale reduction factor (PSRF)
+for the tree length, root height (age), and the effective
+popualtion size of the root branch.
+The ESS estimates how many effectively independent samples the
+MCMC chains collected for a parameter; the larger the number
+the better.
+The PSRF measures whether independent MCMC chains are sampling overlapping
+values for a parameter (i.e., are they sampling from the same distribution);
+values close to one (e.g., < 1.2) indicate the chains converged and are
+sampling from the same distribution.
+|Sumphyco| also reports the average standard deviation of split frequencies
+(ASDSF), which should be close to zero (e.g., < 0.01) if the chains converged
+and are sampling the same region of tree space.
 
-If you have |Tracer|_ installed, you can use it to look at the convergence and
-mixing behavior of the chains.
+Based on the table created by |sumphyco| above, it looks like my MCMC chains
+converged quickly and mixed reasonably well.
+Ignoring the first 201 samples seems like a good choice as it corresponds with
+high ESS values, PSRF values close to 1, and PSRF < 0.01.
+If you have |Tracer|_ installed, you can use it to open the
+``phycoeval-config-state-run-?.log``
+files and look at the convergence and mixing behavior of the chains.
 
-From my |pyco-sumchains| output and inspecting the chains in |Tracer|_,
-ignoring the fist 101 samples as burn-in seems conservative.
-That's the burn-in value I will use below when summarizing and plotting the
-results.
+Summarizing the posterior samples of trees and other parameters
+---------------------------------------------------------------
+
+We have assessed the convergence and mixing of our
+MCMC chains and selected the number of samples we want to ignore
+from the beginning of each chain as "burn-in";
+I selected 201 samples, but you might choose a different number based on the
+metrics from your chains.
+Now, we are ready to summarize our post burn-in MCMC samples.
+We will use |sumphyco| again to do this.
+Enter the following command, but feel free to adjust your burn-in ``-b`` value::
+
+    sumphycoeval -b 201 --map-tree-out cyrt-map-tree.nex phycoeval-config-trees-run-?.nex > posterior-summary.yml
+
+This tells |sumphyco| to summarize the sampled trees (ignoring the first 201
+from each chain), write the maximum *a posteriori* (MAP) to a file named
+``cyrt-map-tree.nex``, and write a |yaml|_-formatted summary of the posterior
+to a file named ``posterior-summary.yml``.
