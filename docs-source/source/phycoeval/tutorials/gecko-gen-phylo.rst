@@ -888,6 +888,35 @@ because you will see them many times in the summary file:
     distribution); values close to one (e.g., < 1.2) suggest the chains
     converged and are sampling from the same distribution.
 
+**summary_of_map_topologies**
+"""""""""""""""""""""""""""""
+
+Up next, there's a summary of the maximum *a posteriori* tree
+topologies (tree models):
+
+summary_of_map_topologies:
+    - count: 280
+      frequency: 0.0538461538461538491
+      newick: ( ... )[& ... ]:0
+
+In my summary there is only 1, but there might be more than one if multiple
+topologies tie for the most frequently sampled.
+The ``count`` is the number of times the tree was sampled, and the
+``frequency`` is simply the ``count`` divided by the total number of samples
+(i.e., an approximation of the posterior probability of the topology).
+Lastly, the annotated MAP topology is provided in ``newick`` format;
+this is the same tree we told |sumphyco| to write to the
+``cyrt-map-tree.nex``, which we discuss more
+:ref:`in the section below <annotated_map_tree>`.
+
+**topologies**
+""""""""""""""
+
+Up next, the ``topologies`` section provides a list of *all* sampled topologies
+sorted from most to least frequent.
+
+
+.. _annotated_map_tree:
 
 Annotated MAP tree
 ^^^^^^^^^^^^^^^^^^
@@ -904,3 +933,6 @@ for the node labels, you can see the shared divs (nodes with the same number).
 ``node_freq`` shows the posterior probability of multifurcations, and
 ``split_freq`` shows the normal posterior probabilities you get from a standard
 Bayesian phylo analysis.
+
+The divergence times are summarized by divergence events (height indices;
+index_height_mean or index_height_median)
