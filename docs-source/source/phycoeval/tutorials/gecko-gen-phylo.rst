@@ -765,6 +765,130 @@ from each chain), write the maximum *a posteriori* (MAP) tree to a file named
 ``cyrt-map-tree.nex``, and write a |yaml|_-formatted summary of the posterior
 to a file named ``posterior-summary.yml``.
 
+YAML posterior summary
+^^^^^^^^^^^^^^^^^^^^^^
+
+By default, |sumphyco| writes a |yaml|_-formatted summary of the posterior
+sample of trees to standard output (i.e., to the terminal's screen).
+In the command above, we used ``> posterior-summary.yml`` to redirect
+this summary output to a file name ``posterior-summary.yml``.
+I chose to use the |yaml|_ format for the posterior summary, because
+it is human-friendly to read and is a standard format, so most
+modern programming languages have a package for parsing it.
+
+The |yaml|_-formatted posterior summary is very rich with information.  We will
+walk through some of the ``posterior-summary.yml`` file to see what kinds of
+information it contains.
+
+**leaf_label_map**
+""""""""""""""""""
+
+It begins with a ``leaf_label_map`` that tells you the numbers that correspond
+to the leaf (tip) labels in the trees::
+
+    leaf_label_map:
+        0: philippinicusLuzonCamarinesNorte
+        1: philippinicusMindoroELR
+        2: philippinicusMindoroRMB
+        3: philippinicusNegros
+        4: philippinicusPanay
+        5: philippinicusSibuyan
+        6: philippinicusTablas
+
+**summary_of_tree_sources**
+"""""""""""""""""""""""""""
+
+These numbers will be used to refer to the leaf labels throughout the rest of
+the file.
+Next, it provides a summary about where all the tree samples came from::
+
+    summary_of_tree_sources:
+        total_number_of_trees_sampled: 5200
+        sources:
+            -
+              path: phycoeval-config-trees-run-1.nex
+              number_of_trees_skipped: 201
+              number_of_trees_sampled: 1300
+            -
+              path: phycoeval-config-trees-run-2.nex
+              number_of_trees_skipped: 201
+              number_of_trees_sampled: 1300
+            -
+              path: phycoeval-config-trees-run-3.nex
+              number_of_trees_skipped: 201
+              number_of_trees_sampled: 1300
+            -
+              path: phycoeval-config-trees-run-4.nex
+              number_of_trees_skipped: 201
+              number_of_trees_sampled: 1300
+
+**summary_of_split_freq_std_deviations**
+""""""""""""""""""""""""""""""""""""""""
+
+Next is a summary of the standard deviations of the frequencies of all tree
+splits (clades) with a frequency greater than 10% (``min_frequency: 0.1``; this
+can be changed with the ``--min-split-freq`` option in |sumphyco|)::
+
+    summary_of_split_freq_std_deviations:
+        min_frequency: 0.100000000000000006
+        n: 8
+        mean: 0.00934072992015095964
+        max: 0.0230469891327866362
+
+More specifically, for each split (clade) that is present in more
+than 10% of the posterior samples, the standard deviation of the
+frequencies across all the MCMC chain is calculated.
+Above, we are shown the mean and max of all these standard deviations of split
+frequencies (SDSF).
+If all the chains are sampling the same distribution of trees, their split
+frequencies should be similar (barring sampling error), so we want the SDSFs to
+be small (a mean SDSF < 0.1 is a rule of thumb that is often used; but, that's
+not a magic number!).
+
+**tree_length**
+"""""""""""""""
+
+Next, the ``tree_length`` section provides a summary of the total length (i.e.,
+the sum of all branch lengths) of sampled trees::
+
+    tree_length:
+        n: 5200
+        ess: 1667.86323370249988
+        mean: 0.0110116006001833976
+        median: 0.0109497159206294985
+        std_dev: 0.00124402282794587181
+        range: [0.00728641572310199936, 0.0161335463633999997]
+        eti_95: [0.00877078878371835048, 0.0136830748419434732]
+        hpdi_95: [0.00857532062927799862, 0.0134531947701339999]
+        psrf: 0.999966895173833081
+
+Some of these summaries are straightfoward, but let's flesh out some of them,
+because you will see them many times in the summary file:
+
+``n``
+    The number of posterior samples.
+
+``ess``
+    The effective sample size. Due to correlations across neighboring MCMC
+    samples, the effective number of samples is often less than ``n``.
+
+``eti_95``
+    The equal-tailed 95% credible interval.
+    I.e., the values associated with the 2.5 and 97.5 percentiles.
+
+``hpdi_95``
+    The highest posterior density 95% credible interval.
+    The narrowest interval that includes 95% of the distribution (95% of the
+    samples when trying to approximate it from a finite sample).
+
+``psrf``
+    The potential scale reduction factor.
+    This measures whether independent MCMC chains are sampling overlapping
+    values for a parameter (i.e., are they sampling from the same
+    distribution); values close to one (e.g., < 1.2) suggest the chains
+    converged and are sampling from the same distribution.
+
+
 Annotated MAP tree
 ^^^^^^^^^^^^^^^^^^
 
@@ -780,6 +904,3 @@ for the node labels, you can see the shared divs (nodes with the same number).
 ``node_freq`` shows the posterior probability of multifurcations, and
 ``split_freq`` shows the normal posterior probabilities you get from a standard
 Bayesian phylo analysis.
-
-YAML posterior summary
-^^^^^^^^^^^^^^^^^^^^^^
