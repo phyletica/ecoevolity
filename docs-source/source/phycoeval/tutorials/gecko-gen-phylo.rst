@@ -754,7 +754,32 @@ Enter the following command, but feel free to adjust your burn-in ``-b`` value::
 
     sumphycoeval -b 201 --map-tree-out cyrt-map-tree.nex phycoeval-config-trees-run-?.nex > posterior-summary.yml
 
+.. note::
+
+    The units for the burn-in option (``-b``/``--burnin``) is the number of
+    samples collected by each MCMC chain, **NOT** the number of MCMC
+    generations.
+
 This tells |sumphyco| to summarize the sampled trees (ignoring the first 201
-from each chain), write the maximum *a posteriori* (MAP) to a file named
+from each chain), write the maximum *a posteriori* (MAP) tree to a file named
 ``cyrt-map-tree.nex``, and write a |yaml|_-formatted summary of the posterior
 to a file named ``posterior-summary.yml``.
+
+Annotated MAP tree
+^^^^^^^^^^^^^^^^^^
+
+The ``--map-tree-out cyrt-map-tree.nex`` option above told |sumphyco| to
+write the maximum *a posteriori* (MAP) tree to a file named
+``cyrt-map-tree.nex``.
+The MAP tree is simply the tree topology most frequently sampled by the MCMC
+chains.
+
+If you open the trees with something like FigTree, and display ``height_index``
+for the node labels, you can see the shared divs (nodes with the same number).
+``index_freq`` shows the posterior probability of the shared divs.
+``node_freq`` shows the posterior probability of multifurcations, and
+``split_freq`` shows the normal posterior probabilities you get from a standard
+Bayesian phylo analysis.
+
+YAML posterior summary
+^^^^^^^^^^^^^^^^^^^^^^
