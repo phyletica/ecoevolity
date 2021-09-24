@@ -865,6 +865,8 @@ the sum of all branch lengths) of sampled trees::
 Some of these summaries are straightfoward, but let's flesh out some of them,
 because you will see them many times in the summary file:
 
+.. _sum_stat_defs:
+
 ``n``
     The number of posterior samples.
 
@@ -913,7 +915,216 @@ this is the same tree we told |sumphyco| to write to the
 """"""""""""""
 
 Up next, the ``topologies`` section provides a list of *all* sampled topologies
-sorted from most to least frequent.
+sorted from most to least frequent::
+
+    topologies:
+        -
+          count: 280
+          frequency: 0.0538461538461538491
+          cumulative_frequency: 0.0538461538461538491
+          number_of_heights: 3
+          heights:
+              - number_of_nodes: 1
+                splits:
+                    - leaf_indices: [3, 4]
+                n: 280
+                ess: 133.894317591770431
+                mean: 0.00063164050550695394
+                median: 0.000625316888421000071
+                std_dev: 0.000188093550720526111
+                range: [0.000186275333359999992, 0.00132545817561999994]
+                eti_95: [0.000295922009107825012, 0.0010075712220599998]
+                hpdi_95: [0.000294101649274000024, 0.00100045882127]
+              - number_of_nodes: 2
+                splits:
+                    - leaf_indices: [2, 3, 4]
+                      node:
+                          descendant_splits:
+                              - [2]
+                              - [3, 4]
+                    - leaf_indices: [5, 6]
+                n: 280
+                ess: 250.986736852775152
+                mean: 0.000940334872247221092
+                median: 0.000939304089077999931
+                std_dev: 0.000173866213213687921
+                range: [0.000495016237200999977, 0.00143800553865000005]
+                eti_95: [0.00063093969598985002, 0.00128013828409874984]
+                hpdi_95: [0.000631647972762000012, 0.00127991331285999999]
+              .
+              .
+              .
+
+For each topology, the number of times it was sampled (``count``), frequency
+(i.e., approximate posterior probability), and cumulative frequency is given.
+Each topology is described as a list of its divergence times (``heights``).
+For each divergence, the number of nodes that map to it
+(``number_of_nodes``) is given, and the ``splits`` (clades) defined
+by those nodes are listed.
+If a split (clade) contains more than 2 leaves, then the splits that descend
+from it are also listed.
+Then the sampled values of the divergence time (or height)
+are summarized;
+:ref:`see above descriptions <sum_stat_defs>`
+of some of the more cryptic summary statistics.
+
+**heights**
+"""""""""""
+
+Next, the ``heights`` section provides a list of all sampled divergence events
+(or ``heights``) in order of decreasing frequency (decreasing approximate
+posterior probability)::
+
+    heights:
+        -
+          number_of_nodes: 2
+          splits:
+              - leaf_indices: [2, 3, 4]
+              - leaf_indices: [5, 6]
+          count: 2586
+          frequency: 0.497307692307692284
+          n: 2586
+          ess: 1609.86703630561283
+          mean: 0.000936390624723727988
+          median: 0.000927218230700499989
+          std_dev: 0.000171689597604143731
+          range: [0.000479753482237999993, 0.00162345554608000001]
+          eti_95: [0.000633384379520000027, 0.00129245641293750015]
+          hpdi_95: [0.000631576245212999983, 0.00128864682125999996]
+        -
+          number_of_nodes: 1
+          splits:
+              - leaf_indices: [2, 3, 4]
+          count: 2559
+          frequency: 0.492115384615384621
+          n: 2559
+          ess: 1165.99838502598004
+          mean: 0.00101518354159117708
+          median: 0.00100011380661999992
+          std_dev: 0.000218746084096721499
+          range: [0.000475600605589000022, 0.00193458727650999999]
+          eti_95: [0.000629584362187399953, 0.00148788643064199939]
+          hpdi_95: [0.000601960582020000029, 0.00144496080627999992]
+
+For each divergence event (height), the number of nodes mapped to it
+(``number_of_nodes``) is given, along with the list of splits (clades)
+associated with those nodes.
+The ``count`` and ``frequency`` of the divergence event is given
+followed by 
+the summary of the sampled values of the height (divergence time);
+:ref:`see above descriptions <sum_stat_defs>`
+of some of the more cryptic summary statistics.
+
+**splits**
+""""""""""
+
+The next section, ``splits``, summarizes all of the splits that were
+sampled.
+Because |phyco| only estimates rooted trees, we can think of a split (branch)
+and clade interchangeably, and define it by all the leaves that descend from it
+(i.e., it "splits" those leaves off from the rest of the tree).
+Each split (branch) on a tree will have a length and effective population size,
+and the height or divergence time of a split will always refer to the height of
+the branch's tipward node (i.e., the node that represents the most recent
+common ancestor of the clade created by the split).
+
+The ``splits`` section is organized into three main subsections: ``root``,
+``leaves``, and ``nontrivial_splits``.
+The root and all leaf branches are always present in every tree, and so
+these will always have a frequency of 1.
+All other splits in a tree are considered ``nontrivial_splits``,
+because they are not always present in every tree.
+For every split, there is a summary of the sampled values of the splits
+divergence time (``height``), effective population size (``pop_size``), and
+length (``length``).
+For the root, the length is always zero, and for the leaves the height is
+always zero.
+
+For every sampled split that has more than two descendants, there is also a
+summary of the ``nodes`` associated with the split.
+We define a node by the splits that descend from it. 
+For example, in the tree below, we can represent the "split" (branch) marked by
+the "X" by listing the leaves that descend from it: [A, B, C].
+
+::
+
+                /---- E
+                |
+      /---------|
+      |         |
+      |         \---- D
+    --|
+      |
+      |     /-------- C
+      |     |
+      \--X--|
+            |   /---- B
+            |   |
+            \---|
+                |
+                \---- A
+
+However, the "node" associated with "X" is more specific, because
+it a list of the splits that descend from it: [[A, B], [C]].
+So, for Split X, there are four possible nodes:
+
+-   [A, B], [C]
+-   [A, C], [B]
+-   [B, C], [A]
+-   [A], [B], [C]
+
+For each node listed for a split in the |yaml|_
+file, you will also find a summaries for its ``height``,
+``length``, and ``pop_size``.
+These are different from the summaries for the split, because it only
+summarizes the samples that had that particular node configuration.
+
+**number_of_heights_summary**
+"""""""""""""""""""""""""""""
+
+::
+
+    number_of_heights_summary:
+        n: 5200
+        ess: 107.736499736150066
+        mean: 3.83980769230769337
+        median: 4
+        std_dev: 0.812666578741826351
+        range: [2, 6]
+        eti_95: [2, 5]
+        hpdi_95: [2, 5]
+
+**number_of_heights**
+"""""""""""""""""""""
+
+::
+
+    numbers_of_heights:
+        -
+          number_of_heights: 4
+          count: 2527
+          frequency: 0.485961538461538445
+          cumulative_frequency: 0.485961538461538445
+        -
+          number_of_heights: 3
+          count: 1494
+          frequency: 0.287307692307692319
+          cumulative_frequency: 0.77326923076923082
+        -
+          number_of_heights: 5
+          count: 881
+          frequency: 0.169423076923076926
+          cumulative_frequency: 0.942692307692307718
+        -
+          number_of_heights: 2
+          count: 204
+          frequency: 0.0392307692307692288
+          cumulative_frequency: 0.981923076923076898
+        -
+          number_of_heights: 6
+          count: 94
+          frequency: 0.0180769230769230772
+          cumulative_frequency: 1
 
 
 .. _annotated_map_tree:
