@@ -962,7 +962,7 @@ For each divergence, the number of nodes that map to it
 (``number_of_nodes``) is given, and the ``splits`` (clades) defined
 by those nodes are listed.
 If a split (clade) contains more than 2 leaves, then the splits that descend
-from it are also listed.
+from it (which we call a ``node``) are also listed.
 Then the sampled values of the divergence time (or height)
 are summarized;
 :ref:`see above descriptions <sum_stat_defs>`
@@ -1008,7 +1008,9 @@ posterior probability)::
 
 For each divergence event (height), the number of nodes mapped to it
 (``number_of_nodes``) is given, along with the list of splits (clades)
-associated with those nodes.
+associated with those nodes;
+each divergence event (height) is defined by the splits (clades) assigned to
+it.
 The ``count`` and ``frequency`` of the divergence event is given
 followed by 
 the summary of the sampled values of the height (divergence time);
@@ -1024,7 +1026,7 @@ Because |phyco| only estimates rooted trees, we can think of a split (branch)
 and clade interchangeably, and define it by all the leaves that descend from it
 (i.e., it "splits" those leaves off from the rest of the tree).
 Each split (branch) on a tree will have a length and effective population size,
-and the height or divergence time of a split will always refer to the height of
+and the height (divergence time) of a split will always refer to the height of
 the branch's tipward node (i.e., the node that represents the most recent
 common ancestor of the clade created by the split).
 
@@ -1034,11 +1036,13 @@ The root and all leaf branches are always present in every tree, and so
 these will always have a frequency of 1.
 All other splits in a tree are considered ``nontrivial_splits``,
 because they are not always present in every tree.
-For every split, there is a summary of the sampled values of the splits
-divergence time (``height``), effective population size (``pop_size``), and
-length (``length``).
+For every split, there is a summary of the sampled values of divergence time
+(``height``), effective population size (``pop_size``), and length
+(``length``).
 For the root, the length is always zero, and for the leaves the height is
 always zero.
+
+.. _tutorial_splits_v_nodes:
 
 For every sampled split that has more than two descendants, there is also a
 summary of the ``nodes`` associated with the split.
@@ -1065,7 +1069,7 @@ the "X" by listing the leaves that descend from it: [A, B, C].
                 \---- A
 
 However, the "node" associated with "X" is more specific, because
-it a list of the splits that descend from it: [[A, B], [C]].
+it's the set of the splits that descend from it: [[A, B], [C]].
 So, for Split X, there are four possible nodes:
 
 -   [A, B], [C]
@@ -1082,6 +1086,19 @@ summarizes the samples that had that particular node configuration.
 **number_of_heights_summary**
 """""""""""""""""""""""""""""
 
+Next, the ``number_of_heights_summary`` section provides
+a summary of the number of independent divergence times (heights)
+across the posterior sample of trees;
+this can range from
+1 (the "comb" tree)
+to
+the number of tips minus 1 (trees with strictly bifurcating and independent
+divergences).
+The data set we analyzed had 7 tips, so each tree in our posterior sample can
+have 1 to 6 divergence times.
+:ref:`See above <sum_stat_defs>`
+for descriptions of some of the more cryptic summary statistics.
+
 ::
 
     number_of_heights_summary:
@@ -1096,6 +1113,13 @@ summarizes the samples that had that particular node configuration.
 
 **number_of_heights**
 """""""""""""""""""""
+
+The last section (``number_of_heights``) in the |yaml|_-formatted posterior
+summary lists the numbers of divergence times (heights) sampled by our MCMC
+chains in order of decreasing frequency.
+Below, you can see that the posterior mode of the number of divergence times
+was 4, which has an approximate posterior probability  (``frequency``) of about
+0.49 (your numbers will be different).
 
 ::
 
@@ -1132,18 +1156,112 @@ summarizes the samples that had that particular node configuration.
 Annotated MAP tree
 ^^^^^^^^^^^^^^^^^^
 
-The ``--map-tree-out cyrt-map-tree.nex`` option above told |sumphyco| to
-write the maximum *a posteriori* (MAP) tree to a file named
+With the ``--map-tree-out cyrt-map-tree.nex`` option above, we told |sumphyco|
+to write the maximum *a posteriori* (MAP) tree to a file named
 ``cyrt-map-tree.nex``.
 The MAP tree is simply the tree topology most frequently sampled by the MCMC
 chains.
+Let's use
+`the IcyTree web-based tree viewer (icytree.org) <https://icytree.org/>`_
+to take a look at our MAP tree.
 
-If you open the trees with something like FigTree, and display ``height_index``
-for the node labels, you can see the shared divs (nodes with the same number).
-``index_freq`` shows the posterior probability of the shared divs.
-``node_freq`` shows the posterior probability of multifurcations, and
-``split_freq`` shows the normal posterior probabilities you get from a standard
-Bayesian phylo analysis.
+Once you have |icytree|_ open in your web browser, you can view the MAP
+tree by dragging and dropping the ``cyrt-map-tree.nex`` file created
+by |sumphyco| onto the |icytree|_ page,
+or
+loading it via "File" -> "Load from file...".
+Once the tree is open, you can hover your mouse pointer over a branch to see
+that the nodes are annotated with a lot of attributes.
 
-The divergence times are summarized by divergence events (height indices;
-index_height_mean or index_height_median)
+First, let's look at the ``height_index`` attribute.
+Go to "Style" -> "Internal node text" -> "height_index".
+Height (divergence time) indices are ordered from youngest to
+oldest and show you which nodes share the same divergence time
+across the tree.
+My MAP tree has three heights (divergence times), and the index "1" appears
+on two nodes, showing that share the same divergence time.
+
+.. _map_tree_height_index:
+
+.. figure:: /_static/cyrt-map-tree-height-index.png
+    :align: center
+    :width: 99%
+    :alt: height_index
+
+    The ``height_index`` attribute will show you which nodes share the same divergence times.
+
+If you change the internal node labels to 
+``index_freq``
+("Style" -> "Internal node text" -> "index_freq"),
+this will display the approximate posterior probabilities for each divergence
+event (height).
+For example, on my MAP tree, the posterior probability that the two clades with
+index "1" share the same divergence time is 0.497.
+
+.. _map_tree_index_freq:
+
+.. figure:: /_static/cyrt-map-tree-index-freq.png
+    :align: center
+    :width: 99%
+    :alt: index_freq
+
+    The ``index_freq`` attribute is the posterior probability of each
+    divergence event (height).
+
+If you want to see the Bayesian support values that are typically shown
+on trees, change the internal node labels to ``split_freq``.
+This will show the approximate posterior probabilities of all the splits
+(clades) across the tree.
+This is the "normal" support value shown on trees that summarize the posterior
+sample of Bayesian phylogenetic analysis.
+
+.. _map_tree_split_freq:
+
+.. figure:: /_static/cyrt-map-tree-split-freq.png
+    :align: center
+    :width: 99%
+    :alt: split_freq
+
+    The ``split_freq`` attribute is the posterior probability of each split (clade).
+
+However, split (clade) posterior probabilities are not very good at summarizing
+the support for polytomies (multifurcations) in the tree.
+To better understand why, please refer to
+:ref:`the section above that compares splits versus nodes <tutorial_splits_v_nodes>`.
+
+If we want to summarize the support for polytomies, we should look
+at the ``node_freq`` attribute
+("Style" -> "Internal node text" -> "node_freq").
+This displays the approximate posterior probability of each internal node in
+the MAP tree (we define a node by the splits that descend from it).
+
+.. _map_tree_node_freq:
+
+.. figure:: /_static/cyrt-map-tree-node-freq.png
+    :align: center
+    :width: 99%
+    :alt: node_freq
+
+    The ``node_freq`` attribute is the posterior probability of each node (a
+    split with a particular set of descendant splits).
+
+In addition to the node attributes above, there are also summaries of the:
+
+-   Divergence time (height) summarized by divergence event
+    (``index_height_*``);
+    i.e., only sampled trees with that particular divergence event (defined by
+    the clades mapped to it) are used to summarize the age of the event.
+-   Divergence time (height) summarized by clade/split height
+    (``split_height_*``);
+    I.e., all sampled trees that contain the given split are used to summarize
+    the age.
+-   Branch length summarized by split (``length_*``).
+-   Effective population size (``pop_size_*``). For this tutorial, this summary
+    is the same for every branch on the MAP tree, because we specified
+    ``equal_population_sizes: true`` in the |phyco| config file.
+
+The divergence times that are used to "draw" the MAP tree
+are the means calculated over divergence events.
+By default, the ``index_height_mean`` is used, but if the
+``--median-heights`` option is specified when running |sumphyco|,
+then ``index_height_median`` will be used.

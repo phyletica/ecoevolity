@@ -371,6 +371,9 @@ rst_epilog = """
 .. _yaml: http://yaml.org/
 .. |yamllint| replace:: http://www.yamllint.com/
 
+.. |icytree| replace:: IcyTree 
+.. _icytree: https://icytree.org
+
 .. |gpl3| replace:: http://www.gnu.org/licenses/gpl-3.0-standalone.html
 
 .. |cmake| replace:: CMake
