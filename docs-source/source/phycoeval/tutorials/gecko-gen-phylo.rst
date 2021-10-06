@@ -116,7 +116,7 @@ The Data
 We will be analyzing 50 RADseq loci from 7 insular populations of bent-toed
 geckos (*Cyrtodactylus*) from the Philippines.
 This is a small subset of the data analyzed in :cite:`Oaks2021phycoeval`.
-|Phyco|_ assumes our characters have two-states (bialleleic) and are unlinked.
+|Phyco|_ assumes our characters have two-states (biallelic) and are unlinked.
 
 Biallelic characters
 --------------------
@@ -481,10 +481,9 @@ like::
 In addition to the settings in our YAML config file, this help menu shows us
 what options for |phyco| we can specify on the command line.
 **NOTE**: if you did not compile |eco| to allow multi-threading, you will not
-see the ``--nthreads`` example.
+see the ``--nthreads`` option.
 
-
-let's try running an analysis with |phyco|::
+Let's try running an analysis with |phyco|::
 
     phycoeval phycoeval-config.yml
 
@@ -720,7 +719,7 @@ more or fewer chains (I ran 4).
 |Sumphyco| reports the effective
 sample size (ESS) and potential scale reduction factor (PSRF)
 for the tree length, root height (age), and the effective
-popualtion size of the root branch.
+population size of the root branch.
 The ESS estimates how many effectively independent samples the
 MCMC chains collected for a parameter; the larger the number
 the better.
@@ -862,7 +861,7 @@ the sum of all branch lengths) of sampled trees::
         hpdi_95: [0.00857532062927799862, 0.0134531947701339999]
         psrf: 0.999966895173833081
 
-Some of these summaries are straightfoward, but let's flesh out some of them,
+Some of these summaries are straightforward, but let's flesh out some of them,
 because you will see them many times in the summary file:
 
 .. _sum_stat_defs:
@@ -1151,6 +1150,64 @@ was 4, which has an approximate posterior probability  (``frequency``) of about
           cumulative_frequency: 1
 
 
+.. _parsing_yaml_summary:
+
+Using the data in the YAML summary
+""""""""""""""""""""""""""""""""""
+
+|yaml|_ is a standard format that most modern programming languages are able to
+read and interpret.
+Below is an example of Python script that parses the |yaml|_ posterior summary
+file and plots the posterior probability of all possible numbers of divergence
+events.
+
+.. code-block:: python
+
+    #! /usr/bin/env python3
+    
+    import yaml
+    import matplotlib.pyplot as plt
+    
+    # Open the summary file and load the data using the yaml module
+    with open("posterior-summary.yml", "r") as stream:
+        data = yaml.safe_load(stream)
+    
+    number_of_species = len(data["leaf_label_map"])
+    
+    # Create list where the posterior probability of each possible number of
+    # divergences is zero 
+    num_divs_post_probs = [0.0 for i in range(number_of_species - 1)]
+
+    # Loop over the numbers of divergences sampled by the MCMC chains
+    # and update their approximate posterior probabilities
+    for d in data["numbers_of_heights"]:
+        num_divs_post_probs[d["number_of_heights"] - 1] = d["frequency"]
+    
+    # Create bar plot of posterior probabilities
+    x_labels = range(1, number_of_species)
+    plt.bar(x_labels, height = num_divs_post_probs)
+    plt.xlabel("Number of divergences")
+    plt.ylabel("Posterior probability")
+    plt.savefig("number-of-divergences.svg")
+
+The script above requires the PyYAML and matplotlib packages to be installed.
+Once these are installed, running the script will generate a plot that looks
+something like
+
+.. _phycoeval_tutorial_num_divs_plot:
+
+.. figure:: /_static/number-of-divergences.svg
+    :align: center
+    :width: 99%
+    :alt: Number of divergences
+
+    The approximate posterior probabilities of all possible numbers of
+    divergences.
+
+This is a simple example of how to take advantage of the information stored in
+the |yaml|_-formatted posterior summary.
+
+
 .. _annotated_map_tree:
 
 Annotated MAP tree
@@ -1179,7 +1236,7 @@ Height (divergence time) indices are ordered from youngest to
 oldest and show you which nodes share the same divergence time
 across the tree.
 My MAP tree has three heights (divergence times), and the index "1" appears
-on two nodes, showing that share the same divergence time.
+on two nodes, indicating that they share the same divergence time.
 
 .. _map_tree_height_index:
 
@@ -1212,8 +1269,8 @@ If you want to see the Bayesian support values that are typically shown
 on trees, change the internal node labels to ``split_freq``.
 This will show the approximate posterior probabilities of all the splits
 (clades) across the tree.
-This is the "normal" support value shown on trees that summarize the posterior
-sample of Bayesian phylogenetic analysis.
+This is the "normal" support value shown on a tree that summarize the posterior
+sample of a Bayesian phylogenetic analysis.
 
 .. _map_tree_split_freq:
 
