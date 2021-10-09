@@ -108,12 +108,16 @@ nexus-formatted character matrix.
 Formatting your data
 ********************
 
-Currently, |eco| only accepts nexus-formatted data files.
-The character data for each of your comparisons will go into a separate nexus
-file.
+Currently, |eco| accepts two input formats for genetic characters:
+Nexus and |yaml|_.
+The character data for each of your comparisons will go into a separate
+file in one of these formats, which are described below.
+
+Nexus format
+============
 
 Standard haploid data
-=====================
+---------------------
 
 You can represent your data in a "standard" 0/1 format.
 Here's example of a pair of populations from which we've sampled 4 genomes (2
@@ -184,7 +188,7 @@ by declaring::
 
 
 Standard diploid data
-=====================
+---------------------
 
 Above, each cell in our matrix represented which state was present
 for the character in a particular haploid genome.
@@ -215,7 +219,7 @@ by declaring::
 
 
 Nucleotide data
-===============
+---------------
 
 If you have nucleotide data, the easiest thing is provide the nucleotide
 characters to |eco| as is, and let it recode them as biallelic.
@@ -270,7 +274,7 @@ accordingly::
 
 
 Population labels
-=================
+-----------------
 
 In our nexus character matrix, we need to indicate which population each
 row corresponds to.
@@ -329,3 +333,53 @@ that the change occurred:
     If you like to use underscores as a population label
     delimiter, just watch out for a
     :ref:`gotcha related to how the nexus format treats underscores <underscoregotcha>`
+
+YAML format
+===========
+
+The |yaml|-formatted data format is a lot more efficient (much smaller file
+sizes).
+Instead of a full alignment,
+it only contains a list of allele count patterns, followed by a list of the
+weight of each pattern (i.e., how many times the allele pattern occurs in the
+alignment).
+For a very small example let's convert the following nexus alignment
+and convert it to the |yaml|_ format that |eco| accepts as input::
+
+    #NEXUS
+    
+    BEGIN DATA;
+        DIMENSIONS NTAX=8 NCHAR=6;
+        FORMAT DATATYPE=DNA MISSING=? GAP=-;
+        MATRIX
+            lizard-953-a-speciesA  ACGTAG
+            lizard-953-b-speciesA  ACGTAG
+            lizard-954-a-speciesA  GCGTAG
+            lizard-954-b-speciesA  ACGTAA
+            lizard-152-a-speciesB  GCGCAG
+            lizard-152-b-speciesB  GCGCAG
+            lizard-154-a-speciesB  ACGTAA
+            lizard-154-b-speciesB  GCGTAG
+        ;
+    END;
+
+To convert these data to |yaml|_ format, we will assume the first nucleotide
+(from the top) in each column is state "0", and the second nucleotide (if any)
+is state "1".
+Doing so gives us the following allele-count patterns in |yaml|_ format::
+
+    ---
+    markers_are_dominant: false
+    population_labels:
+        - speciesA
+        - speciesB
+    allele_count_patterns:
+        - [[1,4], [3,4]]
+        - [[0,4], [0,4]]
+        - [[0,4], [2,4]]
+        - [[1,4], [1,4]]
+    pattern_weights:
+        - 1
+        - 3
+        - 1
+        - 1

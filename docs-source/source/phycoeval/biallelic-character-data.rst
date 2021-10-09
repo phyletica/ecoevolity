@@ -81,10 +81,8 @@ So, your best bet is to include all of the sites from loci.
 Formatting your data
 ********************
 
-Currently, |phyco| only accepts two input formats for genetic characters:
+Currently, |phyco| accepts two input formats for genetic characters:
 Nexus and |yaml|_.
-We will describe both and then mention some ways to get your data into these
-formats.
 
 Nexus format
 ============
