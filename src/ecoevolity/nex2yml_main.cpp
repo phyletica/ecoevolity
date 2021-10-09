@@ -20,6 +20,6 @@
 #include "nex2yml.hpp"
 
 int main(int argc, char *argv[]) {
-    nex2yml_main<RelativeRootCollectionSettings, ComparisonRelativeRootPopulationTreeCollection>(argc, argv);
+    nex2yml_main<RelativeRootCollectionSettings, ComparisonRelativeRootPopulationTreeCollection, BasePopulationTree>(argc, argv);
     return 0;
 }
