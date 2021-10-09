@@ -81,11 +81,16 @@ So, your best bet is to include all of the sites from loci.
 Formatting your data
 ********************
 
-Currently, |phyco| only accepts a nexus-formatted data file with all of your
-characters aligned across all of your samples.
+Currently, |phyco| only accepts two input formats for genetic characters:
+Nexus and |yaml|_.
+We will describe both and then mention some ways to get your data into these
+formats.
+
+Nexus format
+============
 
 Standard haploid data
-=====================
+---------------------
 
 You can represent your data in a "standard" 0/1 format.
 Here's an example of three species from which we've sampled 4 genomes each (2
@@ -167,7 +172,7 @@ by declaring::
 
 
 Standard diploid data
-=====================
+---------------------
 
 Above, each cell in our matrix represented which state was present
 for the character in a particular haploid genome.
@@ -200,7 +205,7 @@ by declaring::
 
 
 Nucleotide data
-===============
+---------------
 
 If you have nucleotide data, the easiest thing is provide the nucleotide
 characters to |phyco| as is, and let it recode them as biallelic.
@@ -261,7 +266,7 @@ accordingly::
 
 
 Population labels
-=================
+-----------------
 
 In our nexus character matrix, we need to indicate which species (or
 population) each row corresponds to.
@@ -290,7 +295,7 @@ the next to samples came from a species called ``speciesB``,
 and
 the last two samples came from a speices we are calling
 ``speciesC``.
-In our :ref:`|phyco| config file <phycoconfigfile>`
+In our |phyco| :ref:`config file <phycoconfigfile>`
 we have to indicate this with::
 
         population_name_delimiter: "-"
@@ -304,3 +309,61 @@ separated by a "-" to figure out the population label.
     If you like to use underscores as a population label
     delimiter, just watch out for a
     :ref:`gotcha related to how the nexus format treats underscores <phycounderscoregotcha>`
+
+
+YAML format
+===========
+
+The |yaml|-formatted data format is a lot more efficient (much smaller file
+sizes).
+Instead of a full alignment,
+it only contains a list of allele count patterns, followed by a list of the
+weight of each pattern (i.e., how many times the allele pattern occurs in the
+alignment).
+For a very small example let's convert the following nexus alignment
+and convert it to the |yaml|_ format that |eco| accepts as input::
+
+    #NEXUS
+    
+    BEGIN DATA;
+        DIMENSIONS NTAX=12 NCHAR=6;
+        FORMAT DATATYPE=DNA MISSING=? GAP=-;
+        MATRIX
+            lizard-953-a-speciesA  ACGTAG
+            lizard-953-b-speciesA  ACGTAG
+            lizard-954-a-speciesA  GCGTAG
+            lizard-954-b-speciesA  ACGTAA
+            lizard-152-a-speciesB  GCGCAG
+            lizard-152-b-speciesB  GCGCAG
+            lizard-154-a-speciesB  ACGTAA
+            lizard-154-b-speciesB  GCGTAG
+            lizard-331-a-speciesC  ACGTAG
+            lizard-331-b-speciesC  ACGTAG
+            lizard-338-a-speciesC  ATGTAG
+            lizard-338-b-speciesC  ACGTAA
+        ;
+    END;
+
+To convert these data to |yaml|_ format, we will assume the first nucleotide
+(from the top) in each column is state "0", and the second nucleotide (if any)
+is state "1".
+Doing so gives us the following allele-count patterns in |yaml|_ format::
+
+    ---
+    markers_are_dominant: false
+    population_labels:
+        - speciesA
+        - speciesB
+        - speciesC
+    allele_count_patterns:
+        - [[1,4], [3,4], [0,4]]
+        - [[0,4], [0,4], [1,4]]
+        - [[0,4], [0,4], [0,4]]
+        - [[0,4], [2,4], [0,4]]
+        - [[1,4], [1,4], [1,4]]
+    pattern_weights:
+        - 1
+        - 1
+        - 2
+        - 1
+        - 1
