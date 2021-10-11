@@ -291,7 +291,7 @@ we are using the suffixes to indicate that the first two samples came
 from a species we are calling ``speciesA``,
 the next to samples came from a species called ``speciesB``,
 and
-the last two samples came from a speices we are calling
+the last two samples came from a species we are calling
 ``speciesC``.
 In our |phyco| :ref:`config file <phycoconfigfile>`
 we have to indicate this with::

@@ -97,13 +97,44 @@ diversification that are of interest across the life sciences**.
     phylogenetic models are over-parameterized.
 
 
+To relax the assumption of independent, bifurcating divergences, 
+|phyco|
+uses
+a Bayesian approach to generalizing the space of tree models to allow for
+shared and multifurcating divergences
+:cite:`Oaks2021phycoeval`.
+Under the generalized tree model implemented in |phyco|,
+trees with :math:`\nTips - 1` bifurcating divergences
+are
+:ref:`only one class of tree models in a greater space of trees <tree_model_space>`
+with anywhere from :math:`\nTips - 1` potentially shared
+or multifurcating divergences.
+
 .. _tree_model_space:
 
-.. figure:: /_static/four-leaf-labeled-trees-boxed-grid-cropped.png
+.. figure:: /_static/four-leaf-labeled-trees-boxed-highlight-shared-grid-cropped.png
     :align: center
     :width: 99%
     :alt: Tree model space
 
     The rooted topologies considered by current phylogenetic methods (within
-    box) and |phyco|'s generalized tree model.
+    box) and the additional tree models considered by |phyco|'s generalized
+    tree model.
+    The tree models with nonindependent (shared) divergences are highlighted in
+    orange.
 
+|phyco| uses reversible-jump Markov chain Monte Carlo algorithms to sample this
+generalized space of trees.
+This allows joint inference of relationships, shared and multifurcating
+divergences, and divergence times.
+
+In |phyco|,
+we coupled the generalized tree model with the "SNAPP likelihood" for directly
+calculating the probability of biallelic characters given a population (or
+species) phylogeny, while analytically integrating over all possible gene trees
+under a coalescent model and all possible mutational histories along those gene
+trees under a finite-sites model of character evolution
+:cite:`Bryant2012,Oaks2018ecoevolity`.
+This allows us to jointly infer a species tree and shared divergences from
+genomic data
+:cite:`Oaks2021phycoeval`.
