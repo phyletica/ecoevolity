@@ -129,6 +129,33 @@ Now, let's look at an example that is more thoroughly specified::
     - comparison:
         path: "../alignments/G-sp_a-sp_b-Dalupiri-CamiguinNorte.nex"
 
+.. note::
+
+    In Version 1.0.0 and above, you can specify exponential and gamma
+    distributions using the mean.
+    For example::
+
+        exponential_distribution:
+            rate: 100.0
+
+    Is equivalent to::
+
+        exponential_distribution:
+            mean: 0.01
+
+    And::
+
+        gamma_distribution:
+            shape: 100.0
+            scale: 0.01
+
+    Is equivalent to::
+
+        gamma_distribution:
+            shape: 100.0
+            mean: 1.0
+
+
 
 All the settings are hierarchically nested by the indent spacing.
 For example,
@@ -174,7 +201,16 @@ parameter, for example::
                     prior:
                         gamma_distribution:
                             shape: 2.0
-                            scale: 3.25
+                            scale: 3.75
+
+.. note::
+
+    In Version 1.0.0 and above, you can specify the same gamma
+    distribution using the mean::
+
+                        gamma_distribution:
+                            shape: 2.0
+                            mean: 7.5
 
 will allow the concentration parameter to be estimated.
 Generally, if you have a large number of comparisons (say 6 or more), it can be
@@ -216,6 +252,14 @@ For example::
     event_time_prior:
         exponential_distribution:
             rate: 100.0
+
+.. note::
+
+    In Version 1.0.0 and above, you can use the mean to specify the same
+    exponential distribution::
+
+        exponential_distribution:
+            mean: 0.01
 
 specifies an exponential distribution with a rate of 100.0 (thus
 the mean of the exponential prior is 1/rate = 1/100.0 = 0.01).
@@ -512,6 +556,22 @@ section and/or for each comparison::
                 value: 1.0
                 estimate: false
 
+.. note::
+
+    In Version 1.0.0 and above, you can specify exponential and gamma
+    distributions using the mean.
+    For example::
+
+                    gamma_distribution:
+                        shape: 4.0
+                        scale: 0.001
+
+    Is equivalent to::
+
+                    gamma_distribution:
+                        shape: 4.0
+                        mean: 0.004
+
 This allows you to specify whether or not you want estimate each parameter, and
 if so, what prior to use.
 
@@ -654,6 +714,15 @@ Alternatively, ::
                         shape: 100.0
                         scale: 0.01
 
+.. note::
+
+    In Version 1.0.0 and above, you can specify the same gamma distribution
+    using the mean::
+
+                    gamma_distribution:
+                        shape: 100.0
+                        mean: 1.0
+
 allows the effective population size of the root to be estimated, and centers
 the prior on its relative size on 1 (i.e., centers the prior expectation for
 the actual root effective population size on the mean of the leaf sizes);
@@ -667,6 +736,15 @@ Similarly ::
                     gamma_distribution:
                         shape: 100.0
                         scale: 0.02
+
+.. note::
+
+    In Version 1.0.0 and above, you can specify the same gamma distribution
+    using the mean::
+
+                    gamma_distribution:
+                        shape: 100.0
+                        mean: 2.0
 
 allows the effective population size of the root to be estimated, and centers
 the prior on its relative size on 2 (i.e., centers the prior expectation for
