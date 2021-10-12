@@ -123,7 +123,7 @@ or multifurcating divergences.
     The tree models with nonindependent (shared) divergences are highlighted in
     orange.
 
-|phyco| uses reversible-jump Markov chain Monte Carlo algorithms to sample this
+|Phyco| uses reversible-jump Markov chain Monte Carlo algorithms to sample this
 generalized space of trees.
 This allows joint inference of relationships, shared and multifurcating
 divergences, and divergence times.
