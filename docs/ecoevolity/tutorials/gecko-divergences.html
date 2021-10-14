@@ -1,0 +1,911 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Gecko Divergences &#8212; Ecoevolity 0.1.0 documentation</title>
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="" href="../../phycoeval/index.html" />
+    <link rel="prev" title="Tutorials" href="index.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  <div class="document">
+    
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<p class="logo">
+  <a href="../../index.html">
+    <img class="logo" src="../../_static/site-logo.svg" alt="Logo"/>
+    
+  </a>
+</p>
+
+
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=phyletica&repo=ecoevolity&type=watch&count=true&size=large&v=2"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">Ecoevolity</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../background.html">Background</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../biallelic-character-data.html">The Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../yaml-config.html">The Configuration File</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="index.html">Tutorials</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../phycoeval/index.html">Phycoeval</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../workshops/index.html">Workshops</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../changes.html">Change History</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../license.html">License</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../citation.html">Citation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../acknowledgments.html">Acknowledgments</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../glossary.html">Glossary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../zbib/references.html">Literature Cited</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html"></a><ul>
+  <li><a href="index.html">Tutorials</a><ul>
+      <li>Previous: <a href="index.html" title="previous chapter">Tutorials</a></li>
+      <li>Next: <a href="../../phycoeval/index.html" title="next chapter"></a></li>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <p><a class="reference external" href="index.html"><img alt="Ecoevolity" src="../../_images/ecoevolity-logo.svg" width="95%" /></a></p>
+<div class="section" id="gecko-divergences">
+<span id="gecko-div-tutorial"></span><h1>Gecko Divergences<a class="headerlink" href="#gecko-divergences" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="objective">
+<h2>Objective<a class="headerlink" href="#objective" title="Permalink to this headline">¶</a></h2>
+<p>Our goal is to learn how to set up, run, and interpret an ecoevolity analysis in
+order to test models of shared divergence times among taxa.</p>
+</div>
+<div class="section" id="background-information">
+<h2>Background Information<a class="headerlink" href="#background-information" title="Permalink to this headline">¶</a></h2>
+<p>Biogeographers are often interested in understanding how environmental changes
+affect the evolution of whole communities of species.
+Processes that operate on the scale of communities often predict population
+divergences and/or demographic changes that are temporally clustered across
+taxa.
+Ecoevolity provides a tool for testing such predictions using Bayesian model choice
+<a class="bibtex reference internal" href="../../zbib/references.html#oaks2018ecoevolity" id="id1">[14]</a>.</p>
+<p>For more detailed background information about the method implemented in ecoevolity,
+please <a class="reference internal" href="../background.html#background"><span class="std std-ref">see here</span></a>.</p>
+</div>
+<div class="section" id="software-used-in-this-activity">
+<h2>Software Used in this Activity<a class="headerlink" href="#software-used-in-this-activity" title="Permalink to this headline">¶</a></h2>
+<p>For this activity, we will be using ecoevolity and pycoevolity.
+If you haven’t already done so, please follow the
+<a class="reference internal" href="../../installation.html#installation"><span class="std std-ref">instructions for installing these packages</span></a>.
+Either installing ecoevolity and pycoevolity directly or using the Docker image will work
+for this tutorial.</p>
+<p>While not required, you may want to install the program
+<a class="reference external" href="https://github.com/beast-dev/tracer/releases">Tracer</a> (<a class="reference external" href="https://github.com/beast-dev/tracer/releases">https://github.com/beast-dev/tracer/releases</a>);
+it’s a nice tool for visualizing the mixing and convergence behavior of Markov
+chain Monte Carlo (MCMC) analyses.</p>
+</div>
+<div class="section" id="the-data">
+<h2>The Data<a class="headerlink" href="#the-data" title="Permalink to this headline">¶</a></h2>
+<p>We will be analyzing “RADseq” data from three pairs of gecko populations from
+the Philippine Islands.
+Each pair of populations inhabit two oceanic islands in the Philippines:</p>
+<ol class="arabic simple">
+<li><p>Babuyan Claro and Calayan</p></li>
+<li><p>Maestre De Campo and Masbate</p></li>
+<li><p>Dalupiri and Camiguin Norte</p></li>
+</ol>
+<p>Based on previous data <a class="bibtex reference internal" href="../../zbib/references.html#siler2012" id="id2">[24]</a><a class="bibtex reference internal" href="../../zbib/references.html#siler2014kikuchii" id="id3">[23]</a>,
+each of these pairs diverged very recently.
+However, because these islands were never connected, each pair’s distribution
+across both islands must have been due to over-water dispersal.
+Such rare dispersal events were likely idiosyncratic to each pair of island
+populations, and thus we do <em>not</em> expect any of these pairs co-diverged.
+For each pair of populations, the data comprise 200 RADseq loci randomly
+sub-sampled from the loci analyzed by
+Oaks <a class="bibtex reference internal" href="../../zbib/references.html#oaks2018ecoevolity" id="id4">[14]</a>.</p>
+<p>If you have not already done so, please download the data.
+If you have <a class="reference external" href="http://git-scm.com/">Git</a> installed, and you are in your command-line console,
+you can get the data via:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">git</span> <span class="n">clone</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">phyletica</span><span class="o">/</span><span class="n">ecoevolity</span><span class="o">-</span><span class="n">example</span><span class="o">-</span><span class="n">data</span><span class="o">.</span><span class="n">git</span>
+</pre></div>
+</div>
+<p>If you prefer not to use <a class="reference external" href="http://git-scm.com/">Git</a>, you can download an archive of the example
+data by
+<a class="reference external" href="https://github.com/phyletica/ecoevolity-example-data/archive/master.zip">clicking here</a>.
+If you do the latter, you’ll have to unzip the archive before proceeding.</p>
+<p>Once downloaded, navigate into the example data directory using the
+command line:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">cd</span> <span class="n">ecoevolity</span><span class="o">-</span><span class="n">example</span><span class="o">-</span><span class="n">data</span>
+</pre></div>
+</div>
+<div class="admonition-extra-steps-for-docker-users admonition">
+<p class="admonition-title">Extra steps for Docker users</p>
+<p>If you are using the Docker container to run ecoevolity, follow these two extra
+steps to be able to analyze the example files you just downloaded.
+First, make sure you are <strong>NOT</strong> inside the Docker container before
+proceeding; you want to be at your computer’s command-line console.
+After you’ve used <code class="docutils literal notranslate"><span class="pre">cd</span></code> to navigate into the example data directory,
+execute the following command to enter the Docker container:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">docker</span> <span class="n">run</span> <span class="o">-</span><span class="n">v</span> <span class="s2">&quot;$(pwd)&quot;</span><span class="p">:</span><span class="o">/</span><span class="n">portal</span> <span class="o">-</span><span class="n">it</span> <span class="n">phyletica</span><span class="o">/</span><span class="n">ecoevolity</span><span class="o">-</span><span class="n">docker</span> <span class="n">bash</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Depending on your system and how Docker is configured, you may need to use
+<code class="docutils literal notranslate"><span class="pre">sudo</span></code> to run Docker commands. If you received a “permission denied”
+message when you ran the command above, try:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sudo</span> <span class="n">docker</span> <span class="n">run</span> <span class="o">-</span><span class="n">v</span> <span class="s2">&quot;$(pwd)&quot;</span><span class="p">:</span><span class="o">/</span><span class="n">portal</span> <span class="o">-</span><span class="n">it</span> <span class="n">phyletica</span><span class="o">/</span><span class="n">ecoevolity</span><span class="o">-</span><span class="n">docker</span> <span class="n">bash</span>
+</pre></div>
+</div>
+</div>
+<p>Then, once inside the Docker container, type:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">cd</span> <span class="n">portal</span>
+</pre></div>
+</div>
+<p>For the remainder of the tutorial, enter (or copy and paste) any
+command-line instructions into the command line of the Docker container.
+However, you can view and edit the input and output files on your computer
+(outside the container) with your plain text editor of choice.</p>
+</div>
+<p>Inside the example data directory, you should find a configuration file
+<code class="docutils literal notranslate"><span class="pre">ecoevolity-config.yml</span></code> and a <code class="docutils literal notranslate"><span class="pre">nexus-files</span></code> directory containing the
+nexus-formatted RADseq data for each of our three pairs of gecko populations.
+For detailed information about how to format nexus files for ecoevolity,
+<a class="reference internal" href="../biallelic-character-data.html#data"><span class="std std-ref">click here</span></a>.</p>
+<div class="section" id="biallelic-characters">
+<h3>Biallelic characters<a class="headerlink" href="#biallelic-characters" title="Permalink to this headline">¶</a></h3>
+<p>Ecoevolity assumes all of your characters have at most two states (biallelic).
+If we provide ecoevolity with nucleotide data, it will automatically recode the data
+as biallelic by considering the first character it finds in each column as
+state <code class="docutils literal notranslate"><span class="pre">0</span></code>, and if it finds a second state it considers it state <code class="docutils literal notranslate"><span class="pre">1</span></code>.
+If it finds a third state in a column, it will report an error message and
+quit.
+For characters (columns) with more than two states, you have two options:</p>
+<ol class="arabic simple">
+<li><p>remove these columns from your matrix, or</p></li>
+<li><p>recode them as biallelic.</p></li>
+</ol>
+<p>Ecoevolity will do the latter for you (more on this in a bit).</p>
+</div>
+<div class="section" id="linked-characters">
+<h3>Linked characters<a class="headerlink" href="#linked-characters" title="Permalink to this headline">¶</a></h3>
+<p>Ecoevolity also assumes all your characters are unlinked.
+Based on simulations of data sets comprising loci with 100, 500, and 1000
+linked characters <a class="bibtex reference internal" href="../../zbib/references.html#oaks2018ecoevolity" id="id5">[14]</a>, we strongly recommend that you
+analyze all of your characters (including the constant ones) and violate the
+assumption of unlinked characters.
+In short, Ecoevolity performs better when you use all of the sites (especially the
+constant ones) compared to reducing the data to only one variable character per
+locus.
+The example data sets we’ll be analyzing consist of 200 loci each comprising
+about 90 linked sites.</p>
+</div>
+<div class="section" id="orthology">
+<h3>Orthology<a class="headerlink" href="#orthology" title="Permalink to this headline">¶</a></h3>
+<p>Within each pair, ecoevolity assumes each column represents an orthologous character
+across your samples from both populations.
+However, the characters do not need to be orthologous among your different
+pairs.
+In other words, you can sample different loci from different pairs of
+populations.
+Thus, if you are assembling your loci from raw sequence reads, it might be
+worth assembling each population pair separately to maximize the number of loci
+you get for each pair.</p>
+</div>
+</div>
+<div class="section" id="running-eco">
+<h2>Running ecoevolity<a class="headerlink" href="#running-eco" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="setting-up-the-configuration-file">
+<h3>Setting up the configuration file<a class="headerlink" href="#setting-up-the-configuration-file" title="Permalink to this headline">¶</a></h3>
+<p>Once we have our nexus files ready, the next step in an ecoevolity analysis is
+setting up the configuration file.
+Ecoevolity requires a <a class="reference external" href="http://yaml.org/">YAML</a>-formatted configuration file.
+<a class="reference external" href="http://yaml.org/">YAML</a> is a human-friendly data standard that allows you to provide ecoevolity the
+information it needs in a format that is easy for you to read and edit.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The website <a class="reference external" href="http://www.yamllint.com/">http://www.yamllint.com/</a> is a nice tool for debugging <a class="reference external" href="http://yaml.org/">YAML</a> syntax.
+You can copy and paste your config file there to check if you’re using
+valid YAML syntax.</p>
+</div>
+<p>For detailed information about all the settings that can be included in an
+ecoevolity config file,
+<a class="reference internal" href="../yaml-config.html#configfile"><span class="std std-ref">click here</span></a>.
+For the purposes of this tutorial, we’ll edit a few elements of the example
+configuration file we downloaded.</p>
+<div class="section" id="choosing-a-prior-on-the-divergence-models">
+<h4>Choosing a prior on the divergence models<a class="headerlink" href="#choosing-a-prior-on-the-divergence-models" title="Permalink to this headline">¶</a></h4>
+<p>Open the <code class="docutils literal notranslate"><span class="pre">ecoevolity-config.yml</span></code> file in the example data directory
+using a plain text editor.
+Near the top, you will see a section that looks like:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">event_model_prior</span><span class="p">:</span>
+    <span class="n">dirichlet_process</span><span class="p">:</span>
+        <span class="n">parameters</span><span class="p">:</span>
+            <span class="n">concentration</span><span class="p">:</span>
+                <span class="n">value</span><span class="p">:</span>      <span class="mf">1.414216</span>
+                <span class="n">estimate</span><span class="p">:</span>   <span class="n">false</span>
+</pre></div>
+</div>
+<p>This tells ecoevolity that, for the prior on <a class="reference internal" href="../../glossary.html#term-Event-model"><span class="xref std std-term">event models</span></a>, we want to use a
+Dirichlet process with its concentration parameter fixed to 1.414216.
+The concentration parameter allows us to control how much sharing of divergence
+times we expect <em>a priori</em>.
+For a gentle introduction to the Dirichlet process, check out
+<a class="reference internal" href="../background.html#prior-on-divergence-models"><span class="std std-ref">this section of the background page</span></a>
+or
+<a class="reference external" href="http://phyletica.org/dirichlet-process/">this blog post</a>.</p>
+<p>One of the ecoevolity tools, called DPprobs, was designed to help you get a feel
+for the Dirichlet process and choose a prior on the concentration parameter.</p>
+<p>When you type:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">dpprobs</span> <span class="o">-</span><span class="n">h</span>
+</pre></div>
+</div>
+<p>on the command line, you should see the help menu for DPprobs written to your
+screen.
+Let’s explore the current setting in the configuration file:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">dpprobs</span> <span class="o">-</span><span class="n">p</span> <span class="n">concentration</span> <span class="mf">1.414216</span> <span class="mi">3</span>
+</pre></div>
+</div>
+<p>This command tells the program (1) the parameter (<code class="docutils literal notranslate"><span class="pre">-p</span></code>) we are providing
+is the concentration parameter, (2) the value of that parameter is 1.414216,
+and (3) there are three comparisons.
+You should get output that looks similar to:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">======================================================================</span>
+                               <span class="n">DPprobs</span>
+              <span class="n">Simulating</span> <span class="n">Dirichlet</span> <span class="n">process</span> <span class="n">probabilities</span>
+
+                               <span class="n">Part</span> <span class="n">of</span><span class="p">:</span>
+                              <span class="n">Ecoevolity</span>
+      <span class="n">Version</span> <span class="mf">0.2.0</span> <span class="p">(</span><span class="n">master</span> <span class="mi">4</span><span class="n">f8811a</span><span class="p">:</span> <span class="mi">2018</span><span class="o">-</span><span class="mi">04</span><span class="o">-</span><span class="mi">30</span><span class="n">T13</span><span class="p">:</span><span class="mi">55</span><span class="p">:</span><span class="mi">12</span><span class="o">-</span><span class="mi">05</span><span class="p">:</span><span class="mi">00</span><span class="p">)</span>
+<span class="o">======================================================================</span>
+
+<span class="n">Seed</span> <span class="o">=</span> <span class="mi">117483248</span>
+<span class="n">Number</span> <span class="n">of</span> <span class="n">samples</span> <span class="o">=</span> <span class="mi">100000</span>
+<span class="n">Number</span> <span class="n">of</span> <span class="n">elements</span> <span class="o">=</span> <span class="mi">3</span>
+<span class="n">Concentration</span> <span class="o">=</span> <span class="mf">1.41422</span>
+<span class="n">Mean</span> <span class="n">number</span> <span class="n">of</span> <span class="n">categories</span> <span class="o">=</span> <span class="mi">2</span>
+
+<span class="n">Estimated</span> <span class="n">probabilities</span> <span class="n">of</span> <span class="n">the</span> <span class="n">number</span> <span class="n">of</span> <span class="n">categories</span><span class="p">:</span>
+<span class="o">----------------------------------------------------------------------</span>
+<span class="n">p</span><span class="p">(</span><span class="n">ncats</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span> <span class="o">=</span> <span class="mf">0.24394</span>      <span class="p">(</span><span class="n">n</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span>
+<span class="n">p</span><span class="p">(</span><span class="n">ncats</span> <span class="o">=</span> <span class="mi">2</span><span class="p">)</span> <span class="o">=</span> <span class="mf">0.51361</span>      <span class="p">(</span><span class="n">n</span> <span class="o">=</span> <span class="mi">3</span><span class="p">)</span>
+<span class="n">p</span><span class="p">(</span><span class="n">ncats</span> <span class="o">=</span> <span class="mi">3</span><span class="p">)</span> <span class="o">=</span> <span class="mf">0.24245</span>      <span class="p">(</span><span class="n">n</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span>
+<span class="o">----------------------------------------------------------------------</span>
+
+<span class="n">Runtime</span><span class="p">:</span> <span class="mi">0</span> <span class="n">seconds</span><span class="o">.</span>
+</pre></div>
+</div>
+<p>This tells us that the prior mean number of divergence events under a Dirichlet
+process with the specified concentration parameter and 3 comparisons is 2.
+It also shows us Monte Carlo approximations for the prior probability for each
+possible number of divergence events.</p>
+<p>Now, let’s find out what value of the concentration parameter corresponds
+with a prior mean number of divergences events of 2.5.
+We’ll also request 1 million simulations under the Dirichlet process to get
+more precise Monte Carlo estimates of the prior probabilities of the possible
+numbers of divergence events:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">dpprobs</span> <span class="o">-</span><span class="n">p</span> <span class="n">mean</span> <span class="o">-</span><span class="n">n</span> <span class="mi">1000000</span> <span class="mf">2.5</span> <span class="mi">3</span>
+</pre></div>
+</div>
+<p>Our output now looks something like:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">======================================================================</span>
+                               <span class="n">DPprobs</span>
+              <span class="n">Simulating</span> <span class="n">Dirichlet</span> <span class="n">process</span> <span class="n">probabilities</span>
+
+                               <span class="n">Part</span> <span class="n">of</span><span class="p">:</span>
+                              <span class="n">Ecoevolity</span>
+      <span class="n">Version</span> <span class="mf">0.2.0</span> <span class="p">(</span><span class="n">master</span> <span class="mi">4</span><span class="n">f8811a</span><span class="p">:</span> <span class="mi">2018</span><span class="o">-</span><span class="mi">04</span><span class="o">-</span><span class="mi">30</span><span class="n">T13</span><span class="p">:</span><span class="mi">55</span><span class="p">:</span><span class="mi">12</span><span class="o">-</span><span class="mi">05</span><span class="p">:</span><span class="mi">00</span><span class="p">)</span>
+<span class="o">======================================================================</span>
+
+<span class="n">Seed</span> <span class="o">=</span> <span class="mi">268086367</span>
+<span class="n">Number</span> <span class="n">of</span> <span class="n">samples</span> <span class="o">=</span> <span class="mi">1000000</span>
+<span class="n">Number</span> <span class="n">of</span> <span class="n">elements</span> <span class="o">=</span> <span class="mi">3</span>
+<span class="n">Concentration</span> <span class="o">=</span> <span class="mf">4.37229</span>
+<span class="n">Mean</span> <span class="n">number</span> <span class="n">of</span> <span class="n">categories</span> <span class="o">=</span> <span class="mf">2.5</span>
+
+<span class="n">Estimated</span> <span class="n">probabilities</span> <span class="n">of</span> <span class="n">the</span> <span class="n">number</span> <span class="n">of</span> <span class="n">categories</span><span class="p">:</span>
+<span class="o">----------------------------------------------------------------------</span>
+<span class="n">p</span><span class="p">(</span><span class="n">ncats</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span> <span class="o">=</span> <span class="mf">0.05873</span>      <span class="p">(</span><span class="n">n</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span>
+<span class="n">p</span><span class="p">(</span><span class="n">ncats</span> <span class="o">=</span> <span class="mi">2</span><span class="p">)</span> <span class="o">=</span> <span class="mf">0.383424</span>     <span class="p">(</span><span class="n">n</span> <span class="o">=</span> <span class="mi">3</span><span class="p">)</span>
+<span class="n">p</span><span class="p">(</span><span class="n">ncats</span> <span class="o">=</span> <span class="mi">3</span><span class="p">)</span> <span class="o">=</span> <span class="mf">0.557846</span>     <span class="p">(</span><span class="n">n</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span>
+<span class="o">----------------------------------------------------------------------</span>
+
+<span class="n">Runtime</span><span class="p">:</span> <span class="mi">0</span> <span class="n">seconds</span><span class="o">.</span>
+</pre></div>
+</div>
+<p>This tells us a concentration parameter of about 4.37 corresponds with a prior
+expectation of 2.5 divergence events (when there are 3 comparisons).
+The output also shows us that the prior probability of the model with three
+divergences is almost 56%.</p>
+<p>If, instead of fixing the concentration parameter, we prefer to place a
+gamma-distributed prior on it, we can specify the shape parameter we would
+like to use for that gamma prior:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">dpprobs</span> <span class="o">-</span><span class="n">p</span> <span class="n">mean</span> <span class="o">-</span><span class="n">n</span> <span class="mi">1000000</span> <span class="o">--</span><span class="n">shape</span> <span class="mf">2.0</span> <span class="mf">2.5</span> <span class="mi">3</span>
+</pre></div>
+</div>
+<p>Output:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">======================================================================</span>
+                               <span class="n">DPprobs</span>
+              <span class="n">Simulating</span> <span class="n">Dirichlet</span> <span class="n">process</span> <span class="n">probabilities</span>
+
+                               <span class="n">Part</span> <span class="n">of</span><span class="p">:</span>
+                              <span class="n">Ecoevolity</span>
+      <span class="n">Version</span> <span class="mf">0.2.0</span> <span class="p">(</span><span class="n">master</span> <span class="mi">4</span><span class="n">f8811a</span><span class="p">:</span> <span class="mi">2018</span><span class="o">-</span><span class="mi">04</span><span class="o">-</span><span class="mi">30</span><span class="n">T13</span><span class="p">:</span><span class="mi">55</span><span class="p">:</span><span class="mi">12</span><span class="o">-</span><span class="mi">05</span><span class="p">:</span><span class="mi">00</span><span class="p">)</span>
+<span class="o">======================================================================</span>
+
+<span class="n">Seed</span> <span class="o">=</span> <span class="mi">1423802726</span>
+<span class="n">Number</span> <span class="n">of</span> <span class="n">samples</span> <span class="o">=</span> <span class="mi">1000000</span>
+<span class="n">Number</span> <span class="n">of</span> <span class="n">elements</span> <span class="o">=</span> <span class="mi">3</span>
+<span class="n">Concentration</span> <span class="o">~</span> <span class="n">gamma</span><span class="p">(</span><span class="n">shape</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span> <span class="n">scale</span> <span class="o">=</span> <span class="mf">2.18615</span><span class="p">)</span>
+<span class="n">Mean</span> <span class="n">number</span> <span class="n">of</span> <span class="n">categories</span> <span class="n">given</span> <span class="n">mean</span> <span class="n">concentration</span> <span class="o">=</span> <span class="mf">2.5</span>
+
+<span class="n">Estimated</span> <span class="n">probabilities</span> <span class="n">of</span> <span class="n">the</span> <span class="n">number</span> <span class="n">of</span> <span class="n">categories</span><span class="p">:</span>
+<span class="o">----------------------------------------------------------------------</span>
+<span class="n">p</span><span class="p">(</span><span class="n">ncats</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span> <span class="o">=</span> <span class="mf">0.123055</span>     <span class="p">(</span><span class="n">n</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span>
+<span class="n">p</span><span class="p">(</span><span class="n">ncats</span> <span class="o">=</span> <span class="mi">2</span><span class="p">)</span> <span class="o">=</span> <span class="mf">0.392924</span>     <span class="p">(</span><span class="n">n</span> <span class="o">=</span> <span class="mi">3</span><span class="p">)</span>
+<span class="n">p</span><span class="p">(</span><span class="n">ncats</span> <span class="o">=</span> <span class="mi">3</span><span class="p">)</span> <span class="o">=</span> <span class="mf">0.484021</span>     <span class="p">(</span><span class="n">n</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span>
+<span class="o">----------------------------------------------------------------------</span>
+
+<span class="n">Runtime</span><span class="p">:</span> <span class="mi">0</span> <span class="n">seconds</span><span class="o">.</span>
+</pre></div>
+</div>
+<p>The output now shows us which gamma distribution has a mean concentration that
+corresponds with a Dirichlet process with an expected number of divergence
+events of 2.5.
+There is no “correct” or “best” value or prior to use for the concentration
+parameter.
+It depends on your system and prior expectations.
+Often, when testing for shared divergences, I like to choose a value or prior
+for the concentration parameter that puts 50% of the prior probability on the
+maximum number of divergence events (i.e., the divergence model with no shared
+divergences).
+That way, if the results support shared divergences, I can be more confident
+the data are driving the result.
+But, this is just my personal preference.</p>
+<p>Okay, let’s edit our config to increase the concentration parameter to favor
+more divergence events <em>a priori</em>.
+Change:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">event_model_prior</span><span class="p">:</span>
+    <span class="n">dirichlet_process</span><span class="p">:</span>
+        <span class="n">parameters</span><span class="p">:</span>
+            <span class="n">concentration</span><span class="p">:</span>
+                <span class="n">value</span><span class="p">:</span>      <span class="mf">1.414216</span>
+                <span class="n">estimate</span><span class="p">:</span>   <span class="n">false</span>
+</pre></div>
+</div>
+<p>To:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">event_model_prior</span><span class="p">:</span>
+    <span class="n">dirichlet_process</span><span class="p">:</span>
+        <span class="n">parameters</span><span class="p">:</span>
+            <span class="n">concentration</span><span class="p">:</span>
+                <span class="n">value</span><span class="p">:</span>      <span class="mf">3.564</span>
+                <span class="n">estimate</span><span class="p">:</span>   <span class="n">false</span>
+</pre></div>
+</div>
+<p>Under this new setting, what is the prior expectation for the number of
+divergence events, and what is the prior probability for the model with 3
+divergence events?
+Use <code class="docutils literal notranslate"><span class="pre">dpprobs</span></code> to find out!</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>We recommend that you analyze your data under multiple settings for the
+concentration parameter, so you can assess how sensitive the results
+are to your prior assumptions.</p>
+</div>
+</div>
+<div class="section" id="choosing-a-prior-on-divergence-times">
+<h4>Choosing a prior on divergence times<a class="headerlink" href="#choosing-a-prior-on-divergence-times" title="Permalink to this headline">¶</a></h4>
+<p>Next, let’s change the prior on the divergence times.
+Currently, the config file specifies an exponential distribution with a rate of
+10:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">event_time_prior</span><span class="p">:</span>
+    <span class="n">exponential_distribution</span><span class="p">:</span>
+        <span class="n">rate</span><span class="p">:</span> <span class="mf">10.0</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>In Version 1.0.0 and above, you can specify the same exponential
+distribution using the mean:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">exponential_distribution</span><span class="p">:</span>
+    <span class="n">mean</span><span class="p">:</span> <span class="mf">0.1</span>
+</pre></div>
+</div>
+</div>
+<p>This corresponds to a prior mean divergence time of 1/rate = 1/10.0 = 0.1.
+What are the units of time?
+To determine this, we need to look at the settings for the mutation rate.
+If we look in the <code class="docutils literal notranslate"><span class="pre">global_comparison_settings</span></code> section, we see:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">mutation_rate</span><span class="p">:</span>
+    <span class="n">value</span><span class="p">:</span> <span class="mf">1.0</span>
+    <span class="n">estimate</span><span class="p">:</span> <span class="n">false</span>
+</pre></div>
+</div>
+<p>Given that this global comparison setting is not overridden within any of the
+<code class="docutils literal notranslate"><span class="pre">comparison</span></code> settings, this tells us we are fixing the mutation rate to
+1.0 for all three pairs of gecko populations.
+As a result, our time units are expected substitutions per site.</p>
+<p>Let’s assume that, based on prior information, we are quite confident these
+geckos have experienced fewer than 1 substitution per every 10 characters since
+the populations diverged.
+Let’s change the prior to a gamma distribution with a shape of 2.0 and a
+scale of 0.005.
+Change:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">event_time_prior</span><span class="p">:</span>
+    <span class="n">exponential_distribution</span><span class="p">:</span>
+        <span class="n">rate</span><span class="p">:</span> <span class="mf">10.0</span>
+</pre></div>
+</div>
+<p>To:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">event_time_prior</span><span class="p">:</span>
+    <span class="n">gamma_distribution</span><span class="p">:</span>
+        <span class="n">shape</span><span class="p">:</span> <span class="mf">2.0</span>
+        <span class="n">scale</span><span class="p">:</span> <span class="mf">0.005</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>In Version 1.0.0 and above, you can specify the same gamma
+distribution using the mean:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">gamma_distribution</span><span class="p">:</span>
+    <span class="n">shape</span><span class="p">:</span> <span class="mf">2.0</span>
+    <span class="n">mean</span><span class="p">:</span> <span class="mf">0.01</span>
+</pre></div>
+</div>
+</div>
+<p>This corresponds with a prior mean time of divergence of
+<img class="math" src="../../_images/math/05993a47a731d481529b08216faa2b3ff63326c1.svg" alt="\textrm{shape} \times \textrm{scale} = 2(0.005) = 0.01"/>
+substitutions per site, and variance of
+<img class="math" src="../../_images/math/38972245684e037b1c80b4fcd78fd649007ec314.svg" alt="\textrm{shape} \times \textrm{scale}^2 = 2(0.005^2) = 0.00005"/>.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>We strongly recommend that you analyze your data under multiple different
+priors on the divergence times, so you can assess how sensitive the
+results are to your prior assumptions.
+The prior on the divergence times can have a large affect on the marginal
+likelihoods of the divergence models, and thus the model posterior
+probabilities
+<a class="bibtex reference internal" href="../../zbib/references.html#oaks2012" id="id6">[19]</a><a class="bibtex reference internal" href="../../zbib/references.html#oaks2014reply" id="id7">[17]</a><a class="bibtex reference internal" href="../../zbib/references.html#oaks2018marginal" id="id8">[15]</a>.
+While ecoevolity tends to be much less sensitive to this than the ABC methods,
+it is still good to examine the affect of the divergence time prior.</p>
+</div>
+</div>
+</div>
+<div class="section" id="running-the-analysis">
+<h3>Running the analysis<a class="headerlink" href="#running-the-analysis" title="Permalink to this headline">¶</a></h3>
+<p>Now that we have our data files and config file ready, let’s go ahead
+and try running an analysis with ecoevolity:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">ecoevolity</span> <span class="n">ecoevolity</span><span class="o">-</span><span class="n">config</span><span class="o">.</span><span class="n">yml</span>
+</pre></div>
+</div>
+<p>Oops, we got an error:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1">#######################################################################</span>
+<span class="c1">###############################  ERROR  ###############################</span>
+<span class="mi">1</span> <span class="n">sites</span> <span class="kn">from</span> <span class="nn">the</span> <span class="n">alignment</span> <span class="ow">in</span><span class="p">:</span>
+    <span class="s1">&#39;nexus-files/BabuyanClaro-Calayan.nex&#39;</span>
+<span class="n">have</span> <span class="n">more</span> <span class="n">than</span> <span class="n">two</span> <span class="n">character</span> <span class="n">states</span><span class="o">.</span>
+<span class="c1">#######################################################################</span>
+</pre></div>
+</div>
+<p>This error message is telling us that we have a site (column) in one of our
+character matrices where there are more than two states represented across our
+samples.
+As discussed above, at this point, we have 2 options: (1) remove any
+characters with more than two states, or (2) recode these sites
+as biallelic.
+The latter ecoevolity will do for us if we specify the <code class="docutils literal notranslate"><span class="pre">--relax-triallelic-sites</span></code>
+option in our command.
+When we use this option, ecoevolity will consider the first state in a column as
+<code class="docutils literal notranslate"><span class="pre">0</span></code>, and any other state found in the column as <code class="docutils literal notranslate"><span class="pre">1</span></code>.
+In all the data sets we’ve analyzed so far, there has been no discernible
+difference in the results between removing or recoding the triallelic sites.
+However, if you have such sites in your data, we recommend trying both options
+to see if it affects the results.
+Ok, let’s go ahead and let ecoevolity recode our characters with more than two
+states as binary:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">ecoevolity</span> <span class="o">--</span><span class="n">relax</span><span class="o">-</span><span class="n">triallelic</span><span class="o">-</span><span class="n">sites</span> <span class="n">ecoevolity</span><span class="o">-</span><span class="n">config</span><span class="o">.</span><span class="n">yml</span>
+</pre></div>
+</div>
+<p>Shoot, another error!:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1">#######################################################################</span>
+<span class="c1">###############################  ERROR  ###############################</span>
+<span class="mi">25</span> <span class="n">sites</span> <span class="kn">from</span> <span class="nn">the</span> <span class="n">alignment</span> <span class="ow">in</span><span class="p">:</span>
+    <span class="s1">&#39;nexus-files/BabuyanClaro-Calayan.nex&#39;</span>
+<span class="n">have</span> <span class="n">no</span> <span class="n">data</span> <span class="k">for</span> <span class="n">at</span> <span class="n">least</span> <span class="n">one</span> <span class="n">population</span><span class="o">.</span>
+<span class="c1">#######################################################################</span>
+</pre></div>
+</div>
+<p>This error message is informing us that for some of our characters, we have no
+data for at least one of the two populations of the Babuyan Claro-Calayan pair.
+Such sites can be common in RADseq loci, because most assemblers seem to
+enforce thresholds on missing data at the locus level.
+Rather than removing these sites ourselves, we can tell ecoevolity to ignore them:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">ecoevolity</span> <span class="o">--</span><span class="n">relax</span><span class="o">-</span><span class="n">triallelic</span><span class="o">-</span><span class="n">sites</span> <span class="o">--</span><span class="n">relax</span><span class="o">-</span><span class="n">missing</span><span class="o">-</span><span class="n">sites</span> <span class="n">ecoevolity</span><span class="o">-</span><span class="n">config</span><span class="o">.</span><span class="n">yml</span>
+</pre></div>
+</div>
+<p>Now, you should be running!</p>
+</div>
+<div class="section" id="checking-the-pre-mcmc-screen-output">
+<h3>Checking the pre-MCMC screen output<a class="headerlink" href="#checking-the-pre-mcmc-screen-output" title="Permalink to this headline">¶</a></h3>
+<p>While the analysis is running, let’s scroll up in our console and look at the
+information ecoevolity reported before the MCMC chain started sampling.
+This output goes by very quickly, but it’s <strong>very</strong> important to read it
+over to make sure ecoevolity is doing what you think it’s doing.
+At the very top, you will see something like:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">======================================================================</span>
+                              <span class="n">Ecoevolity</span>
+                  <span class="n">Estimating</span> <span class="n">evolutionary</span> <span class="n">coevality</span>
+      <span class="n">Version</span> <span class="mf">0.2.0</span> <span class="p">(</span><span class="n">master</span> <span class="n">c59888c</span><span class="p">:</span> <span class="mi">2018</span><span class="o">-</span><span class="mi">05</span><span class="o">-</span><span class="mi">27</span><span class="n">T13</span><span class="p">:</span><span class="mi">26</span><span class="p">:</span><span class="mi">11</span><span class="o">-</span><span class="mi">05</span><span class="p">:</span><span class="mi">00</span><span class="p">)</span>
+<span class="o">======================================================================</span>
+
+<span class="n">Seed</span><span class="p">:</span> <span class="mi">713687808</span>
+<span class="n">Using</span> <span class="n">data</span> <span class="ow">in</span> <span class="n">order</span> <span class="n">to</span> <span class="n">sample</span> <span class="kn">from</span> <span class="nn">the</span> <span class="n">posterior</span> <span class="n">distribution</span><span class="o">...</span>
+<span class="n">Config</span> <span class="n">path</span><span class="p">:</span> <span class="n">ecoevolity</span><span class="o">-</span><span class="n">config</span><span class="o">.</span><span class="n">yml</span>
+</pre></div>
+</div>
+<p>This gives us detailed information about the version of ecoevolity we are using
+(right down to the specific commit SHA).
+It also tells us what number was used to seed the random number generator; we
+would need to provide ecoevolity this seed number in order to reproduce our results.
+The output is also telling us that ecoevolity is using the data to sample from the
+posterior, as opposed to ignoring the data to sample from the prior.</p>
+<p>Next, ecoevolity reports a fully specified configuration file to the screen.
+It’s always good to look this over to make sure ecoevolity is configured as you
+expect.
+After the config output, you should see a series of warning messages alerting
+you to the fact that ecoevolity is recoding some polyallelic sites to biallelic, and
+also ignoring some sites that lack data from at least one population.
+Without using the <code class="docutils literal notranslate"><span class="pre">--relax-triallelic-sites</span></code> and  <code class="docutils literal notranslate"><span class="pre">--relax-missing-sites</span></code>
+options these warnings would have been errors that stopped ecoevolity from running.
+Always look over these warnings to make sure ecoevolity is not removing or
+recoding anything you didn’t expect.</p>
+<p>Next, you will see a summary of the data from your comparisons:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>----------------------------------------------------------------------
+Summary of data from 3 comparisons:
+    Summary of data from &#39;nexus-files/BabuyanClaro-Calayan.nex&#39;:
+        Genotypes: diploid
+        Markers are dominant? false
+        Number of populations: 2
+        Number of sites: 27340
+        Number of variable sites: 102
+        Number of patterns: 71
+        Patterns folded? true
+        Population label (max # of alleles sampled):
+            BabuyanClaro0 (10)
+            Calayan0 (10)
+    Summary of data from &#39;nexus-files/MaestreDeCampo-Masbate.nex&#39;:
+        Genotypes: diploid
+        Markers are dominant? false
+        Number of populations: 2
+        Number of sites: 27311
+        Number of variable sites: 257
+        Number of patterns: 51
+        Patterns folded? true
+        Population label (max # of alleles sampled):
+            MaestreDeCampo1 (6)
+            Masbate1 (6)
+    Summary of data from &#39;nexus-files/Dalupiri-CamiguinNorte.nex&#39;:
+        Genotypes: diploid
+        Markers are dominant? false
+        Number of populations: 2
+        Number of sites: 27285
+        Number of variable sites: 112
+        Number of patterns: 76
+        Patterns folded? true
+        Population label (max # of alleles sampled):
+            CamiguinNorte2 (10)
+            Dalupiri2 (10)
+----------------------------------------------------------------------
+</pre></div>
+</div>
+<p>It is <strong>very important</strong> to look over this summary to make sure ecoevolity
+“sees” your data the way you expect it should.
+Make sure the number of sites, the number of populations, and the number of
+alleles per population match your expectations!</p>
+<p>Next, ecoevolity reports a summary of the state of the MCMC chain to the screen for
+every 10th sample it’s logging to an output file.
+After the chain finishes, ecoevolity also reports stats associated with all of the
+MCMC operators; this information is also logged to a file.</p>
+</div>
+</div>
+<div class="section" id="the-output-files">
+<h2>The Output Files<a class="headerlink" href="#the-output-files" title="Permalink to this headline">¶</a></h2>
+<p>After the analysis finishes, type <code class="docutils literal notranslate"><span class="pre">ls</span></code> at the command line:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">ls</span>
+</pre></div>
+</div>
+<p>You should see two log files that were created by ecoevolity:</p>
+<ol class="arabic simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">ecoevolity-config-operator-run-1.log</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ecoevolity-config-state-run-1.log</span></code></p></li>
+</ol>
+<p>If you open the <code class="docutils literal notranslate"><span class="pre">operator</span></code> log with a plain text editor, you’ll see this file
+contains information about the MCMC operators.
+If you have convergence or mixing issues, this information can be useful for
+troubleshooting.</p>
+<p>If you open the <code class="docutils literal notranslate"><span class="pre">state</span></code> file, you’ll see it contains the MCMC samples.</p>
+</div>
+<div class="section" id="summarizing-and-plotting-the-results">
+<h2>Summarizing and Plotting the Results<a class="headerlink" href="#summarizing-and-plotting-the-results" title="Permalink to this headline">¶</a></h2>
+<p>Before we start summarizing the results, let’s run a second chain so we can
+assess convergence and boost our posterior sample size:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">ecoevolity</span> <span class="o">--</span><span class="n">relax</span><span class="o">-</span><span class="n">triallelic</span><span class="o">-</span><span class="n">sites</span> <span class="o">--</span><span class="n">relax</span><span class="o">-</span><span class="n">missing</span><span class="o">-</span><span class="n">sites</span> <span class="n">ecoevolity</span><span class="o">-</span><span class="n">config</span><span class="o">.</span><span class="n">yml</span>
+</pre></div>
+</div>
+<p>Now’s a good time to go grab a coffee, while you wait for the second chain to
+finish running.
+After the chain finishes, if you use <code class="docutils literal notranslate"><span class="pre">ls</span></code> you should see another <code class="docutils literal notranslate"><span class="pre">operator</span></code>
+and <code class="docutils literal notranslate"><span class="pre">state</span></code> log file:</p>
+<ol class="arabic simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">ecoevolity-config-operator-run-2.log</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ecoevolity-config-state-run-2.log</span></code></p></li>
+</ol>
+<div class="section" id="assessing-mixing-and-convergence">
+<h3>Assessing mixing and convergence<a class="headerlink" href="#assessing-mixing-and-convergence" title="Permalink to this headline">¶</a></h3>
+<p>Now, let’s use the <code class="docutils literal notranslate"><span class="pre">pyco-sumchains</span></code> tool of the pycoevolity packages to help assess
+the convergence of our chains and choose what number of samples we want to remove
+as “burn in”:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pyco</span><span class="o">-</span><span class="n">sumchains</span> <span class="o">-</span><span class="n">s</span> <span class="mi">100</span> <span class="n">ecoevolity</span><span class="o">-</span><span class="n">config</span><span class="o">-</span><span class="n">state</span><span class="o">-</span><span class="n">run</span><span class="o">-</span><span class="mf">1.</span><span class="n">log</span> <span class="n">ecoevolity</span><span class="o">-</span><span class="n">config</span><span class="o">-</span><span class="n">state</span><span class="o">-</span><span class="n">run</span><span class="o">-</span><span class="mf">2.</span><span class="n">log</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">pyco-sumchains</span></code> removes an increasing number of samples
+from the beginning of the chains (i.e., burn in) and reports the effective
+sample size (ESS) and potential scale reduction factor (PSRF) for every
+continuous parameter and log likelihood score.
+The <code class="docutils literal notranslate"><span class="pre">-s</span> <span class="pre">100</span></code> option tells <code class="docutils literal notranslate"><span class="pre">pyco-sumchains</span></code> to remove 100 samples at a time.
+After the table of ESS and PSRF values, it also reports a summary that can
+be useful:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Continuous</span> <span class="n">parameter</span> <span class="k">with</span> <span class="n">lowest</span> <span class="n">mean</span> <span class="n">ESS</span><span class="p">:</span> <span class="n">pop_size_Dalupiri2</span>
+<span class="n">Burnin</span> <span class="n">value</span> <span class="n">that</span> <span class="n">maximized</span> <span class="n">ESS</span> <span class="n">of</span> <span class="n">pop_size_Dalupiri2</span><span class="p">:</span> <span class="mi">100</span> <span class="n">samples</span> <span class="p">(</span><span class="n">ESS</span> <span class="o">=</span> <span class="mf">544.00</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>This tells us which parameter had the lowest mean ESS value
+across all the burn-in values.
+It also tells us what burn-in value was associated with the highest ESS for
+this parameter.</p>
+<p>If you want the ESS and PSRF table in a text file that you can open with Excel,
+simply use <code class="docutils literal notranslate"><span class="pre">&gt;</span></code> to redirect the standard output:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pyco</span><span class="o">-</span><span class="n">sumchains</span> <span class="o">-</span><span class="n">s</span> <span class="mi">100</span> <span class="n">ecoevolity</span><span class="o">-</span><span class="n">config</span><span class="o">-</span><span class="n">state</span><span class="o">-</span><span class="n">run</span><span class="o">-</span><span class="mf">1.</span><span class="n">log</span> <span class="n">ecoevolity</span><span class="o">-</span><span class="n">config</span><span class="o">-</span><span class="n">state</span><span class="o">-</span><span class="n">run</span><span class="o">-</span><span class="mf">2.</span><span class="n">log</span> <span class="o">&gt;</span> <span class="n">pyco</span><span class="o">-</span><span class="n">sumchains</span><span class="o">-</span><span class="n">table</span><span class="o">.</span><span class="n">txt</span>
+</pre></div>
+</div>
+<p>Once <code class="docutils literal notranslate"><span class="pre">pyco-sumchains</span></code> finishes you can open the <code class="docutils literal notranslate"><span class="pre">pyco-sumchains-table.txt</span></code>
+file with Excel to see how the ESS and PSRF of each parameter changes as the
+burn in increases.</p>
+<p>If you have <a class="reference external" href="https://github.com/beast-dev/tracer/releases">Tracer</a> installed, you can use it to look at the convergence and
+mixing behavior of the chains.</p>
+<p>From my <code class="docutils literal notranslate"><span class="pre">pyco-sumchains</span></code> output and inspecting the chains in <a class="reference external" href="https://github.com/beast-dev/tracer/releases">Tracer</a>,
+ignoring the fist 101 samples as burn-in seems conservative.
+That’s the burn-in value I will use below when summarizing and plotting the
+results.</p>
+</div>
+<div class="section" id="summarizing-divergence-model-posterior-probabilities">
+<h3>Summarizing divergence-model posterior probabilities<a class="headerlink" href="#summarizing-divergence-model-posterior-probabilities" title="Permalink to this headline">¶</a></h3>
+<p>Next, let’s use the <code class="docutils literal notranslate"><span class="pre">sumcoevolity</span></code> tool to calculate the posterior probabilities and
+Bayes factors for divergence models:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sumcoevolity</span> <span class="o">-</span><span class="n">b</span> <span class="mi">101</span> <span class="o">-</span><span class="n">c</span> <span class="n">ecoevolity</span><span class="o">-</span><span class="n">config</span><span class="o">.</span><span class="n">yml</span> <span class="o">-</span><span class="n">n</span> <span class="mi">1000000</span> <span class="n">ecoevolity</span><span class="o">-</span><span class="n">config</span><span class="o">-</span><span class="n">state</span><span class="o">-</span><span class="n">run</span><span class="o">-</span><span class="mf">1.</span><span class="n">log</span> <span class="n">ecoevolity</span><span class="o">-</span><span class="n">config</span><span class="o">-</span><span class="n">state</span><span class="o">-</span><span class="n">run</span><span class="o">-</span><span class="mf">2.</span><span class="n">log</span>
+</pre></div>
+</div>
+<p>Let’s break down what these arguments mean:</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">-b</span> <span class="pre">101</span></code> tells <code class="docutils literal notranslate"><span class="pre">sumcoevolity</span></code> to ignore the first 101 samples in our log files</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">-c</span> <span class="pre">ecoevolity-config.yml</span></code> tells <code class="docutils literal notranslate"><span class="pre">sumcoevolity</span></code> where our config file is.</p>
+<p><code class="docutils literal notranslate"><span class="pre">sumcoevolity</span></code> will use the config file to run simulations under the Dirichlet
+process in order to get prior probabilities of divergence models for
+calculating Bayes factors.</p>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">-n</span> <span class="pre">1000000</span></code> tells <code class="docutils literal notranslate"><span class="pre">sumcoevolity</span></code> to use 1 million simulations under the
+Dirichlet process to approximate the prior probabilities</p></li>
+</ul>
+<p><code class="docutils literal notranslate"><span class="pre">sumcoevolity</span></code> will produce two files:</p>
+<ol class="arabic simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">sumcoevolity-results-model.txt</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">sumcoevolity-results-nevents.txt</span></code></p></li>
+</ol>
+<p>Let’s open the <code class="docutils literal notranslate"><span class="pre">sumcoevolity-results-model.txt</span></code> first.
+The content should looks something like:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">model</span>       <span class="n">post_prob</span>       <span class="n">cumulative_post_prob</span>    <span class="n">prior_prob</span>      <span class="n">bf</span>
+<span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span>       <span class="o">&gt;</span><span class="mf">0.999545</span>       <span class="mi">1</span>       <span class="mf">0.50013</span> <span class="o">&gt;</span><span class="mf">2197.86</span>
+</pre></div>
+</div>
+<p>This is showing us a list of models that were sampled by the chains, ranked by their
+posterior probability.
+In my case, there was only a single model sampled: <code class="docutils literal notranslate"><span class="pre">0,1,2</span></code>.
+The notation is a list of divergence-event indices for each of our population pairs.
+In my case, all three pairs have a unique index, and so all three diverged at
+their own event (the 3-divergence model).
+The output also includes the cumulative posterior probability so you can easily
+evaluate credible sets.
+It also shows the prior probability and Bayes factor (<code class="docutils literal notranslate"><span class="pre">bf</span></code>).
+The Bayes factor is the factor by which the posterior odds of the model has
+changed from our prior odds.
+In this case, both the posterior and prior odds are comparing the probability
+of the model in the row versus all other possible models.</p>
+<p>Now, let’s open the <code class="docutils literal notranslate"><span class="pre">sumcoevolity-results-nevents.txt</span></code>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">number_of_events</span>    <span class="n">post_prob</span>       <span class="n">cumulative_post_prob</span>    <span class="n">prior_prob</span>      <span class="n">bf</span>
+<span class="mi">3</span>   <span class="o">&gt;</span><span class="mf">0.999545</span>       <span class="mi">1</span>       <span class="mf">0.50013</span> <span class="o">&gt;</span><span class="mf">2197.86</span>
+<span class="mi">1</span>   <span class="o">&lt;</span><span class="mf">0.000454545</span>    <span class="mi">1</span>       <span class="mf">0.078258</span>        <span class="o">&lt;</span><span class="mf">0.00535618</span>
+<span class="mi">2</span>   <span class="o">&lt;</span><span class="mf">0.000454545</span>    <span class="mi">1</span>       <span class="mf">0.421612</span>        <span class="o">&lt;</span><span class="mf">0.000623851</span>
+</pre></div>
+</div>
+<p>This content is similar to the previous file, but now we are looking at the
+number of divergence events, rather than specific models.
+Each row is one of the possible numbers of events, ranked by their posterior
+probability.
+Just like the last file, the cumulative posterior probability, prior
+probability, and Bayes factor is given for each number of divergence events.</p>
+</div>
+<div class="section" id="plotting-posterior-probabilities-of-the-number-of-events">
+<h3>Plotting posterior probabilities of the number of events<a class="headerlink" href="#plotting-posterior-probabilities-of-the-number-of-events" title="Permalink to this headline">¶</a></h3>
+<p>Now, we can use the <code class="docutils literal notranslate"><span class="pre">pyco-sumtimes</span></code> tool of the pycoevolity package to plot the
+information in the <code class="docutils literal notranslate"><span class="pre">sumcoevolity-results-nevents.txt</span></code> file:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pyco</span><span class="o">-</span><span class="n">sumevents</span> <span class="n">sumcoevolity</span><span class="o">-</span><span class="n">results</span><span class="o">-</span><span class="n">nevents</span><span class="o">.</span><span class="n">txt</span>
+</pre></div>
+</div>
+<p>This should create a plot (in a variety of file formats) that looks something
+like the following.</p>
+<div class="figure align-center" style="width: 90%">
+<a class="reference internal image-reference" href="../../_images/pycoevolity-nevents.svg"><img alt="Pycoevolity nevent plot" src="../../_images/pycoevolity-nevents.svg" width="600px" /></a>
+</div>
+<p>This is just a bar plot representation of the information in the
+<code class="docutils literal notranslate"><span class="pre">sumcoevolity-results-nevents.txt</span></code>.
+If you checkout the help menu using <code class="docutils literal notranslate"><span class="pre">pyco-sumevents</span> <span class="pre">-h</span></code>,
+you’ll see there are several options to customize your plot.
+Also, <code class="docutils literal notranslate"><span class="pre">pyco-sumtimes</span></code> spits out the R script it used to create the
+plot, if you want to customize it further.</p>
+</div>
+<div class="section" id="plotting-marginal-divergence-times">
+<h3>Plotting marginal divergence times<a class="headerlink" href="#plotting-marginal-divergence-times" title="Permalink to this headline">¶</a></h3>
+<p>Now let’s plot the marginal posterior distributions for the divergences
+times of our three pairs of gecko populations:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pyco</span><span class="o">-</span><span class="n">sumtimes</span> <span class="o">-</span><span class="n">b</span> <span class="mi">101</span> <span class="o">-</span><span class="n">z</span> <span class="n">ecoevolity</span><span class="o">-</span><span class="n">config</span><span class="o">-</span><span class="n">state</span><span class="o">-</span><span class="n">run</span><span class="o">-</span><span class="mf">1.</span><span class="n">log</span> <span class="n">ecoevolity</span><span class="o">-</span><span class="n">config</span><span class="o">-</span><span class="n">state</span><span class="o">-</span><span class="n">run</span><span class="o">-</span><span class="mf">2.</span><span class="n">log</span>
+</pre></div>
+</div>
+<p>This should create a plot (in a variety of file formats) that looks something
+like the following.</p>
+<div class="figure align-center" style="width: 90%">
+<a class="reference internal image-reference" href="../../_images/pycoevolity-times.svg"><img alt="Pycoevolity time plot" src="../../_images/pycoevolity-times.svg" width="600px" /></a>
+</div>
+<p>Again, <code class="docutils literal notranslate"><span class="pre">pyco-sumtimes</span> <span class="pre">-h</span></code> will show you options for customizing your plot,
+and <code class="docutils literal notranslate"><span class="pre">pyco-sumtimes</span></code> also outputs the R script that generated the plot.</p>
+</div>
+<div class="section" id="sampling-the-prior-distribution">
+<h3>Sampling the prior distribution<a class="headerlink" href="#sampling-the-prior-distribution" title="Permalink to this headline">¶</a></h3>
+<p>With ecoevolity, it is very easy to run analyses that ignore the data, and
+thus sample from the joint prior distribution.
+All we need to do is add the <code class="docutils literal notranslate"><span class="pre">--ignore-data</span></code> option to our command from
+above.
+We’ll also use the <code class="docutils literal notranslate"><span class="pre">--prefix</span></code> option, which will add a prefix to all the
+output files, allowing us to keep track of the output from sampling the prior:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">ecoevolity</span> <span class="o">--</span><span class="n">ignore</span><span class="o">-</span><span class="n">data</span> <span class="o">--</span><span class="n">prefix</span> <span class="s2">&quot;prior-&quot;</span> <span class="o">--</span><span class="n">relax</span><span class="o">-</span><span class="n">triallelic</span><span class="o">-</span><span class="n">sites</span> <span class="o">--</span><span class="n">relax</span><span class="o">-</span><span class="n">missing</span><span class="o">-</span><span class="n">sites</span> <span class="n">ecoevolity</span><span class="o">-</span><span class="n">config</span><span class="o">.</span><span class="n">yml</span>
+</pre></div>
+</div>
+<p>This should output two files:</p>
+<ul class="simple">
+<li><p>prior-ecoevolity-config-operator-run-1.log</p></li>
+<li><p>prior-ecoevolity-config-state-run-1.log</p></li>
+</ul>
+<p>It should be <em>really</em> fast, making it very quick and easy to thoroughly
+sample from the joint prior via MCMC.
+This is a great way to “sanity check” your analyses;
+quickly generate samples from the prior and make sure they match your
+assumptions.
+Go ahead and run the above command again to run another independent chain to
+sample the prior:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">ecoevolity</span> <span class="o">--</span><span class="n">ignore</span><span class="o">-</span><span class="n">data</span> <span class="o">--</span><span class="n">prefix</span> <span class="s2">&quot;prior-&quot;</span> <span class="o">--</span><span class="n">relax</span><span class="o">-</span><span class="n">triallelic</span><span class="o">-</span><span class="n">sites</span> <span class="o">--</span><span class="n">relax</span><span class="o">-</span><span class="n">missing</span><span class="o">-</span><span class="n">sites</span> <span class="n">ecoevolity</span><span class="o">-</span><span class="n">config</span><span class="o">.</span><span class="n">yml</span>
+</pre></div>
+</div>
+<p>Now, you can use <code class="docutils literal notranslate"><span class="pre">pyco-sumchains</span></code> and <a class="reference external" href="https://github.com/beast-dev/tracer/releases">Tracer</a> to make sure both MCMC chains
+that sampled from the prior converged and mixed well, and to determine an
+appropriate number of samples to remove as burn-in:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>pyco-sumchains -s 100 prior-ecoevolity-config-state-run-?.log
+</pre></div>
+</div>
+<p>For my output, a burn-in of 101 seemed more than sufficient.
+Now, to summarize the prior samples run:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>sumcoevolity -b 101 --prefix &quot;prior-&quot; -c ecoevolity-config.yml -f prior-ecoevolity-config-state-run-?.log
+</pre></div>
+</div>
+<p>This should create 2 files:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">prior-sumcoevolity-results-nevents.txt</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">prior-sumcoevolity-results-model.txt</span></code></p></li>
+</ul>
+<p>Open these up and check to see if the “posterior” probabilities are similar to
+the prior probabilities.
+I put “posterior” in quotes, because the numbers in these columns are actually
+the prior probabilities approximated by the MCMC chains that ignored the data.</p>
+</div>
+</div>
+<div class="section" id="comparison-with-abc">
+<h2>Comparison with ABC<a class="headerlink" href="#comparison-with-abc" title="Permalink to this headline">¶</a></h2>
+<p>Here are my results from ecoevolity after running 5 independent MCMC chains:</p>
+<div class="figure align-center" style="width: 90%">
+<a class="reference internal image-reference" href="../../_images/pycoevolity-nevents-pretty.svg"><img alt="Pycoevolity nevent plot from 5 chains" src="../../_images/pycoevolity-nevents-pretty.svg" width="600px" /></a>
+</div>
+<div class="figure align-center" style="width: 90%">
+<a class="reference internal image-reference" href="../../_images/pycoevolity-times-pretty.svg"><img alt="Pycoevolity time plot from 5 chains" src="../../_images/pycoevolity-times-pretty.svg" width="600px" /></a>
+</div>
+<p>The average runtime for the chains was 7.6 minutes, so about <img class="math" src="../../_images/math/9a251ac4fca1d0d877e834ed741fe8024098da26.svg" alt="7.6 \times
+5 = 38"/> minutes of total computing time.
+For comparison, below are results I obtained from analyzing the same data with
+the ABC method <code class="docutils literal notranslate"><span class="pre">dpp-msbayes</span></code> using almost identical priors and simulating
+500,000 samples from the prior.
+This analysis took 6 days to run with simulations spread across 8 processors,
+so about <img class="math" src="../../_images/math/dd6de346b756b0ab62e3be3a0cdf33b70a6c243a.svg" alt="6 \times 8 = 48"/> days of computing time.</p>
+<div class="figure align-center" style="width: 90%">
+<a class="reference internal image-reference" href="../../_images/dppmsbayes-nevents.svg"><img alt="dpp-msbayes nevent plot" src="../../_images/dppmsbayes-nevents.svg" width="600px" /></a>
+</div>
+<div class="figure align-center" style="width: 90%">
+<a class="reference internal image-reference" href="../../_images/dppmsbayes-times.svg"><img alt="dpp-msbayes time plot" src="../../_images/dppmsbayes-times.svg" width="600px" /></a>
+</div>
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+    <div class="clearer"></div>
+  </div>
+<div class="footer" role="contentinfo" align="center">
+    <a href="https://github.com/phyletica/ecoevolity">GitHub</a> &nbsp; | &nbsp; <a href="../../license.html">License</a> &nbsp; | &nbsp; <a href="../../citation.html">Citation</a> &nbsp; | &nbsp; <a href="https://groups.google.com/forum/#!forum/ecoevolity-users">Users Forum</a>
+</div>
+
+  </body>
+</html>

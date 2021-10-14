@@ -1,0 +1,690 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>The Configuration File &#8212; Ecoevolity 0.1.0 documentation</title>
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Tutorials" href="tutorials/index.html" />
+    <link rel="prev" title="The Data" href="biallelic-character-data.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  <div class="document">
+    
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<p class="logo">
+  <a href="../index.html">
+    <img class="logo" src="../_static/site-logo.svg" alt="Logo"/>
+    
+  </a>
+</p>
+
+
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=phyletica&repo=ecoevolity&type=watch&count=true&size=large&v=2"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ecoevolity/index.html">Ecoevolity</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Phycoeval</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="background.html">Background</a></li>
+<li class="toctree-l2"><a class="reference internal" href="biallelic-character-data.html">The Data</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">The Configuration File</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorials/index.html">Tutorials</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../workshops/index.html">Workshops</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../changes.html">Change History</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../license.html">License</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../citation.html">Citation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../acknowledgments.html">Acknowledgments</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../glossary.html">Glossary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../zbib/references.html">Literature Cited</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="index.html"></a><ul>
+      <li>Previous: <a href="biallelic-character-data.html" title="previous chapter">The Data</a></li>
+      <li>Next: <a href="tutorials/index.html" title="next chapter">Tutorials</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <p><a class="reference external" href="index.html"><img alt="Phycoeval" src="../_images/phycoeval-logo-long.svg" width="95%" /></a></p>
+<div class="section" id="the-configuration-file">
+<span id="phycoconfigfile"></span><h1>The Configuration File<a class="headerlink" href="#the-configuration-file" title="Permalink to this headline">¶</a></h1>
+<div class="contents local topic" id="configuration-file-components">
+<p class="topic-title">Configuration File Components</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#general-parameter-syntax" id="id5">General parameter syntax</a></p></li>
+<li><p><a class="reference internal" href="#tree-model" id="id6">tree_model</a></p>
+<ul>
+<li><p><a class="reference internal" href="#tree-space" id="id7">tree_space</a></p></li>
+<li><p><a class="reference internal" href="#starting-tree" id="id8">starting_tree</a></p></li>
+<li><p><a class="reference internal" href="#tree-prior" id="id9">tree_prior</a></p>
+<ul>
+<li><p><a class="reference internal" href="#root-height" id="id10">root_height</a></p></li>
+<li><p><a class="reference internal" href="#alpha-of-node-height-beta-prior" id="id11">alpha_of_node_height_beta_prior</a></p></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#branch-parameters" id="id12">branch_parameters</a></p>
+<ul>
+<li><p><a class="reference internal" href="#population-size" id="id13">population_size</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#mutation-parameters" id="id14">mutation_parameters</a></p>
+<ul>
+<li><p><a class="reference internal" href="#mutation-rate" id="id15">mutation_rate</a></p></li>
+<li><p><a class="reference internal" href="#freq-1" id="id16">freq_1</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#data" id="id17">data</a></p></li>
+<li><p><a class="reference internal" href="#mcmc-settings" id="id18">mcmc_settings</a></p></li>
+</ul>
+</div>
+<p>You specify most of the settings for a <a class="reference external" href="http://phyletica.org/ecoevolity">phycoeval</a> analysis in a <a class="reference external" href="http://yaml.org/">YAML</a>-formatted
+configuration file.
+<a class="reference external" href="http://yaml.org/">YAML</a> is an “anti-markup” language and data standard that is much more human
+friendly than alternatives like XML.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The website <a class="reference external" href="http://www.yamllint.com/">http://www.yamllint.com/</a> is a nice tool for debugging <a class="reference external" href="http://yaml.org/">YAML</a> syntax.
+You can copy and paste your config file their to check of you’re
+using valid YAML syntax.</p>
+</div>
+<p>The simplest possible configuration file for <a class="reference external" href="http://phyletica.org/ecoevolity">phycoeval</a> would look something like:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">---</span>
+<span class="n">data</span><span class="p">:</span>
+    <span class="n">constant_sites_removed</span><span class="p">:</span> <span class="n">false</span>
+    <span class="n">alignment</span><span class="p">:</span>
+        <span class="n">path</span><span class="p">:</span> <span class="n">alignment</span><span class="o">/</span><span class="n">Gekko</span><span class="o">.</span><span class="n">nex</span>
+</pre></div>
+</div>
+<p>This specifies the path to the nexus file containing the aligned character data
+for the species we want to infer a phylogeny for, and specifies whether we have
+removed constant sites from the alignment.
+The defaults for all other settings would be used in this case, which we
+<strong>strongly discourage</strong>.</p>
+<p>Now, let’s look at an example that is more thoroughly specified:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">---</span>
+<span class="n">data</span><span class="p">:</span>
+    <span class="n">ploidy</span><span class="p">:</span> <span class="mi">2</span>
+    <span class="n">constant_sites_removed</span><span class="p">:</span> <span class="n">false</span>
+    <span class="n">alignment</span><span class="p">:</span>
+        <span class="n">genotypes_are_diploid</span><span class="p">:</span> <span class="n">true</span>
+        <span class="n">markers_are_dominant</span><span class="p">:</span> <span class="n">false</span>
+        <span class="n">population_name_is_prefix</span><span class="p">:</span> <span class="n">false</span>
+        <span class="n">population_name_delimiter</span><span class="p">:</span> <span class="s1">&#39; &#39;</span>
+        <span class="n">path</span><span class="p">:</span> <span class="n">alignment</span><span class="o">/</span><span class="n">Gekko</span><span class="o">.</span><span class="n">nex</span>
+<span class="c1"># This is a comment!</span>
+<span class="n">tree_model</span><span class="p">:</span>
+    <span class="n">tree_space</span><span class="p">:</span> <span class="n">generalized</span>
+    <span class="n">starting_tree</span><span class="p">:</span> <span class="n">comb</span>
+    <span class="n">tree_prior</span><span class="p">:</span>
+        <span class="n">uniform_root_and_betas</span><span class="p">:</span>
+            <span class="n">parameters</span><span class="p">:</span>
+                <span class="n">root_height</span><span class="p">:</span>
+                    <span class="n">estimate</span><span class="p">:</span> <span class="n">true</span>
+                    <span class="n">prior</span><span class="p">:</span>
+                        <span class="n">gamma_distribution</span><span class="p">:</span>
+                            <span class="n">shape</span><span class="p">:</span> <span class="mf">4.0</span>
+                            <span class="n">mean</span><span class="p">:</span> <span class="mf">0.01</span>
+                <span class="n">alpha_of_node_height_beta_prior</span><span class="p">:</span>
+                    <span class="n">value</span><span class="p">:</span> <span class="mf">1.0</span>
+                    <span class="n">estimate</span><span class="p">:</span> <span class="n">false</span>
+<span class="n">branch_parameters</span><span class="p">:</span>
+    <span class="n">population_size</span><span class="p">:</span>
+        <span class="n">equal_population_sizes</span><span class="p">:</span> <span class="n">true</span>
+        <span class="n">value</span><span class="p">:</span> <span class="mf">0.0002</span>
+        <span class="n">estimate</span><span class="p">:</span> <span class="n">true</span>
+        <span class="n">prior</span><span class="p">:</span>
+            <span class="n">gamma_distribution</span><span class="p">:</span>
+                <span class="n">shape</span><span class="p">:</span> <span class="mf">4.0</span>
+                <span class="n">mean</span><span class="p">:</span> <span class="mf">0.0002</span>
+<span class="n">mutation_parameters</span><span class="p">:</span>
+    <span class="n">freq_1</span><span class="p">:</span>
+        <span class="n">value</span><span class="p">:</span> <span class="mf">0.5</span>
+        <span class="n">estimate</span><span class="p">:</span> <span class="n">false</span>
+    <span class="n">mutation_rate</span><span class="p">:</span>
+        <span class="n">value</span><span class="p">:</span> <span class="mf">1.0</span>
+        <span class="n">estimate</span><span class="p">:</span> <span class="n">false</span>
+<span class="n">mcmc_settings</span><span class="p">:</span>
+    <span class="n">chain_length</span><span class="p">:</span> <span class="mi">15000</span>
+    <span class="n">sample_frequency</span><span class="p">:</span> <span class="mi">10</span>
+</pre></div>
+</div>
+<p>All the settings are hierarchically nested by the indent spacing.
+For example,
+<code class="docutils literal notranslate"><span class="pre">data</span></code>, <code class="docutils literal notranslate"><span class="pre">tree_model</span></code>, <code class="docutils literal notranslate"><span class="pre">branch_parameters</span></code>,
+<code class="docutils literal notranslate"><span class="pre">mutation_parameters</span></code>, and <code class="docutils literal notranslate"><span class="pre">mcmc_settings</span></code>
+are all at the highest level of the hierarchy, and have various settings nested
+within them.
+Across a given level of the hierarchy, order does not matter. E.g., the
+top-level groups of settings listed above can be arranged in any order.
+Anything proceeded by a ‘#’ is a comment that is ignored by <a class="reference external" href="http://phyletica.org/ecoevolity">phycoeval</a>.</p>
+<div class="section" id="general-parameter-syntax">
+<span id="param-syntax"></span><h2><a class="toc-backref" href="#id5">General parameter syntax</a><a class="headerlink" href="#general-parameter-syntax" title="Permalink to this headline">¶</a></h2>
+<p>Before we get into the specific syntax for each setting in the config file,
+let’s first
+look at the general syntax that applies
+to all parameters in the <code class="docutils literal notranslate"><span class="pre">tree_model</span></code>, <code class="docutils literal notranslate"><span class="pre">branch_parameters</span></code>, and
+<code class="docutils literal notranslate"><span class="pre">mutation_parameters</span></code> sections of the config.</p>
+<p>The general syntax for a parameter is:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">parameter_name</span><span class="p">:</span>
+    <span class="n">estimate</span><span class="p">:</span> <span class="n">true</span> <span class="c1"># or false</span>
+    <span class="n">value</span><span class="p">:</span> <span class="mf">1.0</span>
+    <span class="n">prior</span><span class="p">:</span>
+        <span class="n">a_valid_distribution</span><span class="p">:</span>
+            <span class="n">distribution_parameter</span><span class="p">:</span> <span class="mf">1.0</span>
+</pre></div>
+</div>
+<p>So, for any parameter, you can specify:</p>
+<ol class="arabic simple">
+<li><p>Whether or not the parameter should be fixed (<code class="docutils literal notranslate"><span class="pre">estimate:</span> <span class="pre">false</span></code>) or
+estimated (<code class="docutils literal notranslate"><span class="pre">estimate:</span> <span class="pre">true</span></code>).</p></li>
+<li><p>A value for the parameter. This is only the starting value if <code class="docutils literal notranslate"><span class="pre">estimate</span></code>
+is <code class="docutils literal notranslate"><span class="pre">true</span></code>, or is the fixed value if <code class="docutils literal notranslate"><span class="pre">estimate</span></code> is <code class="docutils literal notranslate"><span class="pre">false</span></code>.
+<strong>If a value is not specified, the starting value is drawn from the
+prior</strong>.</p></li>
+<li><p>The prior probability distribution. This is ignored if <code class="docutils literal notranslate"><span class="pre">estimate</span></code> is
+<code class="docutils literal notranslate"><span class="pre">false</span></code>.</p></li>
+</ol>
+</div>
+<div class="section" id="tree-model">
+<h2><a class="toc-backref" href="#id6">tree_model</a><a class="headerlink" href="#tree-model" title="Permalink to this headline">¶</a></h2>
+<p>Next, let’s walk through how to specify the tree model in the configration
+file.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">tree_model</span><span class="p">:</span>
+    <span class="n">tree_space</span><span class="p">:</span> <span class="n">generalized</span>
+    <span class="n">starting_tree</span><span class="p">:</span> <span class="n">comb</span>
+    <span class="n">tree_prior</span><span class="p">:</span>
+        <span class="n">uniform_root_and_betas</span><span class="p">:</span>
+            <span class="n">parameters</span><span class="p">:</span>
+                <span class="n">root_height</span><span class="p">:</span>
+                    <span class="n">estimate</span><span class="p">:</span> <span class="n">true</span>
+                    <span class="n">prior</span><span class="p">:</span>
+                        <span class="n">gamma_distribution</span><span class="p">:</span>
+                            <span class="n">shape</span><span class="p">:</span> <span class="mf">4.0</span>
+                            <span class="n">mean</span><span class="p">:</span> <span class="mf">0.01</span>
+                <span class="n">alpha_of_node_height_beta_prior</span><span class="p">:</span>
+                    <span class="n">value</span><span class="p">:</span> <span class="mf">1.0</span>
+                    <span class="n">estimate</span><span class="p">:</span> <span class="n">false</span>
+</pre></div>
+</div>
+<div class="section" id="tree-space">
+<h3><a class="toc-backref" href="#id7">tree_space</a><a class="headerlink" href="#tree-space" title="Permalink to this headline">¶</a></h3>
+<p>There are three options for the <code class="docutils literal notranslate"><span class="pre">tree_space</span></code> setting:</p>
+<ol class="arabic">
+<li><p><code class="docutils literal notranslate"><span class="pre">tree_space:</span> <span class="pre">generalized</span></code></p>
+<p>This tells phycoeval to use a generalized tree distribution that allows for
+shared and/or multifurcating divergences.</p>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">tree_space:</span> <span class="pre">bifurcating</span></code></p>
+<p>This specifies a “standard” tree distribution that assumes all
+divergences are independent and bifurcating.</p>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">tree_space:</span> <span class="pre">fixed</span></code></p>
+<p>This tells phycoeval that you want to fix the tree topology.  To do this, you
+must also provide a starting tree with the topology you wish to hold
+constant during the analyses.</p>
+</li>
+</ol>
+</div>
+<div class="section" id="starting-tree">
+<h3><a class="toc-backref" href="#id8">starting_tree</a><a class="headerlink" href="#starting-tree" title="Permalink to this headline">¶</a></h3>
+<p>phycoeval will first check to see if <code class="docutils literal notranslate"><span class="pre">starting_tree</span></code> is set to one of two
+options:</p>
+<ol class="arabic">
+<li><p><code class="docutils literal notranslate"><span class="pre">starting_tree:</span> <span class="pre">comb</span></code></p>
+<p>This specifies that the MCMC chain should start with the tree topology with
+only one multifurcating internal node.</p>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">starting_tree:</span> <span class="pre">random</span></code></p>
+<p>This specifies that the MCMC chain should start with the random topology
+with only independent, bifurcating divergences; i.e., a random topology
+with <img class="math" src="../_images/math/e141357543991b67295e8b6efbcde991dcb37622.svg" alt="\nTips - 1"/> internal nodes, where <img class="math" src="../_images/math/2d1558f51212a7b4b1610015f8d187b354729e6c.svg" alt="\nTips"/> is the number
+of tips (populations/species).</p>
+</li>
+</ol>
+<p>If the setting for <code class="docutils literal notranslate"><span class="pre">starting_tree</span></code> is not <code class="docutils literal notranslate"><span class="pre">comb</span></code> or <code class="docutils literal notranslate"><span class="pre">random</span></code>,
+phycoeval will next check to see if the string provided is a valid path
+to a file.
+If it is, the starting tree will be read from the file, which can be in
+phylip/newick format or nexus format.</p>
+<p>If the setting for <code class="docutils literal notranslate"><span class="pre">starting_tree</span></code> is not <code class="docutils literal notranslate"><span class="pre">comb</span></code>, <code class="docutils literal notranslate"><span class="pre">random</span></code>, nor a path,
+phycoeval will try to interpret the setting as a newick-formatted tree string.</p>
+<p>So, in summary, you can specify a specific starting tree using a newick string
+or a path to a newick or nexus formatted tree, or you can specify the MCMC
+chain start with the comb tree or a random bifurcating tree.</p>
+</div>
+<div class="section" id="tree-prior">
+<span id="uniform-root-and-betas"></span><h3><a class="toc-backref" href="#id9">tree_prior</a><a class="headerlink" href="#tree-prior" title="Permalink to this headline">¶</a></h3>
+<p>Currently, the only <code class="docutils literal notranslate"><span class="pre">tree_prior</span></code> implemented in phycoeval is
+<code class="docutils literal notranslate"><span class="pre">uniform_root_and_betas</span></code>.
+This prior assumes that all topologies are equally probable <em>a priori</em>,
+the age of the root follows a parametric distribution (e.g., a gamma or
+exponential distribution), and all other divergence times follow scaled beta
+distributions.
+When, <code class="docutils literal notranslate"><span class="pre">tree_space</span></code> is set to <code class="docutils literal notranslate"><span class="pre">generalized</span></code>, all possible non-reticulating
+topologies (including topologies with shared and/or multifurcating divergences)
+are <em>a priori</em> equally probable.
+When, <code class="docutils literal notranslate"><span class="pre">tree_space</span></code> is set to <code class="docutils literal notranslate"><span class="pre">bifurcating</span></code>, all possible topologies with
+independent, bifurcating divergences (i.e., <img class="math" src="../_images/math/e141357543991b67295e8b6efbcde991dcb37622.svg" alt="\nTips - 1"/> internal nodes)
+are equally probable.</p>
+<p>The prior settings for the root age (height) and the beta distributions
+for all other divergence times are specified under the <code class="docutils literal notranslate"><span class="pre">parameters</span></code>
+section fo the <code class="docutils literal notranslate"><span class="pre">uniform_root_and_betas</span></code> tree prior:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">uniform_root_and_betas</span><span class="p">:</span>
+    <span class="n">parameters</span><span class="p">:</span>
+        <span class="n">root_height</span><span class="p">:</span>
+            <span class="n">estimate</span><span class="p">:</span> <span class="n">true</span>
+            <span class="n">prior</span><span class="p">:</span>
+                <span class="n">gamma_distribution</span><span class="p">:</span>
+                    <span class="n">shape</span><span class="p">:</span> <span class="mf">4.0</span>
+                    <span class="n">mean</span><span class="p">:</span> <span class="mf">0.01</span>
+        <span class="n">alpha_of_node_height_beta_prior</span><span class="p">:</span>
+            <span class="n">value</span><span class="p">:</span> <span class="mf">1.0</span>
+            <span class="n">estimate</span><span class="p">:</span> <span class="n">false</span>
+</pre></div>
+</div>
+<div class="section" id="root-height">
+<h4><a class="toc-backref" href="#id10">root_height</a><a class="headerlink" href="#root-height" title="Permalink to this headline">¶</a></h4>
+<p>The <code class="docutils literal notranslate"><span class="pre">root_height</span></code> parameter follows the
+<a class="reference internal" href="#param-syntax"><span class="std std-ref">general parameter syntax discussed above</span></a>.
+Valid continuous probability distributions for the <code class="docutils literal notranslate"><span class="pre">prior</span></code> include:</p>
+<ol class="arabic">
+<li><p><code class="docutils literal notranslate"><span class="pre">exponential_distribution</span></code></p>
+<p>For the <code class="docutils literal notranslate"><span class="pre">exponential_distribution</span></code>, you can specify the
+<code class="docutils literal notranslate"><span class="pre">mean</span></code> or <code class="docutils literal notranslate"><span class="pre">rate</span></code> (the rate = 1/mean), and an <code class="docutils literal notranslate"><span class="pre">offset</span></code>.
+By default, the <code class="docutils literal notranslate"><span class="pre">offset</span></code> is zero, and the lower bound of the
+exponential distribution is zero. If you specify a positive
+offset, this shifts the entire distribution so that the lower
+bound is equal to <code class="docutils literal notranslate"><span class="pre">offset</span></code>.
+<strong>NOTE</strong>: If you specify a <code class="docutils literal notranslate"><span class="pre">mean</span></code> and an <code class="docutils literal notranslate"><span class="pre">offset</span></code>, the mean is
+interpreted as the mean <strong>before</strong> shifting the distribution.</p>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">gamma_distribution</span></code></p>
+<p>For the <code class="docutils literal notranslate"><span class="pre">gamma_distribution</span></code>, you can specify the
+<code class="docutils literal notranslate"><span class="pre">shape</span></code> and <code class="docutils literal notranslate"><span class="pre">mean</span></code> <strong>OR</strong> the <code class="docutils literal notranslate"><span class="pre">shape</span></code> and <code class="docutils literal notranslate"><span class="pre">scale</span></code>,
+where the
+<img class="math" src="../_images/math/e96dc3feba562441a8b16a180d10f5f670435a8d.svg" alt="\textrm{mean} = \textrm{shape} \times \textrm{scale}"/>.
+As with the exponential distribution, you can also specify
+an <code class="docutils literal notranslate"><span class="pre">offset</span></code>, which will shift the gamma distribution
+to have a lower bound equal to <code class="docutils literal notranslate"><span class="pre">offset</span></code>.
+<strong>NOTE</strong>: When you specify an <code class="docutils literal notranslate"><span class="pre">offset</span></code>, the
+<code class="docutils literal notranslate"><span class="pre">scale</span></code> OR <code class="docutils literal notranslate"><span class="pre">mean</span></code> is interpreted as the
+scale or mean <strong>before</strong> shifting the distribution.</p>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">uniform_distribution</span></code></p>
+<p>The <code class="docutils literal notranslate"><span class="pre">uniform_distribution</span></code> has two parameters that can be specified: the
+<code class="docutils literal notranslate"><span class="pre">min</span></code> and <code class="docutils literal notranslate"><span class="pre">max</span></code>.</p>
+</li>
+</ol>
+</div>
+<div class="section" id="alpha-of-node-height-beta-prior">
+<h4><a class="toc-backref" href="#id11">alpha_of_node_height_beta_prior</a><a class="headerlink" href="#alpha-of-node-height-beta-prior" title="Permalink to this headline">¶</a></h4>
+<p>The <code class="docutils literal notranslate"><span class="pre">uniform_root_and_betas</span></code> tree prior assumes (<em>a priori</em>)
+that all non-root divergence times follow a scaled beta distribution
+between the present and the age of the youngest parent node of any
+node mapped to the divergence time
+(<a class="reference internal" href="#scaled-beta-divs-fig"><span class="std std-ref">see the figure below for an example</span></a>.</p>
+<div class="figure align-center" id="id4">
+<span id="scaled-beta-divs-fig"></span><a class="reference internal image-reference" href="../_images/rj-move-tree-cropped.svg"><img alt="Tree prior" src="../_images/rj-move-tree-cropped.svg" width="99%" /></a>
+<p class="caption"><span class="caption-text">An example of the scaled beta distributions on non-root divergence times.</span><a class="headerlink" href="#id4" title="Permalink to this image">¶</a></p>
+</div>
+<p>These are “scaled” betas, because, normally, a beta distribution has a lower
+and upper bound of 0 and 1, respectively.
+The beta distributions are scaled to be proper probability distributions (i.e.,
+integrate to one) between zero (the “present”) and the age of the youngest
+parent node.
+By default, phycoeval sets both the alpha and beta parameters of these beta
+distributions to one, which makes them equivalent to uniform distributions
+between zero and the age of the youngest parent node.
+However, phycoeval allows you to control the settings for the alpha parameter of
+these beta distributions via the <code class="docutils literal notranslate"><span class="pre">alpha_of_node_height_beta_prior</span></code> option:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">alpha_of_node_height_beta_prior</span><span class="p">:</span>
+    <span class="n">value</span><span class="p">:</span> <span class="mf">1.0</span>
+    <span class="n">estimate</span><span class="p">:</span> <span class="n">false</span>
+</pre></div>
+</div>
+<p>Above, we are simply fixing the alpha parameter of the beta distributions on
+the non-root divergence times to 1 (this is the default for phycoeval).
+In general, the default is probably fine for most applications, and estimating
+<code class="docutils literal notranslate"><span class="pre">alpha_of_node_height_beta_prior</span></code> has not been well tested with simulated
+data.</p>
+</div>
+</div>
+</div>
+<div class="section" id="branch-parameters">
+<h2><a class="toc-backref" href="#id12">branch_parameters</a><a class="headerlink" href="#branch-parameters" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">branch_parameters</span><span class="p">:</span>
+    <span class="n">population_size</span><span class="p">:</span>
+        <span class="n">equal_population_sizes</span><span class="p">:</span> <span class="n">true</span>
+        <span class="n">value</span><span class="p">:</span> <span class="mf">0.0002</span>
+        <span class="n">estimate</span><span class="p">:</span> <span class="n">true</span>
+        <span class="n">prior</span><span class="p">:</span>
+            <span class="n">gamma_distribution</span><span class="p">:</span>
+                <span class="n">shape</span><span class="p">:</span> <span class="mf">4.0</span>
+                <span class="n">mean</span><span class="p">:</span> <span class="mf">0.0002</span>
+</pre></div>
+</div>
+<div class="section" id="population-size">
+<span id="phycopopsize"></span><h3><a class="toc-backref" href="#id13">population_size</a><a class="headerlink" href="#population-size" title="Permalink to this headline">¶</a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">population_size</span></code> parameter follows the
+<a class="reference internal" href="#param-syntax"><span class="std std-ref">general parameter syntax discussed above</span></a>,
+with the exception of one additional setting: <code class="docutils literal notranslate"><span class="pre">equal_population_sizes</span></code>.
+If <code class="docutils literal notranslate"><span class="pre">equal_population_sizes</span></code> is set to <code class="docutils literal notranslate"><span class="pre">true</span></code>, then all the branches in the
+tree will share the same <code class="docutils literal notranslate"><span class="pre">population_size</span></code> parameter.
+If <code class="docutils literal notranslate"><span class="pre">equal_population_sizes</span></code> is set to <code class="docutils literal notranslate"><span class="pre">false</span></code>, then each branch in the tree
+gets its own <code class="docutils literal notranslate"><span class="pre">population_size</span></code> parameter.</p>
+<p>If you set the mutation rate to 1, then the effective population sizes
+will be scaled by the mutation rate (<img class="math" src="../_images/math/07154a281fa7a7b2fca07cf7dfcc27f139a20005.svg" alt="\epopsize\murate"/>).
+Alternatively, if you specify an actual rate of mutation per site per
+generation, then the population size will be in units of the effective number
+of diploid individuals or haploid genomes (<img class="math" src="../_images/math/2ed91a02448e36b59b6e45afd82b1f774c8e0636.svg" alt="\epopsize"/>), if the ploidy is 2
+or 1, respectively.</p>
+<div class="admonition note" id="popsizenote">
+<p class="admonition-title">Note</p>
+<p><strong>Important</strong>: In ecoevolity, the <code class="docutils literal notranslate"><span class="pre">population_size</span></code> is related to, but <strong>not</strong>
+equal to <img class="math" src="../_images/math/1a8776d0edf53a7b984660b64c58a891015a585c.svg" alt="\theta"/> (<img class="math" src="../_images/math/a727ed458089ac87901b9eca7bdfaccaf7554ddc.svg" alt="4\epopsize\murate"/>; the genetic
+diversity, or more precisely, the expected number of differences per base
+between two randomly selected haploid genomes).
+The relationship between <code class="docutils literal notranslate"><span class="pre">population_size</span></code> (represented by
+<img class="math" src="../_images/math/2ed91a02448e36b59b6e45afd82b1f774c8e0636.svg" alt="\epopsize"/>) and <img class="math" src="../_images/math/1a8776d0edf53a7b984660b64c58a891015a585c.svg" alt="\theta"/> is:</p>
+<div class="math" id="equation-phycothetarelationship">
+<p><span class="eqno">(1)<a class="headerlink" href="#equation-phycothetarelationship" title="Permalink to this equation">¶</a></span><img src="../_images/math/ce4412e4df3b976ff3207c75806181fff8eedc3d.svg" alt="\textrm{ploidy} \times 2\epopsize\murate = \theta \\
+\epopsize = \frac{\theta}{\textrm{ploidy} \times 2\murate}."/></p>
+</div><p>Thus, if you have prior expectation that <img class="math" src="../_images/math/fed2631119d9610e96c764946c4669cefeefb633.svg" alt="\theta = 0.002"/> and you’ve
+set the <code class="docutils literal notranslate"><span class="pre">mutation_rate</span></code> to 1.0 (i.e., <img class="math" src="../_images/math/5a82e979eece27b6b6e98549c0eb9bd2f129ad92.svg" alt="\murate = 1"/>) and
+<code class="docutils literal notranslate"><span class="pre">ploidy</span></code> to 2, then your prior expectation for <code class="docutils literal notranslate"><span class="pre">population_size</span></code> is,</p>
+<div class="math">
+<p><img src="../_images/math/56089af3d03b88875118fbade876cc70181f32d4.svg" alt="\epopsize = \frac{0.002}{2 \times 2(1)} = \frac{0.002}{4} = 0.0005"/></p>
+</div></div>
+<p>The relationship above is also very important to keep in mind if you
+specify a mutation rate in years.
+For example, let’s assume that for your taxa, you believe 0.004 is a
+reasonable value for the average number of differences per base between two
+randomly selected gene copies, and you’ve told phycoeval that the <code class="docutils literal notranslate"><span class="pre">ploidy</span> <span class="pre">=</span>
+<span class="pre">2</span></code>.
+If you’ve set the mutation rate to <code class="docutils literal notranslate"><span class="pre">1e-8</span></code>, then you can
+use Equation <a class="reference internal" href="#equation-phycothetarelationship">(1)</a> to adjust your prior
+expectation for <code class="docutils literal notranslate"><span class="pre">population_size</span></code> accordingly:</p>
+<div class="math">
+<p><img src="../_images/math/7c666541d3c5f1cd3fa36f811eaf90220cf6abd4.svg" alt="\epopsize &amp;= \frac{\theta}{\textrm{ploidy} \times 2\murate} \\
+          &amp;= \frac{0.004}{2 \times 2(0.00000001)} = \frac{0.002}{2} = \textrm{100,000}"/></p>
+</div></div>
+</div>
+<div class="section" id="mutation-parameters">
+<h2><a class="toc-backref" href="#id14">mutation_parameters</a><a class="headerlink" href="#mutation-parameters" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">mutation_parameters</span><span class="p">:</span>
+    <span class="n">freq_1</span><span class="p">:</span>
+        <span class="n">value</span><span class="p">:</span> <span class="mf">0.5</span>
+        <span class="n">estimate</span><span class="p">:</span> <span class="n">false</span>
+    <span class="n">mutation_rate</span><span class="p">:</span>
+        <span class="n">value</span><span class="p">:</span> <span class="mf">1.0</span>
+        <span class="n">estimate</span><span class="p">:</span> <span class="n">false</span>
+</pre></div>
+</div>
+<div class="section" id="mutation-rate">
+<h3><a class="toc-backref" href="#id15">mutation_rate</a><a class="headerlink" href="#mutation-rate" title="Permalink to this headline">¶</a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">mutation_rate</span></code> settings are for rate of mutation across the tree.
+.. How you scale this is up to you, but you need to make sure you are consistent
+.. in how you scale time and effective population sizes.
+If you set the mutation rate to 1, then time and effective
+population sizes will be scaled by the mutation rate.
+Specifically, time will be in units of <img class="math" src="../_images/math/121aff8f8a9e83553cb4dc1d093ed03aaf11a4f7.svg" alt="\divtime\murate"/> (i.e.,
+expected substitutions per site), and effective population size will be measured
+in <img class="math" src="../_images/math/07154a281fa7a7b2fca07cf7dfcc27f139a20005.svg" alt="\epopsize\murate"/>.
+Alternatively, if you specify an actual rate of mutation per site per
+generation, then time will be in units of generations,
+and population size will be in units of the effective number of diploid
+individuals or gene copies (<img class="math" src="../_images/math/2ed91a02448e36b59b6e45afd82b1f774c8e0636.svg" alt="\epopsize"/>) if the ploidy is 2 or 1,
+respectively.
+To help ensure the population sizes are scaled correctly, it can help to
+remember that <img class="math" src="../_images/math/3eb41ffb49e457b3b0583d74fa196638d841562c.svg" alt="\textrm{ploidy} \times 2\epopsize\murate"/> should
+equal the expected differences per base between two randomly selected genomes
+from a population.</p>
+</div>
+<div class="section" id="freq-1">
+<span id="phycofreq-1"></span><h3><a class="toc-backref" href="#id16">freq_1</a><a class="headerlink" href="#freq-1" title="Permalink to this headline">¶</a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">freq_1</span></code> parameter is the equilibrium frequency of the “1” allele (or 1
+minus the frequency of the “0” allele).
+<strong>If you are using nucleotide data, we recommend that you fix the frequencies
+of the “0” and “1” states to be equal</strong>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">freq_1</span><span class="p">:</span>
+    <span class="n">value</span><span class="p">:</span> <span class="mf">0.5</span>
+    <span class="n">estimate</span><span class="p">:</span> <span class="n">false</span>
+</pre></div>
+</div>
+<p>This is because there is no natural way to recode the 4 nucleotide states to
+two states.
+Thus, if you try to estimate frequencies of the two states, your results will
+be sensitive to the vagaries related to how you decided to code your
+nucleotides as binary.</p>
+<p>However, if the characters you are using are truly biallelic, then it might
+make sense to estimate the frequencies of the two states:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">freq_1</span><span class="p">:</span>
+    <span class="n">estimate</span><span class="p">:</span> <span class="n">true</span>
+    <span class="n">prior</span><span class="p">:</span>
+        <span class="n">beta_distribution</span><span class="p">:</span>
+            <span class="n">alpha</span><span class="p">:</span> <span class="mf">2.5</span>
+            <span class="n">beta</span><span class="p">:</span> <span class="mf">1.2</span>
+</pre></div>
+</div>
+<p>Another option is:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">freq_1</span><span class="p">:</span>
+    <span class="n">value</span><span class="p">:</span> <span class="n">empirical</span>
+    <span class="n">estimate</span><span class="p">:</span> <span class="n">false</span>
+</pre></div>
+</div>
+<p>which fixes the frequencies of the two states to their empirical frequencies
+(i.e., the frequencies at which they appear in your data).
+Again, you shouldn’t do this for nucleotide data.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">empirical</span></code> option for the value only works for the <code class="docutils literal notranslate"><span class="pre">freq_1</span></code>
+parameter.  You should get an error if you try to use it for any other
+parameters.</p>
+</div>
+</div>
+</div>
+<div class="section" id="data">
+<h2><a class="toc-backref" href="#id17">data</a><a class="headerlink" href="#data" title="Permalink to this headline">¶</a></h2>
+<p>This section of the configuration file tells phycoeval about the data we are
+asking it to analyze, and where it can find those data.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">ploidy</span><span class="p">:</span> <span class="mi">2</span>
+</pre></div>
+</div>
+<p>This is the ploidy of the organisms (e.g., 1 = haploid, 2 = diploid), and
+determines the meaning of the <code class="docutils literal notranslate"><span class="pre">population_size</span></code> parameters covered
+under <code class="docutils literal notranslate"><span class="pre">branch_parameters</span></code> below.
+If <code class="docutils literal notranslate"><span class="pre">ploidy</span></code> is set to one, then <code class="docutils literal notranslate"><span class="pre">population_size</span></code> will be the
+(potentially mutation-scaled) haploid effective population size
+(i.e., the effective number of haploid genomes).
+If your taxa are diploid and you set <code class="docutils literal notranslate"><span class="pre">ploidy</span></code> to two, then
+<code class="docutils literal notranslate"><span class="pre">population_size</span></code> will be the (potentially mutation-scaled) effective number
+of diploid individuals.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">constant_sites_removed</span><span class="p">:</span> <span class="n">false</span>
+</pre></div>
+</div>
+<p>This tells phycoeval whether or not you have removed all constant
+characters/sites.
+If <code class="docutils literal notranslate"><span class="pre">true</span></code>, phycoeval will correct the likelihood for having only
+sampled variable characters.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">alignment</span></code> section provides phycoeval with information about
+the data you wish to analyse:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">alignment</span><span class="p">:</span>
+    <span class="n">genotypes_are_diploid</span><span class="p">:</span> <span class="n">true</span>
+    <span class="n">markers_are_dominant</span><span class="p">:</span> <span class="n">false</span>
+    <span class="n">population_name_is_prefix</span><span class="p">:</span> <span class="n">false</span>
+    <span class="n">population_name_delimiter</span><span class="p">:</span> <span class="s1">&#39; &#39;</span>
+    <span class="n">path</span><span class="p">:</span> <span class="n">alignment</span><span class="o">/</span><span class="n">Gekko</span><span class="o">.</span><span class="n">nex</span>
+</pre></div>
+</div>
+<p>Below, we cover each of the possible settings nested under <code class="docutils literal notranslate"><span class="pre">alignment</span></code>.</p>
+<div class="highlight-default notranslate" id="phycogenotypesarediploid"><div class="highlight"><pre><span></span><span class="n">genotypes_are_diploid</span><span class="p">:</span> <span class="n">true</span>
+</pre></div>
+</div>
+<p>This tells <a class="reference external" href="http://phyletica.org/ecoevolity">ecoevolity</a> how you have encoded your characters.
+Does each cell of your character matrix represent the state of both alleles of
+a diploid individual?
+If so, <code class="docutils literal notranslate"><span class="pre">genotypes_are_diploid</span></code> should be <code class="docutils literal notranslate"><span class="pre">true</span></code>.
+If each cell represents the state of a particular gene copy, then
+<code class="docutils literal notranslate"><span class="pre">genotypes_are_diploid</span></code> should be <code class="docutils literal notranslate"><span class="pre">false</span></code>.
+If you have a code(s) to represent a heterozygote, then
+<code class="docutils literal notranslate"><span class="pre">genotypes_are_diploid</span></code> should definitely be <code class="docutils literal notranslate"><span class="pre">true</span></code>.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">markers_are_dominant</span><span class="p">:</span> <span class="n">false</span>
+</pre></div>
+</div>
+<p>This specifies whether your markers are dominant.
+If the same code is used to designate the character state of a heterozygote and
+one of the two possible homozygotes, then <code class="docutils literal notranslate"><span class="pre">markers_are_dominant</span></code> should be
+<code class="docutils literal notranslate"><span class="pre">true</span></code>.
+If you can tell the difference among a heterozygote and both homozygotes, then
+<code class="docutils literal notranslate"><span class="pre">markers_are_dominant</span></code> should be <code class="docutils literal notranslate"><span class="pre">false</span></code>.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">population_name_delimiter</span><span class="p">:</span> <span class="s2">&quot; &quot;</span>
+<span class="n">population_name_is_prefix</span><span class="p">:</span> <span class="n">false</span>
+</pre></div>
+</div>
+<p>For each row (individual or gene copy) of your character matrix, you need to
+tell <a class="reference external" href="http://phyletica.org/ecoevolity">ecoevolity</a> which population it was sampled from.
+You do this by using prefixes or suffixes for each row label in your nexus
+file, and the prefix or suffix needs to be delimited by a character.
+So, if your matrix looks like:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>Begin data;
+    Dimensions ntax=20 nchar=40000;
+    Format datatype=standard symbols=&quot;01&quot; missing=? gap=-;
+    Matrix
+&#39;population1-lizard-001&#39;  0010...
+&#39;population1-lizard-002&#39;  0010...
+&#39;population2-lizard-003&#39;  0000...
+&#39;population2-lizard-004&#39;  0011...
+.
+.
+.
+</pre></div>
+</div>
+<p>then you should specify:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">population_name_delimiter</span><span class="p">:</span> <span class="s2">&quot;-&quot;</span>
+<span class="n">population_name_is_prefix</span><span class="p">:</span> <span class="n">true</span>
+</pre></div>
+</div>
+<p>and <a class="reference external" href="http://phyletica.org/ecoevolity">ecoevolity</a> will know that the data in the first two rows came from
+“population1” and the data in the third and forth rows came from “population2”.</p>
+<div class="admonition note" id="phycounderscoregotcha">
+<p class="admonition-title">Note</p>
+<p><strong>Underscore gotcha!</strong></p>
+<p>The nexus format standard interprets underscores as spaces, unless the
+labels are quoted. So if you have:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>Begin data;
+    Dimensions ntax=20 nchar=40000;
+    Format datatype=standard symbols=&quot;01&quot; missing=? gap=-;
+    Matrix
+population1_jro-001  0010...
+population1_jro-002  0010...
+population2_jro-003  0000...
+.
+.
+.
+</pre></div>
+</div>
+<p>you need to specify:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">population_name_delimiter</span><span class="p">:</span> <span class="s2">&quot; &quot;</span> <span class="c1"># just a space!</span>
+<span class="n">population_name_is_prefix</span><span class="p">:</span> <span class="n">true</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="mcmc-settings">
+<h2><a class="toc-backref" href="#id18">mcmc_settings</a><a class="headerlink" href="#mcmc-settings" title="Permalink to this headline">¶</a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">mcmc_settings</span></code> specify how long to run the MCMC
+chain, and how often to record a sample from it. For example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">mcmc_settings</span><span class="p">:</span>
+    <span class="n">chain_length</span><span class="p">:</span> <span class="mi">15000</span>
+    <span class="n">sample_frequency</span><span class="p">:</span> <span class="mi">10</span>
+</pre></div>
+</div>
+<p>tells phycoeval to run the chain for 15,000 generations, recording a sample every
+10th generation (15,000/10 = 1500 total samples).
+This is a good starting point. For most datasets we have analyzed so far,
+this has been sufficient. If the chain is having mixing problems, then you
+can try increasing these numbers.
+We recommend running several independent chains (analyses) to:</p>
+<ol class="arabic simple">
+<li><p>Confirm the chains are converging.</p></li>
+<li><p>Increase the number of samples from the posterior distribution (assuming
+the chains converged).</p></li>
+</ol>
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+    <div class="clearer"></div>
+  </div>
+<div class="footer" role="contentinfo" align="center">
+    <a href="https://github.com/phyletica/ecoevolity">GitHub</a> &nbsp; | &nbsp; <a href="../license.html">License</a> &nbsp; | &nbsp; <a href="../citation.html">Citation</a> &nbsp; | &nbsp; <a href="https://groups.google.com/forum/#!forum/ecoevolity-users">Users Forum</a>
+</div>
+
+  </body>
+</html>

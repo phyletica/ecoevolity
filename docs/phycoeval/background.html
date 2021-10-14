@@ -1,0 +1,225 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Background &#8212; Ecoevolity 0.1.0 documentation</title>
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="The Data" href="biallelic-character-data.html" />
+    <link rel="prev" title="" href="index.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  <div class="document">
+    
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<p class="logo">
+  <a href="../index.html">
+    <img class="logo" src="../_static/site-logo.svg" alt="Logo"/>
+    
+  </a>
+</p>
+
+
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=phyletica&repo=ecoevolity&type=watch&count=true&size=large&v=2"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ecoevolity/index.html">Ecoevolity</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Phycoeval</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Background</a></li>
+<li class="toctree-l2"><a class="reference internal" href="biallelic-character-data.html">The Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="yaml-config.html">The Configuration File</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorials/index.html">Tutorials</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../workshops/index.html">Workshops</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../changes.html">Change History</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../license.html">License</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../citation.html">Citation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../acknowledgments.html">Acknowledgments</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../glossary.html">Glossary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../zbib/references.html">Literature Cited</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="index.html"></a><ul>
+      <li>Previous: <a href="index.html" title="previous chapter"></a></li>
+      <li>Next: <a href="biallelic-character-data.html" title="next chapter">The Data</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <p><a class="reference external" href="index.html"><img alt="Phycoeval" src="../_images/phycoeval-logo-long.svg" width="95%" /></a></p>
+<div class="section" id="background">
+<span id="phycobackground"></span><h1>Background<a class="headerlink" href="#background" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="the-short-story-tl-dr">
+<h2>The short story (tl;dr)<a class="headerlink" href="#the-short-story-tl-dr" title="Permalink to this headline">¶</a></h2>
+<p>Many processes of diversification can cause
+simultaneous (and potentially multifurcating) divergences,
+but current phylogenetic methods for inferring rooted trees
+assume evolutionary lineages diverge independently (and only bifurcate).
+This leaves us without a good way to infer the patterns of shared
+divergences predicted by these processes.
+To solve this problem, we generalized the space of topologies considered during
+phylogenetic inference to include trees with shared or multifurcating
+divergences.
+This allows us to jointly infer relationships, divergence times, shared
+divergences, and multifurcating divergences, and test for patterns of
+divergences predicted by processes of diversification that simultaneously
+affect multiple lineages.</p>
+</div>
+<div class="section" id="the-longer-story">
+<h2>The longer story<a class="headerlink" href="#the-longer-story" title="Permalink to this headline">¶</a></h2>
+<p>Many processes of diversification can simultaneously affect multiple
+lineages.
+For example, below is an animation of three species of lizards co-occurring on
+an island that is fragmented twice by rising sea levels.</p>
+<div class="figure align-center" id="id8">
+<span id="shared-divs-bifurcating-gif"></span><a class="reference internal image-reference" href="../_images/slides-bifurcating.gif"><img alt="Shared divergences" src="../_images/slides-bifurcating.gif" style="width: 99%;" /></a>
+<p class="caption"><span class="caption-text">Island fragmentation causing shared divergences.</span><a class="headerlink" href="#id8" title="Permalink to this image">¶</a></p>
+</div>
+<p>This creates two bouts of shared divergences across the tree, indicated
+by the dashed lines above.
+In addition to biogeography, there are many other examples of processes
+of diversification that generate patterns of shared divergences.
+Instead of lizards on islands, let’s imagine three members of a gene family
+residing along a region of a chromosome that gets duplicated.
+This would create shared divergences across the phylogenetic history of the
+gene family.
+In epidemiology, when multiple infected individuals spread the pathogen to
+others at a social gathering, this will create shared divergences in the
+“transmission tree” of the pathogen.</p>
+<p>If rising sea levels fragments the island into more than two
+island, like in the animation below,
+this will not only cause shared divergences among lineages,
+but also multifurcations
+(a lineage diverging into three or more descendants).</p>
+<div class="figure align-center" id="id9">
+<span id="shared-divs-multifurcating-gif"></span><a class="reference internal image-reference" href="../_images/slides-multifurcating.gif"><img alt="Shared multifurcating divergences" src="../_images/slides-multifurcating.gif" style="width: 99%;" /></a>
+<p class="caption"><span class="caption-text">Island fragmentation causing multifurcating, shared divergences.</span><a class="headerlink" href="#id9" title="Permalink to this image">¶</a></p>
+</div>
+<p>Similarly, when an infected individual spreads a pathogen to two or
+more others at a social gathering, this will create a multifurcating
+divergence in the transmission tree.</p>
+<p>Current phylogenetic methods for inferring rooted trees assume all divergences
+are independent and bifurcating.
+In other words, if we have <img class="math" src="../_images/math/2d1558f51212a7b4b1610015f8d187b354729e6c.svg" alt="\nTips"/> tips, current methods only consider
+trees with <img class="math" src="../_images/math/e141357543991b67295e8b6efbcde991dcb37622.svg" alt="\nTips - 1"/> independent, bifurcating divergences.
+When shared and/or multifurcating divergences were common in the system we
+want to study, such tree models are over-parameterized as
+<a class="reference internal" href="#true-v-current-tree-model"><span class="std std-ref">illustrated in the figure below</span></a>.
+More importantly, <strong>by assuming all divergences are independent and
+bifurcating, current phylogenetic methods do not allow us to test for patterns
+of shared or multifurcating divergences predicted by processes of
+diversification that are of interest across the life sciences</strong>.</p>
+<div class="figure align-center" id="id10">
+<span id="true-v-current-tree-model"></span><a class="reference internal image-reference" href="../_images/gecko-trees-flipped-cropped.svg"><img alt="True versus current tree model" src="../_images/gecko-trees-flipped-cropped.svg" width="99%" /></a>
+<p class="caption"><span class="caption-text">When shared or multifurcating divergences have occurred, current
+phylogenetic models are over-parameterized.</span><a class="headerlink" href="#id10" title="Permalink to this image">¶</a></p>
+</div>
+<p>To relax the assumption of independent, bifurcating divergences,
+phycoeval
+uses
+a Bayesian approach to generalizing the space of tree models to allow for
+shared and multifurcating divergences
+<a class="bibtex reference internal" href="../zbib/references.html#oaks2021phycoeval" id="id1">[20]</a>.
+Under the generalized tree model implemented in phycoeval,
+trees with <img class="math" src="../_images/math/e141357543991b67295e8b6efbcde991dcb37622.svg" alt="\nTips - 1"/> bifurcating divergences
+are
+<a class="reference internal" href="#tree-model-space"><span class="std std-ref">only one class of tree models in a greater space of trees</span></a>
+with anywhere from <img class="math" src="../_images/math/e141357543991b67295e8b6efbcde991dcb37622.svg" alt="\nTips - 1"/> potentially shared
+or multifurcating divergences.</p>
+<div class="figure align-center" id="id11">
+<span id="tree-model-space"></span><a class="reference internal image-reference" href="../_images/four-leaf-labeled-trees-boxed-highlight-shared-grid-cropped.png"><img alt="Tree model space" src="../_images/four-leaf-labeled-trees-boxed-highlight-shared-grid-cropped.png" style="width: 99%;" /></a>
+<p class="caption"><span class="caption-text">The rooted topologies considered by current phylogenetic methods (within
+box) and the additional tree models considered by phycoeval’s generalized
+tree model.
+The tree models with nonindependent (shared) divergences are highlighted in
+orange.</span><a class="headerlink" href="#id11" title="Permalink to this image">¶</a></p>
+</div>
+<p>Phycoeval uses reversible-jump Markov chain Monte Carlo algorithms to sample this
+generalized space of trees.
+This allows joint inference of relationships, shared and multifurcating
+divergences, and divergence times.</p>
+<p>In phycoeval,
+we coupled the generalized tree model with the “SNAPP likelihood” for directly
+calculating the probability of biallelic characters given a population (or
+species) phylogeny, while analytically integrating over all possible gene trees
+under a coalescent model and all possible mutational histories along those gene
+trees under a finite-sites model of character evolution
+<a class="bibtex reference internal" href="../zbib/references.html#bryant2012" id="id2">[3]</a><a class="bibtex reference internal" href="../zbib/references.html#oaks2018ecoevolity" id="id3">[14]</a>.
+This allows us to jointly infer a species tree and shared divergences from
+genomic data
+<a class="bibtex reference internal" href="../zbib/references.html#oaks2021phycoeval" id="id4">[20]</a>.</p>
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+    <div class="clearer"></div>
+  </div>
+<div class="footer" role="contentinfo" align="center">
+    <a href="https://github.com/phyletica/ecoevolity">GitHub</a> &nbsp; | &nbsp; <a href="../license.html">License</a> &nbsp; | &nbsp; <a href="../citation.html">Citation</a> &nbsp; | &nbsp; <a href="https://groups.google.com/forum/#!forum/ecoevolity-users">Users Forum</a>
+</div>
+
+  </body>
+</html>
