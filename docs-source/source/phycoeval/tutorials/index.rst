@@ -1,3 +1,5 @@
+|phyco_logo_long|
+
 #########
 Tutorials
 #########
@@ -5,4 +7,4 @@ Tutorials
 .. toctree::
     :maxdepth: 1
 
-    gecko-divergences.rst
+    gecko-gen-phylo.rst

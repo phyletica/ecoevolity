@@ -1,3 +1,4 @@
+|eco_logo_long|
 
 .. _gecko_div_tutorial:
 
@@ -29,7 +30,7 @@ Either installing |eco| and |pyco| directly or using the Docker image will work
 for this tutorial.
 
 While not required, you may want to install the program
-|Tracer|_ (http://tree.bio.ed.ac.uk/software/tracer/);
+|Tracer|_ (https://github.com/beast-dev/tracer/releases);
 it's a nice tool for visualizing the mixing and convergence behavior of Markov
 chain Monte Carlo (MCMC) analyses.
 
@@ -371,6 +372,14 @@ Currently, the config file specifies an exponential distribution with a rate of
         exponential_distribution:
             rate: 10.0
 
+.. note::
+
+    In Version 1.0.0 and above, you can specify the same exponential
+    distribution using the mean::
+
+        exponential_distribution:
+            mean: 0.1
+
 This corresponds to a prior mean divergence time of 1/rate = 1/10.0 = 0.1.
 What are the units of time?
 To determine this, we need to look at the settings for the mutation rate.
@@ -403,6 +412,15 @@ To::
         gamma_distribution:
             shape: 2.0
             scale: 0.005
+
+.. note::
+
+    In Version 1.0.0 and above, you can specify the same gamma
+    distribution using the mean::
+
+        gamma_distribution:
+            shape: 2.0
+            mean: 0.01
 
 This corresponds with a prior mean time of divergence of
 :math:`\textrm{shape} \times \textrm{scale} = 2(0.005) = 0.01`

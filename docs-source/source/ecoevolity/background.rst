@@ -1,3 +1,5 @@
+|eco_logo_long|
+
 .. _background:
 
 ##########
@@ -229,17 +231,27 @@ at the proportion of the posterior samples that are from each model.
 
 .. _prior_on_divergence_models:
 
-**************************
-Prior on divergence models
-**************************
+***************************
+Priors on divergence models
+***************************
 
 To sample from the posterior in Equation :eq:`jointposterior`,
 we have to assume a prior on all the possible ways our pairs of species
 diverged (divergence models).
-|Eco| treats the divergence model (number of divergence events, and the
-assignment of the taxa to the events) as a random variable under a Dirichlet
-process :cite:`Ferguson1973,Antoniak1974`.
-The basic idea of the Dirichlet process is quite simple; we assign species
+As of Version 1.0.0, |Eco| treats the divergence model (number of divergence
+events, and the assignment of the taxa to the events) as a random variable
+under three different distributions:
+The Dirichlet process, Pitman-Yor process, and uniform.
+Prior to Version 1.0.0, only the Dirichlet process was implemented.
+
+.. _dp-prior-on-divergence-models:
+
+Dirichlet-process prior
+=======================
+
+The basic idea of the Dirichlet process
+:cite:`Ferguson1973,Antoniak1974`
+is quite simple; we assign species
 pairs to divergence events one at a time following a very simple rule.
 When assigning the :math:`n^{th}` pair, we assign it to its own
 event (i.e., a new divergence event) with probability
@@ -292,6 +304,153 @@ biological processes.
 Rather, we use it because it is flexible (we can adjust or estimate the
 concentration parameter), and mathematically convenient; it allows us to use
 Gibbs sampling :cite:`Neal2000` to sample across divergence models.
+
+.. _pyp-prior-on-divergence-models:
+
+Pitman-Yor process prior
+========================
+
+One of the newly implemented ways of modeling shared divergences is
+the Pitman-Yor process (PYP) :cite:`PitmanYor1997`.
+The PYP is a generalization of the Dirichlet process.
+It adds an additional parameter called the "discount" parameter, which
+we will denote as :math:`d`.
+When :math:`d = 0` the PYP is equivalent to the DP.
+The discount parameter gives the PYP flexibility over the tail behavior of the
+process (the DP has exponential tails).
+
+The rule governing the PYP is very similar to the DP.
+When assigning the :math:`n^{th}` pair, we assign it to its own event (i.e., a
+new divergence event with a unique time) with probability
+
+.. math::
+    :label: pypnewcat
+
+    \frac{\alpha + k d}{\alpha + n -1}
+
+where :math:`k` is the number of events that currently exist (i.e., that
+already have a pair assigned to it).
+Or, we assign it to an existing event :math:`x` with probability
+
+.. math::
+    :label: pypexistingcat
+
+    \frac{n_x - d}{\alpha + n -1}
+
+where :math:`n_x` is the number of pairs already assigned to
+event :math:`x`.
+
+The animation below illustrates how the these rules of the PYP determine the
+prior probability of all five possible models of divergence.
+Notice toward the end of the animation, as the discount parameter
+increases we place more probability on the divergence models with more
+independent divergence events (less shared divergences).
+Again, when the discount parameter is zero, the PYP is equivalent to the DP.
+
+.. _pyp_tree:
+
+.. figure:: /_static/pyp-3-example.gif
+    :align: center
+    :width: 600 px
+    :figwidth: 90 %
+    :alt: PYP example
+
+    An example of the Pitman-Yor process.
+
+`Click here for a larger, interactive demonstration of the PYP
+<http://phyletica.org/pyp-demo/>`_.
+
+With an extra parameter, the PYP has greater flexibility than the DP.
+We can adjust both the concentration and discount parameters to fit our prior
+expectations.
+Also, we can put distributions on both of these parameters and integrate over
+uncertainty about the prior probabilities of the divergence models.
+The PYP preserves the mathematical conveniences of the DP.
+We can quickly calculate the probability of any model, and
+the exchangeability property still allows us to use Gibbs sampling to
+sample across possible divergence models.
+
+
+.. _uniform-prior-on-divergence-models:
+
+Uniform prior
+-------------
+
+We have also implemented a uniform prior over divergence models, where we
+assume *a priori* that every possible divergence model (every way of grouping
+the divergence times of the population pairs) is equally probable.
+Furthermore, we added a "split weight" parameter, which we denote as :math:`s`,
+to provide some flexibility to this prior on divergence models.
+
+We can think of the split weight (:math:`s`) in simple terms.
+For a given model with :math:`k` divergence events (i.e., divergence time
+categories), the relative probability of each model with
+:math:`k + 1` events is :math:`s`,
+and the relative probability of each model with
+:math:`k - 1` events is :math:`\frac{1}{s}`.
+More generally, the relative probability of each model with
+:math:`k + n` events is :math:`s^n`,
+and the relative probability of each model with
+:math:`k - n` events is :math:`\frac{1}{s^n}`.
+
+To get a feel for this "uniform" prior, in the following tables we will look at
+an example for 4 pairs of populations, with 3 different values for the split
+weight. First, some notation that is used in the tables:
+
+:math:`N`
+    The number of population pairs we are comparing.
+
+:math:`k`
+    The number of divergence events (i.e., divergence time categories).
+
+:math:`S(N, k)`
+    The number of models that have :math:`k` categories (the Stirling number of
+    the second kind).
+
+:math:`s^{k-1}`
+    The relative probability of each model with :math:`k` events (we scale this
+    relative probability to help make the tables readable).
+
+:math:`s^{k-1}S(N, k)`
+    The relative probability of the entire class of divergence models with
+    :math:`k` events.
+
+:math:`p(m_k)`
+    The probability of *each* divergence model with :math:`k` events.
+
+
+Split weight :math:`s = 1.0`:
+
+=========  ==============  ===============  =====================  ====================
+:math:`k`  :math:`S(N,k)`  :math:`s^{k-1}`  :math:`s^{k-1}S(N,k)`     :math:`p(m_k)`
+---------  --------------  ---------------  ---------------------  --------------------
+    1            1                1                   1            :math:`\frac{1}{15}`
+    2            7                1                   7            :math:`\frac{1}{15}`
+    3            6                1                   6            :math:`\frac{1}{15}`
+    4            1                1                   1            :math:`\frac{1}{15}`
+=========  ==============  ===============  =====================  ====================
+
+Split weight :math:`s = 2.0`:
+
+=========  ==============  ===============  =====================  ====================
+:math:`k`  :math:`S(N,k)`  :math:`s^{k-1}`  :math:`s^{k-1}S(N,k)`     :math:`p(m_k)`
+---------  --------------  ---------------  ---------------------  --------------------
+    1            1                1                   1            :math:`\frac{1}{47}`
+    2            7                2                   14           :math:`\frac{2}{47}`
+    3            6                4                   24           :math:`\frac{4}{47}`
+    4            1                8                   8            :math:`\frac{8}{47}`
+=========  ==============  ===============  =====================  ====================
+
+Split weight :math:`s = \frac{1}{2}`:
+
+=========  ==============  ===============  =====================  ====================
+:math:`k`  :math:`S(N,k)`  :math:`s^{k-1}`  :math:`s^{k-1}S(N,k)`     :math:`p(m_k)`
+---------  --------------  ---------------  ---------------------  --------------------
+    1            1                8                   8            :math:`\frac{8}{49}`
+    2            7                4                   28           :math:`\frac{4}{49}`
+    3            6                2                   12           :math:`\frac{2}{49}`
+    4            1                1                   1            :math:`\frac{1}{49}`
+=========  ==============  ===============  =====================  ====================
 
 
 ************************************

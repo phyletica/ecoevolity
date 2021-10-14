@@ -479,7 +479,122 @@ TEST_CASE("Basic testing", "[treesum]") {
         std::set<Split> s_r;
         // s_r.insert("1111");
         s_r.insert(split_r);
-        
+
+
+        std::set< std::set<Split> > nh_12;
+        std::set< std::set<Split> > nh_34;
+        std::set< std::set<Split> > nh_24;
+        std::set< std::set<Split> > nh_14;
+        std::set< std::set<Split> > nh_13;
+        std::set< std::set<Split> > nh_14_23;
+        std::set< std::set<Split> > nh_12_3;
+        std::set< std::set<Split> > nh_2_34;
+
+        std::set<Split> tmp_split_set;
+
+        tmp_split_set.clear();
+        tmp_split_set.insert(split_1);
+        tmp_split_set.insert(split_2);
+        nh_12.insert(tmp_split_set);
+
+        tmp_split_set.clear();
+        tmp_split_set.insert(split_3);
+        tmp_split_set.insert(split_4);
+        nh_34.insert(tmp_split_set);
+
+        tmp_split_set.clear();
+        tmp_split_set.insert(split_2);
+        tmp_split_set.insert(split_4);
+        nh_24.insert(tmp_split_set);
+
+        tmp_split_set.clear();
+        tmp_split_set.insert(split_1);
+        tmp_split_set.insert(split_4);
+        nh_14.insert(tmp_split_set);
+        nh_14_23.insert(tmp_split_set);
+
+        tmp_split_set.clear();
+        tmp_split_set.insert(split_2);
+        tmp_split_set.insert(split_3);
+        nh_14_23.insert(tmp_split_set);
+
+        tmp_split_set.clear();
+        tmp_split_set.insert(split_1);
+        tmp_split_set.insert(split_3);
+        nh_13.insert(tmp_split_set);
+
+        tmp_split_set.clear();
+        tmp_split_set.insert(split_12);
+        tmp_split_set.insert(split_3);
+        nh_12_3.insert(tmp_split_set);
+
+        tmp_split_set.clear();
+        tmp_split_set.insert(split_34);
+        tmp_split_set.insert(split_2);
+        nh_2_34.insert(tmp_split_set);
+
+        std::set< std::set<Split> > rnh_123_4;
+        std::set< std::set<Split> > rnh_1_234;
+        std::set< std::set<Split> > rnh_1_2_3_4;
+        std::set< std::set<Split> > rnh_12_3_4;
+        std::set< std::set<Split> > rnh_14_23;
+        std::set< std::set<Split> > rnh_13_24;
+        std::set< std::set<Split> > rnh_1_2_34;
+        std::set< std::set<Split> > rnh_12_34;
+
+        rnh_123_4.insert(root_descendants_123_4);
+        rnh_1_234.insert(root_descendants_1_234);
+        rnh_1_2_3_4.insert(root_descendants_1_2_3_4);
+        rnh_12_3_4.insert(root_descendants_12_3_4);
+        rnh_14_23.insert(root_descendants_14_23);
+        rnh_13_24.insert(root_descendants_13_24);
+        rnh_1_2_34.insert(root_descendants_1_2_34);
+        rnh_12_34.insert(root_descendants_12_34);
+
+
+
+        std::map< std::set< std::set<Split> >, unsigned int > expected_node_height_count_map {
+            {nh_12,         7},
+            {nh_34,         5},
+            {rnh_14_23,     4},
+            {nh_14_23,      4},
+            {rnh_12_3_4,    3},
+            {rnh_12_34,     2},
+            {rnh_13_24,     2},
+            {rnh_1_2_34,    2},
+            {rnh_1_2_3_4,   2},
+            {rnh_123_4,     2},
+            {nh_13,         2},
+            {nh_24,         2},
+            {nh_12_3,       2},
+            {rnh_1_234,     1},
+            {nh_2_34,       1}
+        };
+        std::vector<unsigned int> expected_node_height_counts {
+            7, 5, 4, 4, 3, 2, 2, 2, 2, 2, 2, 2, 2, 1, 1
+        };
+
+        for (auto key_count : expected_node_height_count_map) {
+            REQUIRE(ts.get_node_height_count(key_count.first) == key_count.second);
+            REQUIRE(ts.get_node_height_frequency(key_count.first) == key_count.second / 18.0);
+        }
+
+        std::map< std::set< std::set<Split> >, unsigned int> node_height_count_map;
+        std::vector<unsigned int> node_height_counts;
+        for (auto nh : ts.get_node_heights()) {
+            std::set< std::set<Split> > node_set;
+            for (auto ns : nh->get_node_set()) {
+                node_set.insert(ns);
+            }
+            REQUIRE(node_height_count_map.count(node_set) == 0);
+            node_height_count_map[node_set] = nh->get_sample_size();
+            node_height_counts.push_back(nh->get_sample_size());
+        }
+        REQUIRE(node_height_count_map == expected_node_height_count_map);
+        REQUIRE(node_height_counts == expected_node_height_counts);
+
+
+
         std::set< std::set<Split> > t_12_34;
         t_12_34.insert(s_12);
         t_12_34.insert(s_34);
@@ -1305,6 +1420,162 @@ TEST_CASE("Basic testing", "[treesum]") {
         REQUIRE(summary["summary_of_target_tree"]["splits"]["root"]["node"]["descendant_splits"][1][0].as<int>() == 0);
         REQUIRE(summary["summary_of_target_tree"]["splits"]["root"]["node"]["descendant_splits"][1][1].as<int>() == 3);
 
+        std::stringstream sumstream_w_merged;
+        ts.write_summary(sumstream_w_merged,
+                false, // use_median_heights
+                0.1,   // min_freq_for_asdsf
+                "",    // margin
+                2);    // precision
+        ts.write_summary_of_merged_target_heights(sumstream_w_merged,
+                "",    // margin
+                2);    // precision
+        ts.write_summary_of_merged_target_heights(std::cout,
+                "",    // margin
+                2);    // precision
+        YAML::Node sum_w_merged;
+        try {
+            sum_w_merged = YAML::Load(sumstream_w_merged);
+        }
+        catch (...) {
+            REQUIRE(0 == 1);
+        }
+
+        REQUIRE(sum_w_merged["leaf_label_map"]["0"].as<std::string>() == "sp1");
+        REQUIRE(sum_w_merged["leaf_label_map"]["1"].as<std::string>() == "sp2");
+        REQUIRE(sum_w_merged["leaf_label_map"]["2"].as<std::string>() == "sp3");
+        REQUIRE(sum_w_merged["leaf_label_map"]["3"].as<std::string>() == "sp4");
+        REQUIRE(sum_w_merged["splits"]["root"]["count"].as<int>() == 18);
+        REQUIRE(sum_w_merged["splits"]["leaves"][0]["count"].as<int>() == 18);
+        REQUIRE(sum_w_merged["splits"]["leaves"][3]["count"].as<int>() == 18);
+        REQUIRE(sum_w_merged["splits"]["nontrivial_splits"][0]["count"].as<int>() == 7);
+        REQUIRE(sum_w_merged["splits"]["nontrivial_splits"][0]["frequency"].as<double>() == 0.39);
+        REQUIRE(sum_w_merged["splits"]["nontrivial_splits"][0]["height_mean"].as<double>() == 0.2);
+        REQUIRE(sum_w_merged["splits"]["nontrivial_splits"][0]["height_std_dev"].as<double>() == 0.12);
+        REQUIRE(sum_w_merged["splits"]["nontrivial_splits"][0]["length_mean"].as<double>() == 0.13);
+        REQUIRE(sum_w_merged["splits"]["nontrivial_splits"][0]["length_std_dev"].as<double>() == 0.049);
+        REQUIRE(sum_w_merged["splits"]["nontrivial_splits"][0]["height_eti_95"][0].as<double>() == 0.1);
+        REQUIRE(sum_w_merged["splits"]["nontrivial_splits"][0]["height_eti_95"][1].as<double>() == 0.38);
+        REQUIRE(sum_w_merged["splits"]["nontrivial_splits"][0]["pop_size_mean"].as<double>() == 0.34);
+        REQUIRE(sum_w_merged["splits"]["nontrivial_splits"][0]["pop_size_eti_95"][0].as<double>() == 0.12);
+        REQUIRE(sum_w_merged["splits"]["nontrivial_splits"][0]["pop_size_eti_95"][1].as<double>() == 0.6);
+        REQUIRE(sum_w_merged["heights"][2]["count"].as<int>() == 4);
+        REQUIRE(sum_w_merged["heights"][2]["number_of_nodes"].as<int>() == 2);
+        REQUIRE(sum_w_merged["heights"][2]["frequency"].as<double>() == 0.22);
+        REQUIRE(sum_w_merged["heights"][2]["mean"].as<double>() == 0.35);
+        REQUIRE(sum_w_merged["heights"][2]["std_dev"].as<double>() == 0.13);
+        REQUIRE(sum_w_merged["heights"][2]["eti_95"][0].as<double>() == 0.21);
+        REQUIRE(sum_w_merged["heights"][2]["eti_95"][1].as<double>() == 0.49);
+        REQUIRE(sum_w_merged["heights"][2]["splits"][0]["leaf_indices"][0].as<int>() == 1);
+        REQUIRE(sum_w_merged["heights"][2]["splits"][0]["leaf_indices"][1].as<int>() == 2);
+        REQUIRE(sum_w_merged["heights"][2]["splits"][1]["leaf_indices"][0].as<int>() == 0);
+        REQUIRE(sum_w_merged["heights"][2]["splits"][1]["leaf_indices"][1].as<int>() == 3);
+        REQUIRE(sum_w_merged["topologies"][1]["count"].as<int>() == 3);
+        REQUIRE(sum_w_merged["topologies"][1]["number_of_heights"].as<int>() == 2);
+        REQUIRE(sum_w_merged["topologies"][1]["frequency"].as<double>() == 0.17);
+        REQUIRE(sum_w_merged["topologies"][1]["cumulative_frequency"].as<double>() == 0.39);
+        REQUIRE(sum_w_merged["topologies"][1]["heights"][0]["number_of_nodes"].as<int>() == 1);
+        REQUIRE(sum_w_merged["topologies"][1]["heights"][1]["number_of_nodes"].as<int>() == 1);
+        REQUIRE(sum_w_merged["topologies"][1]["heights"][0]["splits"][0]["leaf_indices"][0].as<int>() == 0);
+        REQUIRE(sum_w_merged["topologies"][1]["heights"][0]["splits"][0]["leaf_indices"][1].as<int>() == 1);
+        REQUIRE(sum_w_merged["topologies"][1]["heights"][1]["splits"][0]["leaf_indices"][0].as<int>() == 0);
+        REQUIRE(sum_w_merged["topologies"][1]["heights"][1]["splits"][0]["leaf_indices"][1].as<int>() == 1);
+        REQUIRE(sum_w_merged["topologies"][1]["heights"][1]["splits"][0]["leaf_indices"][2].as<int>() == 2);
+        REQUIRE(sum_w_merged["topologies"][1]["heights"][1]["splits"][0]["leaf_indices"][3].as<int>() == 3);
+        REQUIRE(sum_w_merged["topologies"][1]["heights"][0]["mean"].as<double>() == 0.27);
+        REQUIRE(sum_w_merged["topologies"][1]["heights"][1]["mean"].as<double>() == 0.4);
+        REQUIRE(sum_w_merged["topologies"][1]["heights"][0]["std_dev"].as<double>() == 0.15);
+        REQUIRE(sum_w_merged["topologies"][1]["heights"][1]["std_dev"].as<double>() == 0.1);
+        REQUIRE(sum_w_merged["topologies"][1]["heights"][0]["eti_95"][0].as<double>() == 0.11);
+        REQUIRE(sum_w_merged["topologies"][1]["heights"][1]["eti_95"][0].as<double>() == 0.3);
+        REQUIRE(sum_w_merged["topologies"][1]["heights"][0]["eti_95"][1].as<double>() == 0.4);
+        REQUIRE(sum_w_merged["topologies"][1]["heights"][1]["eti_95"][1].as<double>() == 0.49);
+        REQUIRE(sum_w_merged["topologies"][1]["heights"][0]["hpdi_95"][0].as<double>() == 0.1);
+        REQUIRE(sum_w_merged["topologies"][1]["heights"][1]["hpdi_95"][0].as<double>() == 0.3);
+        REQUIRE(sum_w_merged["topologies"][1]["heights"][0]["hpdi_95"][1].as<double>() == 0.4);
+        REQUIRE(sum_w_merged["topologies"][1]["heights"][1]["hpdi_95"][1].as<double>() == 0.5);
+        REQUIRE(sum_w_merged["topologies"][2]["cumulative_frequency"].as<double>() == 0.5);
+        REQUIRE(sum_w_merged["topologies"][3]["cumulative_frequency"].as<double>() == 0.61);
+        REQUIRE(sum_w_merged["topologies"][4]["cumulative_frequency"].as<double>() == 0.72);
+        REQUIRE(sum_w_merged["topologies"][5]["cumulative_frequency"].as<double>() == 0.83);
+        REQUIRE(sum_w_merged["topologies"][6]["cumulative_frequency"].as<double>() == 0.94);
+        REQUIRE(sum_w_merged["topologies"][7]["cumulative_frequency"].as<double>() == 1);
+        REQUIRE(sum_w_merged["summary_of_map_topologies"][0]["count"].as<int>() == 4);
+        REQUIRE(sum_w_merged["summary_of_map_topologies"][0]["frequency"].as<double>() == 0.22);
+        REQUIRE(sum_w_merged["summary_of_tree_sources"]["total_number_of_trees_sampled"].as<int>() == 18);
+        REQUIRE(sum_w_merged["summary_of_tree_sources"]["sources"][0]["number_of_trees_skipped"].as<int>() == 2);
+        REQUIRE(sum_w_merged["summary_of_tree_sources"]["sources"][1]["number_of_trees_skipped"].as<int>() == 2);
+        REQUIRE(sum_w_merged["summary_of_tree_sources"]["sources"][2]["number_of_trees_skipped"].as<int>() == 2);
+        REQUIRE(sum_w_merged["summary_of_tree_sources"]["sources"][3]["number_of_trees_skipped"].as<int>() == 2);
+        REQUIRE(sum_w_merged["summary_of_tree_sources"]["sources"][4]["number_of_trees_skipped"].as<int>() == 2);
+        REQUIRE(sum_w_merged["summary_of_tree_sources"]["sources"][5]["number_of_trees_skipped"].as<int>() == 2);
+        REQUIRE(sum_w_merged["summary_of_tree_sources"]["sources"][6]["number_of_trees_skipped"].as<int>() == 2);
+        REQUIRE(sum_w_merged["summary_of_tree_sources"]["sources"][7]["number_of_trees_skipped"].as<int>() == 2);
+        REQUIRE(sum_w_merged["summary_of_tree_sources"]["sources"][0]["number_of_trees_sampled"].as<int>() == 2);
+        REQUIRE(sum_w_merged["summary_of_tree_sources"]["sources"][1]["number_of_trees_sampled"].as<int>() == 3);
+        REQUIRE(sum_w_merged["summary_of_tree_sources"]["sources"][2]["number_of_trees_sampled"].as<int>() == 2);
+        REQUIRE(sum_w_merged["summary_of_tree_sources"]["sources"][3]["number_of_trees_sampled"].as<int>() == 4);
+        REQUIRE(sum_w_merged["summary_of_tree_sources"]["sources"][4]["number_of_trees_sampled"].as<int>() == 2);
+        REQUIRE(sum_w_merged["summary_of_tree_sources"]["sources"][5]["number_of_trees_sampled"].as<int>() == 2);
+        REQUIRE(sum_w_merged["summary_of_tree_sources"]["sources"][6]["number_of_trees_sampled"].as<int>() == 2);
+        REQUIRE(sum_w_merged["summary_of_tree_sources"]["sources"][7]["number_of_trees_sampled"].as<int>() == 1);
+        REQUIRE(sum_w_merged["summary_of_tree_sources"]["sources"][0]["path"].as<std::string>() == "data/4-tip-trees-12-34.nex");
+        REQUIRE(sum_w_merged["summary_of_tree_sources"]["sources"][1]["path"].as<std::string>() == "data/4-tip-trees-12.nex");
+        REQUIRE(sum_w_merged["summary_of_tree_sources"]["sources"][2]["path"].as<std::string>() == "data/4-tip-trees-13-24.nex");
+        REQUIRE(sum_w_merged["summary_of_tree_sources"]["sources"][3]["path"].as<std::string>() == "data/4-tip-trees-14-23-shared.nex");
+        REQUIRE(sum_w_merged["summary_of_tree_sources"]["sources"][4]["path"].as<std::string>() == "data/4-tip-trees-34.nex");
+        REQUIRE(sum_w_merged["summary_of_tree_sources"]["sources"][5]["path"].as<std::string>() == "data/4-tip-trees-comb.nex");
+        REQUIRE(sum_w_merged["summary_of_tree_sources"]["sources"][6]["path"].as<std::string>() == "data/4-tip-trees-ladder-1234.nex");
+        REQUIRE(sum_w_merged["summary_of_tree_sources"]["sources"][7]["path"].as<std::string>() == "data/4-tip-trees-ladder-4321.nex");
+        REQUIRE(sum_w_merged["summary_of_target_tree"]["is_a_map_topology"].as<bool>() == true);
+
+        REQUIRE(sum_w_merged["splits"]["root"]["nodes"][0]["number_of_descendants"].as<int>() == 2);
+        REQUIRE(sum_w_merged["splits"]["root"]["nodes"][0]["count"].as<int>() == 4);
+        REQUIRE(sum_w_merged["splits"]["root"]["nodes"][0]["frequency"].as<double>() == 0.22);
+        REQUIRE(sum_w_merged["splits"]["root"]["nodes"][0]["descendant_splits"][0][0].as<int>() == 1);
+        REQUIRE(sum_w_merged["splits"]["root"]["nodes"][0]["descendant_splits"][0][1].as<int>() == 2);
+        REQUIRE(sum_w_merged["splits"]["root"]["nodes"][0]["descendant_splits"][1][0].as<int>() == 0);
+        REQUIRE(sum_w_merged["splits"]["root"]["nodes"][0]["descendant_splits"][1][1].as<int>() == 3);
+
+        REQUIRE(sum_w_merged["splits"]["root"]["nodes"][1]["number_of_descendants"].as<int>() == 3);
+        REQUIRE(sum_w_merged["splits"]["root"]["nodes"][1]["count"].as<int>() == 3);
+        REQUIRE(sum_w_merged["splits"]["root"]["nodes"][1]["frequency"].as<double>() == 0.17);
+
+        REQUIRE(sum_w_merged["splits"]["root"]["nodes"][2]["count"].as<int>() == 2);
+        REQUIRE(sum_w_merged["splits"]["root"]["nodes"][2]["frequency"].as<double>() == 0.11);
+        REQUIRE(sum_w_merged["splits"]["root"]["nodes"][3]["count"].as<int>() == 2);
+        REQUIRE(sum_w_merged["splits"]["root"]["nodes"][3]["frequency"].as<double>() == 0.11);
+        REQUIRE(sum_w_merged["splits"]["root"]["nodes"][4]["count"].as<int>() == 2);
+        REQUIRE(sum_w_merged["splits"]["root"]["nodes"][4]["frequency"].as<double>() == 0.11);
+        REQUIRE(sum_w_merged["splits"]["root"]["nodes"][5]["count"].as<int>() == 2);
+        REQUIRE(sum_w_merged["splits"]["root"]["nodes"][5]["frequency"].as<double>() == 0.11);
+        REQUIRE(sum_w_merged["splits"]["root"]["nodes"][6]["count"].as<int>() == 2);
+        REQUIRE(sum_w_merged["splits"]["root"]["nodes"][6]["frequency"].as<double>() == 0.11);
+
+        REQUIRE(sum_w_merged["splits"]["root"]["nodes"][7]["number_of_descendants"].as<int>() == 2);
+        REQUIRE(sum_w_merged["splits"]["root"]["nodes"][7]["count"].as<int>() == 1);
+        REQUIRE(sum_w_merged["splits"]["root"]["nodes"][7]["frequency"].as<double>() == 0.056);
+        REQUIRE(sum_w_merged["splits"]["root"]["nodes"][7]["descendant_splits"][0][0].as<int>() == 0);
+        REQUIRE(sum_w_merged["splits"]["root"]["nodes"][7]["descendant_splits"][1][0].as<int>() == 1);
+        REQUIRE(sum_w_merged["splits"]["root"]["nodes"][7]["descendant_splits"][1][1].as<int>() == 2);
+        REQUIRE(sum_w_merged["splits"]["root"]["nodes"][7]["descendant_splits"][1][2].as<int>() == 3);
+
+        REQUIRE(sum_w_merged["summary_of_target_tree"]["splits"]["root"]["node"]["is_a_map_node_given_split"].as<bool>() == true);
+        REQUIRE(sum_w_merged["summary_of_target_tree"]["splits"]["root"]["node"]["number_of_descendants"].as<int>() == 2);
+        REQUIRE(sum_w_merged["summary_of_target_tree"]["splits"]["root"]["node"]["count"].as<int>() == 4);
+        REQUIRE(sum_w_merged["summary_of_target_tree"]["splits"]["root"]["node"]["frequency"].as<double>() == 0.22);
+        REQUIRE(sum_w_merged["summary_of_target_tree"]["splits"]["root"]["node"]["descendant_splits"][0][0].as<int>() == 1);
+        REQUIRE(sum_w_merged["summary_of_target_tree"]["splits"]["root"]["node"]["descendant_splits"][0][1].as<int>() == 2);
+        REQUIRE(sum_w_merged["summary_of_target_tree"]["splits"]["root"]["node"]["descendant_splits"][1][0].as<int>() == 0);
+        REQUIRE(sum_w_merged["summary_of_target_tree"]["splits"]["root"]["node"]["descendant_splits"][1][1].as<int>() == 3);
+
+        REQUIRE(sum_w_merged["merged_target_heights"].size() == 1);
+        REQUIRE(sum_w_merged["merged_target_heights"][0]["younger_height_index"].as<int>() == 0);
+        REQUIRE(sum_w_merged["merged_target_heights"][0]["younger_height_number_of_nodes"].as<int>() == 2);
+        REQUIRE(sum_w_merged["merged_target_heights"][0]["older_height_number_of_nodes"].as<int>() == 1);
+        REQUIRE(sum_w_merged["merged_target_heights"][0]["merged_height_number_of_nodes"].as<int>() == 1);
+        REQUIRE(sum_w_merged["merged_target_heights"][0]["count"].as<int>() == 2);
+        REQUIRE(sum_w_merged["merged_target_heights"][0]["frequency"].as<double>() == 0.11);
+
         // ts.write_map_trees_to_nexus(std::cout);
         // ts.write_target_tree_to_nexus(std::cout);
 
@@ -1338,5 +1609,113 @@ TEST_CASE("Basic testing", "[treesum]") {
                 0.1,   // min_freq_for_asdsf
                 "",    // margin
                 2);    // precision
+    }
+}
+
+TEST_CASE("Basic merged target heights summary", "[treesum]") {
+    SECTION("Basic merged target heights") {
+        std::vector<std::string> source_tree_paths {
+                "data/9-tip-gen-trees.nex",
+        };
+        std::string target_tree_path = "data/9-tip-bif-target-tree.nex";
+
+        treesum::TreeSample<PopulationNode> ts(
+                target_tree_path,
+                source_tree_paths,
+                "nexus",
+                "nexus",
+                0);
+        REQUIRE(ts.get_number_of_leaves() == 9);
+        REQUIRE(ts.get_number_of_sources() == 1);
+        REQUIRE(ts.get_sample_size() == 10);
+
+        std::vector<unsigned int> expected_source_sample_sizes {
+                10,
+        };
+        REQUIRE(ts.get_source_sample_sizes() == expected_source_sample_sizes);
+
+        std::stringstream sumstream_w_merged;
+        ts.write_summary(sumstream_w_merged,
+                false, // use_median_heights
+                0.1,   // min_freq_for_asdsf
+                "",    // margin
+                2);    // precision
+        ts.write_summary_of_merged_target_heights(sumstream_w_merged,
+                "",    // margin
+                2);    // precision
+        ts.write_summary_of_merged_target_heights(std::cout,
+                "",    // margin
+                2);    // precision
+        YAML::Node sum_w_merged;
+        try {
+            sum_w_merged = YAML::Load(sumstream_w_merged);
+        }
+        catch (...) {
+            REQUIRE(0 == 1);
+        }
+
+        REQUIRE(sum_w_merged["merged_target_heights"].size() == 7);
+        REQUIRE(sum_w_merged["merged_target_heights"][0]["younger_height_index"].as<int>() == 0);
+        REQUIRE(sum_w_merged["merged_target_heights"][0]["younger_height_number_of_nodes"].as<int>() == 1);
+        REQUIRE(sum_w_merged["merged_target_heights"][0]["older_height_number_of_nodes"].as<int>() == 1);
+        REQUIRE(sum_w_merged["merged_target_heights"][0]["merged_height_number_of_nodes"].as<int>() == 2);
+        REQUIRE(sum_w_merged["merged_target_heights"][0]["count"].as<int>() == 0);
+        REQUIRE(sum_w_merged["merged_target_heights"][0]["frequency"].as<double>() == 0.0);
+        REQUIRE(sum_w_merged["merged_target_heights"][0]["younger_height"].as<double>() == 0.03);
+        REQUIRE(sum_w_merged["merged_target_heights"][0]["older_height"].as<double>() == 0.05);
+
+        REQUIRE(sum_w_merged["merged_target_heights"][1]["younger_height_index"].as<int>() == 1);
+        REQUIRE(sum_w_merged["merged_target_heights"][1]["younger_height_number_of_nodes"].as<int>() == 1);
+        REQUIRE(sum_w_merged["merged_target_heights"][1]["older_height_number_of_nodes"].as<int>() == 1);
+        REQUIRE(sum_w_merged["merged_target_heights"][1]["merged_height_number_of_nodes"].as<int>() == 1);
+        REQUIRE(sum_w_merged["merged_target_heights"][1]["count"].as<int>() == 0);
+        REQUIRE(sum_w_merged["merged_target_heights"][1]["frequency"].as<double>() == 0.0);
+        REQUIRE(sum_w_merged["merged_target_heights"][1]["younger_height"].as<double>() == 0.05);
+        REQUIRE(sum_w_merged["merged_target_heights"][1]["older_height"].as<double>() == 0.06);
+
+        REQUIRE(sum_w_merged["merged_target_heights"][2]["younger_height_index"].as<int>() == 2);
+        REQUIRE(sum_w_merged["merged_target_heights"][2]["younger_height_number_of_nodes"].as<int>() == 1);
+        REQUIRE(sum_w_merged["merged_target_heights"][2]["older_height_number_of_nodes"].as<int>() == 1);
+        REQUIRE(sum_w_merged["merged_target_heights"][2]["merged_height_number_of_nodes"].as<int>() == 2);
+        REQUIRE(sum_w_merged["merged_target_heights"][2]["count"].as<int>() == 0);
+        REQUIRE(sum_w_merged["merged_target_heights"][2]["frequency"].as<double>() == 0.0);
+        REQUIRE(sum_w_merged["merged_target_heights"][2]["younger_height"].as<double>() == 0.06);
+        REQUIRE(sum_w_merged["merged_target_heights"][2]["older_height"].as<double>() == 0.11);
+
+        REQUIRE(sum_w_merged["merged_target_heights"][3]["younger_height_index"].as<int>() == 3);
+        REQUIRE(sum_w_merged["merged_target_heights"][3]["younger_height_number_of_nodes"].as<int>() == 1);
+        REQUIRE(sum_w_merged["merged_target_heights"][3]["older_height_number_of_nodes"].as<int>() == 1);
+        REQUIRE(sum_w_merged["merged_target_heights"][3]["merged_height_number_of_nodes"].as<int>() == 2);
+        REQUIRE(sum_w_merged["merged_target_heights"][3]["count"].as<int>() == 0);
+        REQUIRE(sum_w_merged["merged_target_heights"][3]["frequency"].as<double>() == 0.0);
+        REQUIRE(sum_w_merged["merged_target_heights"][3]["younger_height"].as<double>() == 0.11);
+        REQUIRE(sum_w_merged["merged_target_heights"][3]["older_height"].as<double>() == 0.12);
+
+        REQUIRE(sum_w_merged["merged_target_heights"][4]["younger_height_index"].as<int>() == 4);
+        REQUIRE(sum_w_merged["merged_target_heights"][4]["younger_height_number_of_nodes"].as<int>() == 1);
+        REQUIRE(sum_w_merged["merged_target_heights"][4]["older_height_number_of_nodes"].as<int>() == 1);
+        REQUIRE(sum_w_merged["merged_target_heights"][4]["merged_height_number_of_nodes"].as<int>() == 2);
+        REQUIRE(sum_w_merged["merged_target_heights"][4]["count"].as<int>() == 0);
+        REQUIRE(sum_w_merged["merged_target_heights"][4]["frequency"].as<double>() == 0.0);
+        REQUIRE(sum_w_merged["merged_target_heights"][4]["younger_height"].as<double>() == 0.12);
+        REQUIRE(sum_w_merged["merged_target_heights"][4]["older_height"].as<double>() == 0.14);
+
+        REQUIRE(sum_w_merged["merged_target_heights"][5]["younger_height_index"].as<int>() == 5);
+        REQUIRE(sum_w_merged["merged_target_heights"][5]["younger_height_number_of_nodes"].as<int>() == 1);
+        REQUIRE(sum_w_merged["merged_target_heights"][5]["older_height_number_of_nodes"].as<int>() == 1);
+        REQUIRE(sum_w_merged["merged_target_heights"][5]["merged_height_number_of_nodes"].as<int>() == 1);
+        REQUIRE(sum_w_merged["merged_target_heights"][5]["count"].as<int>() == 0);
+        REQUIRE(sum_w_merged["merged_target_heights"][5]["frequency"].as<double>() == 0.0);
+        REQUIRE(sum_w_merged["merged_target_heights"][5]["younger_height"].as<double>() == 0.14);
+        REQUIRE(sum_w_merged["merged_target_heights"][5]["older_height"].as<double>() == 0.18);
+
+        REQUIRE(sum_w_merged["merged_target_heights"][6]["younger_height_index"].as<int>() == 6);
+        REQUIRE(sum_w_merged["merged_target_heights"][6]["younger_height_number_of_nodes"].as<int>() == 1);
+        REQUIRE(sum_w_merged["merged_target_heights"][6]["older_height_number_of_nodes"].as<int>() == 1);
+        REQUIRE(sum_w_merged["merged_target_heights"][6]["merged_height_number_of_nodes"].as<int>() == 1);
+        REQUIRE(sum_w_merged["merged_target_heights"][6]["count"].as<int>() == 10);
+        REQUIRE(sum_w_merged["merged_target_heights"][6]["frequency"].as<double>() == 1.0);
+        REQUIRE(sum_w_merged["merged_target_heights"][6]["younger_height"].as<double>() == 0.18);
+        REQUIRE(sum_w_merged["merged_target_heights"][6]["older_height"].as<double>() == 0.2);
     }
 }

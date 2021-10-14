@@ -1,3 +1,5 @@
+|eco_logo_long|
+
 .. _configfile:
 
 ######################
@@ -127,6 +129,33 @@ Now, let's look at an example that is more thoroughly specified::
     - comparison:
         path: "../alignments/G-sp_a-sp_b-Dalupiri-CamiguinNorte.nex"
 
+.. note::
+
+    In Version 1.0.0 and above, you can specify exponential and gamma
+    distributions using the mean.
+    For example::
+
+        exponential_distribution:
+            rate: 100.0
+
+    Is equivalent to::
+
+        exponential_distribution:
+            mean: 0.01
+
+    And::
+
+        gamma_distribution:
+            shape: 100.0
+            scale: 0.01
+
+    Is equivalent to::
+
+        gamma_distribution:
+            shape: 100.0
+            mean: 1.0
+
+
 
 All the settings are hierarchically nested by the indent spacing.
 For example,
@@ -146,8 +175,15 @@ The ``event_model_prior`` sets up the prior probabilities for all the different
 ways we can cluster the comparisons together (or not).
 Thus, the term "event model" is being used to refer to each of these
 possibilities.
-Currently, ``dirichlet_process`` (aka "DPP") is the only option, and it has a
-single setting: the ``concentration`` parameter.
+
+Dirichlet-process prior
+=======================
+
+Prior to Version 1.0.0,
+the ``dirichlet_process`` (aka "DPP") was the only option for the
+``event_model_prior``, and it has a single setting: the ``concentration``
+parameter.
+(:ref:`see this background section for more DPP details <dp-prior-on-divergence-models>`).
 
 The settings::
 
@@ -172,7 +208,16 @@ parameter, for example::
                     prior:
                         gamma_distribution:
                             shape: 2.0
-                            scale: 3.25
+                            scale: 3.75
+
+.. note::
+
+    In Version 1.0.0 and above, you can specify the same gamma
+    distribution using the mean::
+
+                        gamma_distribution:
+                            shape: 2.0
+                            mean: 7.5
 
 will allow the concentration parameter to be estimated.
 Generally, if you have a large number of comparisons (say 6 or more), it can be
@@ -203,6 +248,79 @@ that the data are driving that result.
 But, that is just an arbitrary preference (i.e., there is no fundamental
 mathematical justification for it).
 
+Pitman-Yor process prior
+========================
+
+In Version 1.0.0 and above,
+the Pitman-Yor process (PYP) can also be used
+(:ref:`see this background section for more PYP details <pyp-prior-on-divergence-models>`).
+It has two parameters: the ``concentration`` and ``discount`` parameters.
+
+Here is an example of the configuration of the ``pitman_yor_process``,
+where we estimate and put priors on both parameters::
+
+    event_model_prior:
+        pitman_yor_process:
+            parameters:
+                concentration:
+                    value: 3.58
+                    estimate: true
+                    prior:
+                        gamma_distribution:
+                            shape: 2.0
+                            mean: 3.58
+                discount:
+                    value: 0.2
+                    estimate: true
+                    prior:
+                        beta_distribution:
+                            alpha: 1.0
+                            beta: 4.0
+
+In Version 1.0.0 and above, you can also use the ``dpprobs`` tool to
+help get a feel for how the PYP distributes prior probabilities over
+the possible number of categories.
+For example, we can modify our ``dpprobs`` command above to give us
+some information about a PYP prior with a discount of 0.5::
+
+    $ dpprobs -d 0.5 -p concentration 7.5 4
+
+Or, we can use the following command to get a summary for our
+``pitman_yor_process`` settings above::
+
+    $ dpprobs --shape 2.0 --scale 1.79 --discount-alpha 1.0 --discount-beta 4.0 1 4
+
+(the parameter value ``1`` [the second to last argument] is ignored for this
+command, but is necessary to avoid an error).
+
+Uniform prior
+=============
+
+In Version 1.0.0 and above,
+a uniform distribution can also be used.
+In its simplest form, this gives all possible ways to assign comparisons to
+events equal probability, *a priori*::
+
+    event_model_prior:
+        uniform:
+            parameters:
+                split_weight:
+                    value: 1.0
+                    estimate: false 
+
+However, the ``split_weight`` can be adjusted or estimated under a prior
+distribution.
+:ref:`See this background section for more details <uniform-prior-on-divergence-models>`.
+
+In Version 1.0.0 and above, there is also a ``swprobs`` tool (the mnemonic for
+this is "s"plit "w"eight "prob"abilities).
+For example::
+
+    $ swprobs 1 4
+
+This will summarize a uniform prior distribution with a split weight of 1 for 4
+comparisons.
+   
 
 ****************
 event_time_prior
@@ -214,6 +332,14 @@ For example::
     event_time_prior:
         exponential_distribution:
             rate: 100.0
+
+.. note::
+
+    In Version 1.0.0 and above, you can use the mean to specify the same
+    exponential distribution::
+
+        exponential_distribution:
+            mean: 0.01
 
 specifies an exponential distribution with a rate of 100.0 (thus
 the mean of the exponential prior is 1/rate = 1/100.0 = 0.01).
@@ -510,6 +636,22 @@ section and/or for each comparison::
                 value: 1.0
                 estimate: false
 
+.. note::
+
+    In Version 1.0.0 and above, you can specify exponential and gamma
+    distributions using the mean.
+    For example::
+
+                    gamma_distribution:
+                        shape: 4.0
+                        scale: 0.001
+
+    Is equivalent to::
+
+                    gamma_distribution:
+                        shape: 4.0
+                        mean: 0.004
+
 This allows you to specify whether or not you want estimate each parameter, and
 if so, what prior to use.
 
@@ -652,6 +794,15 @@ Alternatively, ::
                         shape: 100.0
                         scale: 0.01
 
+.. note::
+
+    In Version 1.0.0 and above, you can specify the same gamma distribution
+    using the mean::
+
+                    gamma_distribution:
+                        shape: 100.0
+                        mean: 1.0
+
 allows the effective population size of the root to be estimated, and centers
 the prior on its relative size on 1 (i.e., centers the prior expectation for
 the actual root effective population size on the mean of the leaf sizes);
@@ -665,6 +816,15 @@ Similarly ::
                     gamma_distribution:
                         shape: 100.0
                         scale: 0.02
+
+.. note::
+
+    In Version 1.0.0 and above, you can specify the same gamma distribution
+    using the mean::
+
+                    gamma_distribution:
+                        shape: 100.0
+                        mean: 2.0
 
 allows the effective population size of the root to be estimated, and centers
 the prior on its relative size on 2 (i.e., centers the prior expectation for

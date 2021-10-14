@@ -5,3 +5,13 @@ div.footer {
     color: {{ theme_footer_text }};
     text-align: center;
 }
+
+table.scrollwide {
+    display: block;
+    max-width: 100%;
+    background-color: #EEE;
+    overflow: auto;
+}
+table.scrollwide td {
+    white-space: nowrap;
+}

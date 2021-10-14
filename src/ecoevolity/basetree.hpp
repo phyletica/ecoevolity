@@ -2147,6 +2147,35 @@ class BaseTree {
             this->refresh_ordered_nodes();
         }
 
+        void store_nodes_by_height_index(
+                std::map<unsigned int, std::set< std::set<Split> > > & node_map,
+                const bool resize_splits = false) const {
+            if (resize_splits) {
+                this->root_->resize_splits(this->get_leaf_node_count());
+            }
+            for (auto node = this->pre_ordered_nodes_.rbegin();
+                    node != this->pre_ordered_nodes_.rend();
+                    ++node) {
+                if (! (*node)->is_leaf()) {
+                    // add this internal node's split to split set
+                    unsigned int height_idx = this->get_node_height_index(
+                            (*node)->get_height_parameter());
+                    std::set<Split> node_split_set;
+                    for (auto child : (*node)->get_all_children()) {
+                        node_split_set.insert(child->split_);
+                    }
+                    node_map[height_idx].insert(node_split_set);
+                }
+                else {
+                    // Set bit for this leaf node's index
+                    (*node)->split_.set_leaf_bit((*node)->get_index());
+                }
+                if ((*node)->has_parent()) {
+                    (*node)->get_parent()->split_.add_split((*node)->split_);
+                }
+            }
+        }
+
         void store_splits_by_height_index(
                 std::map< int, std::set<Split> > & split_map,
                 const bool resize_splits = false,
@@ -2158,7 +2187,7 @@ class BaseTree {
             for (auto node = this->pre_ordered_nodes_.rbegin();
                     node != this->pre_ordered_nodes_.rend();
                     ++node) {
-                if (! (*node)->is_leaf()) { 
+                if (! (*node)->is_leaf()) {
                     // add this internal node's split to split set
                     if (include_root || (! (*node)->is_root())) {
                         int height_idx = (int)this->get_node_height_index(
@@ -2258,11 +2287,13 @@ class BaseTree {
         void store_splits_heights_parameters(
                 std::set< std::set<Split> > & split_set,
                 std::map<std::set<Split>, double> & heights,
+                std::map<std::set< std::set<Split> >, double> & node_heights,
                 std::map< Split, std::set<Split> > & node_map,
                 std::map<Split, std::map<std::string, double> > & split_parameters,
                 std::map<std::set<Split>, std::map<std::string, double> > & node_parameters,
                 const bool resize_splits = false) const {
             std::map< unsigned int, std::set<Split> > split_map;
+            std::map< unsigned int, std::set< std::set<Split> > > index_to_node_map;
             if (resize_splits) {
                 this->root_->resize_splits(this->get_leaf_node_count());
             }
@@ -2280,6 +2311,7 @@ class BaseTree {
                     for (auto child : (*node)->get_all_children()) {
                         node_split_set.insert(child->split_);
                     }
+                    index_to_node_map[height_idx].insert(node_split_set);
                     node_parameters[node_split_set] = parameter_map;
                     node_map[(*node)->split_] = node_split_set;
                 }
@@ -2292,9 +2324,12 @@ class BaseTree {
                     (*node)->get_parent()->split_.add_split((*node)->split_);
                 }
             }
-            for (auto item : split_map) {
-                split_set.insert(item.second);
-                heights[item.second] = this->get_height(item.first);
+            ECOEVOLITY_ASSERT(split_map.size() == this->get_number_of_node_heights());
+            ECOEVOLITY_ASSERT(split_map.size() == index_to_node_map.size());
+            for (unsigned int ht_idx = 0; ht_idx < this->get_number_of_node_heights(); ++ht_idx) {
+                split_set.insert(split_map.at(ht_idx));
+                heights[split_map.at(ht_idx)] = this->get_height(ht_idx);
+                node_heights[index_to_node_map.at(ht_idx)] = this->get_height(ht_idx);
             }
         }
 

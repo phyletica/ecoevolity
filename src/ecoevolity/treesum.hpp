@@ -228,6 +228,40 @@ class HeightSamples : public BaseSamples {
         }
 };
 
+class NodeHeightSamples : public BaseSamples {
+    protected:
+        std::set< std::set<Split> > node_set_;
+        std::vector<double> heights_;
+
+    public:
+        void add_sample(
+                const std::set< std::set<Split> > & set_of_nodes,
+                double height,
+                unsigned int tree_index,
+                unsigned int source_index) {
+            ECOEVOLITY_ASSERT(set_of_nodes.size() > 0);
+            this->set_node_set(set_of_nodes);
+            this->heights_.push_back(height);
+            this->tally_sample_(tree_index, source_index);
+        }
+
+        const std::set< std::set<Split> > & get_node_set() const {
+            return this->node_set_;
+        }
+
+        void set_node_set(const std::set< std::set<Split> > & set_of_nodes) {
+            if ((this->n_ > 0) || (this->node_set_.size() > 0)) {
+                ECOEVOLITY_ASSERT(set_of_nodes == this->node_set_);
+            }
+            else {
+                this->node_set_ = set_of_nodes;
+            }
+        }
+
+        const std::vector<double> & get_heights() const {
+            return this->heights_;
+        }
+};
 
 class SplitSamples : public BaseSamples {
     protected:
@@ -337,12 +371,14 @@ class TreeSample {
     protected:
         std::vector< std::shared_ptr<TopologySamples> > topologies_;
         std::vector< std::shared_ptr<HeightSamples> > heights_;
+        std::vector< std::shared_ptr<NodeHeightSamples> > node_heights_;
         std::vector< std::shared_ptr<SplitSamples> > splits_;
         std::vector< std::shared_ptr<NodeSamples> > nodes_;
         std::vector< std::shared_ptr<SplitSamples> > non_trivial_splits_;
         std::vector< std::shared_ptr<NumberOfHeightsSamples> > num_heights_;
         std::map< std::set< std::set<Split> >, std::shared_ptr<TopologySamples> > topologies_map_;
         std::map< std::set<Split>,             std::shared_ptr<HeightSamples>   > heights_map_;
+        std::map< std::set< std::set<Split> >, std::shared_ptr<NodeHeightSamples> > node_heights_map_;
         std::map< Split,                       std::shared_ptr<SplitSamples>    > splits_map_;
         std::map< std::set<Split>,             std::shared_ptr<NodeSamples>    > nodes_map_;
         std::map< unsigned int,                std::shared_ptr<NumberOfHeightsSamples> > num_heights_map_;
@@ -360,6 +396,7 @@ class TreeSample {
         TopologySamples target_topology_sample_;
         std::set< std::set<Split> > target_topology_;
         std::map<std::set<Split>, double> target_heights_;
+        std::map<std::set< std::set<Split> >, double> target_node_heights_;
         std::map<Split, std::map<std::string, double> > target_split_parameters_;
         std::map<std::set<Split>, std::map<std::string, double> > target_node_parameters_;
         std::vector<double> target_euclidean_distances_;
@@ -369,6 +406,8 @@ class TreeSample {
             std::sort(this->topologies_.begin(), this->topologies_.end(),
                     BaseSamples::reverse_sort_by_n);
             std::sort(this->heights_.begin(), this->heights_.end(),
+                    BaseSamples::reverse_sort_by_n);
+            std::sort(this->node_heights_.begin(), this->node_heights_.end(),
                     BaseSamples::reverse_sort_by_n);
             std::sort(this->splits_.begin(), this->splits_.end(),
                     BaseSamples::reverse_sort_by_n);
@@ -447,12 +486,14 @@ class TreeSample {
         void _update_target_tree() {
             this->target_topology_.clear();
             this->target_heights_.clear();
+            this->target_node_heights_.clear();
             this->target_split_parameters_.clear();
             this->target_node_parameters_.clear();
             std::map< Split, std::set<Split> > node_map;
             this->target_tree_.store_splits_heights_parameters(
                     this->target_topology_,
                     this->target_heights_,
+                    this->target_node_heights_,
                     node_map,
                     this->target_split_parameters_,
                     this->target_node_parameters_,
@@ -621,12 +662,14 @@ class TreeSample {
 
             std::set< std::set<Split> > split_set;
             std::map<std::set<Split>, double> heights;
+            std::map<std::set< std::set<Split> >, double> node_heights;
             std::map<Split, std::map<std::string, double> > split_parameters;
             std::map<std::set<Split>, std::map<std::string, double> > node_parameters;
             std::map<Split, std::set< Split > > node_map;
             tree.store_splits_heights_parameters(
                     split_set,
                     heights,
+                    node_heights,
                     node_map,
                     split_parameters,
                     node_parameters,
@@ -674,6 +717,25 @@ class TreeSample {
                             source_index);
                     this->heights_.push_back(hs);
                     this->heights_map_[splits_height.first] = hs;
+                }
+            }
+            for (auto node_height : node_heights) {
+                if (this->node_heights_map_.count(node_height.first) > 0) {
+                    this->node_heights_map_[node_height.first]->add_sample(
+                            node_height.first,
+                            node_height.second,
+                            tree_index,
+                            source_index);
+                }
+                else {
+                    std::shared_ptr<NodeHeightSamples> nhs = std::make_shared<NodeHeightSamples>();
+                    nhs->add_sample(
+                            node_height.first,
+                            node_height.second,
+                            tree_index,
+                            source_index);
+                    this->node_heights_.push_back(nhs);
+                    this->node_heights_map_[node_height.first] = nhs;
                 }
             }
             for (auto split_pmap : split_parameters) {
@@ -1105,6 +1167,10 @@ class TreeSample {
             return this->source_sample_sizes_.at(source_index);
         }
 
+        unsigned int get_source_burnin(unsigned int source_index) const {
+            return this->source_num_skipped_.at(source_index);
+        }
+
         bool equal_source_sample_sizes() const {
             unsigned int n = this->source_sample_sizes_.at(0);
             for (unsigned int i = 1; i < this->source_sample_sizes_.size(); ++i) {
@@ -1132,11 +1198,23 @@ class TreeSample {
             return this->_get_values_by_source(this->tree_lengths_);
         }
 
+        const std::vector<double> & get_root_parameter_values(
+                const std::string & parameter_name) const {
+            return this->get_split(this->root_split_)->get_values(parameter_name);
+        }
+        std::vector< std::vector<double> > get_root_parameter_values_by_source(
+                const std::string & parameter_name) const {
+            return this->_get_values_by_source(this->get_root_parameter_values(parameter_name));
+        }
+
         const std::vector< std::shared_ptr<TopologySamples> > & get_topologies() const {
             return this->topologies_;
         }
         const std::vector< std::shared_ptr<HeightSamples> > & get_heights() const {
             return this->heights_;
+        }
+        const std::vector< std::shared_ptr<NodeHeightSamples> > & get_node_heights() const {
+            return this->node_heights_;
         }
         const std::vector< std::shared_ptr<SplitSamples> > & get_splits() const {
             return this->splits_;
@@ -1256,6 +1334,20 @@ class TreeSample {
                 const std::set<Split> & split_set
                 ) const {
             return this->get_height_count(split_set) / (double)this->sample_size_;
+        }
+
+        unsigned int get_node_height_count(
+                const std::set< std::set<Split> > & node_set
+                ) const {
+            if (this->node_heights_map_.count(node_set) < 1) {
+                return 0;
+            }
+            return this->node_heights_map_.at(node_set)->get_sample_size();
+        }
+        double get_node_height_frequency(
+                const std::set< std::set<Split> > & node_set
+                ) const {
+            return this->get_node_height_count(node_set) / (double)this->sample_size_;
         }
 
         unsigned int get_split_count(
@@ -2174,6 +2266,65 @@ class TreeSample {
                     trees,
                     out,
                     precision);
+        }
+
+        void write_summary_of_merged_target_heights(std::ostream & out,
+                const std::string & margin = "",
+                const unsigned int precision = 12) {
+            if (! this->target_tree_provided_) {
+                return;
+            }
+            unsigned int nheights = this->target_tree_.get_number_of_node_heights();
+            if (nheights < 2) {
+                // No heights to merge
+                return;
+            }
+            std::string indent = string_util::get_indent(1);
+            out.precision(precision);
+
+            std::vector<unsigned int> sizes_of_mapped_polytomies;
+            unsigned int number_of_nodes_merged_up;
+            std::map< unsigned int, std::set< std::set<Split> > > height_index_to_node_set;
+
+            std::string item_margin = margin + indent + "  ";
+            out << margin << "merged_target_heights:\n";
+
+            for (unsigned int ht_idx = 0; ht_idx < (nheights - 1); ++ht_idx) {
+                this->target_tree_.store_state();
+
+                double younger_height = this->target_tree_.get_height(ht_idx);
+                double older_height = this->target_tree_.get_height(ht_idx + 1);
+                unsigned int n_nodes_mapped = this->target_tree_.get_mapped_node_count(ht_idx);
+                unsigned int older_n_nodes_mapped = this->target_tree_.get_mapped_node_count(ht_idx + 1);
+
+                this->target_tree_.merge_node_height_up(ht_idx,
+                        sizes_of_mapped_polytomies,
+                        number_of_nodes_merged_up,
+                        true);
+                ECOEVOLITY_ASSERT(this->target_tree_.get_height(ht_idx) == older_height);
+                ECOEVOLITY_ASSERT(this->target_tree_.get_number_of_node_heights() == (nheights - 1));
+                unsigned int post_merge_num_nodes = this->target_tree_.get_mapped_node_count(ht_idx);
+                height_index_to_node_set.clear();
+                this->target_tree_.store_nodes_by_height_index(
+                        height_index_to_node_set,
+                        false); // Don't update split size (i.e., # of leaves)
+                ECOEVOLITY_ASSERT(height_index_to_node_set.at(ht_idx).size() == post_merge_num_nodes);
+                double height_freq = this->get_node_height_frequency(height_index_to_node_set.at(ht_idx));
+                double height_count = this->get_node_height_count(height_index_to_node_set.at(ht_idx));
+
+                out << margin << indent << "-\n";
+                out << item_margin << "younger_height_index: " << ht_idx << "\n";
+                out << item_margin << "younger_height: " << younger_height << "\n";
+                out << item_margin << "older_height: " << older_height << "\n";
+                out << item_margin << "younger_height_number_of_nodes: " << n_nodes_mapped << "\n";
+                out << item_margin << "older_height_number_of_nodes: " << older_n_nodes_mapped << "\n";
+                out << item_margin << "merged_height_number_of_nodes: " << post_merge_num_nodes << "\n";
+                out << item_margin << "count: " << height_count << "\n";
+                out << item_margin << "frequency: " << height_freq << "\n";
+
+                this->target_tree_.restore_state();
+                ECOEVOLITY_ASSERT(this->target_tree_.get_number_of_node_heights() == nheights);
+            }
         }
 };
 

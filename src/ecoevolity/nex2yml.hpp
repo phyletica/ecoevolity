@@ -29,12 +29,14 @@
 #include "error.hpp"
 #include "settings.hpp"
 #include "collection.hpp"
+#include "general_tree_settings.hpp"
+#include "settings_io.hpp"
 
 
 void write_nex2yml_splash(std::ostream& out);
 
 
-template <class SettingsType, class CollectionType>
+template <class SettingsType, class CollectionType, class TreeType>
 int nex2yml_main(int argc, char * argv[]) {
 
     write_nex2yml_splash(std::cout);
@@ -117,26 +119,90 @@ int nex2yml_main(int argc, char * argv[]) {
     std::cout << "Config path: " << config_path << std::endl;
 
     std::cout << "Parsing config file..." << std::endl;
-    SettingsType settings = SettingsType(config_path);
+    SettingsType settings;
+    PopulationTreeSettings phyco_settings;
+    bool using_phyco_settings = false;
+    try {
+        settings = SettingsType(config_path);
+    }
+    catch (...) {
+        using_phyco_settings = true;
+        try {
+            phyco_settings = PopulationTreeSettings(config_path);
+        }
+        catch (...) {
+            std::cerr << "ERROR: Problem parsing config file: "
+                    << config_path << "\n";
+            throw;
+        }
+    }
 
-    std::cout << "Configuring comparisons..." << std::endl;
-    CollectionType comparisons = CollectionType(
-            settings,
-            rng,
-            strict_on_constant_sites,
-            strict_on_missing_sites,
-            strict_on_triallelic_sites);
+    if (! using_phyco_settings) {
+        std::cout << "Configuring comparisons..." << std::endl;
+        CollectionType comparisons = CollectionType(
+                settings,
+                rng,
+                strict_on_constant_sites,
+                strict_on_missing_sites,
+                strict_on_triallelic_sites);
 
-    std::cout << "\n" << string_util::banner('-') << "\n";
-    comparisons.write_summary(std::cout);
-    std::cout << string_util::banner('-') << "\n\n";
+        std::cout << "\n" << string_util::banner('-') << "\n";
+        comparisons.write_summary(std::cout);
+        std::cout << string_util::banner('-') << "\n\n";
 
-    std::cout << "Writing YAML files of allele count patterns..." << std::endl;
-    std::ofstream yml_out_stream;
-    for (unsigned int i = 0;
-            i < comparisons.get_number_of_trees();
-            ++i) {
-        const BiallelicData & d = comparisons.get_tree(i)->get_data();
+        std::cout << "Writing YAML files of allele count patterns..." << std::endl;
+        std::ofstream yml_out_stream;
+        for (unsigned int i = 0;
+                i < comparisons.get_number_of_trees();
+                ++i) {
+            const BiallelicData & d = comparisons.get_tree(i)->get_data();
+            std::string yml_out_path = d.get_path() + ".yml";
+
+            std::cout << "    Writing \'" << yml_out_path << "\'" << std::endl;
+            try {
+                yml_out_stream.open(yml_out_path);
+            }
+            catch (...) {
+                std::cerr << "An error occurred when trying to open \'"
+                          << yml_out_path
+                          << "\'\n";
+                throw;
+            }
+            try {
+                d.write_yaml(yml_out_stream);
+            }
+            catch (...) {
+                yml_out_stream.close();
+                std::cerr << "An error occurred when trying to write to \'"
+                          << yml_out_path
+                          << "\'\n";
+                throw;
+            }
+            yml_out_stream.close();
+        }
+    }
+    else {
+        std::cout << "Configuring model..." << std::endl;
+
+        TreeType tree(
+                phyco_settings,
+                rng,
+                strict_on_constant_sites,
+                strict_on_missing_sites,
+                strict_on_triallelic_sites,
+                false // store_seq_loci_info
+                );
+
+        GeneralTreeOperatorSchedule<BasePopulationTree> operator_schedule(
+                phyco_settings.operator_settings, tree.get_leaf_node_count());
+
+        std::cout << "\n" << string_util::banner('-') << "\n";
+        write_settings(std::cout, phyco_settings, operator_schedule);
+        std::cout << string_util::banner('-') << "\n\n";
+
+        std::cout << "Writing YAML files of allele count patterns..." << std::endl;
+        std::ofstream yml_out_stream;
+        const BiallelicData & d = tree.get_data();
         std::string yml_out_path = d.get_path() + ".yml";
 
         std::cout << "    Writing \'" << yml_out_path << "\'" << std::endl;
@@ -154,7 +220,7 @@ int nex2yml_main(int argc, char * argv[]) {
         }
         catch (...) {
             yml_out_stream.close();
-            std::cerr << "An error occurred when tryin to write to \'"
+            std::cerr << "An error occurred when trying to write to \'"
                       << yml_out_path
                       << "\'\n";
             throw;
