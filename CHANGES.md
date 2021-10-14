@@ -1,3 +1,23 @@
+Version 1.0.0
+=============
+
+Changes
+-------
+
+-   Adding ``phycoeval``, ``sumphycoeval``, and ``simphycoeval`` tools and
+    associated code and tests. These tools implement fully phylogenetic models
+    of shared or multifurcating divergences under a generalized tree
+    distribution.
+
+-   Updating documentation.
+
+-   Documenting the Pitman-Yor and Uniform distributions over divergence models
+    for ``ecoevolity``.
+
+-   Updating ``nex2yml`` tool to take both ``ecoevolity`` and ``phycoeval``
+    config files.
+
+
 Version 0.3.2
 =============
 
