@@ -175,8 +175,15 @@ The ``event_model_prior`` sets up the prior probabilities for all the different
 ways we can cluster the comparisons together (or not).
 Thus, the term "event model" is being used to refer to each of these
 possibilities.
-Currently, ``dirichlet_process`` (aka "DPP") is the only option, and it has a
-single setting: the ``concentration`` parameter.
+
+Dirichlet-process prior
+=======================
+
+Prior to Version 1.0.0,
+the ``dirichlet_process`` (aka "DPP") was the only option for the
+``event_model_prior``, and it has a single setting: the ``concentration``
+parameter.
+(:ref:`see this background section for more DPP details <dp-prior-on-divergence-models>`).
 
 The settings::
 
@@ -241,6 +248,79 @@ that the data are driving that result.
 But, that is just an arbitrary preference (i.e., there is no fundamental
 mathematical justification for it).
 
+Pitman-Yor process prior
+========================
+
+In Version 1.0.0 and above,
+the Pitman-Yor process (PYP) can also be used
+(:ref:`see this background section for more PYP details <pyp-prior-on-divergence-models>`).
+It has two parameters: the ``concentration`` and ``discount`` parameters.
+
+Here is an example of the configuration of the ``pitman_yor_process``,
+where we estimate and put priors on both parameters::
+
+    event_model_prior:
+        pitman_yor_process:
+            parameters:
+                concentration:
+                    value: 3.58
+                    estimate: true
+                    prior:
+                        gamma_distribution:
+                            shape: 2.0
+                            mean: 3.58
+                discount:
+                    value: 0.2
+                    estimate: true
+                    prior:
+                        beta_distribution:
+                            alpha: 1.0
+                            beta: 4.0
+
+In Version 1.0.0 and above, you can also use the ``dpprobs`` tool to
+help get a feel for how the PYP distributes prior probabilities over
+the possible number of categories.
+For example, we can modify our ``dpprobs`` command above to give us
+some information about a PYP prior with a discount of 0.5::
+
+    $ dpprobs -d 0.5 -p concentration 7.5 4
+
+Or, we can use the following command to get a summary for our
+``pitman_yor_process`` settings above::
+
+    $ dpprobs --shape 2.0 --scale 1.79 --discount-alpha 1.0 --discount-beta 4.0 1 4
+
+(the parameter value ``1`` [the second to last argument] is ignored for this
+command, but is necessary to avoid an error).
+
+Uniform prior
+=============
+
+In Version 1.0.0 and above,
+a uniform distribution can also be used.
+In its simplest form, this gives all possible ways to assign comparisons to
+events equal probability, *a priori*::
+
+    event_model_prior:
+        uniform:
+            parameters:
+                split_weight:
+                    value: 1.0
+                    estimate: false 
+
+However, the ``split_weight`` can be adjusted or estimated under a prior
+distribution.
+:ref:`See this background section for more details <uniform-prior-on-divergence-models>`.
+
+In Version 1.0.0 and above, there is also a ``swprobs`` tool (the mnemonic for
+this is "s"plit "w"eight "prob"abilities).
+For example::
+
+    $ swprobs 1 4
+
+This will summarize a uniform prior distribution with a split weight of 1 for 4
+comparisons.
+   
 
 ****************
 event_time_prior
