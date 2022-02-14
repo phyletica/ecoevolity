@@ -967,7 +967,7 @@ class TreeSample {
             std::sort(node_heights.begin(), node_heights.end(), PositiveRealParameter::sort_by_value);
             for (unsigned int i = 0; i < node_heights.size(); ++i) {
                 node_heights.at(i)->store();
-                node_heights.at(i)->set_value(i);
+                node_heights.at(i)->set_value(i + 1.0);
             }
         }
 
