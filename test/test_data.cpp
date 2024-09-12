@@ -8375,6 +8375,37 @@ TEST_CASE("Testing diploid dna with triallelic, missing, mirrored, and constant 
         std::vector<unsigned int> expected_max_cts = {6,6,4};
         REQUIRE(bd.get_max_allele_counts() == expected_max_cts);
     }
+
+    SECTION("Demonstrate that seq labels can be different for every site") {
+        std::string nex_path1 = "data/diploid-dna-constant-missing-triallelic.nex";
+        BiallelicData bd1(nex_path1);
+        std::string nex_path2 = "data/diploid-dna-constant-missing-triallelic-disjoint.nex";
+        BiallelicData bd2(nex_path2);
+        REQUIRE(bd1.get_number_of_populations() == bd2.get_number_of_populations());
+        REQUIRE(bd1.get_number_of_patterns() == bd2.get_number_of_patterns());
+        REQUIRE(bd1.get_number_of_sites() == bd2.get_number_of_sites());
+        REQUIRE(bd1.markers_are_dominant() == bd2.markers_are_dominant());
+        REQUIRE(bd1.genotypes_are_diploid() == bd2.genotypes_are_diploid());
+        REQUIRE(bd1.has_constant_patterns() == bd2.has_constant_patterns());
+        REQUIRE(bd1.has_missing_population_patterns() == bd2.has_missing_population_patterns());
+        REQUIRE(bd1.has_mirrored_patterns() == bd2.has_mirrored_patterns());
+        REQUIRE(bd1.patterns_are_folded() == bd2.patterns_are_folded());
+        REQUIRE(bd1.has_recoded_triallelic_sites() == bd2.has_recoded_triallelic_sites());
+        REQUIRE(bd1.get_number_of_triallelic_sites_recoded() == bd2.get_number_of_triallelic_sites_recoded());
+
+        for (unsigned int pattern_idx = 0; pattern_idx < bd1.get_number_of_patterns(); ++pattern_idx) {
+            REQUIRE(bd1.get_pattern_weight(pattern_idx) == bd2.get_pattern_weight(pattern_idx));
+            REQUIRE(bd1.get_allele_counts(pattern_idx) == bd2.get_allele_counts(pattern_idx));
+            REQUIRE(bd1.get_red_allele_counts(pattern_idx) == bd2.get_red_allele_counts(pattern_idx));
+        }
+
+        REQUIRE(bd1.get_population_index("pop1") == bd2.get_population_index("pop1"));
+        REQUIRE(bd1.get_population_index("pop2") == bd2.get_population_index("pop2"));
+        REQUIRE(bd1.get_population_index("pop3") == bd2.get_population_index("pop3"));
+        REQUIRE(bd1.get_population_label(0) == bd2.get_population_label(0));
+        REQUIRE(bd1.get_population_label(1) == bd2.get_population_label(1));
+        REQUIRE(bd1.get_population_label(2) == bd2.get_population_label(2));
+    }
 }
 
 TEST_CASE("Testing diploid dna with triallelic, missing, mirrored, constant sites, and charsets", "[BiallelicData]") {
