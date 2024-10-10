@@ -27,6 +27,11 @@ void compute_leaf_partials(
         const unsigned int allele_count,
         const bool markers_are_dominant
         ) {
+    if (allele_count == 0) {
+        BiallelicPatternProbabilityMatrix m(0, 0);
+        node.copy_bottom_pattern_probs(m);
+        return;
+    }
     if (markers_are_dominant) {
         unsigned int n = allele_count;
         unsigned int n_reds = red_allele_count;
@@ -100,7 +105,7 @@ void merge_top_of_branch_partials(
         }
     }
 
-    for (unsigned int n = 1; n<= allele_count_child2; ++n) {
+    for (unsigned int n = 1; n <= allele_count_child2; ++n) {
         double b_nr = 1.0;
         for (unsigned int r = 0; r <= n; ++r) {
             top_partials_child2.at(((n*(n+1))/2)-1+r) *= b_nr;
@@ -149,10 +154,13 @@ void compute_internal_partials(
         }
     }
     if (number_of_children_with_alleles < 1) {
-        std::ostringstream message;
-        message << "compute_internal_partials; "
-                << "no children have alleles!";
-        throw EcoevolityError(message.str());
+        // std::ostringstream message;
+        // message << "compute_internal_partials; "
+        //         << "no children have alleles!";
+        // throw EcoevolityError(message.str());
+        BiallelicPatternProbabilityMatrix m(0, 0);
+        node.copy_bottom_pattern_probs(m);
+        return;
     }
     if (number_of_children_with_alleles == 1) {
         node.copy_bottom_pattern_probs(node.get_child(indices_of_children_with_alleles.at(0))->get_top_pattern_probs());

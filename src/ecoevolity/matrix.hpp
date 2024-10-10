@@ -81,6 +81,7 @@ class BiallelicPatternProbabilityMatrix {
         std::string to_string() const;
 
     private:
+        double prob_missing_ = 0.0;
         unsigned int allele_count_ = 0;
         std::vector<double> pattern_prob_matrix_;
 };
