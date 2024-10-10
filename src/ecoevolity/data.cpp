@@ -726,12 +726,14 @@ bool BiallelicData::add_site(
                 "Patterns cannot be added to a parsed dataset",
                 this->path_);
     }
+    unsigned int n_alleles = 0;
     for (auto cnt: allele_counts) {
-        if (cnt == 0) {
-            throw EcoevolityBiallelicDataError(
-                    "Cannot add missing data patterns",
-                    this->path_);
-        }
+        n_alleles += cnt;
+    }
+    if (n_alleles == 0) {
+        throw EcoevolityBiallelicDataError(
+                "Cannot add missing data patterns",
+                this->path_);
     }
     if (filtering_constant_patterns && this->pattern_is_constant(red_allele_counts, allele_counts)) {
         if (red_allele_counts == allele_counts) {
@@ -878,6 +880,10 @@ bool BiallelicData::has_missing_population_patterns() const {
     return this->has_missing_population_patterns_;
 }
 
+bool BiallelicData::has_missing_patterns() const {
+    return this->has_missing_patterns_;
+}
+
 bool BiallelicData::has_mirrored_patterns() const {
     return this->has_mirrored_patterns_;
 }
@@ -936,6 +942,22 @@ void BiallelicData::update_has_missing_population_patterns() {
     return;
 }
 
+void BiallelicData::update_has_missing_patterns() {
+    this->has_missing_patterns_ = false;
+    unsigned int n_sampled = 0;
+    for (unsigned int pattern_idx = 0; pattern_idx < this->get_number_of_patterns(); ++pattern_idx) {
+        n_sampled = 0;
+        for (auto count_iter: this->get_allele_counts(pattern_idx)) {
+            n_sampled += count_iter;
+        }
+        if (n_sampled == 0) {
+            this->has_missing_patterns_ = true;
+            return;
+        }
+    }
+    return;
+}
+
 void BiallelicData::update_has_mirrored_patterns() {
     this->has_mirrored_patterns_ = false;
     unsigned int mirrored_idx = 0;
@@ -983,6 +1005,7 @@ void BiallelicData::update_patterns_are_folded() {
 void BiallelicData::update_pattern_booleans() {
     this->update_has_constant_patterns();
     this->update_has_missing_population_patterns();
+    this->update_has_missing_patterns();
     this->update_has_mirrored_patterns();
     this->update_patterns_are_folded();
 }
@@ -1110,12 +1133,33 @@ void BiallelicData::remove_first_missing_population_pattern(
     for (unsigned int pattern_idx = 0; pattern_idx < this->get_number_of_patterns(); ++pattern_idx) {
         for (unsigned int pop_idx = 0; pop_idx < this->get_number_of_populations(); ++pop_idx) {
             if (this->get_allele_count(pattern_idx, pop_idx) == 0) {
-                this->number_of_missing_sites_removed_ += this->get_pattern_weight(pattern_idx);
+                this->number_of_missing_population_sites_removed_ += this->get_pattern_weight(pattern_idx);
                 this->remove_pattern(pattern_idx);
                 removed_index = pattern_idx;
                 was_removed = true;
                 return;
             }
+        }
+    }
+}
+
+void BiallelicData::remove_first_missing_pattern(
+        bool& was_removed,
+        unsigned int& removed_index) {
+    removed_index = 0;
+    was_removed = false;
+    unsigned int n_sampled = 0;
+    for (unsigned int pattern_idx = 0; pattern_idx < this->get_number_of_patterns(); ++pattern_idx) {
+        n_sampled = 0;
+        for (unsigned int pop_idx = 0; pop_idx < this->get_number_of_populations(); ++pop_idx) {
+            n_sampled += this->get_allele_count(pattern_idx, pop_idx);
+        }
+        if (n_sampled == 0) {
+            this->number_of_missing_sites_removed_ += this->get_pattern_weight(pattern_idx);
+            this->remove_pattern(pattern_idx);
+            removed_index = pattern_idx;
+            was_removed = true;
+            return;
         }
     }
 }
@@ -1206,6 +1250,25 @@ unsigned int BiallelicData::remove_missing_population_patterns(const bool valida
     return number_removed;
 }
 
+unsigned int BiallelicData::remove_missing_patterns(const bool validate) {
+    unsigned int number_removed = 0;
+    unsigned int return_idx = 0;
+    bool was_found = false;
+    while (true) {
+        this->remove_first_missing_pattern(was_found, return_idx);
+        if (! was_found) {
+            break;
+        }
+        number_removed += 1;
+    }
+    this->update_pattern_booleans();
+    this->update_max_allele_counts();
+    if (validate) {
+        this->validate();
+    }
+    return number_removed;
+}
+
 unsigned int BiallelicData::fold_patterns(const bool validate) {
     if (this->markers_are_dominant()) {
         throw EcoevolityBiallelicDataError(
@@ -1257,6 +1320,10 @@ unsigned int BiallelicData::get_number_of_constant_red_sites_removed() const {
     return this->number_of_constant_red_sites_removed_;
 }
 
+unsigned int BiallelicData::get_number_of_missing_population_sites_removed() const {
+    return this->number_of_missing_population_sites_removed_;
+}
+
 unsigned int BiallelicData::get_number_of_missing_sites_removed() const {
     return this->number_of_missing_sites_removed_;
 }
@@ -1306,6 +1373,8 @@ void BiallelicData::validate() const {
     unsigned int number_of_pops = this->population_labels_.size();
     bool has_constant = false;
     bool has_missing = false;
+    bool has_fully_missing = false;
+    unsigned int n_sampled = 0;
     for (unsigned int pattern_idx = 0; pattern_idx < this->get_number_of_patterns(); ++pattern_idx) {
         if (this->allele_counts_.at(pattern_idx).size() != number_of_pops) {
             throw EcoevolityBiallelicDataError(
@@ -1321,6 +1390,7 @@ void BiallelicData::validate() const {
             (this->red_allele_counts_.at(pattern_idx) == this->allele_counts_.at(pattern_idx))) {
             has_constant = true;
         }
+        n_sampled = 0;
         for (unsigned int pop_idx = 0; pop_idx < number_of_pops; ++pop_idx) {
             if (this->red_allele_counts_.at(pattern_idx).at(pop_idx) > this->allele_counts_.at(pattern_idx).at(pop_idx)) {
                 throw EcoevolityBiallelicDataError(
@@ -1330,6 +1400,10 @@ void BiallelicData::validate() const {
             if (this->allele_counts_.at(pattern_idx).at(pop_idx) == 0) {
                 has_missing = true;
             }
+            n_sampled += this->allele_counts_.at(pattern_idx).at(pop_idx);
+        }
+        if (n_sampled == 0) {
+            has_fully_missing = true;
         }
     }
     if (has_constant != this->has_constant_patterns()) {
@@ -1338,6 +1412,11 @@ void BiallelicData::validate() const {
                 this->path_);
     }
     if (has_missing != this->has_missing_population_patterns()) {
+        throw EcoevolityBiallelicDataError(
+                "missing population pattern boolean is incorrect",
+                this->path_);
+    }
+    if (has_fully_missing != this->has_missing_patterns()) {
         throw EcoevolityBiallelicDataError(
                 "missing data pattern boolean is incorrect",
                 this->path_);

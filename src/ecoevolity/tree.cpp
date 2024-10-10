@@ -439,7 +439,7 @@ void BasePopulationTree::process_and_vet_initialized_data(
     if (this->data_.get_number_of_populations() < 1) {
         throw EcoevolityError("BasePopulationTree(); no populations were found");
     }
-    unsigned int number_of_missing_patterns_removed = this->data_.remove_missing_population_patterns();
+    unsigned int number_of_missing_patterns_removed = this->data_.remove_missing_patterns();
     if (this->data_.has_recoded_triallelic_sites()) {
         if (strict_on_triallelic_sites) {
             std::ostringstream message;
@@ -475,7 +475,7 @@ void BasePopulationTree::process_and_vet_initialized_data(
                     << this->data_.get_number_of_missing_sites_removed()
                     << " sites from the alignment in:\n    \'"
                     << this->data_.get_path() << "\'\n"
-                    << "have no data for at least one population.\n"
+                    << "have no data across all populations.\n"
                     << "#######################################################################\n";
             throw EcoevolityMissingDataError(message.str(), this->data_.get_path());
         }
@@ -486,7 +486,7 @@ void BasePopulationTree::process_and_vet_initialized_data(
                     << this->data_.get_number_of_missing_sites_removed()
                     << " sites will be ignored from the alignment in:\n    \'"
                     << this->data_.get_path() << "\'\n"
-                    << "due to at least one population with no data.\n"
+                    << "due no data across all populations.\n"
                     << "#######################################################################\n";
             std::cerr << message.str() << std::endl;
         }

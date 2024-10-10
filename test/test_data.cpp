@@ -2087,10 +2087,10 @@ TEST_CASE("Testing for missing haploid site patterns", "[BiallelicData]") {
         REQUIRE_THROWS_AS(bd.get_sequence_labels(2), std::out_of_range &);
 
         // Removing patterns
-        REQUIRE(bd.get_number_of_missing_sites_removed() == 0);
+        REQUIRE(bd.get_number_of_missing_population_sites_removed() == 0);
         unsigned int number_removed = bd.remove_missing_population_patterns();
         REQUIRE(number_removed == 3);
-        REQUIRE(bd.get_number_of_missing_sites_removed() == 4);
+        REQUIRE(bd.get_number_of_missing_population_sites_removed() == 4);
         REQUIRE(bd.get_number_of_populations() == 2);
         REQUIRE(bd.get_number_of_patterns() == 2);
         REQUIRE(bd.get_number_of_sites() == 3);
@@ -2238,10 +2238,10 @@ TEST_CASE("Testing for missing haploid site patterns", "[BiallelicData]") {
         REQUIRE(bd.get_locus_end_indices() == expected_locus_ends);
 
         // Removing patterns
-        REQUIRE(bd.get_number_of_missing_sites_removed() == 0);
+        REQUIRE(bd.get_number_of_missing_population_sites_removed() == 0);
         unsigned int number_removed = bd.remove_missing_population_patterns();
         REQUIRE(number_removed == 3);
-        REQUIRE(bd.get_number_of_missing_sites_removed() == 4);
+        REQUIRE(bd.get_number_of_missing_population_sites_removed() == 4);
         REQUIRE(bd.get_number_of_populations() == 2);
         REQUIRE(bd.get_number_of_patterns() == 2);
         REQUIRE(bd.get_number_of_sites() == 3);
@@ -2397,10 +2397,10 @@ TEST_CASE("Testing for missing haploid site patterns as dominant", "[BiallelicDa
         REQUIRE_THROWS_AS(bd.get_sequence_labels(2), std::out_of_range &);
 
         // Removing patterns
-        REQUIRE(bd.get_number_of_missing_sites_removed() == 0);
+        REQUIRE(bd.get_number_of_missing_population_sites_removed() == 0);
         unsigned int number_removed = bd.remove_missing_population_patterns();
         REQUIRE(number_removed == 3);
-        REQUIRE(bd.get_number_of_missing_sites_removed() == 4);
+        REQUIRE(bd.get_number_of_missing_population_sites_removed() == 4);
         REQUIRE(bd.get_number_of_populations() == 2);
         REQUIRE(bd.get_number_of_patterns() == 2);
         REQUIRE(bd.get_number_of_sites() == 3);
@@ -2532,10 +2532,10 @@ TEST_CASE("Testing for missing haploid site patterns as dominant with charsets",
         REQUIRE(bd.get_locus_end_indices() == expected_locus_ends);
 
         // Removing patterns
-        REQUIRE(bd.get_number_of_missing_sites_removed() == 0);
+        REQUIRE(bd.get_number_of_missing_population_sites_removed() == 0);
         unsigned int number_removed = bd.remove_missing_population_patterns();
         REQUIRE(number_removed == 3);
-        REQUIRE(bd.get_number_of_missing_sites_removed() == 4);
+        REQUIRE(bd.get_number_of_missing_population_sites_removed() == 4);
         REQUIRE(bd.get_number_of_populations() == 2);
         REQUIRE(bd.get_number_of_patterns() == 2);
         REQUIRE(bd.get_number_of_sites() == 3);
@@ -5069,7 +5069,7 @@ TEST_CASE("Testing diploid dna with missing, mirrored, constant sites, and no he
         REQUIRE(bd.get_number_of_triallelic_sites_recoded() == 0);
 
         REQUIRE(bd.get_number_of_constant_sites_removed() == 0);
-        REQUIRE(bd.get_number_of_missing_sites_removed() == 0);
+        REQUIRE(bd.get_number_of_missing_population_sites_removed() == 0);
 
         std::vector<unsigned int> expected_wts = {1,1,1,1,1,1,1,1,1};
 
@@ -5152,6 +5152,7 @@ TEST_CASE("Testing diploid dna with missing, mirrored, constant sites, and no he
         REQUIRE(bd.get_number_of_constant_sites_removed() == 2);
         REQUIRE(bd.get_number_of_constant_green_sites_removed() == 2);
         REQUIRE(bd.get_number_of_constant_red_sites_removed() == 0);
+        REQUIRE(bd.get_number_of_missing_population_sites_removed() == 0);
         REQUIRE(bd.get_number_of_missing_sites_removed() == 0);
 
         expected_wts.clear();
@@ -5210,7 +5211,8 @@ TEST_CASE("Testing diploid dna with missing, mirrored, constant sites, and no he
         REQUIRE(bd.get_number_of_constant_sites_removed() == 2);
         REQUIRE(bd.get_number_of_constant_green_sites_removed() == 2);
         REQUIRE(bd.get_number_of_constant_red_sites_removed() == 0);
-        REQUIRE(bd.get_number_of_missing_sites_removed() == 1);
+        REQUIRE(bd.get_number_of_missing_population_sites_removed() == 1);
+        REQUIRE(bd.get_number_of_missing_sites_removed() == 0);
 
         expected_wts.clear();
         expected_wts = {1,1,1,1,1,1};
@@ -5265,7 +5267,7 @@ TEST_CASE("Testing diploid dna with missing, mirrored, constant sites, and no he
         REQUIRE(bd.get_number_of_constant_sites_removed() == 2);
         REQUIRE(bd.get_number_of_constant_green_sites_removed() == 2);
         REQUIRE(bd.get_number_of_constant_red_sites_removed() == 0);
-        REQUIRE(bd.get_number_of_missing_sites_removed() == 1);
+        REQUIRE(bd.get_number_of_missing_population_sites_removed() == 1);
 
         expected_wts.clear();
         expected_wts = {1,2,1,1,1};
@@ -5596,6 +5598,7 @@ TEST_CASE("Testing diploid dna with missing, mirrored, constant sites, no hets, 
         REQUIRE(bd.get_number_of_triallelic_sites_recoded() == 0);
 
         REQUIRE(bd.get_number_of_constant_sites_removed() == 0);
+        REQUIRE(bd.get_number_of_missing_population_sites_removed() == 0);
         REQUIRE(bd.get_number_of_missing_sites_removed() == 0);
 
         std::vector<unsigned int> expected_wts = {1,1,1,1,1,1,1,1,1};
@@ -5685,6 +5688,7 @@ TEST_CASE("Testing diploid dna with missing, mirrored, constant sites, no hets, 
         REQUIRE(bd.get_number_of_constant_sites_removed() == 2);
         REQUIRE(bd.get_number_of_constant_green_sites_removed() == 2);
         REQUIRE(bd.get_number_of_constant_red_sites_removed() == 0);
+        REQUIRE(bd.get_number_of_missing_population_sites_removed() == 0);
         REQUIRE(bd.get_number_of_missing_sites_removed() == 0);
 
         expected_wts.clear();
@@ -5749,7 +5753,8 @@ TEST_CASE("Testing diploid dna with missing, mirrored, constant sites, no hets, 
         REQUIRE(bd.get_number_of_constant_sites_removed() == 2);
         REQUIRE(bd.get_number_of_constant_green_sites_removed() == 2);
         REQUIRE(bd.get_number_of_constant_red_sites_removed() == 0);
-        REQUIRE(bd.get_number_of_missing_sites_removed() == 1);
+        REQUIRE(bd.get_number_of_missing_population_sites_removed() == 1);
+        REQUIRE(bd.get_number_of_missing_sites_removed() == 0);
 
         expected_wts.clear();
         expected_wts = {1,1,1,1,1,1};
@@ -5810,7 +5815,8 @@ TEST_CASE("Testing diploid dna with missing, mirrored, constant sites, no hets, 
         REQUIRE(bd.get_number_of_constant_sites_removed() == 2);
         REQUIRE(bd.get_number_of_constant_green_sites_removed() == 2);
         REQUIRE(bd.get_number_of_constant_red_sites_removed() == 0);
-        REQUIRE(bd.get_number_of_missing_sites_removed() == 1);
+        REQUIRE(bd.get_number_of_missing_population_sites_removed() == 1);
+        REQUIRE(bd.get_number_of_missing_sites_removed() == 0);
 
         expected_wts.clear();
         expected_wts = {1,2,1,1,1};
@@ -8718,6 +8724,7 @@ TEST_CASE("Testing diploid dna with missing, mirrored, constant, triallelic site
         REQUIRE(bd.get_number_of_triallelic_sites_recoded() == 2);
 
         REQUIRE(bd.get_number_of_constant_sites_removed() == 0);
+        REQUIRE(bd.get_number_of_missing_population_sites_removed() == 0);
         REQUIRE(bd.get_number_of_missing_sites_removed() == 0);
 
         std::vector<unsigned int> expected_wts = {1,1,1,1,1,1,1,1,1};
@@ -8801,6 +8808,7 @@ TEST_CASE("Testing diploid dna with missing, mirrored, constant, triallelic site
         REQUIRE(bd.get_number_of_constant_sites_removed() == 2);
         REQUIRE(bd.get_number_of_constant_green_sites_removed() == 2);
         REQUIRE(bd.get_number_of_constant_red_sites_removed() == 0);
+        REQUIRE(bd.get_number_of_missing_population_sites_removed() == 0);
         REQUIRE(bd.get_number_of_missing_sites_removed() == 0);
 
         expected_wts.clear();
@@ -8859,7 +8867,8 @@ TEST_CASE("Testing diploid dna with missing, mirrored, constant, triallelic site
         REQUIRE(bd.get_number_of_constant_sites_removed() == 2);
         REQUIRE(bd.get_number_of_constant_green_sites_removed() == 2);
         REQUIRE(bd.get_number_of_constant_red_sites_removed() == 0);
-        REQUIRE(bd.get_number_of_missing_sites_removed() == 1);
+        REQUIRE(bd.get_number_of_missing_population_sites_removed() == 1);
+        REQUIRE(bd.get_number_of_missing_sites_removed() == 0);
 
         expected_wts.clear();
         expected_wts = {1,1,1,1,1,1};
@@ -8914,7 +8923,8 @@ TEST_CASE("Testing diploid dna with missing, mirrored, constant, triallelic site
         REQUIRE(bd.get_number_of_constant_sites_removed() == 2);
         REQUIRE(bd.get_number_of_constant_green_sites_removed() == 2);
         REQUIRE(bd.get_number_of_constant_red_sites_removed() == 0);
-        REQUIRE(bd.get_number_of_missing_sites_removed() == 1);
+        REQUIRE(bd.get_number_of_missing_population_sites_removed() == 1);
+        REQUIRE(bd.get_number_of_missing_sites_removed() == 0);
 
         expected_wts.clear();
         expected_wts = {1,2,1,1,1};
@@ -9251,6 +9261,7 @@ TEST_CASE("Testing diploid dna with missing, mirrored, constant, triallelic site
         REQUIRE(bd.get_number_of_triallelic_sites_recoded() == 2);
 
         REQUIRE(bd.get_number_of_constant_sites_removed() == 0);
+        REQUIRE(bd.get_number_of_missing_population_sites_removed() == 0);
         REQUIRE(bd.get_number_of_missing_sites_removed() == 0);
 
         std::vector<unsigned int> expected_wts = {1,1,1,1,1,1,1,1,1};
@@ -9340,6 +9351,7 @@ TEST_CASE("Testing diploid dna with missing, mirrored, constant, triallelic site
         REQUIRE(bd.get_number_of_constant_sites_removed() == 2);
         REQUIRE(bd.get_number_of_constant_green_sites_removed() == 2);
         REQUIRE(bd.get_number_of_constant_red_sites_removed() == 0);
+        REQUIRE(bd.get_number_of_missing_population_sites_removed() == 0);
         REQUIRE(bd.get_number_of_missing_sites_removed() == 0);
 
         expected_wts.clear();
@@ -9404,7 +9416,8 @@ TEST_CASE("Testing diploid dna with missing, mirrored, constant, triallelic site
         REQUIRE(bd.get_number_of_constant_sites_removed() == 2);
         REQUIRE(bd.get_number_of_constant_green_sites_removed() == 2);
         REQUIRE(bd.get_number_of_constant_red_sites_removed() == 0);
-        REQUIRE(bd.get_number_of_missing_sites_removed() == 1);
+        REQUIRE(bd.get_number_of_missing_population_sites_removed() == 1);
+        REQUIRE(bd.get_number_of_missing_sites_removed() == 0);
 
         expected_wts.clear();
         expected_wts = {1,1,1,1,1,1};
@@ -9465,7 +9478,8 @@ TEST_CASE("Testing diploid dna with missing, mirrored, constant, triallelic site
         REQUIRE(bd.get_number_of_constant_sites_removed() == 2);
         REQUIRE(bd.get_number_of_constant_green_sites_removed() == 2);
         REQUIRE(bd.get_number_of_constant_red_sites_removed() == 0);
-        REQUIRE(bd.get_number_of_missing_sites_removed() == 1);
+        REQUIRE(bd.get_number_of_missing_population_sites_removed() == 1);
+        REQUIRE(bd.get_number_of_missing_sites_removed() == 0);
 
         expected_wts.clear();
         expected_wts = {1,2,1,1,1};
