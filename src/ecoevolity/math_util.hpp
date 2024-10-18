@@ -928,5 +928,14 @@ inline double chi_square_quantile(double prob, double df)
 		return (ch);
 }
 
+inline double harmonic_number(unsigned int n) {
+    ECOEVOLITY_ASSERT(n > 0);
+    double h = 0.0;
+    for (unsigned int i = 1; i <= n; ++i) {
+        h += (1.0 / i);
+    }
+    return h;
+}
+
 
 #endif

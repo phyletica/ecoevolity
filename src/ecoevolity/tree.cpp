@@ -1149,6 +1149,10 @@ void BasePopulationTree::simulate_gene_tree(
                 return;
             }
             double node_height = this->get_node_height_in_subs_per_site(*node);
+            // The root should have some lineages, regardless of some
+            // reticulations or some populations missing data, so let's make
+            // that assertion
+            ECOEVOLITY_ASSERT(lineages.size() > 0);
             this->coalesce_in_branch(
                     lineages,
                     this->get_node_theta(*node),
@@ -1238,7 +1242,14 @@ double BasePopulationTree::coalesce_in_branch(
         double top_of_branch_height,
         unsigned int branch_index
         ) {
-    ECOEVOLITY_ASSERT(lineages.size() > 0);
+    if (lineages.size() < 1) {
+        // This branch does not have any sampled lineages to coalesce
+        // This could be from missing data, or due to a reticulation
+        // (migration) "stealing" all of the uncoalesced lineages (not
+        // implemented yet)
+        // Nothing to coalesce, so simply return the parent node height
+        return top_of_branch_height;
+    }
     ECOEVOLITY_ASSERT(bottom_of_branch_height < top_of_branch_height);
     double current_height = bottom_of_branch_height;
     unsigned int k = lineages.size();

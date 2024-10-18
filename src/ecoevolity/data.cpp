@@ -1680,3 +1680,82 @@ BiallelicData::get_unique_allele_counts() const {
     }
     return unique_allele_counts;
 }
+
+std::map< unsigned int, unsigned int >
+BiallelicData::get_unique_allele_counts_for_population(unsigned int population_index) const {
+    std::map< unsigned int, unsigned int > unique_allele_counts;
+    for (unsigned int pattern_idx = 0; pattern_idx < this->get_number_of_patterns(); ++pattern_idx) {
+        unsigned int allele_ct = this->get_allele_count(pattern_idx, population_index);
+        unsigned int w = this->get_pattern_weight(pattern_idx);
+        if (unique_allele_counts.count(allele_ct) < 1) {
+            unique_allele_counts[allele_ct] = w;
+        }
+        else {
+            unique_allele_counts[allele_ct] += w;
+        }
+    }
+    return unique_allele_counts;
+}
+
+std::map< unsigned int, unsigned int >
+BiallelicData::get_unique_allele_counts_for_population(const std::string population_label) const {
+    return this->get_unique_allele_counts_for_population(this->get_population_index(population_label));
+}
+
+unsigned int BiallelicData::get_wattersons_k(unsigned int population_index) const {
+    unsigned int allele_count;
+    unsigned int red_allele_count;
+    unsigned int k = 0;
+    for (unsigned int pattern_idx = 0; pattern_idx < this->get_number_of_patterns(); ++pattern_idx) {
+        allele_count = this->get_allele_count(pattern_idx, population_index);
+        red_allele_count = this->get_red_allele_count(pattern_idx, population_index);
+        if ((allele_count > 1) && (red_allele_count > 0) && (red_allele_count < allele_count)) {
+            k += this->get_pattern_weight(pattern_idx);
+        }
+    }
+    return k;
+}
+
+unsigned int BiallelicData::get_wattersons_k(std::string population_label) const {
+    return this->get_wattersons_k(this->get_population_index(population_label));
+}
+
+std::pair<double, unsigned int>
+BiallelicData::get_weighted_wattersons_denom(unsigned int population_index) const {
+    std::map< unsigned int, unsigned int > uniq_allele_counts = this->get_unique_allele_counts_for_population(population_index);
+    double weighted_harmonic_sum = 0.0;
+    unsigned int n_sites = 0;
+    for (auto const& key_val : uniq_allele_counts) {
+        // We need at least 2 gene copies to observe a difference
+        if (key_val.first > 1) {
+            double harmonic_n = harmonic_number(key_val.first - 1);
+            weighted_harmonic_sum += (harmonic_n * key_val.second);
+            n_sites += key_val.second;
+        }
+    }
+    if (n_sites == 0) {
+        throw EcoevolityBiallelicDataError(
+                "Tried to calc denom of Watterson's theta on a pop with no chances for a segregating site",
+                this->path_);
+    }
+    double w = weighted_harmonic_sum / n_sites;
+    std::pair<double, unsigned int> r(w, n_sites);
+    return r;
+}
+
+std::pair<double, unsigned int>
+BiallelicData::get_weighted_wattersons_denom(const std::string population_label) const {
+    return this->get_weighted_wattersons_denom(this->get_population_index(population_label));
+}
+
+double BiallelicData::get_wattersons_theta(unsigned int population_index) const {
+    unsigned int k = this->get_wattersons_k(population_index);
+    std::pair<double, unsigned int> denom_nsites = this->get_weighted_wattersons_denom(population_index);
+    double denom = denom_nsites.first;
+    unsigned int n_sites = denom_nsites.second;
+    return (k / denom) / n_sites;
+}
+
+double BiallelicData::get_wattersons_theta(const std::string population_label) const {
+    return this->get_wattersons_theta(this->get_population_index(population_label));
+}

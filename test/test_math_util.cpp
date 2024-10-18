@@ -2244,3 +2244,12 @@ TEST_CASE("Testing get_pyp_log_prior_probability exchangeability with 6 elements
 //         REQUIRE(log_p == get_wdp_log_prior_probability(permutations.at(i), concentration, discount));
 //     }
 // }
+//
+TEST_CASE("Testing harmonic_number",
+        "[math_util]") {
+    REQUIRE(harmonic_number(1) == 1.0);
+    REQUIRE(harmonic_number(2) == Approx(3.0/2.0).epsilon(1e-10));
+    REQUIRE(harmonic_number(3) == Approx(11.0/6.0).epsilon(1e-10));
+    REQUIRE(harmonic_number(4) == Approx(25.0/12.0).epsilon(1e-10));
+    REQUIRE(harmonic_number(5) == Approx(137.0/60.0).epsilon(1e-10));
+}

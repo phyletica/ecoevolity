@@ -1,0 +1,10 @@
+---
+population_labels: [pop1, pop2]
+
+allele_count_patterns:
+- [[2, 20], [0, 0]]
+- [[0, 0], [4, 20]]
+
+pattern_weights: [5001,4999]
+
+markers_are_dominant: false

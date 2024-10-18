@@ -37,6 +37,7 @@
 #include "debug.hpp"
 #include "assert.hpp"
 #include "error.hpp"
+#include "math_util.hpp"
 
 /**
  * Class for storing biallelic site patterns.
@@ -232,6 +233,17 @@ class BiallelicData {
         std::map< std::vector<unsigned int>, unsigned int >
         get_unique_allele_counts() const;
 
+        std::map< unsigned int, unsigned int >
+        get_unique_allele_counts_for_population(unsigned int population_index) const;
+        std::map< unsigned int, unsigned int >
+        get_unique_allele_counts_for_population(const std::string population_label) const;
+
+        unsigned int get_wattersons_k(unsigned int population_index) const;
+        unsigned int get_wattersons_k(const std::string population_label) const;
+        std::pair<double, unsigned int> get_weighted_wattersons_denom(unsigned int population_index) const;
+        std::pair<double, unsigned int> get_weighted_wattersons_denom(const std::string population_label) const;
+        double get_wattersons_theta(unsigned int population_index) const;
+        double get_wattersons_theta(const std::string population_label) const;
 
     private:
         unsigned int number_of_constant_red_sites_removed_ = 0;
