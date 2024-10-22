@@ -1,0 +1,18 @@
+#NEXUS
+Begin data;
+	Dimensions ntax=6 nchar=7;
+	Format datatype=standard symbols="01" gap=-;
+	Matrix
+pop1_a  0?10?-1
+pop1_b  1?01?--
+pop2_c  ?111?--
+pop2_d  ?001?--
+pop2_e  ?-?0?--
+pop3_f  01?0?-1
+	;
+End;
+
+Begin sets;
+    charset locus1 = 1-3;
+    charset locus2 = 4-7;
+End;

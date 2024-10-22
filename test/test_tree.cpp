@@ -8289,7 +8289,7 @@ TEST_CASE("Testing linked dataset simulation", "[ComparisonPopulationTree]") {
         double prop_sum = 0.0;
         double io_u_sum = 0.0;
         double io_prop_sum = 0.0;
-        unsigned int nreps = 100;
+        unsigned int nreps = 200;
         BiallelicData data;
         BiallelicData io_data;
         for (unsigned int i = 0; i < nreps; ++i) {
@@ -8344,7 +8344,9 @@ TEST_CASE("Testing linked dataset simulation", "[ComparisonPopulationTree]") {
         REQUIRE(io_prop_sum == Approx(prop_sum));
 
         REQUIRE(data.has_seq_loci_info() == true);
-        std::vector<unsigned int> expected_locus_ends = {3, 8, 13, 18};
+        // sites with missing populations no longer get removed
+        // std::vector<unsigned int> expected_locus_ends = {3, 8, 13, 18};
+        std::vector<unsigned int> expected_locus_ends = {4, 9, 14, 19};
         REQUIRE(data.get_contiguous_pattern_indices().size() == tree.get_data().get_number_of_sites());
         REQUIRE(data.get_locus_end_indices() == expected_locus_ends);
 

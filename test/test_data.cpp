@@ -2087,10 +2087,10 @@ TEST_CASE("Testing for missing haploid site patterns", "[BiallelicData]") {
         REQUIRE_THROWS_AS(bd.get_sequence_labels(2), std::out_of_range &);
 
         // Removing patterns
-        REQUIRE(bd.get_number_of_missing_sites_removed() == 0);
+        REQUIRE(bd.get_number_of_missing_population_sites_removed() == 0);
         unsigned int number_removed = bd.remove_missing_population_patterns();
         REQUIRE(number_removed == 3);
-        REQUIRE(bd.get_number_of_missing_sites_removed() == 4);
+        REQUIRE(bd.get_number_of_missing_population_sites_removed() == 4);
         REQUIRE(bd.get_number_of_populations() == 2);
         REQUIRE(bd.get_number_of_patterns() == 2);
         REQUIRE(bd.get_number_of_sites() == 3);
@@ -2238,10 +2238,10 @@ TEST_CASE("Testing for missing haploid site patterns", "[BiallelicData]") {
         REQUIRE(bd.get_locus_end_indices() == expected_locus_ends);
 
         // Removing patterns
-        REQUIRE(bd.get_number_of_missing_sites_removed() == 0);
+        REQUIRE(bd.get_number_of_missing_population_sites_removed() == 0);
         unsigned int number_removed = bd.remove_missing_population_patterns();
         REQUIRE(number_removed == 3);
-        REQUIRE(bd.get_number_of_missing_sites_removed() == 4);
+        REQUIRE(bd.get_number_of_missing_population_sites_removed() == 4);
         REQUIRE(bd.get_number_of_populations() == 2);
         REQUIRE(bd.get_number_of_patterns() == 2);
         REQUIRE(bd.get_number_of_sites() == 3);
@@ -2330,6 +2330,461 @@ TEST_CASE("Testing for missing haploid site patterns", "[BiallelicData]") {
     }
 }
 
+TEST_CASE("Testing for fully missing haploid site patterns", "[BiallelicData]") {
+
+    SECTION("Testing data/haploid-standard-multi-missing.nex/yml") {
+        std::string nex_path = "data/haploid-standard-multi-missing.nex";
+        std::string yml_path = "data/haploid-standard-multi-missing.yml";
+        // file, delim, pop_is_prefix, diploid, dominant, validate, seq_loci
+        BiallelicData bd(nex_path, ' ', true, false, false, true, true);
+        BiallelicData ybd;
+        ybd.init_from_yaml_path(yml_path);
+        REQUIRE(bd.get_number_of_populations() == 3);
+        REQUIRE(ybd.get_number_of_populations() == 3);
+        REQUIRE(bd.get_number_of_patterns() == 6);
+        REQUIRE(ybd.get_number_of_patterns() == 6);
+        REQUIRE(bd.get_number_of_sites() == 7);
+        REQUIRE(ybd.get_number_of_sites() == 7);
+        REQUIRE(bd.get_number_of_variable_sites() == 4);
+        REQUIRE(ybd.get_number_of_variable_sites() == 4);
+        REQUIRE(! bd.markers_are_dominant());
+        REQUIRE(! bd.genotypes_are_diploid());
+        REQUIRE(! ybd.markers_are_dominant());
+
+        REQUIRE(bd.has_constant_patterns() == true);
+        REQUIRE(bd.has_missing_population_patterns() == true);
+        REQUIRE(bd.has_mirrored_patterns() == false);
+        REQUIRE(bd.patterns_are_folded() == false);
+        REQUIRE(bd.has_recoded_triallelic_sites() == false);
+        REQUIRE(bd.get_number_of_triallelic_sites_recoded() == 0);
+
+        REQUIRE(ybd.has_constant_patterns() == true);
+        REQUIRE(ybd.has_missing_population_patterns() == true);
+        REQUIRE(ybd.has_mirrored_patterns() == false);
+        REQUIRE(ybd.patterns_are_folded() == false);
+        REQUIRE(ybd.has_recoded_triallelic_sites() == false);
+        REQUIRE(ybd.get_number_of_triallelic_sites_recoded() == 0);
+
+        std::vector<unsigned int> expected_wts = {1,1,1,1,2,1};
+
+        std::vector< std::vector<unsigned int> > expected_allele_counts(6);
+        expected_allele_counts[0] = {2, 0, 1};
+        expected_allele_counts[1] = {0, 2, 1};
+        expected_allele_counts[2] = {2, 2, 0};
+        expected_allele_counts[3] = {2, 3, 1};
+        expected_allele_counts[4] = {0, 0, 0};
+        expected_allele_counts[5] = {1, 0, 1};
+
+        std::map<std::vector<unsigned int>, unsigned int> expected_unique_allele_counts;
+        expected_unique_allele_counts[expected_allele_counts.at(0)] = 1;
+        expected_unique_allele_counts[expected_allele_counts.at(1)] = 1;
+        expected_unique_allele_counts[expected_allele_counts.at(2)] = 1;
+        expected_unique_allele_counts[expected_allele_counts.at(3)] = 1;
+        expected_unique_allele_counts[expected_allele_counts.at(4)] = 2;
+        expected_unique_allele_counts[expected_allele_counts.at(5)] = 1;
+        REQUIRE(bd.get_unique_allele_counts() == expected_unique_allele_counts);
+        REQUIRE(ybd.get_unique_allele_counts() == expected_unique_allele_counts);
+
+        std::vector< std::vector<unsigned int> > expected_red_counts(6);
+        expected_red_counts[0] = {1, 0, 0};
+        expected_red_counts[1] = {0, 1, 1};
+        expected_red_counts[2] = {1, 1, 0};
+        expected_red_counts[3] = {1, 2, 0};
+        expected_red_counts[4] = {0, 0, 0};
+        expected_red_counts[5] = {1, 0, 1};
+
+        for (unsigned int pattern_idx = 0; pattern_idx < expected_wts.size(); ++pattern_idx) {
+            REQUIRE(bd.get_pattern_weight(pattern_idx) == expected_wts.at(pattern_idx));
+            REQUIRE(bd.get_allele_counts(pattern_idx) == expected_allele_counts.at(pattern_idx));
+            REQUIRE(bd.get_red_allele_counts(pattern_idx) == expected_red_counts.at(pattern_idx));
+
+            REQUIRE(ybd.get_pattern_weight(pattern_idx) == expected_wts.at(pattern_idx));
+            REQUIRE(ybd.get_allele_counts(pattern_idx) == expected_allele_counts.at(pattern_idx));
+            REQUIRE(ybd.get_red_allele_counts(pattern_idx) == expected_red_counts.at(pattern_idx));
+        }
+
+        REQUIRE_THROWS_AS(bd.get_pattern_weight(6), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_allele_counts(6), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_red_allele_counts(6), std::out_of_range &);
+
+        REQUIRE_THROWS_AS(ybd.get_pattern_weight(6), std::out_of_range &);
+        REQUIRE_THROWS_AS(ybd.get_allele_counts(6), std::out_of_range &);
+        REQUIRE_THROWS_AS(ybd.get_red_allele_counts(6), std::out_of_range &);
+
+        REQUIRE(bd.get_population_index("pop1") == 0);
+        REQUIRE(bd.get_population_index("pop2") == 1);
+        REQUIRE(bd.get_population_index("pop3") == 2);
+        REQUIRE_THROWS_AS(bd.get_population_index("bogus_label"), std::out_of_range &);
+        REQUIRE(bd.get_population_label(0) == "pop1");
+        REQUIRE(bd.get_population_label(1) == "pop2");
+        REQUIRE(bd.get_population_label(2) == "pop3");
+        REQUIRE_THROWS_AS(bd.get_population_label(3), std::out_of_range &);
+
+        REQUIRE(ybd.get_population_index("pop1") == 0);
+        REQUIRE(ybd.get_population_index("pop2") == 1);
+        REQUIRE(ybd.get_population_index("pop3") == 2);
+        REQUIRE_THROWS_AS(ybd.get_population_index("bogus_label"), std::out_of_range &);
+        REQUIRE(ybd.get_population_label(0) == "pop1");
+        REQUIRE(ybd.get_population_label(1) == "pop2");
+        REQUIRE(ybd.get_population_label(2) == "pop3");
+        REQUIRE_THROWS_AS(ybd.get_population_label(3), std::out_of_range &);
+
+        // Removing fully missing patterns
+        REQUIRE(bd.get_number_of_missing_population_sites_removed() == 0);
+        REQUIRE(bd.get_number_of_missing_sites_removed() == 0);
+        REQUIRE(ybd.get_number_of_missing_population_sites_removed() == 0);
+        REQUIRE(ybd.get_number_of_missing_sites_removed() == 0);
+
+        unsigned int number_removed = bd.remove_missing_patterns();
+        unsigned int ynumber_removed = ybd.remove_missing_patterns();
+        REQUIRE(number_removed == 1);
+        REQUIRE(ynumber_removed == 1);
+
+        REQUIRE(bd.get_number_of_missing_population_sites_removed() == 0);
+        REQUIRE(bd.get_number_of_missing_sites_removed() == 2);
+        REQUIRE(bd.get_number_of_populations() == 3);
+        REQUIRE(bd.get_number_of_patterns() == 5);
+        REQUIRE(bd.get_number_of_sites() == 5);
+        REQUIRE(bd.get_number_of_variable_sites() == 4);
+        REQUIRE(bd.has_constant_patterns() == true);
+        REQUIRE(bd.has_missing_population_patterns() == true);
+        REQUIRE(bd.has_missing_patterns() == false);
+
+        REQUIRE(ybd.get_number_of_missing_population_sites_removed() == 0);
+        REQUIRE(ybd.get_number_of_missing_sites_removed() == 2);
+        REQUIRE(ybd.get_number_of_populations() == 3);
+        REQUIRE(ybd.get_number_of_patterns() == 5);
+        REQUIRE(ybd.get_number_of_sites() == 5);
+        REQUIRE(ybd.get_number_of_variable_sites() == 4);
+        REQUIRE(ybd.has_constant_patterns() == true);
+        REQUIRE(ybd.has_missing_population_patterns() == true);
+        REQUIRE(ybd.has_missing_patterns() == false);
+
+        std::vector<unsigned int> rm_expected_wts = {1,1,1,1,1};
+
+        std::vector< std::vector<unsigned int> > rm_expected_allele_counts(5);
+        rm_expected_allele_counts[0] = {2, 0, 1};
+        rm_expected_allele_counts[1] = {0, 2, 1};
+        rm_expected_allele_counts[2] = {2, 2, 0};
+        rm_expected_allele_counts[3] = {2, 3, 1};
+        rm_expected_allele_counts[4] = {1, 0, 1};
+
+        std::vector< std::vector<unsigned int> > rm_expected_red_counts(5);
+        rm_expected_red_counts[0] = {1, 0, 0};
+        rm_expected_red_counts[1] = {0, 1, 1};
+        rm_expected_red_counts[2] = {1, 1, 0};
+        rm_expected_red_counts[3] = {1, 2, 0};
+        rm_expected_red_counts[4] = {1, 0, 1};
+
+        std::map<std::vector<unsigned int>, unsigned int> rm_expected_unique_allele_counts;
+        rm_expected_unique_allele_counts[rm_expected_allele_counts.at(0)] = 1;
+        rm_expected_unique_allele_counts[rm_expected_allele_counts.at(1)] = 1;
+        rm_expected_unique_allele_counts[rm_expected_allele_counts.at(2)] = 1;
+        rm_expected_unique_allele_counts[rm_expected_allele_counts.at(3)] = 1;
+        rm_expected_unique_allele_counts[rm_expected_allele_counts.at(4)] = 1;
+
+        REQUIRE(bd.get_unique_allele_counts() == rm_expected_unique_allele_counts);
+        REQUIRE(ybd.get_unique_allele_counts() == rm_expected_unique_allele_counts);
+
+        for (unsigned int pattern_idx = 0; pattern_idx < rm_expected_wts.size(); ++pattern_idx) {
+            REQUIRE(bd.get_pattern_weight(pattern_idx) == rm_expected_wts.at(pattern_idx));
+            REQUIRE(bd.get_allele_counts(pattern_idx) == rm_expected_allele_counts.at(pattern_idx));
+            REQUIRE(bd.get_red_allele_counts(pattern_idx) == rm_expected_red_counts.at(pattern_idx));
+
+            REQUIRE(ybd.get_pattern_weight(pattern_idx) == rm_expected_wts.at(pattern_idx));
+            REQUIRE(ybd.get_allele_counts(pattern_idx) == rm_expected_allele_counts.at(pattern_idx));
+            REQUIRE(ybd.get_red_allele_counts(pattern_idx) == rm_expected_red_counts.at(pattern_idx));
+        }
+
+        REQUIRE_THROWS_AS(bd.get_pattern_weight(5), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_allele_counts(5), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_red_allele_counts(5), std::out_of_range &);
+
+        REQUIRE_THROWS_AS(ybd.get_pattern_weight(5), std::out_of_range &);
+        REQUIRE_THROWS_AS(ybd.get_allele_counts(5), std::out_of_range &);
+        REQUIRE_THROWS_AS(ybd.get_red_allele_counts(5), std::out_of_range &);
+
+        // Removing missing population patterns
+        REQUIRE(bd.get_number_of_missing_population_sites_removed() == 0);
+        REQUIRE(bd.get_number_of_missing_sites_removed() == 2);
+        REQUIRE(ybd.get_number_of_missing_population_sites_removed() == 0);
+        REQUIRE(ybd.get_number_of_missing_sites_removed() == 2);
+
+        number_removed = bd.remove_missing_population_patterns();
+        ynumber_removed = ybd.remove_missing_population_patterns();
+        REQUIRE(number_removed == 4);
+        REQUIRE(ynumber_removed == 4);
+
+        REQUIRE(bd.get_number_of_missing_population_sites_removed() == 4);
+        REQUIRE(bd.get_number_of_missing_sites_removed() == 2);
+        REQUIRE(bd.get_number_of_populations() == 3);
+        REQUIRE(bd.get_number_of_patterns() == 1);
+        REQUIRE(bd.get_number_of_sites() == 1);
+        REQUIRE(bd.get_number_of_variable_sites() == 1);
+        REQUIRE(bd.has_constant_patterns() == false);
+        REQUIRE(bd.has_missing_population_patterns() == false);
+        REQUIRE(bd.has_missing_patterns() == false);
+
+        REQUIRE(ybd.get_number_of_missing_population_sites_removed() == 4);
+        REQUIRE(ybd.get_number_of_missing_sites_removed() == 2);
+        REQUIRE(ybd.get_number_of_populations() == 3);
+        REQUIRE(ybd.get_number_of_patterns() == 1);
+        REQUIRE(ybd.get_number_of_sites() == 1);
+        REQUIRE(ybd.get_number_of_variable_sites() == 1);
+        REQUIRE(ybd.has_constant_patterns() == false);
+        REQUIRE(ybd.has_missing_population_patterns() == false);
+        REQUIRE(ybd.has_missing_patterns() == false);
+
+        std::vector<unsigned int> rrm_expected_wts = {1};
+
+        std::vector< std::vector<unsigned int> > rrm_expected_allele_counts(1);
+        rrm_expected_allele_counts[0] = {2, 3, 1};
+
+        std::vector< std::vector<unsigned int> > rrm_expected_red_counts(1);
+        rrm_expected_red_counts[0] = {1, 2, 0};
+
+        std::map<std::vector<unsigned int>, unsigned int> rrm_expected_unique_allele_counts;
+        rrm_expected_unique_allele_counts[rrm_expected_allele_counts.at(0)] = 1;
+
+        REQUIRE(bd.get_unique_allele_counts() == rrm_expected_unique_allele_counts);
+        REQUIRE(ybd.get_unique_allele_counts() == rrm_expected_unique_allele_counts);
+
+        for (unsigned int pattern_idx = 0; pattern_idx < rrm_expected_wts.size(); ++pattern_idx) {
+            REQUIRE(bd.get_pattern_weight(pattern_idx) == rrm_expected_wts.at(pattern_idx));
+            REQUIRE(bd.get_allele_counts(pattern_idx) == rrm_expected_allele_counts.at(pattern_idx));
+            REQUIRE(bd.get_red_allele_counts(pattern_idx) == rrm_expected_red_counts.at(pattern_idx));
+
+            REQUIRE(ybd.get_pattern_weight(pattern_idx) == rrm_expected_wts.at(pattern_idx));
+            REQUIRE(ybd.get_allele_counts(pattern_idx) == rrm_expected_allele_counts.at(pattern_idx));
+            REQUIRE(ybd.get_red_allele_counts(pattern_idx) == rrm_expected_red_counts.at(pattern_idx));
+        }
+
+        REQUIRE_THROWS_AS(bd.get_pattern_weight(1), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_allele_counts(1), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_red_allele_counts(1), std::out_of_range &);
+
+        REQUIRE_THROWS_AS(ybd.get_pattern_weight(1), std::out_of_range &);
+        REQUIRE_THROWS_AS(ybd.get_allele_counts(1), std::out_of_range &);
+        REQUIRE_THROWS_AS(ybd.get_red_allele_counts(1), std::out_of_range &);
+    }
+}
+
+TEST_CASE("Testing for removing missing pop then fully missing haploid site patterns", "[BiallelicData]") {
+
+    SECTION("Testing data/haploid-standard-multi-missing.nex/yml") {
+        std::string nex_path = "data/haploid-standard-multi-missing.nex";
+        std::string yml_path = "data/haploid-standard-multi-missing.yml";
+        // file, delim, pop_is_prefix, diploid, dominant, validate, seq_loci
+        BiallelicData bd(nex_path, ' ', true, false, false, true, true);
+        BiallelicData ybd;
+        ybd.init_from_yaml_path(yml_path);
+        REQUIRE(bd.get_number_of_populations() == 3);
+        REQUIRE(ybd.get_number_of_populations() == 3);
+        REQUIRE(bd.get_number_of_patterns() == 6);
+        REQUIRE(ybd.get_number_of_patterns() == 6);
+        REQUIRE(bd.get_number_of_sites() == 7);
+        REQUIRE(ybd.get_number_of_sites() == 7);
+        REQUIRE(bd.get_number_of_variable_sites() == 4);
+        REQUIRE(ybd.get_number_of_variable_sites() == 4);
+        REQUIRE(! bd.markers_are_dominant());
+        REQUIRE(! bd.genotypes_are_diploid());
+        REQUIRE(! ybd.markers_are_dominant());
+
+        REQUIRE(bd.has_constant_patterns() == true);
+        REQUIRE(bd.has_missing_population_patterns() == true);
+        REQUIRE(bd.has_mirrored_patterns() == false);
+        REQUIRE(bd.patterns_are_folded() == false);
+        REQUIRE(bd.has_recoded_triallelic_sites() == false);
+        REQUIRE(bd.get_number_of_triallelic_sites_recoded() == 0);
+
+        REQUIRE(ybd.has_constant_patterns() == true);
+        REQUIRE(ybd.has_missing_population_patterns() == true);
+        REQUIRE(ybd.has_mirrored_patterns() == false);
+        REQUIRE(ybd.patterns_are_folded() == false);
+        REQUIRE(ybd.has_recoded_triallelic_sites() == false);
+        REQUIRE(ybd.get_number_of_triallelic_sites_recoded() == 0);
+
+        std::vector<unsigned int> expected_wts = {1,1,1,1,2,1};
+
+        std::vector< std::vector<unsigned int> > expected_allele_counts(6);
+        expected_allele_counts[0] = {2, 0, 1};
+        expected_allele_counts[1] = {0, 2, 1};
+        expected_allele_counts[2] = {2, 2, 0};
+        expected_allele_counts[3] = {2, 3, 1};
+        expected_allele_counts[4] = {0, 0, 0};
+        expected_allele_counts[5] = {1, 0, 1};
+
+        std::map<std::vector<unsigned int>, unsigned int> expected_unique_allele_counts;
+        expected_unique_allele_counts[expected_allele_counts.at(0)] = 1;
+        expected_unique_allele_counts[expected_allele_counts.at(1)] = 1;
+        expected_unique_allele_counts[expected_allele_counts.at(2)] = 1;
+        expected_unique_allele_counts[expected_allele_counts.at(3)] = 1;
+        expected_unique_allele_counts[expected_allele_counts.at(4)] = 2;
+        expected_unique_allele_counts[expected_allele_counts.at(5)] = 1;
+        REQUIRE(bd.get_unique_allele_counts() == expected_unique_allele_counts);
+        REQUIRE(ybd.get_unique_allele_counts() == expected_unique_allele_counts);
+
+        std::vector< std::vector<unsigned int> > expected_red_counts(6);
+        expected_red_counts[0] = {1, 0, 0};
+        expected_red_counts[1] = {0, 1, 1};
+        expected_red_counts[2] = {1, 1, 0};
+        expected_red_counts[3] = {1, 2, 0};
+        expected_red_counts[4] = {0, 0, 0};
+        expected_red_counts[5] = {1, 0, 1};
+
+        for (unsigned int pattern_idx = 0; pattern_idx < expected_wts.size(); ++pattern_idx) {
+            REQUIRE(bd.get_pattern_weight(pattern_idx) == expected_wts.at(pattern_idx));
+            REQUIRE(bd.get_allele_counts(pattern_idx) == expected_allele_counts.at(pattern_idx));
+            REQUIRE(bd.get_red_allele_counts(pattern_idx) == expected_red_counts.at(pattern_idx));
+
+            REQUIRE(ybd.get_pattern_weight(pattern_idx) == expected_wts.at(pattern_idx));
+            REQUIRE(ybd.get_allele_counts(pattern_idx) == expected_allele_counts.at(pattern_idx));
+            REQUIRE(ybd.get_red_allele_counts(pattern_idx) == expected_red_counts.at(pattern_idx));
+        }
+
+        REQUIRE_THROWS_AS(bd.get_pattern_weight(6), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_allele_counts(6), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_red_allele_counts(6), std::out_of_range &);
+
+        REQUIRE_THROWS_AS(ybd.get_pattern_weight(6), std::out_of_range &);
+        REQUIRE_THROWS_AS(ybd.get_allele_counts(6), std::out_of_range &);
+        REQUIRE_THROWS_AS(ybd.get_red_allele_counts(6), std::out_of_range &);
+
+        REQUIRE(bd.get_population_index("pop1") == 0);
+        REQUIRE(bd.get_population_index("pop2") == 1);
+        REQUIRE(bd.get_population_index("pop3") == 2);
+        REQUIRE_THROWS_AS(bd.get_population_index("bogus_label"), std::out_of_range &);
+        REQUIRE(bd.get_population_label(0) == "pop1");
+        REQUIRE(bd.get_population_label(1) == "pop2");
+        REQUIRE(bd.get_population_label(2) == "pop3");
+        REQUIRE_THROWS_AS(bd.get_population_label(3), std::out_of_range &);
+
+        REQUIRE(ybd.get_population_index("pop1") == 0);
+        REQUIRE(ybd.get_population_index("pop2") == 1);
+        REQUIRE(ybd.get_population_index("pop3") == 2);
+        REQUIRE_THROWS_AS(ybd.get_population_index("bogus_label"), std::out_of_range &);
+        REQUIRE(ybd.get_population_label(0) == "pop1");
+        REQUIRE(ybd.get_population_label(1) == "pop2");
+        REQUIRE(ybd.get_population_label(2) == "pop3");
+        REQUIRE_THROWS_AS(ybd.get_population_label(3), std::out_of_range &);
+
+        // Removing missing population patterns
+        REQUIRE(bd.get_number_of_missing_population_sites_removed() == 0);
+        REQUIRE(bd.get_number_of_missing_sites_removed() == 0);
+        REQUIRE(ybd.get_number_of_missing_population_sites_removed() == 0);
+        REQUIRE(ybd.get_number_of_missing_sites_removed() == 0);
+
+        unsigned int number_removed = bd.remove_missing_population_patterns();
+        unsigned int ynumber_removed = ybd.remove_missing_population_patterns();
+        REQUIRE(number_removed == 5);
+        REQUIRE(ynumber_removed == 5);
+
+        REQUIRE(bd.get_number_of_missing_population_sites_removed() == 6);
+        REQUIRE(bd.get_number_of_missing_sites_removed() == 0);
+        REQUIRE(bd.get_number_of_populations() == 3);
+        REQUIRE(bd.get_number_of_patterns() == 1);
+        REQUIRE(bd.get_number_of_sites() == 1);
+        REQUIRE(bd.get_number_of_variable_sites() == 1);
+        REQUIRE(bd.has_constant_patterns() == false);
+        REQUIRE(bd.has_missing_population_patterns() == false);
+        REQUIRE(bd.has_missing_patterns() == false);
+
+        REQUIRE(ybd.get_number_of_missing_population_sites_removed() == 6);
+        REQUIRE(ybd.get_number_of_missing_sites_removed() == 0);
+        REQUIRE(ybd.get_number_of_populations() == 3);
+        REQUIRE(ybd.get_number_of_patterns() == 1);
+        REQUIRE(ybd.get_number_of_sites() == 1);
+        REQUIRE(ybd.get_number_of_variable_sites() == 1);
+        REQUIRE(ybd.has_constant_patterns() == false);
+        REQUIRE(ybd.has_missing_population_patterns() == false);
+        REQUIRE(ybd.has_missing_patterns() == false);
+
+        std::vector<unsigned int> rm_expected_wts = {1};
+
+        std::vector< std::vector<unsigned int> > rm_expected_allele_counts(1);
+        rm_expected_allele_counts[0] = {2, 3, 1};
+
+        std::vector< std::vector<unsigned int> > rm_expected_red_counts(1);
+        rm_expected_red_counts[0] = {1, 2, 0};
+
+        std::map<std::vector<unsigned int>, unsigned int> rm_expected_unique_allele_counts;
+        rm_expected_unique_allele_counts[rm_expected_allele_counts.at(0)] = 1;
+
+        REQUIRE(bd.get_unique_allele_counts() == rm_expected_unique_allele_counts);
+        REQUIRE(ybd.get_unique_allele_counts() == rm_expected_unique_allele_counts);
+
+        for (unsigned int pattern_idx = 0; pattern_idx < rm_expected_wts.size(); ++pattern_idx) {
+            REQUIRE(bd.get_pattern_weight(pattern_idx) == rm_expected_wts.at(pattern_idx));
+            REQUIRE(bd.get_allele_counts(pattern_idx) == rm_expected_allele_counts.at(pattern_idx));
+            REQUIRE(bd.get_red_allele_counts(pattern_idx) == rm_expected_red_counts.at(pattern_idx));
+
+            REQUIRE(ybd.get_pattern_weight(pattern_idx) == rm_expected_wts.at(pattern_idx));
+            REQUIRE(ybd.get_allele_counts(pattern_idx) == rm_expected_allele_counts.at(pattern_idx));
+            REQUIRE(ybd.get_red_allele_counts(pattern_idx) == rm_expected_red_counts.at(pattern_idx));
+        }
+
+        REQUIRE_THROWS_AS(bd.get_pattern_weight(1), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_allele_counts(1), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_red_allele_counts(1), std::out_of_range &);
+
+        REQUIRE_THROWS_AS(ybd.get_pattern_weight(1), std::out_of_range &);
+        REQUIRE_THROWS_AS(ybd.get_allele_counts(1), std::out_of_range &);
+        REQUIRE_THROWS_AS(ybd.get_red_allele_counts(1), std::out_of_range &);
+
+        // Removing missing patterns
+        REQUIRE(bd.get_number_of_missing_population_sites_removed() == 6);
+        REQUIRE(bd.get_number_of_missing_sites_removed() == 0);
+        REQUIRE(ybd.get_number_of_missing_population_sites_removed() == 6);
+        REQUIRE(ybd.get_number_of_missing_sites_removed() == 0);
+
+        number_removed = bd.remove_missing_population_patterns();
+        ynumber_removed = ybd.remove_missing_population_patterns();
+        REQUIRE(number_removed == 0);
+        REQUIRE(ynumber_removed == 0);
+
+        REQUIRE(bd.get_number_of_missing_population_sites_removed() == 6);
+        REQUIRE(bd.get_number_of_missing_sites_removed() == 0);
+        REQUIRE(bd.get_number_of_populations() == 3);
+        REQUIRE(bd.get_number_of_patterns() == 1);
+        REQUIRE(bd.get_number_of_sites() == 1);
+        REQUIRE(bd.get_number_of_variable_sites() == 1);
+        REQUIRE(bd.has_constant_patterns() == false);
+        REQUIRE(bd.has_missing_population_patterns() == false);
+        REQUIRE(bd.has_missing_patterns() == false);
+
+        REQUIRE(ybd.get_number_of_missing_population_sites_removed() == 6);
+        REQUIRE(ybd.get_number_of_missing_sites_removed() == 0);
+        REQUIRE(ybd.get_number_of_populations() == 3);
+        REQUIRE(ybd.get_number_of_patterns() == 1);
+        REQUIRE(ybd.get_number_of_sites() == 1);
+        REQUIRE(ybd.get_number_of_variable_sites() == 1);
+        REQUIRE(ybd.has_constant_patterns() == false);
+        REQUIRE(ybd.has_missing_population_patterns() == false);
+        REQUIRE(ybd.has_missing_patterns() == false);
+
+        REQUIRE(bd.get_unique_allele_counts() == rm_expected_unique_allele_counts);
+        REQUIRE(ybd.get_unique_allele_counts() == rm_expected_unique_allele_counts);
+
+        for (unsigned int pattern_idx = 0; pattern_idx < rm_expected_wts.size(); ++pattern_idx) {
+            REQUIRE(bd.get_pattern_weight(pattern_idx) == rm_expected_wts.at(pattern_idx));
+            REQUIRE(bd.get_allele_counts(pattern_idx) == rm_expected_allele_counts.at(pattern_idx));
+            REQUIRE(bd.get_red_allele_counts(pattern_idx) == rm_expected_red_counts.at(pattern_idx));
+
+            REQUIRE(ybd.get_pattern_weight(pattern_idx) == rm_expected_wts.at(pattern_idx));
+            REQUIRE(ybd.get_allele_counts(pattern_idx) == rm_expected_allele_counts.at(pattern_idx));
+            REQUIRE(ybd.get_red_allele_counts(pattern_idx) == rm_expected_red_counts.at(pattern_idx));
+        }
+
+        REQUIRE_THROWS_AS(bd.get_pattern_weight(1), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_allele_counts(1), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_red_allele_counts(1), std::out_of_range &);
+
+        REQUIRE_THROWS_AS(ybd.get_pattern_weight(1), std::out_of_range &);
+        REQUIRE_THROWS_AS(ybd.get_allele_counts(1), std::out_of_range &);
+        REQUIRE_THROWS_AS(ybd.get_red_allele_counts(1), std::out_of_range &);
+    }
+}
+
 TEST_CASE("Testing for missing haploid site patterns as dominant", "[BiallelicData]") {
 
     SECTION("Testing data/haploid-standard-missing.nex") {
@@ -2397,10 +2852,10 @@ TEST_CASE("Testing for missing haploid site patterns as dominant", "[BiallelicDa
         REQUIRE_THROWS_AS(bd.get_sequence_labels(2), std::out_of_range &);
 
         // Removing patterns
-        REQUIRE(bd.get_number_of_missing_sites_removed() == 0);
+        REQUIRE(bd.get_number_of_missing_population_sites_removed() == 0);
         unsigned int number_removed = bd.remove_missing_population_patterns();
         REQUIRE(number_removed == 3);
-        REQUIRE(bd.get_number_of_missing_sites_removed() == 4);
+        REQUIRE(bd.get_number_of_missing_population_sites_removed() == 4);
         REQUIRE(bd.get_number_of_populations() == 2);
         REQUIRE(bd.get_number_of_patterns() == 2);
         REQUIRE(bd.get_number_of_sites() == 3);
@@ -2532,10 +2987,10 @@ TEST_CASE("Testing for missing haploid site patterns as dominant with charsets",
         REQUIRE(bd.get_locus_end_indices() == expected_locus_ends);
 
         // Removing patterns
-        REQUIRE(bd.get_number_of_missing_sites_removed() == 0);
+        REQUIRE(bd.get_number_of_missing_population_sites_removed() == 0);
         unsigned int number_removed = bd.remove_missing_population_patterns();
         REQUIRE(number_removed == 3);
-        REQUIRE(bd.get_number_of_missing_sites_removed() == 4);
+        REQUIRE(bd.get_number_of_missing_population_sites_removed() == 4);
         REQUIRE(bd.get_number_of_populations() == 2);
         REQUIRE(bd.get_number_of_patterns() == 2);
         REQUIRE(bd.get_number_of_sites() == 3);
@@ -5069,7 +5524,7 @@ TEST_CASE("Testing diploid dna with missing, mirrored, constant sites, and no he
         REQUIRE(bd.get_number_of_triallelic_sites_recoded() == 0);
 
         REQUIRE(bd.get_number_of_constant_sites_removed() == 0);
-        REQUIRE(bd.get_number_of_missing_sites_removed() == 0);
+        REQUIRE(bd.get_number_of_missing_population_sites_removed() == 0);
 
         std::vector<unsigned int> expected_wts = {1,1,1,1,1,1,1,1,1};
 
@@ -5152,6 +5607,7 @@ TEST_CASE("Testing diploid dna with missing, mirrored, constant sites, and no he
         REQUIRE(bd.get_number_of_constant_sites_removed() == 2);
         REQUIRE(bd.get_number_of_constant_green_sites_removed() == 2);
         REQUIRE(bd.get_number_of_constant_red_sites_removed() == 0);
+        REQUIRE(bd.get_number_of_missing_population_sites_removed() == 0);
         REQUIRE(bd.get_number_of_missing_sites_removed() == 0);
 
         expected_wts.clear();
@@ -5210,7 +5666,8 @@ TEST_CASE("Testing diploid dna with missing, mirrored, constant sites, and no he
         REQUIRE(bd.get_number_of_constant_sites_removed() == 2);
         REQUIRE(bd.get_number_of_constant_green_sites_removed() == 2);
         REQUIRE(bd.get_number_of_constant_red_sites_removed() == 0);
-        REQUIRE(bd.get_number_of_missing_sites_removed() == 1);
+        REQUIRE(bd.get_number_of_missing_population_sites_removed() == 1);
+        REQUIRE(bd.get_number_of_missing_sites_removed() == 0);
 
         expected_wts.clear();
         expected_wts = {1,1,1,1,1,1};
@@ -5265,7 +5722,7 @@ TEST_CASE("Testing diploid dna with missing, mirrored, constant sites, and no he
         REQUIRE(bd.get_number_of_constant_sites_removed() == 2);
         REQUIRE(bd.get_number_of_constant_green_sites_removed() == 2);
         REQUIRE(bd.get_number_of_constant_red_sites_removed() == 0);
-        REQUIRE(bd.get_number_of_missing_sites_removed() == 1);
+        REQUIRE(bd.get_number_of_missing_population_sites_removed() == 1);
 
         expected_wts.clear();
         expected_wts = {1,2,1,1,1};
@@ -5596,6 +6053,7 @@ TEST_CASE("Testing diploid dna with missing, mirrored, constant sites, no hets, 
         REQUIRE(bd.get_number_of_triallelic_sites_recoded() == 0);
 
         REQUIRE(bd.get_number_of_constant_sites_removed() == 0);
+        REQUIRE(bd.get_number_of_missing_population_sites_removed() == 0);
         REQUIRE(bd.get_number_of_missing_sites_removed() == 0);
 
         std::vector<unsigned int> expected_wts = {1,1,1,1,1,1,1,1,1};
@@ -5685,6 +6143,7 @@ TEST_CASE("Testing diploid dna with missing, mirrored, constant sites, no hets, 
         REQUIRE(bd.get_number_of_constant_sites_removed() == 2);
         REQUIRE(bd.get_number_of_constant_green_sites_removed() == 2);
         REQUIRE(bd.get_number_of_constant_red_sites_removed() == 0);
+        REQUIRE(bd.get_number_of_missing_population_sites_removed() == 0);
         REQUIRE(bd.get_number_of_missing_sites_removed() == 0);
 
         expected_wts.clear();
@@ -5749,7 +6208,8 @@ TEST_CASE("Testing diploid dna with missing, mirrored, constant sites, no hets, 
         REQUIRE(bd.get_number_of_constant_sites_removed() == 2);
         REQUIRE(bd.get_number_of_constant_green_sites_removed() == 2);
         REQUIRE(bd.get_number_of_constant_red_sites_removed() == 0);
-        REQUIRE(bd.get_number_of_missing_sites_removed() == 1);
+        REQUIRE(bd.get_number_of_missing_population_sites_removed() == 1);
+        REQUIRE(bd.get_number_of_missing_sites_removed() == 0);
 
         expected_wts.clear();
         expected_wts = {1,1,1,1,1,1};
@@ -5810,7 +6270,8 @@ TEST_CASE("Testing diploid dna with missing, mirrored, constant sites, no hets, 
         REQUIRE(bd.get_number_of_constant_sites_removed() == 2);
         REQUIRE(bd.get_number_of_constant_green_sites_removed() == 2);
         REQUIRE(bd.get_number_of_constant_red_sites_removed() == 0);
-        REQUIRE(bd.get_number_of_missing_sites_removed() == 1);
+        REQUIRE(bd.get_number_of_missing_population_sites_removed() == 1);
+        REQUIRE(bd.get_number_of_missing_sites_removed() == 0);
 
         expected_wts.clear();
         expected_wts = {1,2,1,1,1};
@@ -8375,6 +8836,37 @@ TEST_CASE("Testing diploid dna with triallelic, missing, mirrored, and constant 
         std::vector<unsigned int> expected_max_cts = {6,6,4};
         REQUIRE(bd.get_max_allele_counts() == expected_max_cts);
     }
+
+    SECTION("Demonstrate that seq labels can be different for every site") {
+        std::string nex_path1 = "data/diploid-dna-constant-missing-triallelic.nex";
+        BiallelicData bd1(nex_path1);
+        std::string nex_path2 = "data/diploid-dna-constant-missing-triallelic-disjoint.nex";
+        BiallelicData bd2(nex_path2);
+        REQUIRE(bd1.get_number_of_populations() == bd2.get_number_of_populations());
+        REQUIRE(bd1.get_number_of_patterns() == bd2.get_number_of_patterns());
+        REQUIRE(bd1.get_number_of_sites() == bd2.get_number_of_sites());
+        REQUIRE(bd1.markers_are_dominant() == bd2.markers_are_dominant());
+        REQUIRE(bd1.genotypes_are_diploid() == bd2.genotypes_are_diploid());
+        REQUIRE(bd1.has_constant_patterns() == bd2.has_constant_patterns());
+        REQUIRE(bd1.has_missing_population_patterns() == bd2.has_missing_population_patterns());
+        REQUIRE(bd1.has_mirrored_patterns() == bd2.has_mirrored_patterns());
+        REQUIRE(bd1.patterns_are_folded() == bd2.patterns_are_folded());
+        REQUIRE(bd1.has_recoded_triallelic_sites() == bd2.has_recoded_triallelic_sites());
+        REQUIRE(bd1.get_number_of_triallelic_sites_recoded() == bd2.get_number_of_triallelic_sites_recoded());
+
+        for (unsigned int pattern_idx = 0; pattern_idx < bd1.get_number_of_patterns(); ++pattern_idx) {
+            REQUIRE(bd1.get_pattern_weight(pattern_idx) == bd2.get_pattern_weight(pattern_idx));
+            REQUIRE(bd1.get_allele_counts(pattern_idx) == bd2.get_allele_counts(pattern_idx));
+            REQUIRE(bd1.get_red_allele_counts(pattern_idx) == bd2.get_red_allele_counts(pattern_idx));
+        }
+
+        REQUIRE(bd1.get_population_index("pop1") == bd2.get_population_index("pop1"));
+        REQUIRE(bd1.get_population_index("pop2") == bd2.get_population_index("pop2"));
+        REQUIRE(bd1.get_population_index("pop3") == bd2.get_population_index("pop3"));
+        REQUIRE(bd1.get_population_label(0) == bd2.get_population_label(0));
+        REQUIRE(bd1.get_population_label(1) == bd2.get_population_label(1));
+        REQUIRE(bd1.get_population_label(2) == bd2.get_population_label(2));
+    }
 }
 
 TEST_CASE("Testing diploid dna with triallelic, missing, mirrored, constant sites, and charsets", "[BiallelicData]") {
@@ -8687,6 +9179,7 @@ TEST_CASE("Testing diploid dna with missing, mirrored, constant, triallelic site
         REQUIRE(bd.get_number_of_triallelic_sites_recoded() == 2);
 
         REQUIRE(bd.get_number_of_constant_sites_removed() == 0);
+        REQUIRE(bd.get_number_of_missing_population_sites_removed() == 0);
         REQUIRE(bd.get_number_of_missing_sites_removed() == 0);
 
         std::vector<unsigned int> expected_wts = {1,1,1,1,1,1,1,1,1};
@@ -8770,6 +9263,7 @@ TEST_CASE("Testing diploid dna with missing, mirrored, constant, triallelic site
         REQUIRE(bd.get_number_of_constant_sites_removed() == 2);
         REQUIRE(bd.get_number_of_constant_green_sites_removed() == 2);
         REQUIRE(bd.get_number_of_constant_red_sites_removed() == 0);
+        REQUIRE(bd.get_number_of_missing_population_sites_removed() == 0);
         REQUIRE(bd.get_number_of_missing_sites_removed() == 0);
 
         expected_wts.clear();
@@ -8828,7 +9322,8 @@ TEST_CASE("Testing diploid dna with missing, mirrored, constant, triallelic site
         REQUIRE(bd.get_number_of_constant_sites_removed() == 2);
         REQUIRE(bd.get_number_of_constant_green_sites_removed() == 2);
         REQUIRE(bd.get_number_of_constant_red_sites_removed() == 0);
-        REQUIRE(bd.get_number_of_missing_sites_removed() == 1);
+        REQUIRE(bd.get_number_of_missing_population_sites_removed() == 1);
+        REQUIRE(bd.get_number_of_missing_sites_removed() == 0);
 
         expected_wts.clear();
         expected_wts = {1,1,1,1,1,1};
@@ -8883,7 +9378,8 @@ TEST_CASE("Testing diploid dna with missing, mirrored, constant, triallelic site
         REQUIRE(bd.get_number_of_constant_sites_removed() == 2);
         REQUIRE(bd.get_number_of_constant_green_sites_removed() == 2);
         REQUIRE(bd.get_number_of_constant_red_sites_removed() == 0);
-        REQUIRE(bd.get_number_of_missing_sites_removed() == 1);
+        REQUIRE(bd.get_number_of_missing_population_sites_removed() == 1);
+        REQUIRE(bd.get_number_of_missing_sites_removed() == 0);
 
         expected_wts.clear();
         expected_wts = {1,2,1,1,1};
@@ -9220,6 +9716,7 @@ TEST_CASE("Testing diploid dna with missing, mirrored, constant, triallelic site
         REQUIRE(bd.get_number_of_triallelic_sites_recoded() == 2);
 
         REQUIRE(bd.get_number_of_constant_sites_removed() == 0);
+        REQUIRE(bd.get_number_of_missing_population_sites_removed() == 0);
         REQUIRE(bd.get_number_of_missing_sites_removed() == 0);
 
         std::vector<unsigned int> expected_wts = {1,1,1,1,1,1,1,1,1};
@@ -9309,6 +9806,7 @@ TEST_CASE("Testing diploid dna with missing, mirrored, constant, triallelic site
         REQUIRE(bd.get_number_of_constant_sites_removed() == 2);
         REQUIRE(bd.get_number_of_constant_green_sites_removed() == 2);
         REQUIRE(bd.get_number_of_constant_red_sites_removed() == 0);
+        REQUIRE(bd.get_number_of_missing_population_sites_removed() == 0);
         REQUIRE(bd.get_number_of_missing_sites_removed() == 0);
 
         expected_wts.clear();
@@ -9373,7 +9871,8 @@ TEST_CASE("Testing diploid dna with missing, mirrored, constant, triallelic site
         REQUIRE(bd.get_number_of_constant_sites_removed() == 2);
         REQUIRE(bd.get_number_of_constant_green_sites_removed() == 2);
         REQUIRE(bd.get_number_of_constant_red_sites_removed() == 0);
-        REQUIRE(bd.get_number_of_missing_sites_removed() == 1);
+        REQUIRE(bd.get_number_of_missing_population_sites_removed() == 1);
+        REQUIRE(bd.get_number_of_missing_sites_removed() == 0);
 
         expected_wts.clear();
         expected_wts = {1,1,1,1,1,1};
@@ -9434,7 +9933,8 @@ TEST_CASE("Testing diploid dna with missing, mirrored, constant, triallelic site
         REQUIRE(bd.get_number_of_constant_sites_removed() == 2);
         REQUIRE(bd.get_number_of_constant_green_sites_removed() == 2);
         REQUIRE(bd.get_number_of_constant_red_sites_removed() == 0);
-        REQUIRE(bd.get_number_of_missing_sites_removed() == 1);
+        REQUIRE(bd.get_number_of_missing_population_sites_removed() == 1);
+        REQUIRE(bd.get_number_of_missing_sites_removed() == 0);
 
         expected_wts.clear();
         expected_wts = {1,2,1,1,1};

@@ -72,7 +72,7 @@ int nex2yml_main(int argc, char * argv[]) {
             .action("store_true")
             .dest("relax_missing_sites")
             .help("By default, if a column is found for which there is no data "
-                  "for at least one population, nex2yml throws an error. "
+                  "across all populations, nex2yml throws an error. "
                   "With this option, nex2yml will automatically ignore such "
                   "sites and only issue a warning."
                 );

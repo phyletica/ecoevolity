@@ -88,6 +88,13 @@ int sumphycoeval_main(int argc, char * argv[]) {
             .help("Path to a file where the maximum a posteriori (MAP) tree(s) "
                   "will be written in nexus format. Default: Do not write a "
                   "nexus-formatted file of the MAP tree(s).");
+    parser.add_option("--mco", "--map-cladogram-out")
+            .action("store")
+            .dest("map_cladogram_out_path")
+            .set_default("")
+            .help("Path to a file where the maximum a posteriori (MAP) "
+                  "cladogram(s) will be written in nexus format. Default: Do "
+                  "not write a nexus-formatted file of the MAP cladogram(s).");
     parser.add_option("--median-heights")
             .action("store_true")
             .dest("use_median_heights")
@@ -309,6 +316,19 @@ int sumphycoeval_main(int argc, char * argv[]) {
         }
     }
 
+    std::string map_cladogram_out_path;
+    bool writing_map_cladogram_to_nexus = false;
+    if (options.is_set_by_user("map_cladogram_out_path")) {
+        map_cladogram_out_path = options.get("map_cladogram_out_path").get_str();
+        writing_map_cladogram_to_nexus = true;
+        if (prevent_overwrite && path::exists(map_cladogram_out_path)) {
+            throw EcoevolityError("MAP cladogram output path \'" +
+                    map_cladogram_out_path +
+                    "\' already exists. Please specify a different path or use "
+                    "the \'--force\' option to overwrite the file.");
+        }
+    }
+
     std::string target_tree_format = "nexus";
     if (options.get("newick_target_tree")) {
         target_tree_format = "relaxedphyliptree";
@@ -341,7 +361,17 @@ int sumphycoeval_main(int argc, char * argv[]) {
             throw EcoevolityError(message.str());
         }
     }
-
+    std::ofstream map_cladogram_out_stream;
+    if (writing_map_cladogram_to_nexus) {
+        map_cladogram_out_stream.open(map_cladogram_out_path);
+        if (! map_cladogram_out_stream.is_open()) {
+            std::ostringstream message;
+            message << "ERROR: Could not open MAP cladogram output file \'"
+                    << map_cladogram_out_path
+                    << "\'\n";
+            throw EcoevolityError(message.str());
+        }
+    }
 
     time(&start);
 
@@ -381,6 +411,14 @@ int sumphycoeval_main(int argc, char * argv[]) {
                 use_median_heights,
                 precision);
         map_tree_out_stream.close();
+    }
+    if (writing_map_cladogram_to_nexus) {
+        std::cerr << "Writing annotated MAP cladograms to:\n"
+                  << "  " << map_cladogram_out_path << std::endl;
+        tree_sample.write_map_cladograms_to_nexus(
+                map_cladogram_out_stream,
+                precision);
+        map_cladogram_out_stream.close();
     }
 
     std::cerr << "Writing YAML-formatted summary to standard output..." << std::endl;

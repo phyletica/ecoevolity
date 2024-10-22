@@ -726,12 +726,14 @@ bool BiallelicData::add_site(
                 "Patterns cannot be added to a parsed dataset",
                 this->path_);
     }
+    unsigned int n_alleles = 0;
     for (auto cnt: allele_counts) {
-        if (cnt == 0) {
-            throw EcoevolityBiallelicDataError(
-                    "Cannot add missing data patterns",
-                    this->path_);
-        }
+        n_alleles += cnt;
+    }
+    if (n_alleles == 0) {
+        throw EcoevolityBiallelicDataError(
+                "Cannot add missing data patterns",
+                this->path_);
     }
     if (filtering_constant_patterns && this->pattern_is_constant(red_allele_counts, allele_counts)) {
         if (red_allele_counts == allele_counts) {
@@ -878,6 +880,10 @@ bool BiallelicData::has_missing_population_patterns() const {
     return this->has_missing_population_patterns_;
 }
 
+bool BiallelicData::has_missing_patterns() const {
+    return this->has_missing_patterns_;
+}
+
 bool BiallelicData::has_mirrored_patterns() const {
     return this->has_mirrored_patterns_;
 }
@@ -936,6 +942,22 @@ void BiallelicData::update_has_missing_population_patterns() {
     return;
 }
 
+void BiallelicData::update_has_missing_patterns() {
+    this->has_missing_patterns_ = false;
+    unsigned int n_sampled = 0;
+    for (unsigned int pattern_idx = 0; pattern_idx < this->get_number_of_patterns(); ++pattern_idx) {
+        n_sampled = 0;
+        for (auto count_iter: this->get_allele_counts(pattern_idx)) {
+            n_sampled += count_iter;
+        }
+        if (n_sampled == 0) {
+            this->has_missing_patterns_ = true;
+            return;
+        }
+    }
+    return;
+}
+
 void BiallelicData::update_has_mirrored_patterns() {
     this->has_mirrored_patterns_ = false;
     unsigned int mirrored_idx = 0;
@@ -983,6 +1005,7 @@ void BiallelicData::update_patterns_are_folded() {
 void BiallelicData::update_pattern_booleans() {
     this->update_has_constant_patterns();
     this->update_has_missing_population_patterns();
+    this->update_has_missing_patterns();
     this->update_has_mirrored_patterns();
     this->update_patterns_are_folded();
 }
@@ -1110,12 +1133,33 @@ void BiallelicData::remove_first_missing_population_pattern(
     for (unsigned int pattern_idx = 0; pattern_idx < this->get_number_of_patterns(); ++pattern_idx) {
         for (unsigned int pop_idx = 0; pop_idx < this->get_number_of_populations(); ++pop_idx) {
             if (this->get_allele_count(pattern_idx, pop_idx) == 0) {
-                this->number_of_missing_sites_removed_ += this->get_pattern_weight(pattern_idx);
+                this->number_of_missing_population_sites_removed_ += this->get_pattern_weight(pattern_idx);
                 this->remove_pattern(pattern_idx);
                 removed_index = pattern_idx;
                 was_removed = true;
                 return;
             }
+        }
+    }
+}
+
+void BiallelicData::remove_first_missing_pattern(
+        bool& was_removed,
+        unsigned int& removed_index) {
+    removed_index = 0;
+    was_removed = false;
+    unsigned int n_sampled = 0;
+    for (unsigned int pattern_idx = 0; pattern_idx < this->get_number_of_patterns(); ++pattern_idx) {
+        n_sampled = 0;
+        for (unsigned int pop_idx = 0; pop_idx < this->get_number_of_populations(); ++pop_idx) {
+            n_sampled += this->get_allele_count(pattern_idx, pop_idx);
+        }
+        if (n_sampled == 0) {
+            this->number_of_missing_sites_removed_ += this->get_pattern_weight(pattern_idx);
+            this->remove_pattern(pattern_idx);
+            removed_index = pattern_idx;
+            was_removed = true;
+            return;
         }
     }
 }
@@ -1206,6 +1250,25 @@ unsigned int BiallelicData::remove_missing_population_patterns(const bool valida
     return number_removed;
 }
 
+unsigned int BiallelicData::remove_missing_patterns(const bool validate) {
+    unsigned int number_removed = 0;
+    unsigned int return_idx = 0;
+    bool was_found = false;
+    while (true) {
+        this->remove_first_missing_pattern(was_found, return_idx);
+        if (! was_found) {
+            break;
+        }
+        number_removed += 1;
+    }
+    this->update_pattern_booleans();
+    this->update_max_allele_counts();
+    if (validate) {
+        this->validate();
+    }
+    return number_removed;
+}
+
 unsigned int BiallelicData::fold_patterns(const bool validate) {
     if (this->markers_are_dominant()) {
         throw EcoevolityBiallelicDataError(
@@ -1257,6 +1320,10 @@ unsigned int BiallelicData::get_number_of_constant_red_sites_removed() const {
     return this->number_of_constant_red_sites_removed_;
 }
 
+unsigned int BiallelicData::get_number_of_missing_population_sites_removed() const {
+    return this->number_of_missing_population_sites_removed_;
+}
+
 unsigned int BiallelicData::get_number_of_missing_sites_removed() const {
     return this->number_of_missing_sites_removed_;
 }
@@ -1306,6 +1373,8 @@ void BiallelicData::validate() const {
     unsigned int number_of_pops = this->population_labels_.size();
     bool has_constant = false;
     bool has_missing = false;
+    bool has_fully_missing = false;
+    unsigned int n_sampled = 0;
     for (unsigned int pattern_idx = 0; pattern_idx < this->get_number_of_patterns(); ++pattern_idx) {
         if (this->allele_counts_.at(pattern_idx).size() != number_of_pops) {
             throw EcoevolityBiallelicDataError(
@@ -1321,6 +1390,7 @@ void BiallelicData::validate() const {
             (this->red_allele_counts_.at(pattern_idx) == this->allele_counts_.at(pattern_idx))) {
             has_constant = true;
         }
+        n_sampled = 0;
         for (unsigned int pop_idx = 0; pop_idx < number_of_pops; ++pop_idx) {
             if (this->red_allele_counts_.at(pattern_idx).at(pop_idx) > this->allele_counts_.at(pattern_idx).at(pop_idx)) {
                 throw EcoevolityBiallelicDataError(
@@ -1330,6 +1400,10 @@ void BiallelicData::validate() const {
             if (this->allele_counts_.at(pattern_idx).at(pop_idx) == 0) {
                 has_missing = true;
             }
+            n_sampled += this->allele_counts_.at(pattern_idx).at(pop_idx);
+        }
+        if (n_sampled == 0) {
+            has_fully_missing = true;
         }
     }
     if (has_constant != this->has_constant_patterns()) {
@@ -1338,6 +1412,11 @@ void BiallelicData::validate() const {
                 this->path_);
     }
     if (has_missing != this->has_missing_population_patterns()) {
+        throw EcoevolityBiallelicDataError(
+                "missing population pattern boolean is incorrect",
+                this->path_);
+    }
+    if (has_fully_missing != this->has_missing_patterns()) {
         throw EcoevolityBiallelicDataError(
                 "missing data pattern boolean is incorrect",
                 this->path_);
@@ -1600,4 +1679,83 @@ BiallelicData::get_unique_allele_counts() const {
         }
     }
     return unique_allele_counts;
+}
+
+std::map< unsigned int, unsigned int >
+BiallelicData::get_unique_allele_counts_for_population(unsigned int population_index) const {
+    std::map< unsigned int, unsigned int > unique_allele_counts;
+    for (unsigned int pattern_idx = 0; pattern_idx < this->get_number_of_patterns(); ++pattern_idx) {
+        unsigned int allele_ct = this->get_allele_count(pattern_idx, population_index);
+        unsigned int w = this->get_pattern_weight(pattern_idx);
+        if (unique_allele_counts.count(allele_ct) < 1) {
+            unique_allele_counts[allele_ct] = w;
+        }
+        else {
+            unique_allele_counts[allele_ct] += w;
+        }
+    }
+    return unique_allele_counts;
+}
+
+std::map< unsigned int, unsigned int >
+BiallelicData::get_unique_allele_counts_for_population(const std::string population_label) const {
+    return this->get_unique_allele_counts_for_population(this->get_population_index(population_label));
+}
+
+unsigned int BiallelicData::get_wattersons_k(unsigned int population_index) const {
+    unsigned int allele_count;
+    unsigned int red_allele_count;
+    unsigned int k = 0;
+    for (unsigned int pattern_idx = 0; pattern_idx < this->get_number_of_patterns(); ++pattern_idx) {
+        allele_count = this->get_allele_count(pattern_idx, population_index);
+        red_allele_count = this->get_red_allele_count(pattern_idx, population_index);
+        if ((allele_count > 1) && (red_allele_count > 0) && (red_allele_count < allele_count)) {
+            k += this->get_pattern_weight(pattern_idx);
+        }
+    }
+    return k;
+}
+
+unsigned int BiallelicData::get_wattersons_k(std::string population_label) const {
+    return this->get_wattersons_k(this->get_population_index(population_label));
+}
+
+std::pair<double, unsigned int>
+BiallelicData::get_weighted_wattersons_denom(unsigned int population_index) const {
+    std::map< unsigned int, unsigned int > uniq_allele_counts = this->get_unique_allele_counts_for_population(population_index);
+    double weighted_harmonic_sum = 0.0;
+    unsigned int n_sites = 0;
+    for (auto const& key_val : uniq_allele_counts) {
+        // We need at least 2 gene copies to observe a difference
+        if (key_val.first > 1) {
+            double harmonic_n = harmonic_number(key_val.first - 1);
+            weighted_harmonic_sum += (harmonic_n * key_val.second);
+            n_sites += key_val.second;
+        }
+    }
+    if (n_sites == 0) {
+        throw EcoevolityBiallelicDataError(
+                "Tried to calc denom of Watterson's theta on a pop with no chances for a segregating site",
+                this->path_);
+    }
+    double w = weighted_harmonic_sum / n_sites;
+    std::pair<double, unsigned int> r(w, n_sites);
+    return r;
+}
+
+std::pair<double, unsigned int>
+BiallelicData::get_weighted_wattersons_denom(const std::string population_label) const {
+    return this->get_weighted_wattersons_denom(this->get_population_index(population_label));
+}
+
+double BiallelicData::get_wattersons_theta(unsigned int population_index) const {
+    unsigned int k = this->get_wattersons_k(population_index);
+    std::pair<double, unsigned int> denom_nsites = this->get_weighted_wattersons_denom(population_index);
+    double denom = denom_nsites.first;
+    unsigned int n_sites = denom_nsites.second;
+    return (k / denom) / n_sites;
+}
+
+double BiallelicData::get_wattersons_theta(const std::string population_label) const {
+    return this->get_wattersons_theta(this->get_population_index(population_label));
 }

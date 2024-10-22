@@ -946,6 +946,31 @@ class TreeSample {
             }
         }
 
+        void _set_heights_with_indices(
+                std::shared_ptr<NodeType> root_node) const {
+            // Let's get sorted node heights so that we can use them for
+            // looking up height indices
+            std::vector< std::shared_ptr<PositiveRealParameter> > node_heights;
+            std::vector< std::shared_ptr<NodeType> > internal_nodes = root_node->get_internal_nodes();
+            for (unsigned int i = 0; i < internal_nodes.size(); ++i) {
+                bool exists = false;
+                // Check if we already have a pointer to the same place in memory
+                for (unsigned int j = 0; j < node_heights.size(); ++j) {
+                    if (internal_nodes.at(i)->get_height_parameter() == node_heights.at(j)) {
+                        exists = true;
+                    }
+                }
+                if (! exists) {
+                    node_heights.push_back(internal_nodes.at(i)->get_height_parameter());
+                }
+            }
+            std::sort(node_heights.begin(), node_heights.end(), PositiveRealParameter::sort_by_value);
+            for (unsigned int i = 0; i < node_heights.size(); ++i) {
+                node_heights.at(i)->store();
+                node_heights.at(i)->set_value(i + 1.0);
+            }
+        }
+
         void _process_node_splits(
                 const Split & split,
                 const TopologySamples & topo_sample,
@@ -2246,8 +2271,7 @@ class TreeSample {
                     precision);
         }
 
-        void write_map_trees_to_nexus(
-                std::ostream & out,
+        std::vector< std::shared_ptr<NodeType> > get_map_trees(
                 const bool use_median_heights = false,
                 const unsigned int precision = 12) const {
             std::vector< std::shared_ptr<NodeType> > trees;
@@ -2261,6 +2285,29 @@ class TreeSample {
                         use_median_heights,
                         precision);
                 trees.push_back(t);
+            }
+            return trees;
+        }
+
+        void write_map_trees_to_nexus(
+                std::ostream & out,
+                const bool use_median_heights = false,
+                const unsigned int precision = 12) const {
+            std::vector< std::shared_ptr<NodeType> > trees;
+            trees = this->get_map_trees(use_median_heights, precision);
+            this->_write_to_nexus(
+                    trees,
+                    out,
+                    precision);
+        }
+
+        void write_map_cladograms_to_nexus(
+                std::ostream & out,
+                const unsigned int precision = 12) const {
+            std::vector< std::shared_ptr<NodeType> > trees;
+            trees = this->get_map_trees(false, precision);
+            for (std::shared_ptr<NodeType> t : trees) {
+                this->_set_heights_with_indices(t);
             }
             this->_write_to_nexus(
                     trees,

@@ -37,6 +37,7 @@
 #include "debug.hpp"
 #include "assert.hpp"
 #include "error.hpp"
+#include "math_util.hpp"
 
 /**
  * Class for storing biallelic site patterns.
@@ -113,6 +114,7 @@ class BiallelicData {
 
         bool has_constant_patterns() const;
         bool has_missing_population_patterns() const;
+        bool has_missing_patterns() const;
         bool has_mirrored_patterns() const;
         bool patterns_are_folded() const;
         bool has_recoded_triallelic_sites() const;
@@ -131,11 +133,13 @@ class BiallelicData {
 
         unsigned int remove_constant_patterns(const bool validate = true);
         unsigned int remove_missing_population_patterns(const bool validate = true);
+        unsigned int remove_missing_patterns(const bool validate = true);
         unsigned int fold_patterns(const bool validate = true);
 
         unsigned int get_number_of_constant_sites_removed() const;
         unsigned int get_number_of_constant_red_sites_removed() const;
         unsigned int get_number_of_constant_green_sites_removed() const;
+        unsigned int get_number_of_missing_population_sites_removed() const;
         unsigned int get_number_of_missing_sites_removed() const;
         unsigned int get_number_of_triallelic_sites_recoded() const;
 
@@ -229,15 +233,28 @@ class BiallelicData {
         std::map< std::vector<unsigned int>, unsigned int >
         get_unique_allele_counts() const;
 
+        std::map< unsigned int, unsigned int >
+        get_unique_allele_counts_for_population(unsigned int population_index) const;
+        std::map< unsigned int, unsigned int >
+        get_unique_allele_counts_for_population(const std::string population_label) const;
+
+        unsigned int get_wattersons_k(unsigned int population_index) const;
+        unsigned int get_wattersons_k(const std::string population_label) const;
+        std::pair<double, unsigned int> get_weighted_wattersons_denom(unsigned int population_index) const;
+        std::pair<double, unsigned int> get_weighted_wattersons_denom(const std::string population_label) const;
+        double get_wattersons_theta(unsigned int population_index) const;
+        double get_wattersons_theta(const std::string population_label) const;
 
     private:
         unsigned int number_of_constant_red_sites_removed_ = 0;
         unsigned int number_of_constant_green_sites_removed_ = 0;
+        unsigned int number_of_missing_population_sites_removed_ = 0;
         unsigned int number_of_missing_sites_removed_ = 0;
         unsigned int number_of_triallelic_sites_recoded_ = 0;
         bool markers_are_dominant_ = true;
         bool genotypes_are_diploid_ = true;
         bool has_missing_population_patterns_ = false;
+        bool has_missing_patterns_ = false;
         bool has_constant_patterns_ = false;
         bool has_mirrored_patterns_ = true;
         bool patterns_are_folded_ = false;
@@ -259,6 +276,7 @@ class BiallelicData {
         //Methods
         void remove_pattern(unsigned int pattern_index);
         void update_has_missing_population_patterns();
+        void update_has_missing_patterns();
         void update_has_constant_patterns();
         void update_has_mirrored_patterns();
         void update_patterns_are_folded();
@@ -266,6 +284,9 @@ class BiallelicData {
                 bool& was_removed,
                 unsigned int& removed_index);
         void remove_first_missing_population_pattern(
+                bool& was_removed,
+                unsigned int& removed_index);
+        void remove_first_missing_pattern(
                 bool& was_removed,
                 unsigned int& removed_index);
         void fold_first_mirrored_pattern(

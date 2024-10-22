@@ -1,0 +1,83 @@
+#NEXUS
+
+BEGIN TAXA;
+    DIMENSIONS NTAX=31;
+    TAXLABELS
+        kya_GH37
+        kya_GH38
+        kya_GH39
+        fas_GH210
+        fas_GH211
+        fas_GH112
+        fas_GH113
+        fas_GH114
+        fas_GH216
+        fas_GH217
+        kya_GH327
+        kya_GH328
+        kya_GH329
+        kya_GH330
+        kya_GH331
+        fas_GH432
+        fas_GH433
+        fas_GH434
+        fas_GH435
+        fas_GH436
+        fas_GH437
+        fas_GH438
+        fas_GH439
+        fas_GH440
+        kya_GH341
+        kya_GH342
+        kya_GH343
+        kya_GH344
+        kya_GH345
+        kya_GH346
+        kya_GH347
+  ;
+END;
+
+BEGIN CHARACTERS;
+    DIMENSIONS NCHAR=21;
+    FORMAT DATATYPE=STANDARD SYMBOLS="012" MISSING=? GAP=-;
+    MATRIX
+        kya_GH37     ??2222211220222200201
+        kya_GH38     ??2222220220222100201
+        kya_GH39     ??2222220220212200211
+        fas_GH210    ?0?222120220222020101
+        fas_GH211    ?12222?20220222120001
+        fas_GH112    ?02222120220222021000
+        fas_GH113    ?0?222?20220222120001
+        fas_GH114    ?01212120220222120000
+        fas_GH216    ?02122120120222020001
+        fas_GH217    ?12222?20211222020001
+        kya_GH327    ??2222220220222200201
+        kya_GH328    ??2222220?20222200201
+        kya_GH329    ??2222220220222200201
+        kya_GH330    ??2222220220222200201
+        kya_GH331    ??222122022012220020?
+        fas_GH432    ?02222?20220222010001
+        fas_GH433    ?11222?20220222120001
+        fas_GH434    ?11222?20220222020001
+        fas_GH435    ?02222?2022022202000?
+        fas_GH436    ?12222?20220222020001
+        fas_GH437    ?02222120220222020001
+        fas_GH438    ?12222?20220222020001
+        fas_GH439    ?1?222?20220221020001
+        fas_GH440    ?02222120220222020001
+        kya_GH341    ??2222220220222201201
+        kya_GH342    ??2222220220222200201
+        kya_GH343    ??222222022022220020?
+        kya_GH344    ??2222220220222201201
+        kya_GH345    ??2222220220222200201
+        kya_GH346    ??2222220220222200201
+        kya_GH347    ??2222220220222200200
+    ;
+END;
+
+BEGIN SETS;
+    charset locus1 = 1-5;
+    charset locus2 = 6-10;
+    charset locus3 = 11-15;
+    charset locus4 = 16-21;
+END;

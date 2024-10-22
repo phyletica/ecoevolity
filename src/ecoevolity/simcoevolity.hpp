@@ -163,7 +163,7 @@ int simcoevolity_main(int argc, char * argv[]) {
             .action("store_true")
             .dest("relax_missing_sites")
             .help("By default, if a column is found for which there is no data "
-                  "for at least one population, Simcoevolity throws an error. "
+                  "across all populations, Simcoevolity throws an error. "
                   "With this option, Simcoevolity will automatically ignore such "
                   "sites and only issue a warning. Simulated data sets will have "
                   "fewer sites than the original alignment."
