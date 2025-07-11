@@ -1,54 +1,50 @@
 #!/usr/bin/env bash
  
 set -e
- 
+
+# make sure we get back to directory of caller
+current_dir="$(pwd)"
+function return_on_exit () {
+    cd "$current_dir"
+}
+trap return_on_exit EXIT
+
 # get location of script
-ECOEVOLITY_BASE_DIR=""
-this_dir=`dirname "$0"`
-if [ "$this_dir" = "." ]
-then
-    ECOEVOLITY_BASE_DIR="$(pwd)"
-else
-    cd "$this_dir"
-    ECOEVOLITY_BASE_DIR="$(pwd)"
-fi
+dep_dir="$( cd -P "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+ 
+yaml_cpp_build_dir="${dep_dir}/yaml-cpp-build"
+install_dir="${yaml_cpp_build_dir}/installed"
 
-YAML_CPP_BUILD_DIR="${ECOEVOLITY_BASE_DIR}/yaml-cpp-build"
-INSTALL_DIR="${YAML_CPP_BUILD_DIR}/installed"
-
-if [ -d "$YAML_CPP_BUILD_DIR" ]
+if [ -d "$yaml_cpp_build_dir" ]
 then 
-    echo "ERROR: build directory '$YAML_CPP_BUILD_DIR' already exists."
+    echo "ERROR: build directory '$yaml_cpp_build_dir' already exists."
     echo "To recompile, please remove this directory and re-run this script."
     exit 1
 else
-    mkdir -p "${YAML_CPP_BUILD_DIR}/build"
-    mkdir -p "$INSTALL_DIR"
+    mkdir -p "${yaml_cpp_build_dir}/build"
+    mkdir -p "$install_dir"
 fi
 
-YAML_CPP_DIR="${ECOEVOLITY_BASE_DIR}/src/external/yaml-cpp-master-ce056ac"
+ecoevolity_base_dir="$(dirname "$dep_dir")"
+yaml_cpp_dir="${ecoevolity_base_dir}/src/external/yaml-cpp-master-ce056ac"
 
 # number of cpus to use during compile
-COMPILETHREADS=4
+num_threads=4
  
-cd "${YAML_CPP_BUILD_DIR}/build"
-cmake -DBUILD_SHARED_LIBS=OFF -DCMAKE_INSTALL_PREFIX="$INSTALL_DIR" "$YAML_CPP_DIR"
+cd "${yaml_cpp_build_dir}/build"
+cmake -DBUILD_SHARED_LIBS=OFF -DCMAKE_INSTALL_PREFIX="$install_dir" "$yaml_cpp_dir"
 make clean
-make -j $COMPILETHREADS
+make -j $num_threads
 make install
-
-cd "$ECOEVOLITY_BASE_DIR"
 
 echo
 echo
 echo yaml-cpp headers and binaries are in:
-echo "    $INSTALL_DIR"
+echo "    $install_dir"
 
-env_path="${YAML_CPP_BUILD_DIR}/yaml-cpp-env.sh"
-echo "#!/bin/sh" > "$env_path"
-echo export PATH="${INSTALL_DIR}/bin:\${PATH}" >> "$env_path"
-echo export LD_LIBRARY_PATH="${INSTALL_DIR}/lib:\${LD_LIBRARY_PATH}" >> "$env_path"
-echo export PKG_CONFIG_PATH="${INSTALL_DIR}/lib/pkgconfig:\${PKG_CONFIG_PATH}" >> "$env_path"
-echo export YAML_CPP_PREFIX="${INSTALL_DIR}" >> "$env_path"
+env_path="${dep_dir}/env-yaml-cpp.sh"
+echo export LD_LIBRARY_PATH="${install_dir}/lib:\${LD_LIBRARY_PATH}" > "$env_path"
+echo export PKG_CONFIG_PATH="${install_dir}/share/pkgconfig:\${PKG_CONFIG_PATH}" >> "$env_path"
+echo export YAML_CPP_PREFIX="${install_dir}" >> "$env_path"
 
-rm -r "${YAML_CPP_BUILD_DIR}/build"
+rm -r "${yaml_cpp_build_dir}/build"
