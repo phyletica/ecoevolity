@@ -22,14 +22,14 @@ else
     mkdir -p "${TEST_BUILD_DIR}"
 fi
 
-if [ -e "${ECOEVOLITY_BASE_DIR}/ncl-build/ncl-env.sh" ]
+if [ -e "${ECOEVOLITY_BASE_DIR}/dependencies/env-ncl.sh" ]
 then
-    source "${ECOEVOLITY_BASE_DIR}/ncl-build/ncl-env.sh"
+    source "${ECOEVOLITY_BASE_DIR}/dependencies/env-ncl.sh"
 fi
 
-if [ -e "${ECOEVOLITY_BASE_DIR}/yaml-cpp-build/yaml-cpp-env.sh" ]
+if [ -e "${ECOEVOLITY_BASE_DIR}/dependencies/env-yaml-cpp.sh" ]
 then
-    source "${ECOEVOLITY_BASE_DIR}/yaml-cpp-build/yaml-cpp-env.sh"
+    source "${ECOEVOLITY_BASE_DIR}/dependencies/env-yaml-cpp.sh"
 fi
 
 # number of cpus to use during compile
