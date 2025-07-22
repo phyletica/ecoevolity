@@ -120,7 +120,7 @@ int nex2yml_main(int argc, char * argv[]) {
 
     std::cout << "Parsing config file..." << std::endl;
     SettingsType settings;
-    PopulationTreeSettings phyco_settings;
+    PopulationTreeAnalysisSettings phyco_settings;
     bool using_phyco_settings = false;
     try {
         settings = SettingsType(config_path);
@@ -128,7 +128,7 @@ int nex2yml_main(int argc, char * argv[]) {
     catch (...) {
         using_phyco_settings = true;
         try {
-            phyco_settings = PopulationTreeSettings(config_path);
+            phyco_settings = PopulationTreeAnalysisSettings(config_path);
         }
         catch (...) {
             std::cerr << "ERROR: Problem parsing config file: "

@@ -27,7 +27,7 @@
 template<class TreeType>
 inline void write_settings(
         std::ostream & out,
-        const PopulationTreeSettings & settings,
+        const PopulationTreeAnalysisSettings & settings,
         const GeneralTreeOperatorSchedule<TreeType> & operator_schedule
         ) {
     std::string indent = string_util::get_indent(1);

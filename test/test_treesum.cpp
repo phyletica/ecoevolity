@@ -4,7 +4,7 @@
 #include <limits>
 #include <memory>
 
-#include "ecoevolity/tree.hpp"
+#include "ecoevolity/poptree.hpp"
 #include "ecoevolity/node.hpp"
 
 TEST_CASE("Testing bare BaseSample", "[treesum]") {

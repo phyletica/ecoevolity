@@ -30,20 +30,13 @@
 #include "rng.hpp"
 #include "path.hpp"
 #include "string_util.hpp"
+#include "log_path_util.hpp"
 #include "general_tree_settings.hpp"
 #include "settings_io.hpp"
 #include "mcmc.hpp"
 
 
 void write_phy_splash(std::ostream& out);
-
-void update_log_paths(
-        std::string & tree_log_path,
-        std::string & state_log_path,
-        std::string & operator_log_path,
-        unsigned int max_number_of_attempts = 10000);
-
-void increment_log_path(std::string & log_path);
 
 template <class TreeType>
 int phycoeval_main(int argc, char * argv[]) {
@@ -188,7 +181,7 @@ int phycoeval_main(int argc, char * argv[]) {
     std::cout << "Config path: " << config_path << std::endl;
 
     std::cout << "Parsing config file..." << std::endl;
-    PopulationTreeSettings settings(config_path);
+    PopulationTreeAnalysisSettings settings(config_path);
 
     std::cout << "Configuring model..." << std::endl;
 
@@ -228,7 +221,7 @@ int phycoeval_main(int argc, char * argv[]) {
         state_log_path = output_prefix + path::basename(state_log_path);
         operator_log_path = output_prefix + path::basename(operator_log_path);
     }
-    update_log_paths(tree_log_path, state_log_path, operator_log_path);
+    ecoevolity::update_log_paths(tree_log_path, state_log_path, operator_log_path);
 
     std::cout << "\n" << string_util::banner('-') << "\n";
     tree.write_data_summary(std::cout);

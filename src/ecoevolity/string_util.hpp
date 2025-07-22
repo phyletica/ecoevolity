@@ -49,6 +49,24 @@ inline std::vector<std::string> split(
     return elements;
 }
 
+inline std::vector<std::string> split_wspace(
+        const std::string &s) {
+    std::vector<std::string> all_elements;
+    std::vector<std::string> tab_elements;
+    std::vector<std::string> space_elements;
+    split(s, '\t', tab_elements);
+    for (auto tab_el : tab_elements) {
+        space_elements.clear();
+        split(tab_el, ' ', space_elements);
+        for (auto space_el : space_elements) {
+            if (! space_el.empty()) {
+                all_elements.push_back(space_el);
+            }
+        }
+    }
+    return all_elements;
+}
+
 inline std::string join(const std::vector<std::string>& components,
                         const std::string delimiter = "") {
     std::ostringstream ss;

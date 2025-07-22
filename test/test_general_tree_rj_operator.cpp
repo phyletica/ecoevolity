@@ -5,7 +5,7 @@
 #include <limits>
 #include <memory>
 
-#include "ecoevolity/tree.hpp"
+#include "ecoevolity/poptree.hpp"
 #include "ecoevolity/node.hpp"
 #include "ecoevolity/probability.hpp"
 #include "ecoevolity/parameter.hpp"

@@ -1,6 +1,6 @@
 #include "catch.hpp"
 #include "ecoevolity/basetree.hpp"
-#include "ecoevolity/tree.hpp"
+#include "ecoevolity/poptree.hpp"
 #include "ecoevolity/node.hpp"
 
 TEST_CASE("Testing 3 leaves", "[treeio]") {
@@ -302,7 +302,7 @@ TEST_CASE("Testing 3 leaves with different expected leaf indices that should mat
 
 TEST_CASE("Testing 5 leaves with polytomy and shared div", "[treeio]") {
     SECTION("Testing 5 leaves with polytomy and shared div") {
-        std::string newick_tree_str = "((a:0.1,e:0.1)[&height=0.1,height_index=0]:0.2,(b:0.1,d:0.1)[&height=0.1,height_index=0]:0.2,c:0.3)[&height=0.3,height_index=1];";
+        std::string newick_tree_str = "((a[&height=0]:0.1,e[&height=0]:0.1)[&height=0.1,height_index=0]:0.2,(b[&height=0]:0.1,d[&height=0]:0.1)[&height=0.1,height_index=0]:0.2,c[&height=0]:0.3)[&height=0.3,height_index=1];";
         BaseTree<Node> tree(newick_tree_str);
         std::vector<double> expected_heights {0.1, 0.3};
         std::vector<double> heights = tree.get_node_heights();
@@ -345,7 +345,7 @@ TEST_CASE("Testing 5 leaves with polytomy and shared div", "[treeio]") {
         REQUIRE(splits == expected_splits);
 
         // Changing positions of sisters should not matter
-        newick_tree_str = "((d:0.1,b:0.1)[&height=0.1,height_index=0]:0.2,(e:0.1,a:0.1)[&height=0.1,height_index=0]:0.2,c:0.3)[&height=0.3,height_index=1];";
+        newick_tree_str = "((d[&height=0]:0.1,b[&height=0]:0.1)[&height=0.1,height_index=0]:0.2,(e[&height=0]:0.1,a[&height=0]:0.1)[&height=0.1,height_index=0]:0.2,c[&height=0]:0.3)[&height=0.3,height_index=1];";
         BaseTree<Node> tree2(newick_tree_str);
         std::map< int, std::set<Split> > splits2 = tree2.get_splits_by_height_index(false);
         REQUIRE(splits2 == expected_splits);
@@ -356,7 +356,7 @@ TEST_CASE("Testing 5 leaves with polytomy and shared div", "[treeio]") {
         }
 
         // swapping sisters should matter
-        newick_tree_str = "((a:0.1,d:0.1)[&height=0.1,height_index=0]:0.2,(b:0.1,e:0.1)[&height=0.1,height_index=0]:0.2,c:0.3)[&height=0.3,height_index=1];";
+        newick_tree_str = "((a[&height=0]:0.1,d[&height=0]:0.1)[&height=0.1,height_index=0]:0.2,(b[&height=0]:0.1,e[&height=0]:0.1)[&height=0.1,height_index=0]:0.2,c[&height=0]:0.3)[&height=0.3,height_index=1];";
         BaseTree<Node> tree3(newick_tree_str);
         std::map< int, std::set<Split> > splits3 = tree3.get_splits_by_height_index(false);
         REQUIRE(splits3 != expected_splits);
@@ -370,7 +370,7 @@ TEST_CASE("Testing 5 leaves with polytomy and shared div", "[treeio]") {
 
 TEST_CASE("Testing 5 leaves with polytomy and shared div, round trip", "[treeio]") {
     SECTION("Testing 5 leaves with polytomy and shared div, round trip") {
-        std::string newick_tree_str = "((a:0.1,e:0.1)[&height=0.1,height_index=0]:0.2,(b:0.1,d:0.1)[&height=0.1,height_index=0]:0.2,c:0.3)[&height=0.3,height_index=1];";
+        std::string newick_tree_str = "((a[&height=0]:0.1,e[&height=0]:0.1)[&height=0.1,height_index=0]:0.2,(b[&height=0]:0.1,d[&height=0]:0.1)[&height=0.1,height_index=0]:0.2,c[&height=0]:0.3)[&height=0.3,height_index=1];";
         BaseTree<Node> tree(newick_tree_str);
         std::string written_newick_tree_str = tree.to_parentheses(true) + ";";
         BaseTree<Node> round_trip_tree(written_newick_tree_str);
@@ -639,5 +639,133 @@ TEST_CASE("Testing BasePopulationTree with 3 leaves", "[treeio]") {
         std::map< int, std::set<Split> > expected_splits = expected_tree.get_splits_by_height_index(false);
 
         REQUIRE(splits == expected_splits);
+    }
+}
+
+TEST_CASE("Testing nonultrametric 3 leaves with no comments", "[treeio]") {
+    SECTION("Testing nonultrametric 3 leaves with no comments") {
+        std::string newick_tree_str = "((spa:0.1,spb:0.09):0.2,spc:0.3);";
+        BaseTree<Node> tree(newick_tree_str);
+
+        std::string written_newick_tree_str = tree.to_parentheses(false) + ";";
+        std::istringstream written_newick_tree_stream(written_newick_tree_str);
+        BaseTree<Node> tree2(written_newick_tree_stream, "relaxedphyliptree");
+
+        std::string written_newick_tree_str2 = tree.to_parentheses(true) + ";";
+        std::istringstream written_newick_tree_stream2(written_newick_tree_str2);
+        BaseTree<Node> tree3(written_newick_tree_stream2, "relaxedphyliptree");
+
+        std::vector< BaseTree<Node> > all_trees {tree, tree2, tree3};
+
+        std::vector<double> expected_heights {0.1, 0.3};
+
+        std::shared_ptr<Node> root = std::make_shared<Node>(4, "root", 0.3);
+        std::shared_ptr<Node> internal1 = std::make_shared<Node>(3, "internal1", 0.1);
+        std::shared_ptr<Node> spa = std::make_shared<Node>(0, "spa", 0.0);
+        spa->fix_node_height();
+        std::shared_ptr<Node> spb = std::make_shared<Node>(1, "spb", 0.05);
+        spb->fix_node_height();
+        std::shared_ptr<Node> spc = std::make_shared<Node>(2, "spc", 0.0);
+        spc->fix_node_height();
+
+        internal1->add_child(spa);
+        internal1->add_child(spb);
+
+        root->add_child(internal1);
+        root->add_child(spc);
+        BaseTree<Node> expected_tree(root);
+
+        std::map< int, std::set<Split> > expected_splits = expected_tree.get_splits_by_height_index(false);
+
+        for (auto t : all_trees) {
+            std::vector<double> heights = t.get_node_heights();
+            REQUIRE(expected_heights.size() == heights.size());
+            for (unsigned int i = 0; i < heights.size(); ++ i) {
+                REQUIRE(heights.at(i) == Approx(expected_heights.at(i)));
+            }
+            std::map< int, std::set<Split> > splits = t.get_splits_by_height_index(false);
+
+
+            REQUIRE(splits == expected_splits);
+
+            for (auto leaf_node : t.get_root_ptr()->get_leaves()) {
+                if (leaf_node->get_label() == "spa") {
+                    REQUIRE(leaf_node->get_height() == Approx(0.0));
+                    REQUIRE(leaf_node->get_length() == Approx(0.1));
+                }
+                if (leaf_node->get_label() == "spb") {
+                    REQUIRE(leaf_node->get_height() == Approx(0.01));
+                    REQUIRE(leaf_node->get_length() == Approx(0.09));
+                }
+                if (leaf_node->get_label() == "spc") {
+                    REQUIRE(leaf_node->get_height() == Approx(0.0));
+                    REQUIRE(leaf_node->get_length() == Approx(0.3));
+                }
+            }
+        }
+    }
+}
+
+TEST_CASE("Testing nonultrametric 3 leaves with comments", "[treeio]") {
+    SECTION("Testing nonultrametric 3 leaves with comments") {
+        std::string newick_tree_str = "((spa[&height=0]:0.1,spb[&height=0.01]:0.09)[&height=0.1,height_index=0]:0.2,spc[&height=0]:0.3)[&height=0.3,height_index=1];";
+        BaseTree<Node> tree(newick_tree_str);
+
+        std::string written_newick_tree_str = tree.to_parentheses(false) + ";";
+        std::istringstream written_newick_tree_stream(written_newick_tree_str);
+        BaseTree<Node> tree2(written_newick_tree_stream, "relaxedphyliptree");
+
+        std::string written_newick_tree_str2 = tree.to_parentheses(true) + ";";
+        std::istringstream written_newick_tree_stream2(written_newick_tree_str2);
+        BaseTree<Node> tree3(written_newick_tree_stream2, "relaxedphyliptree");
+
+        std::vector< BaseTree<Node> > all_trees {tree, tree2, tree3};
+
+        std::vector<double> expected_heights {0.1, 0.3};
+
+        std::shared_ptr<Node> root = std::make_shared<Node>(4, "root", 0.3);
+        std::shared_ptr<Node> internal1 = std::make_shared<Node>(3, "internal1", 0.1);
+        std::shared_ptr<Node> spa = std::make_shared<Node>(0, "spa", 0.0);
+        spa->fix_node_height();
+        std::shared_ptr<Node> spb = std::make_shared<Node>(1, "spb", 0.05);
+        spb->fix_node_height();
+        std::shared_ptr<Node> spc = std::make_shared<Node>(2, "spc", 0.0);
+        spc->fix_node_height();
+
+        internal1->add_child(spa);
+        internal1->add_child(spb);
+
+        root->add_child(internal1);
+        root->add_child(spc);
+        BaseTree<Node> expected_tree(root);
+
+        std::map< int, std::set<Split> > expected_splits = expected_tree.get_splits_by_height_index(false);
+
+        for (auto t : all_trees) {
+            std::vector<double> heights = t.get_node_heights();
+            REQUIRE(expected_heights.size() == heights.size());
+            for (unsigned int i = 0; i < heights.size(); ++ i) {
+                REQUIRE(heights.at(i) == Approx(expected_heights.at(i)));
+            }
+            std::map< int, std::set<Split> > splits = t.get_splits_by_height_index(false);
+
+
+            REQUIRE(splits == expected_splits);
+
+            for (auto leaf_node : t.get_root_ptr()->get_leaves()) {
+                if (leaf_node->get_label() == "spa") {
+                    REQUIRE(leaf_node->get_height() == Approx(0.0));
+                    REQUIRE(leaf_node->get_length() == Approx(0.1));
+                }
+                if (leaf_node->get_label() == "spb") {
+                    REQUIRE(leaf_node->get_height() == Approx(0.01));
+                    REQUIRE(leaf_node->get_length() == Approx(0.09));
+                }
+                if (leaf_node->get_label() == "spc") {
+                    REQUIRE(leaf_node->get_height() == Approx(0.0));
+                    REQUIRE(leaf_node->get_length() == Approx(0.3));
+                }
+            }
+        }
     }
 }

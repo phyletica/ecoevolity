@@ -1,0 +1,13 @@
+#nexus
+
+begin paup;
+    log start replace file=rbcl-ml-jc-paup.log;
+    set crit=like forcepolyt storebrlen;
+    exe ./rbcl.nex;
+    gettrees file=./rbcl-jc-ml.tre;
+    lset nst=6 rmatrix=(0.08394222 0.34116704 0.03603322 0.15737940 0.30297095 0.07850717) basefreq=(0.309769 0.163380 0.121023 0.405828) rates=gamma shape=0.5 pinvar=0;
+    lscores 1 / userbrlen;
+    describetree 1 / plot=none brlens=sumonly;
+    log stop;
+    quit;
+end;

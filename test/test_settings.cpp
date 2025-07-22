@@ -1,7 +1,7 @@
 #include "catch.hpp"
 #include "ecoevolity/settings.hpp"
 #include "ecoevolity/parameter.hpp"
-#include "ecoevolity/tree.hpp"
+#include "ecoevolity/poptree.hpp"
 
 TEST_CASE("Testing bare constructor of ContinuousDistributionSettings",
         "[ContinuousDistributionSettings]") {
@@ -765,6 +765,7 @@ TEST_CASE("Testing parameter settings for vector of 2 to be normalized",
         ContinuousDistributionSettings prior_settings = p.get_prior_settings();
         REQUIRE(prior_settings.get_name() == "dirichlet_distribution");
         std::vector<double> expected_values {1.0/2.0, 3.0/2.0};
+        p.mean_normalize_values();
         std::vector<double> values = p.get_values();
         for (unsigned int i = 0; i < values.size(); ++i) {
             REQUIRE(values.at(i) == Approx(expected_values.at(i)));
@@ -798,6 +799,7 @@ TEST_CASE("Testing parameter settings for vector of 3 to be normalized",
         ContinuousDistributionSettings prior_settings = p.get_prior_settings();
         REQUIRE(prior_settings.get_name() == "dirichlet_distribution");
         std::vector<double> expected_values {1.0, 0.5, 1.5};
+        p.mean_normalize_values();
         std::vector<double> values = p.get_values();
         for (unsigned int i = 0; i < values.size(); ++i) {
             REQUIRE(values.at(i) == Approx(expected_values.at(i)));
@@ -831,6 +833,7 @@ TEST_CASE("Testing parameter settings for vector of 3 fixed",
         ContinuousDistributionSettings prior_settings = p.get_prior_settings();
         REQUIRE(prior_settings.get_name() == "none");
         std::vector<double> expected_values {1.0, 0.5, 1.5};
+        p.mean_normalize_values();
         std::vector<double> values = p.get_values();
         for (unsigned int i = 0; i < values.size(); ++i) {
             REQUIRE(values.at(i) == Approx(expected_values.at(i)));

@@ -1,5 +1,5 @@
 #include "catch.hpp"
-#include "ecoevolity/tree.hpp"
+#include "ecoevolity/poptree.hpp"
 #include "ecoevolity/stats_util.hpp"
 
 

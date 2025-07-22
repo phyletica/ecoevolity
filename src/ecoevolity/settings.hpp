@@ -519,7 +519,7 @@ class PositiveRealParameterSettings {
     friend class DirichletComparisonSettings;
     friend class RelativeRootComparisonSettings;
     template<typename T> friend class BaseCollectionSettings;
-    friend class PopulationTreeSettings;
+    friend class PopulationTreeAnalysisSettings;
 
     protected:
         double value_ = std::numeric_limits<double>::quiet_NaN();
@@ -556,28 +556,18 @@ class PositiveRealParameterSettings {
 
                 if (arg->first.as<std::string>() == "value") {
                     if (arg->second.IsSequence()) {
-                        std::vector<double> temp_values;
-                        double sum = 0.0;
+                        this->values_.clear();
                         YAML::Node value_node = arg->second;
                         for (YAML::const_iterator v = value_node.begin();
                                 v != value_node.end();
                                 ++v) {
                             double val = v->as<double>();
-                            if (val <= 0.0) {
-                                throw EcoevolityPositiveRealParameterSettingError(
-                                        "dirichlet distribution values must be greater than 0"
-                                        );
-                            }
-                            temp_values.push_back(val);
-                            sum += val;
+                            this->values_.push_back(val);
                         }
-                        if (temp_values.size() < 2) {
+                        if (this->values_.size() < 2) {
                             throw EcoevolityPositiveRealParameterSettingError(
                                     "parameter vector must have at least 2 values"
                                     );
-                        }
-                        for (auto x : temp_values) {
-                            this->values_.push_back(temp_values.size() * (x / sum));
                         }
                         this->is_vector_ = true;
                     }
@@ -715,6 +705,22 @@ class PositiveRealParameterSettings {
         }
         const std::vector<double> & get_values() const {
             return this->values_;
+        }
+        void sum_normalize_values() {
+            if (this->values_.size() < 2) {
+                std::string message = (
+                        "value vector has fewer than 2 elements");
+                throw EcoevolityError(message);
+            }
+            this->values_ = get_sum_normalized_vector(this->values_);
+        }
+        void mean_normalize_values() {
+            if (this->values_.size() < 2) {
+                std::string message = (
+                        "value vector has fewer than 2 elements");
+                throw EcoevolityError(message);
+            }
+            this->values_ = get_mean_normalized_vector(this->values_);
         }
         bool is_fixed() const {
             return this->is_fixed_;
@@ -2504,6 +2510,12 @@ class DirichletComparisonSettings : public BaseComparisonSettings<DirichletTreeS
                 else if (parameter->first.as<std::string>() == "population_size_multipliers") {
                     this->population_size_multiplier_settings_ = PositiveRealParameterSettings(parameter->second);
                     this->pop_size_multipliers_specified_ = true;
+                    for (const auto & v: this->population_size_multiplier_settings_.get_values()) {
+                        if (v <= 0.0) {
+                            throw EcoevolityYamlConfigError("population_size_multipliers must be positive");
+                        }
+                    }
+                    this->population_size_multiplier_settings_.mean_normalize_values();
                 }
                 else if (parameter->first.as<std::string>() == "freq_1") {
                     this->freq_1_settings_ = PositiveRealParameterSettings(parameter->second);

@@ -126,6 +126,27 @@ inline void normalize_log_likelihoods(std::vector<double>& v) {
     ECOEVOLITY_ASSERT_APPROX_EQUAL(t, 1.0);
 }
 
+inline std::vector<double> get_sum_normalized_vector(const std::vector<double>& v) {
+    ECOEVOLITY_ASSERT(v.size() > 0);
+    std::vector<double> r(v.size());
+    double sum_v = std::accumulate(v.begin(), v.end(), 0.0);
+    for (unsigned i = 0; i < v.size(); ++i) {
+        r.at(i) = v.at(i) / sum_v;
+    }
+    return r;
+}
+
+inline std::vector<double> get_mean_normalized_vector(const std::vector<double>& v) {
+    auto n = v.size();
+    ECOEVOLITY_ASSERT(n > 0);
+    std::vector<double> r(n);
+    double sum_v = std::accumulate(v.begin(), v.end(), 0.0);
+    for (unsigned i = 0; i < n; ++i) {
+        r.at(i) = (v.at(i) / sum_v) * n;
+    }
+    return r;
+}
+
 /**
  * Calculate the expected number of categories under a Dirichlet process.
  *

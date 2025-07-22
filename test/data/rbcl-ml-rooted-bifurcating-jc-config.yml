@@ -1,0 +1,44 @@
+---
+data:
+    path: ./rbcl.phy
+tree_model:
+    tree_space: generalized
+    starting_tree: ./rbcl-jc-rooted-bifurcating-ml.tre
+    tree_prior:
+        uniform_root_and_betas:
+            parameters:
+                root_height:
+                    estimate: true
+                    prior:
+                        gamma_distribution:
+                            shape: 1.0
+                            mean: 0.01
+                alpha_of_node_height_beta_prior:
+                    value: 1.0
+                    estimate: false
+mutation_parameters:
+    state_frequencies:
+        value: [0.25, 0.25, 0.25, 0.25]
+        estimate: true
+        prior:
+            dirichlet_distribution:
+                alpha: [1, 1, 1, 1]
+    rate_matrix:
+        value: [1, 1, 1, 1, 1, 1]
+        estimate: true
+        prior:
+            dirichlet_distribution:
+                alpha: [1, 1, 1, 1, 1, 1]
+    among_site_rate_variation:
+        discrete_gamma:
+            number_of_categories: 1
+            parameters:
+                one_over_shape:
+                    value: 1.0
+                    estimate: false
+                    prior:
+                        exponential_distribution:
+                            mean: 1.0
+mcmc_settings:
+    chain_length: 15000
+    sample_frequency: 10

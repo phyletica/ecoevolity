@@ -27,7 +27,7 @@
 #include <memory>
 
 #include "basetree.hpp"
-#include "tree.hpp"
+#include "poptree.hpp"
 #include "rng.hpp"
 #include "assert.hpp"
 #include "math_util.hpp"

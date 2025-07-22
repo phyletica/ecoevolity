@@ -4,7 +4,7 @@ set(ECOEVOLITY_SOURCES
     error.cpp
     matrix.cpp
     likelihood.cpp
-    tree.cpp
+    poptree.cpp
     operator_schedule.cpp
     operator.cpp
     collection.cpp
@@ -20,6 +20,10 @@ set(ECOEVOLITY_SOURCES
     sumcoevolity.cpp
     data.cpp)
 
+if (USING_PLL)
+    set(ECOEVOLITY_SOURCES ${ECOEVOLITY_SOURCES} nephila.cpp)
+endif()
+
 set(ECOEVOLITY_LIBRARY libecoevolity)
 set(ECOEVOLITY_INCLUDE_DIR "${ECOEVOLITY_SOURCE_DIR}")
 CREATE_FINAL_FILE ("${CMAKE_CURRENT_BINARY_DIR}/libecoevolity.cpp" "${ECOEVOLITY_SOURCES}")
@@ -27,10 +31,12 @@ add_library(libecoevolity STATIC "${CMAKE_CURRENT_BINARY_DIR}/libecoevolity.cpp"
 target_include_directories(libecoevolity PUBLIC "${ECOEVOLITY_SOURCE_DIR}")
 
 
+set(LIBRARIES_TO_LINK ${ECOEVOLITY_LIBRARY} ${NCL_LIBRARIES} ${YAML_CPP_LIBRARY})
 if (BUILD_WITH_THREADS)
-    set(LIBRARIES_TO_LINK ${ECOEVOLITY_LIBRARY} ${NCL_LIBRARIES} ${YAML_CPP_LIBRARY} ${CMAKE_THREAD_LIBS_INIT})
-else()
-    set(LIBRARIES_TO_LINK ${ECOEVOLITY_LIBRARY} ${NCL_LIBRARIES} ${YAML_CPP_LIBRARY})
+    set(LIBRARIES_TO_LINK ${LIBRARIES_TO_LINK} ${CMAKE_THREAD_LIBS_INIT})
+endif()
+if (USING_PLL)
+    set(LIBRARIES_TO_LINK ${LIBRARIES_TO_LINK} ${PLL_LIBRARY})
 endif()
 
 set(ECOEVOLITY_EXE_NAME "ecoevolity")
@@ -84,3 +90,10 @@ add_executable(sumphycoeval sumphycoeval_main.cpp)
 target_link_libraries(sumphycoeval ${LIBRARIES_TO_LINK})
 install(TARGETS sumphycoeval
         DESTINATION bin)
+
+if (USING_PLL)
+    add_executable(nephila nephila_main.cpp)
+    target_link_libraries(nephila ${LIBRARIES_TO_LINK})
+    install(TARGETS nephila
+            DESTINATION bin)
+endif()

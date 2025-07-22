@@ -3,7 +3,7 @@
 
 #include "ecoevolity/path.hpp"
 #include "ecoevolity/general_tree_operator.hpp"
-#include "ecoevolity/tree.hpp"
+#include "ecoevolity/poptree.hpp"
 #include "ecoevolity/node.hpp"
 #include "ecoevolity/probability.hpp"
 #include "ecoevolity/parameter.hpp"

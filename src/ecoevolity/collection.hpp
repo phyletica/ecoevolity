@@ -24,7 +24,7 @@
 
 #include "data.hpp"
 #include "node.hpp"
-#include "tree.hpp"
+#include "poptree.hpp"
 #include "parameter.hpp"
 #include "settings.hpp"
 #include "operator_schedule.hpp"

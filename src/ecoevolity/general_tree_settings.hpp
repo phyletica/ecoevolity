@@ -17,8 +17,7 @@
  * with Ecoevolity.  If not, see <http://www.gnu.org/licenses/>.
 ******************************************************************************/
 
-#ifndef GENERAL_TREE_SETTINGS_HPP
-#define GENERAL_TREE_SETTINGS_HPP
+#pragma once
 
 #include <iostream>
 #include <sstream>
@@ -151,7 +150,6 @@ class StartingTreeSettings {
                     "Unexpected StartingTreeSettings::source_");
         }
 };
-
 
 class GeneralTreeOperatorSettings {
     protected:
@@ -1315,9 +1313,9 @@ class PopSizeSettings : public PositiveRealParameterSettings {
         }
 };
 
-class GeneralTreeDataSettings {
+class PopulationTreeDataSettings {
 
-        friend class PopulationTreeSettings;
+        friend class PopulationTreeAnalysisSettings;
 
     protected:
         std::string path_;
@@ -1422,8 +1420,8 @@ class GeneralTreeDataSettings {
         }
 
     public:
-        GeneralTreeDataSettings() { }
-        GeneralTreeDataSettings(const GeneralTreeDataSettings & other) {
+        PopulationTreeDataSettings() { }
+        PopulationTreeDataSettings(const PopulationTreeDataSettings & other) {
             this->path_ = other.path_;
             this->population_name_delimiter_ = other.population_name_delimiter_;
             this->population_name_is_prefix_ = other.population_name_is_prefix_;
@@ -1433,7 +1431,7 @@ class GeneralTreeDataSettings {
             this->using_yaml_data_ = other.using_yaml_data_;
             this->ploidy_ = other.ploidy_;
         }
-        GeneralTreeDataSettings& operator=(const GeneralTreeDataSettings& other) {
+        PopulationTreeDataSettings& operator=(const PopulationTreeDataSettings& other) {
             this->path_ = other.path_;
             this->population_name_delimiter_ = other.population_name_delimiter_;
             this->population_name_is_prefix_ = other.population_name_is_prefix_;
@@ -1444,7 +1442,7 @@ class GeneralTreeDataSettings {
             this->ploidy_ = other.ploidy_;
             return * this;
         }
-        virtual ~GeneralTreeDataSettings() { }
+        virtual ~PopulationTreeDataSettings() { }
         const std::string& get_path() const {
             return this->path_;
         }
@@ -1552,32 +1550,103 @@ class GeneralTreeDataSettings {
         }
 };
 
+class NucDataSettings {
 
-class PopulationTreeSettings {
+    protected:
+        std::string path_;
+
+    public:
+        NucDataSettings() { }
+        NucDataSettings(const NucDataSettings & other) {
+            this->path_ = other.path_;
+        }
+        NucDataSettings& operator=(const NucDataSettings& other) {
+            this->path_ = other.path_;
+            return * this;
+        }
+        virtual ~NucDataSettings() { }
+        const std::string& get_path() const {
+            return this->path_;
+        }
+        void set_path(const std::string & path) {
+            this->path_ = path;
+        }
+        void update_from_config(const YAML::Node& node,
+                const std::string & config_path) {
+            if (! node.IsMap()) {
+                std::string message = (
+                        "Expecting data node to be a map, but found: " +
+                        YamlCppUtils::get_node_type(node));
+                throw EcoevolityYamlConfigError(message);
+            }
+
+            std::unordered_set<std::string> keys;
+            for (YAML::const_iterator p = node.begin();
+                    p != node.end();
+                    ++p) {
+                if (keys.count(p->first.as<std::string>()) > 0) {
+                    std::string message = (
+                            "Duplicate key in data parameters: " +
+                            p->first.as<std::string>());
+                    throw EcoevolityYamlConfigError(message);
+                }
+                keys.insert(p->first.as<std::string>());
+
+                if (p->first.as<std::string>() == "path") {
+                    std::string pth = string_util::strip(p->second.as<std::string>());
+                    this->path_ = path::join(path::dirname(config_path), pth);
+                    if (! path::isfile(this->path_)) {
+                        std::string message = (
+                                "alignment path \'" + this->path_ + "\' is not a file");
+                        throw EcoevolityYamlConfigError(message);
+                    }
+                }
+                else {
+                    std::string message = (
+                            "Unrecognized key in data parameters: " +
+                            p->first.as<std::string>());
+                    throw EcoevolityYamlConfigError(message);
+                }
+            }
+        }
+
+        std::string to_string(unsigned int indent_level = 0) const {
+            std::ostringstream ss;
+            ss << std::boolalpha;
+            std::string margin = string_util::get_indent(indent_level);
+            std::string indent = string_util::get_indent(1);
+            ss << margin << "path: " << this->path_ << "\n";
+
+            return ss.str();
+        }
+};
+
+
+class PopulationTreeAnalysisSettings {
     public:
         // Public data members
         PopSizeSettings population_size_settings;
         PositiveRealParameterSettings freq_1_settings;
         PositiveRealParameterSettings mutation_rate_settings;
-        GeneralTreeDataSettings data_settings;
+        PopulationTreeDataSettings data_settings;
         TreeModelSettings tree_model_settings;
         std::shared_ptr<GeneralTreeOperatorSettingsCollection> operator_settings;
 
         // Constructors
-        PopulationTreeSettings() {
+        PopulationTreeAnalysisSettings() {
             this->set_defaults();
             this->update_operator_settings_type();
         }
-        PopulationTreeSettings(
-                const std::string & yaml_config_path) : PopulationTreeSettings() {
+        PopulationTreeAnalysisSettings(
+                const std::string & yaml_config_path) : PopulationTreeAnalysisSettings() {
             this->init_from_config_file(yaml_config_path);
         }
-        PopulationTreeSettings(
+        PopulationTreeAnalysisSettings(
                 std::istream& yaml_config_stream,
-                const std::string & yaml_config_path) : PopulationTreeSettings() {
+                const std::string & yaml_config_path) : PopulationTreeAnalysisSettings() {
             this->init_from_config_stream(yaml_config_stream, yaml_config_path);
         }
-        PopulationTreeSettings(const PopulationTreeSettings & other) {
+        PopulationTreeAnalysisSettings(const PopulationTreeAnalysisSettings & other) {
             this->config_path_ = other.config_path_;
             this->chain_length_ = other.chain_length_;
             this->sample_frequency_ = other.sample_frequency_;
@@ -1591,8 +1660,8 @@ class PopulationTreeSettings {
             this->data_settings = other.data_settings;
             this->tree_model_settings = other.tree_model_settings;
         }
-        virtual ~PopulationTreeSettings() { }
-        PopulationTreeSettings & operator=(const PopulationTreeSettings & other) {
+        virtual ~PopulationTreeAnalysisSettings() { }
+        PopulationTreeAnalysisSettings & operator=(const PopulationTreeAnalysisSettings & other) {
             this->config_path_ = other.config_path_;
             this->chain_length_ = other.chain_length_;
             this->sample_frequency_ = other.sample_frequency_;
@@ -1988,4 +2057,480 @@ class PopulationTreeSettings {
         }
 };
 
-#endif
+class NucTreeAnalysisSettings {
+    public:
+        // Public data members
+        TreeModelSettings tree_model_settings;
+        NucDataSettings data_settings;
+        std::shared_ptr<GeneralTreeOperatorSettingsCollection> operator_settings;
+
+        PositiveRealParameterSettings state_freq_settings;
+        PositiveRealParameterSettings rate_matrix_settings;
+        unsigned int asrv_num_cats;
+        PositiveRealParameterSettings asrv_one_over_shape_settings;
+        
+
+        // Constructors
+        NucTreeAnalysisSettings() {
+            this->set_defaults();
+            this->update_operator_settings_type();
+        }
+        NucTreeAnalysisSettings(
+                const std::string & yaml_config_path) : NucTreeAnalysisSettings() {
+            this->init_from_config_file(yaml_config_path);
+        }
+        NucTreeAnalysisSettings(
+                std::istream& yaml_config_stream,
+                const std::string & yaml_config_path) : NucTreeAnalysisSettings() {
+            this->init_from_config_stream(yaml_config_stream, yaml_config_path);
+        }
+        NucTreeAnalysisSettings(const NucTreeAnalysisSettings & other) {
+            this->config_path_ = other.config_path_;
+            this->chain_length_ = other.chain_length_;
+            this->sample_frequency_ = other.sample_frequency_;
+            this->tree_log_path_ = other.tree_log_path_;
+            this->state_log_path_ = other.state_log_path_;
+            this->operator_log_path_ = other.operator_log_path_;
+            this->operator_settings = other.operator_settings;
+            this->tree_model_settings = other.tree_model_settings;
+            this->data_settings = other.data_settings;
+            this->state_freq_settings = other.state_freq_settings;
+            this->rate_matrix_settings = other.rate_matrix_settings;
+        }
+        virtual ~NucTreeAnalysisSettings() { }
+        NucTreeAnalysisSettings & operator=(const NucTreeAnalysisSettings & other) {
+            this->config_path_ = other.config_path_;
+            this->chain_length_ = other.chain_length_;
+            this->sample_frequency_ = other.sample_frequency_;
+            this->tree_log_path_ = other.tree_log_path_;
+            this->state_log_path_ = other.state_log_path_;
+            this->operator_log_path_ = other.operator_log_path_;
+            this->operator_settings = other.operator_settings;
+            this->tree_model_settings = other.tree_model_settings;
+            this->data_settings = other.data_settings;
+            this->state_freq_settings = other.state_freq_settings;
+            this->rate_matrix_settings = other.rate_matrix_settings;
+            return * this;
+        }
+
+        void set_defaults() {
+            YAML::Node n;
+            std::stringstream ss;
+
+            ss << "value: [ 1.0, 1.0, 1.0, 1.0, 1.0, 1.0 ]\n"
+               << "estimate: true\n"
+               << "prior:\n"
+               << "    dirichlet_distribution:\n"
+               << "        alpha: [ 1.0, 1.0, 1.0, 1.0, 1.0, 1.0 ]\n";
+            n = YAML::Load(ss);
+            this->rate_matrix_settings = PositiveRealParameterSettings(n);
+
+            ss.str("");
+            ss.clear();
+            ss << "value: [ 0.25, 0.25, 0.25, 0.25 ]\n"
+               << "estimate: true\n"
+               << "prior:\n"
+               << "    dirichlet_distribution:\n"
+               << "        alpha: [ 1.0, 1.0, 1.0, 1.0 ]\n";
+            n = YAML::Load(ss);
+            this->state_freq_settings = PositiveRealParameterSettings(n);
+
+            this->asrv_num_cats = 4;
+
+            ss.str("");
+            ss.clear();
+            ss << "value: 1.0\n"
+               << "estimate: true\n"
+               << "prior:\n"
+               << "    exponential_distribution:\n"
+               << "        mean: 1.0\n";
+            n = YAML::Load(ss);
+            this->asrv_one_over_shape_settings = PositiveRealParameterSettings(n);
+        }
+
+        const std::string& get_config_path() const {
+            return this->config_path_;
+        }
+        std::string get_config_directory() const {
+            return path::dirname(this->get_config_path());
+        }
+        const std::string& get_tree_log_path() const {
+            return this->tree_log_path_;
+        }
+        const std::string& get_state_log_path() const {
+            return this->state_log_path_;
+        }
+        const std::string& get_operator_log_path() const {
+            return this->operator_log_path_;
+        }
+        double get_chain_length() const {
+            return this->chain_length_;
+        }
+        double get_sample_frequency() const {
+            return this->sample_frequency_;
+        }
+
+        void update_operator_weights() {
+            this->tree_model_settings.update_operator_weights(this->operator_settings);
+
+            // const bool root_height_is_fixed = tree_model_settings.tree_prior->root_height_is_fixed();
+        }
+
+        void write_settings(std::ostream& out) const {
+            std::string indent = string_util::get_indent(1);
+            out << std::boolalpha;
+
+            out << "---\n"
+                << "data:\n"
+                << this->data_settings.to_string(1)
+                << "tree_model:\n"
+                << this->tree_model_settings.to_string(1)
+                << "mutation_parameters:\n"
+                << indent << "state_frequencies:\n"
+                << this->state_freq_settings.to_string(2)
+                << indent << "rate_matrix:\n"
+                << this->rate_matrix_settings.to_string(2)
+                << indent << "among_site_rate_variation:\n"
+                << indent << indent << "discrete_gamma:\n"
+                << indent << indent << indent << "number_of_categories: " << this->asrv_num_cats << "\n"
+                << indent << indent << indent << "parameters:\n"
+                << indent << indent << indent << indent << "one_over_shape:\n"
+                << this->asrv_one_over_shape_settings.to_string(5)
+                << "mcmc_settings:\n"
+                << indent << "chain_length: " << this->get_chain_length() << "\n"
+                << indent << "sample_frequency: " << this->get_sample_frequency() << "\n"
+                << indent << "operators:\n"
+                << this->operator_settings->to_string(2);
+        }
+
+        std::string to_string() const {
+            std::ostringstream ss;
+            this->write_settings(ss);
+            return ss.str();
+        }
+
+    protected:
+        std::string config_path_ = "";
+        unsigned int chain_length_ = 100000;
+        unsigned int sample_frequency_ = 100;
+        std::string tree_log_path_ = "phycoeval-trees-run-1.nex";
+        std::string state_log_path_ = "phycoeval-state-run-1.log";
+        std::string operator_log_path_ = "phycoeval-operator-run-1.log";
+
+        void set_output_paths_to_config_directory() {
+            std::pair<std::string, std::string> prefix_ext = path::splitext(this->config_path_);
+            this->tree_log_path_ = prefix_ext.first + "-trees-run-1.nex";
+            this->state_log_path_ = prefix_ext.first + "-state-run-1.log";
+            this->operator_log_path_ = prefix_ext.first + "-operator-run-1.log";
+        }
+
+        void init_from_config_stream(std::istream& stream, const std::string& path) {
+            this->config_path_ = path;
+            this->set_output_paths_to_config_directory();
+            this->parse_yaml_config(stream);
+            // Update operators
+            this->update_operator_weights();
+        }
+
+        void init_from_config_file(const std::string& path) {
+            std::ifstream in_stream;
+            in_stream.open(path);
+            if (! in_stream.is_open()) {
+                throw EcoevolityYamlConfigError(
+                        "Could not open YAML config file",
+                        path);
+            }
+            this->init_from_config_stream(in_stream, path);
+            in_stream.close();
+        }
+
+        void parse_yaml_config(std::istream& config_stream) {
+            YAML::Node config;
+            try {
+                config = YAML::Load(config_stream);
+            }
+            catch (...) {
+                std::cerr << "ERROR: Problem with YAML-formatting of config\n";
+                throw;
+            }
+            this->parse_top_level(config);
+        }
+
+        void parse_top_level(const YAML::Node& top_level_node) {
+            if (! top_level_node.IsMap()) {
+                throw EcoevolityYamlConfigError(
+                        "Expecting top-level of config to be a map, but found: " +
+                        YamlCppUtils::get_node_type(top_level_node));
+            }
+
+            // parse data settings
+            if (! top_level_node["data"]) {
+                throw EcoevolityYamlConfigError("No data");
+            }
+            this->data_settings.update_from_config(
+                    top_level_node["data"],
+                    this->config_path_);
+
+            // Parse tree model first, because we need it for determining what
+            // type off operator collection settings is needed
+            if (top_level_node["tree_model"]) {
+                this->tree_model_settings.update_from_config(
+                        top_level_node["tree_model"],
+                        this->config_path_);
+                this->update_operator_settings_type();
+            }
+
+            std::unordered_set<std::string> keys;
+            for (YAML::const_iterator top = top_level_node.begin();
+                    top != top_level_node.end();
+                    ++top) {
+                if (keys.count(top->first.as<std::string>()) > 0) {
+                    std::string message = (
+                            "Duplicate top-level key: " +
+                            top->first.as<std::string>());
+                    throw EcoevolityYamlConfigError(message);
+                }
+                keys.insert(top->first.as<std::string>());
+
+                if (top->first.as<std::string>() == "data") {
+                    // Already parsed above
+                }
+                else if (top->first.as<std::string>() == "tree_model") {
+                    // Already parsed above
+                }
+                // parse mcmc settings
+                else if (top->first.as<std::string>() == "mcmc_settings") {
+                    this->parse_mcmc_settings(top->second);
+                }
+                // parse mutation parameter settings
+                else if (top->first.as<std::string>() == "mutation_parameters") {
+                    this->parse_mutation_parameters(top->second);
+                }
+                else {
+                    throw EcoevolityYamlConfigError(
+                            "Unrecognized top level key: '" +
+                            top->first.as<std::string>() + "'");
+                }
+            }
+        }
+
+        void update_operator_settings_type() {
+            EcoevolityOptions::TreePrior tree_prior_type = this->tree_model_settings.tree_prior->get_type();
+            if (tree_prior_type == EcoevolityOptions::TreePrior::uniform_root_and_betas) {
+                this->operator_settings = std::make_shared<BetaPopulationTreeOperatorSettingsCollection>();
+            }
+            else {
+                std::string message = (
+                        "Do not have OperatorSettingsCollection to match tree prior: " +
+                        EcoevolityOptions::get_tree_prior_string(tree_prior_type));
+            }
+        }
+
+        void parse_mcmc_settings(const YAML::Node& mcmc_node) {
+            if (! mcmc_node.IsMap()) {
+                throw EcoevolityYamlConfigError(
+                        "Expecting mcmc_settings to be a map, but found: " +
+                        YamlCppUtils::get_node_type(mcmc_node));
+            }
+            std::unordered_set<std::string> keys;
+            for (YAML::const_iterator mcmc = mcmc_node.begin(); mcmc != mcmc_node.end(); ++mcmc) {
+                if (keys.count(mcmc->first.as<std::string>()) > 0) {
+                    std::string message = (
+                            "Duplicate mcmc settings key: " +
+                            mcmc->first.as<std::string>());
+                    throw EcoevolityYamlConfigError(message);
+                }
+                keys.insert(mcmc->first.as<std::string>());
+
+                if (mcmc->first.as<std::string>() == "chain_length") {
+                    this->chain_length_ = mcmc->second.as<unsigned int>();
+
+                }
+                else if (mcmc->first.as<std::string>() == "sample_frequency") {
+                    this->sample_frequency_ = mcmc->second.as<unsigned int>();
+                }
+                // parse operator settings
+                else if (mcmc->first.as<std::string>() == "operators") {
+                    this->operator_settings->update_from_config(mcmc->second);
+                }
+                else {
+                    throw EcoevolityYamlConfigError(
+                            "Unrecognized mcmc_settings key: " +
+                            mcmc->first.as<std::string>());
+                }
+            }
+        }
+
+        void parse_mutation_parameters(const YAML::Node& node) {
+            if (! node.IsMap()) {
+                throw EcoevolityYamlConfigError(
+                        "Expecting mutation_parameters node to be a map, but found: " +
+                        YamlCppUtils::get_node_type(node));
+            }
+            std::unordered_set<std::string> keys;
+            for (YAML::const_iterator sub_node = node.begin();
+                    sub_node != node.end();
+                    ++sub_node) {
+                if (keys.count(sub_node->first.as<std::string>()) > 0) {
+                    std::string message = (
+                            "Duplicate key in mutation_parameters: " +
+                            sub_node->first.as<std::string>());
+                    throw EcoevolityYamlConfigError(message);
+                }
+                keys.insert(sub_node->first.as<std::string>());
+
+                if (sub_node->first.as<std::string>() == "state_frequencies") {
+                    this->state_freq_settings = PositiveRealParameterSettings(sub_node->second);
+                    if (this->state_freq_settings.use_empirical_value()) {
+                        throw EcoevolityPositiveRealParameterSettingError(
+                                "Using empirical nucleotide frequencies is not implemented yet"
+                        );
+                    }
+                    if (this->state_freq_settings.get_values().size() != 4) {
+                        throw EcoevolityPositiveRealParameterSettingError(
+                                "Number of values for state_frequencies must be 4"
+                        );
+                    }
+                    for (const auto & freq : this->state_freq_settings.get_values()) {
+                        if (freq < 0.0) {
+                            throw EcoevolityPositiveRealParameterSettingError(
+                                    "Values for state_frequencies must be non-negative"
+                            );
+                        }
+                    }
+                    this->state_freq_settings.sum_normalize_values();
+                }
+                else if (sub_node->first.as<std::string>() == "rate_matrix") {
+                    this->rate_matrix_settings = PositiveRealParameterSettings(sub_node->second);
+                    if (this->rate_matrix_settings.use_empirical_value()) {
+                        throw EcoevolityPositiveRealParameterSettingError(
+                                "empirical value not supported for rate_matrix");
+                    }
+                    if (this->rate_matrix_settings.get_values().size() != 6) {
+                        throw EcoevolityPositiveRealParameterSettingError(
+                                "Number of values for rate_matrix must be 6"
+                        );
+                    }
+                    for (const auto & rate : this->rate_matrix_settings.get_values()) {
+                        if (rate < 0.0) {
+                            throw EcoevolityPositiveRealParameterSettingError(
+                                    "Values for rate_matrix must be non-negative"
+                            );
+                        }
+                    }
+                    this->rate_matrix_settings.sum_normalize_values();
+                }
+                else if (sub_node->first.as<std::string>() == "among_site_rate_variation") {
+                    this->parse_asrv_parameters(sub_node->second);
+                }
+                else {
+                    throw EcoevolityYamlConfigError(
+                            "Unrecognized key in mutation_parameters: '" +
+                            sub_node->first.as<std::string>() + "'");
+                }
+            }
+        }
+
+        void parse_asrv_parameters(const YAML::Node& node) {
+            if (! node.IsMap()) {
+                throw EcoevolityYamlConfigError(
+                        "Expecting among_site_rate_variation node to be a map, but found: " +
+                        YamlCppUtils::get_node_type(node));
+            }
+            std::unordered_set<std::string> keys;
+            for (YAML::const_iterator sub_node = node.begin();
+                    sub_node != node.end();
+                    ++sub_node) {
+                if (keys.count(sub_node->first.as<std::string>()) > 0) {
+                    std::string message = (
+                            "Duplicate key in among_site_rate_variation: " +
+                            sub_node->first.as<std::string>());
+                    throw EcoevolityYamlConfigError(message);
+                }
+                keys.insert(sub_node->first.as<std::string>());
+
+                if (sub_node->first.as<std::string>() == "discrete_gamma") {
+                    this->parse_discrete_gamma_settings(sub_node->second);
+                }
+                else {
+                    throw EcoevolityYamlConfigError(
+                            "Unrecognized key in among_site_rate_variation: '" +
+                            sub_node->first.as<std::string>() + "'");
+                }
+            }
+        }
+
+        void parse_discrete_gamma_settings(const YAML::Node& node) {
+            if (! node.IsMap()) {
+                throw EcoevolityYamlConfigError(
+                        "Expecting discrete_gamma node to be a map, but found: " +
+                        YamlCppUtils::get_node_type(node));
+            }
+            std::unordered_set<std::string> keys;
+            for (YAML::const_iterator sub_node = node.begin();
+                    sub_node != node.end();
+                    ++sub_node) {
+                if (keys.count(sub_node->first.as<std::string>()) > 0) {
+                    std::string message = (
+                            "Duplicate key in discrete_gamma: " +
+                            sub_node->first.as<std::string>());
+                    throw EcoevolityYamlConfigError(message);
+                }
+                keys.insert(sub_node->first.as<std::string>());
+
+                if (sub_node->first.as<std::string>() == "number_of_categories") {
+                    this->asrv_num_cats = sub_node->second.as<unsigned int>();
+                }
+                else if (sub_node->first.as<std::string>() == "parameters") {
+                    this->parse_discrete_gamma_parameters(sub_node->second);
+                }
+                else {
+                    throw EcoevolityYamlConfigError(
+                            "Unrecognized key in discrete_gamma: '" +
+                            sub_node->first.as<std::string>() + "'");
+                }
+            }
+        }
+
+        void parse_discrete_gamma_parameters(const YAML::Node& node) {
+            if (! node.IsMap()) {
+                throw EcoevolityYamlConfigError(
+                        "Expecting discrete_gamma parameters node to be a map, but found: " +
+                        YamlCppUtils::get_node_type(node));
+            }
+            std::unordered_set<std::string> keys;
+            for (YAML::const_iterator sub_node = node.begin();
+                    sub_node != node.end();
+                    ++sub_node) {
+                if (keys.count(sub_node->first.as<std::string>()) > 0) {
+                    std::string message = (
+                            "Duplicate key in discrete_gamma parameters: " +
+                            sub_node->first.as<std::string>());
+                    throw EcoevolityYamlConfigError(message);
+                }
+                keys.insert(sub_node->first.as<std::string>());
+
+                if (sub_node->first.as<std::string>() == "one_over_shape") {
+                    this->asrv_one_over_shape_settings = PositiveRealParameterSettings(sub_node->second);
+                }
+                else {
+                    throw EcoevolityYamlConfigError(
+                            "Unrecognized key in discrete_gamma parameters: '" +
+                            sub_node->first.as<std::string>() + "'");
+                }
+            }
+        }
+
+        // virtual void update_settings_contingent_upon_data() {
+        //     if (this->freq_1_settings.use_empirical_value()) {
+        //         BiallelicData d = BiallelicData(
+        //                 this->data_settings.path_,
+        //                 this->data_settings.population_name_delimiter_,
+        //                 this->data_settings.population_name_is_prefix_,
+        //                 this->data_settings.genotypes_are_diploid_,
+        //                 this->data_settings.markers_are_dominant_,
+        //                 true);
+        //         this->freq_1_settings.value_ = d.get_proportion_1();
+        //     }
+        // }
+};

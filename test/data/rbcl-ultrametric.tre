@@ -1,0 +1,41 @@
+#NEXUS
+[R-package PHYTOOLS, Tue Jul 22 14:36:15 2025]
+
+BEGIN TAXA;
+	DIMENSIONS NTAX = 14;
+	TAXLABELS
+		Atractomorpha_echinata
+		Bracteacoccus_aerius
+		Bracteacoccus_minor
+		Chlorotetraedron_incus
+		Chromochloris_zofingiensis
+		Kirchneriella_aperta
+		Mychonastes_homosphaera
+		Neochloris_aquatica
+		Ourococcus_multisporus
+		Pediastrum_duplex
+		Pseudomuriella_schumacherensis
+		Rotundella_rotunda
+		Scenedesmus_obliquus
+		Stigeoclonium_helveticum
+	;
+END;
+BEGIN TREES;
+	TRANSLATE
+		1	Atractomorpha_echinata,
+		2	Bracteacoccus_aerius,
+		3	Bracteacoccus_minor,
+		4	Chlorotetraedron_incus,
+		5	Chromochloris_zofingiensis,
+		6	Kirchneriella_aperta,
+		7	Mychonastes_homosphaera,
+		8	Neochloris_aquatica,
+		9	Ourococcus_multisporus,
+		10	Pediastrum_duplex,
+		11	Pseudomuriella_schumacherensis,
+		12	Rotundella_rotunda,
+		13	Scenedesmus_obliquus,
+		14	Stigeoclonium_helveticum
+	;
+	TREE * UNTITLED = [&R] (1:0.247445,(((((((((((2:0.058351,3:0.058351):0.016986,5:0.075337):0.017071,(6:0.067138,11:0.067138):0.02527):0.016985,9:0.109393):0.016955,4:0.126348):0.016955,7:0.143303):0,13:0.143303):0.016955,12:0.160258):0.034406,8:0.194664):0,10:0.194664):0.052781,14:0.247445):0.0);
+END;

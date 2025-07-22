@@ -1,0 +1,13 @@
+#nexus
+
+begin paup;
+    log start replace file=rbcl-ultrametric-root-poly-jc-paup.log;
+    set crit=like forcepolyt storebrlen;
+    exe ./rbcl.nex;
+    gettrees file=./rbcl-ultrametric-root-poly.tre;
+    lset nst=1 basefreq=equal rates=equal;
+    lscores 1 / userbrlen;
+    describetree 1 / plot=none brlens=sumonly;
+    log stop;
+    quit;
+end;

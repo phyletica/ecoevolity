@@ -27,6 +27,7 @@
 #include "probability.hpp"
 #include "error.hpp"
 #include "assert.hpp"
+#include "general_tree_settings.hpp"
 
 class PopSizeScaler;
 class GlobalHeightSizeMixer;
@@ -274,12 +275,23 @@ class BaseTree {
             NxsSimpleTree simple_tree(tree_description,
                     default_int_edge_length,
                     default_double_edge_length);
+
+            ///////////////////////////////////////////////////////////////////
+            // Code below can now handle non-ultrametric trees (serially
+            // sampled tips). Once the rjMCMC moves to lump/split heights are
+            // updated to handle non-ultrametric trees
             bool tree_is_ultrametric = this->parsed_tree_is_ultrametric_(
                     simple_tree,
                     ultrametricity_tolerance);
-            if (! tree_is_ultrametric) {
-                throw EcoevolityError("Input tree not ultrametric");
-            }
+
+            // if (! tree_is_ultrametric) {
+            //     throw EcoevolityError("Input tree not ultrametric");
+            // }
+            ///////////////////////////////////////////////////////////////////
+
+            double max_root_to_tip_dist = this->get_max_root_to_tip_dist(simple_tree);
+            double abs_tolerance = max_root_to_tip_dist * ultrametricity_tolerance;
+
             const std::vector<NxsSimpleNode *> & leaves = simple_tree.GetLeavesRef();
             unsigned int num_leaves = leaves.size();
             int num_leaves_int = leaves.size();
@@ -327,6 +339,12 @@ class BaseTree {
             if (root_info.count("height_index") > 0) {
                 using_height_comments = true;
             }
+
+            double min_leaf_height = 0.0;
+            if (using_height_comments) {
+                min_leaf_height = this->get_min_leaf_height(simple_tree);
+            }
+
             // For storing heights so they can be shared; only needed if using
             // comments
             std::map<unsigned int, std::shared_ptr<PositiveRealParameter> > indices_to_heights;
@@ -336,6 +354,7 @@ class BaseTree {
             std::shared_ptr<NodeType> root = this->create_internal_node_(
                     simple_root,
                     indices_to_heights,
+                    max_root_to_tip_dist,
                     using_height_comments,
                     next_internal_index);
             ++next_internal_index;
@@ -347,9 +366,68 @@ class BaseTree {
                     next_internal_index,
                     indices_to_heights,
                     leaf_label_to_index_map,
+                    max_root_to_tip_dist,
+                    min_leaf_height,
+                    abs_tolerance,
                     using_height_comments);
 
             this->set_root(root);
+        }
+
+        double get_dist_from_root(const NxsSimpleNode * ncl_node) const {
+            double dist = 0.0;
+            const NxsSimpleNode * parent = ncl_node->GetEdgeToParent().GetParent();
+            while (parent) {
+                dist += ncl_node->GetEdgeToParent().GetDblEdgeLen();
+                ncl_node = parent;
+                parent = ncl_node->GetEdgeToParent().GetParent();
+            }
+            return dist;
+        }
+
+        double get_height_from_edge_lengths(
+                const NxsSimpleNode * ncl_node,
+                const double max_root_to_tip_dist) const {
+            double dist_from_root = this->get_dist_from_root(ncl_node);
+            assert(max_root_to_tip_dist >= dist_from_root);
+            double height = max_root_to_tip_dist - dist_from_root;
+            return height;
+        }
+
+        double get_max_root_to_tip_dist(NxsSimpleTree & ncl_simple_tree) const {
+            const std::vector<NxsSimpleNode *> & leaves = ncl_simple_tree.GetLeavesRef();
+            double max_dist = -1.0;
+            for (auto leaf_node : leaves) {
+                double dist = this->get_dist_from_root(leaf_node);
+                if (dist > max_dist) {
+                    max_dist = dist;
+                }
+            }
+            return max_dist;
+        }
+
+        double get_min_leaf_height(NxsSimpleTree & ncl_simple_tree) const {
+            const std::vector<NxsSimpleNode *> & leaves = ncl_simple_tree.GetLeavesRef();
+            double min_height = std::numeric_limits<double>::infinity();
+            for (auto leaf_node : leaves) {
+                std::map<std::string, std::string> comment_map;
+                this->parse_node_comments_(leaf_node, comment_map);
+                if (comment_map.count("height") < 1) {
+                    throw EcoevolityError(
+                        "get_min_leaf_height: A leaf didn't have a height comment"
+                    );
+                }
+                double height;
+                std::stringstream h_converter(comment_map["height"]);
+                if (! (h_converter >> height)) {
+                    throw EcoevolityError("could not convert node height \'" +
+                            h_converter.str() + "\'");
+                }
+                if (height < min_height) {
+                    min_height = height;
+                }
+            }
+            return min_height;
         }
 
         bool parsed_tree_is_ultrametric_(const NxsSimpleTree & simple_tree,
@@ -395,6 +473,9 @@ class BaseTree {
                 int & next_internal_index,
                 std::map<unsigned int, std::shared_ptr<PositiveRealParameter> > & indices_to_heights,
                 std::unordered_map<std::string, int> & leaf_label_to_index_map,
+                const double max_root_to_tip_dist,
+                const double min_leaf_height,
+                const double abs_tolerance,
                 const bool using_height_comments) {
             for (auto child_ncl_node : parent_ncl_node->GetChildren()) {
                 if (! child_ncl_node->GetFirstChild()) {
@@ -402,12 +483,17 @@ class BaseTree {
                     std::shared_ptr<NodeType> leaf = this->create_leaf_node_(
                             child_ncl_node,
                             taxa_block,
-                            leaf_label_to_index_map);
+                            leaf_label_to_index_map,
+                            max_root_to_tip_dist,
+                            min_leaf_height,
+                            abs_tolerance,
+                            using_height_comments);
                     parent_node->add_child(leaf);
                 }
                 else {
                     std::shared_ptr<NodeType> node = this->create_internal_node_(child_ncl_node,
                             indices_to_heights,
+                            max_root_to_tip_dist,
                             using_height_comments,
                             next_internal_index);
                     ++next_internal_index;
@@ -419,6 +505,9 @@ class BaseTree {
                             next_internal_index,
                             indices_to_heights,
                             leaf_label_to_index_map,
+                            max_root_to_tip_dist,
+                            min_leaf_height,
+                            abs_tolerance,
                             using_height_comments);
                 }
             }
@@ -426,7 +515,7 @@ class BaseTree {
 
         void parse_node_comments_(
                 const NxsSimpleNode * ncl_node,
-                std::map<std::string, std::string> & comment_map) {
+                std::map<std::string, std::string> & comment_map) const {
             NxsSimpleEdge ncl_edge = ncl_node->GetEdgeToParent();
             for (auto nxs_comment : ncl_edge.GetUnprocessedComments()) {
                 std::string raw_comment = string_util::strip(nxs_comment.GetText());
@@ -444,16 +533,38 @@ class BaseTree {
         std::shared_ptr<NodeType> create_leaf_node_(
                 const NxsSimpleNode * ncl_node,
                 const NxsTaxaBlock * taxa_block,
-                std::unordered_map<std::string, int> & leaf_label_to_index_map) {
+                std::unordered_map<std::string, int> & leaf_label_to_index_map,
+                const double max_root_to_tip_dist,
+                const double min_leaf_height,
+                const double abs_tolerance,
+                const bool using_height_comments) {
             ECOEVOLITY_ASSERT(! ncl_node->GetFirstChild());
             std::map<std::string, std::string> comment_map;
             this->parse_node_comments_(ncl_node, comment_map);
             NxsString leaf_label = taxa_block->GetTaxonLabel(ncl_node->GetTaxonIndex());
             // std::cout << leaf_label << "\n";
+            double height;
+            if (using_height_comments) {
+                std::stringstream h_converter(comment_map["height"]);
+                if (! (h_converter >> height)) {
+                    throw EcoevolityError("could not convert node height \'" +
+                            h_converter.str() + "\'");
+                }
+            }
+            else {
+                // Need to get height from edge lengths
+                height = this->get_height_from_edge_lengths(ncl_node, max_root_to_tip_dist);
+                // Check to see if leaf height should be equal to zero (or the
+                // min_leaf_height, but that should be zero if we are getting
+                // heights from branch lengths)
+                if (fabs(height - min_leaf_height) <= abs_tolerance) {
+                    height = min_leaf_height;
+                }
+            }
             std::shared_ptr<NodeType> leaf = std::make_shared<NodeType>(
                     leaf_label_to_index_map[leaf_label],
                     leaf_label,
-                    0.0);
+                    height);
             leaf->fix_node_height();
             leaf->extract_data_from_node_comments(comment_map);
             return leaf;
@@ -462,6 +573,7 @@ class BaseTree {
         std::shared_ptr<NodeType> create_internal_node_(
                 const NxsSimpleNode * ncl_node,
                 std::map<unsigned int, std::shared_ptr<PositiveRealParameter> > & indices_to_heights,
+                const double max_root_to_tip_dist,
                 const bool using_height_comments,
                 const unsigned int internal_index) {
             ECOEVOLITY_ASSERT(ncl_node->GetFirstChild());
@@ -483,7 +595,8 @@ class BaseTree {
             }
             else {
                 // Need to get height from edge lengths
-                height = this->get_simple_node_height_(ncl_node);
+                // height = this->get_simple_node_height_(ncl_node);
+                height = this->get_height_from_edge_lengths(ncl_node, max_root_to_tip_dist);
             }
             std::shared_ptr<NodeType> node = std::make_shared<NodeType>(
                     internal_index,
@@ -567,10 +680,13 @@ class BaseTree {
                 std::shared_ptr<NodeType>) const {
             return 0.0;
         }
+
         // Used to signify that the likelihood needs recalculating.
         // Node methods are expected to make nodes dirty. However, whenever the
         // node height parameters are updated, this needs to be called, because
         // nodes are bypassed (and thus don't end up dirty)
+        // TODO: To improve efficienty, update to make only affected nodes
+        //       dirty when updating node heights
         void make_dirty() {
             this->is_dirty_ = true;
         }
@@ -2377,6 +2493,274 @@ class BaseTree {
         }
         std::shared_ptr<ContinuousProbabilityDistribution> get_prior_on_beta_of_node_height_beta_prior() const {
             return this->beta_of_node_height_beta_prior_->get_prior();
+        }
+
+        void set_tree_to_comb() {
+            std::vector< std::shared_ptr<NodeType> > leaves = this->root_->get_leaves();
+            unsigned int num_leaves = leaves.size();
+
+            this->root_->set_index(num_leaves);
+
+            for (unsigned int i = 0; i < num_leaves; ++i) {
+                leaves.at(i)->remove_parent();
+                leaves.at(i)->add_parent(this->root_);
+            }
+        }
+
+        void set_tree_to_random_bifurcating(
+                RandomNumberGenerator & rng) {
+            std::vector< std::shared_ptr<NodeType> > leaves = this->root_->get_leaves();
+            unsigned int num_leaves = leaves.size();
+            unsigned int next_index = num_leaves;
+
+            this->root_->set_index(next_index);
+            ++next_index;
+
+            for (unsigned int i = 0; i < num_leaves; ++i) {
+                leaves.at(i)->remove_parent();
+            }
+
+            for (unsigned int i = 0; i < this->root_->get_number_of_children(); ++i) {
+                this->root_->remove_child(i);
+            }
+
+            std::vector< std::shared_ptr<NodeType> > existing_nodes;
+        
+            std::vector<unsigned int> leaf_indices(num_leaves);
+            for (unsigned int i = 0; i < num_leaves; ++i) {
+                leaf_indices.at(i) = i;
+            }
+            rng.shuffle<unsigned int>(leaf_indices);
+        
+            unsigned int leaf_idx = leaf_indices.back();
+            leaf_indices.pop_back();
+            this->root_->add_child(leaves.at(leaf_idx));
+            existing_nodes.push_back(leaves.at(leaf_idx));
+        
+            leaf_idx = leaf_indices.back();
+            leaf_indices.pop_back();
+            this->root_->add_child(leaves.at(leaf_idx));
+            existing_nodes.push_back(leaves.at(leaf_idx));
+        
+            unsigned int attach_idx;
+            std::shared_ptr<NodeType> sib_node;
+            std::shared_ptr<NodeType> parent_node;
+            while(leaf_indices.size() > 0) {
+                leaf_idx = leaf_indices.back();
+                leaf_indices.pop_back();
+        
+                attach_idx = rng.uniform_int(0, existing_nodes.size() - 1);
+                sib_node = existing_nodes.at(attach_idx);
+                parent_node = sib_node->get_parent();
+                double sib_length = sib_node->get_length();
+                double new_height = sib_node->get_height() + (0.5 * sib_length);
+                std::shared_ptr<NodeType> new_node = std::make_shared<NodeType>(
+                        next_index,
+                        new_height);
+                ++next_index;
+                sib_node->remove_parent();
+                new_node->add_child(sib_node);
+                new_node->add_child(leaves.at(leaf_idx));
+                new_node->add_parent(parent_node);
+                existing_nodes.push_back(leaves.at(leaf_idx));
+                existing_nodes.push_back(new_node);
+            }
+            // Draw heights from prior
+            BaseTree::draw_from_prior(rng);
+        }
+
+        // Need data for this, so must be overidden by descendant classes
+        virtual void set_tree_to_upgma() {
+            throw EcoevolityNotImplementedError(
+                    "BaseTree::set_tree_to_upgma is not implemented");
+        }
+
+        void set_tree_from_string(const std::string & newick_tree_string) {
+            bool root_ht_fixed = this->root_height_is_fixed();
+            std::shared_ptr<ContinuousProbabilityDistribution> root_ht_prior = this->get_root_node_height_prior();
+        
+            std::istringstream tree_stream(newick_tree_string);
+            try {
+                this->build_from_stream_(tree_stream, "relaxedphyliptree");
+            }
+            catch(...) {
+                std::cerr << "ERROR: Problem parsing newick tree string:\n"
+                        << newick_tree_string << "\n";
+                throw;
+            }
+        
+            this->set_root_node_height_prior(root_ht_prior);
+            if (root_ht_fixed) {
+                this->fix_root_height();
+            }
+            else {
+                this->estimate_root_height();
+            }
+        }
+
+        void set_tree_from_path(const std::string & path) {
+            bool root_ht_fixed = this->root_height_is_fixed();
+            std::shared_ptr<ContinuousProbabilityDistribution> root_ht_prior = this->get_root_node_height_prior();
+        
+            std::ifstream in_stream;
+            in_stream.open(path);
+            if (! in_stream.is_open()) {
+                throw EcoevolityParsingError(
+                        "Could not open tree file",
+                        path);
+            }
+        
+            try {
+                this->build_from_stream_(in_stream, "relaxedphyliptree");
+            }
+            catch(...) {
+                try {
+                    in_stream.clear();
+                    in_stream.seekg(0);
+                    this->build_from_stream_(in_stream, "nexus");
+                }
+                catch(...) {
+                    std::cerr << "ERROR: Problem parsing tree file path: "
+                            << path << "\n";
+                    throw;
+                }
+            }
+        
+            this->set_root_node_height_prior(root_ht_prior);
+            if (root_ht_fixed) {
+                this->fix_root_height();
+            }
+            else {
+                this->estimate_root_height();
+            }
+        }
+
+        void establish_tree_and_node_heights(
+                const TreeModelSettings& tree_model_settings,
+                RandomNumberGenerator& rng) {
+            ECOEVOLITY_ASSERT(tree_model_settings.tree_prior->get_type() ==
+                    EcoevolityOptions::TreePrior::uniform_root_and_betas);
+        
+            // Get a copy of the settings for the node heights 
+            std::map<std::string, PositiveRealParameterSettings> height_param_settings;
+            height_param_settings = tree_model_settings.tree_prior->get_parameter_settings();
+            PositiveRealParameterSettings root_ht_settings;
+            PositiveRealParameterSettings alpha_of_beta_settings;
+            root_ht_settings = height_param_settings.at("root_height");
+            alpha_of_beta_settings = height_param_settings.at("alpha_of_node_height_beta");
+        
+            // If the root height parameter is fixed but not set, it needs according to
+            // the starting tree, which will happen below. For now, we will give it a
+            // dummy value
+            if (root_ht_settings.is_fixed() && std::isnan(root_ht_settings.get_value())) {
+                root_ht_settings.set_value(1.0);
+            }
+            PositiveRealParameter root_ht = PositiveRealParameter(
+                    root_ht_settings,
+                    rng);
+            this->set_root_node_height_prior(root_ht.get_prior());
+            this->set_root_height(root_ht.get_value());
+            if (root_ht.is_fixed()) {
+                this->fix_root_height();
+            }
+        
+            PositiveRealParameter alpha_of_beta = PositiveRealParameter(
+                    alpha_of_beta_settings,
+                    rng);
+            this->estimate_alpha_of_node_height_beta_prior();
+            this->set_prior_on_alpha_of_node_height_beta_prior(alpha_of_beta.get_prior());
+            this->set_alpha_of_node_height_beta_prior(alpha_of_beta.get_value());
+            if (alpha_of_beta.is_fixed()) {
+                this->fix_alpha_of_node_height_beta_prior();
+            }
+        
+            this->estimate_beta_of_node_height_beta_prior();
+            this->set_beta_of_node_height_beta_prior(1.0);
+            this->fix_beta_of_node_height_beta_prior();
+        
+        
+            if (tree_model_settings.starting_tree_settings.get_tree_source() ==
+                    StartingTreeSettings::Source::option) {
+                if (tree_model_settings.starting_tree_settings.get_tree_option() ==
+                        StartingTreeSettings::Option::comb) {
+                    this->set_tree_to_comb();
+                }
+                else if (tree_model_settings.starting_tree_settings.get_tree_option() ==
+                        StartingTreeSettings::Option::upgma) {
+                    this->set_tree_to_upgma();
+                }
+                else if (tree_model_settings.starting_tree_settings.get_tree_option() ==
+                        StartingTreeSettings::Option::random) {
+                    this->set_tree_to_random_bifurcating(rng);
+                }
+                else {
+                    std::ostringstream message;
+                    message << "Unexpected StartingTreeSettings::Option: "
+                        << (int)tree_model_settings.starting_tree_settings.get_tree_option();
+                    throw EcoevolityError(message.str());
+                }
+            }
+            else if (tree_model_settings.starting_tree_settings.get_tree_source() ==
+                    StartingTreeSettings::Source::string) {
+                this->set_tree_from_string(tree_model_settings.starting_tree_settings.get_tree_string());
+            }
+            else if (tree_model_settings.starting_tree_settings.get_tree_source() ==
+                    StartingTreeSettings::Source::path) {
+                this->set_tree_from_path(tree_model_settings.starting_tree_settings.get_tree_path());
+            }
+            else {
+                std::ostringstream message;
+                message << "Unexpected StartingTreeSettings::Source: "
+                    << (int)tree_model_settings.starting_tree_settings.get_tree_source();
+                throw EcoevolityError(message.str());
+            }
+        }
+
+        void init_tree_from_leaf_labels(std::vector<std::string> leaf_labels) {
+            assert(leaf_labels.size() > 0);
+            if (leaf_labels.size() < 3) {
+                std::shared_ptr<NodeType> root = std::make_shared<NodeType>((int)leaf_labels.size(), 0.0);
+                for (unsigned int leaf_idx = 0;
+                        leaf_idx < leaf_labels.size();
+                        ++leaf_idx) {
+                    std::shared_ptr<NodeType> tip = std::make_shared<NodeType>(
+                            leaf_idx,
+                            leaf_labels.at(leaf_idx),
+                            0.0);
+                    tip->fix_node_height();
+                    root->add_child(tip);
+                }
+                this->set_root(root);
+                return;
+            }
+            unsigned int next_index = leaf_labels.size();
+            std::shared_ptr<NodeType> ancestor = std::make_shared<NodeType>(next_index, 0.0);
+            ++next_index;
+            ancestor->add_child(std::make_shared<NodeType>(
+                        0,
+                        leaf_labels.at(0),
+                        0.0));
+            ancestor->add_child(std::make_shared<NodeType>(
+                        1,
+                        leaf_labels.at(1),
+                        0.0));
+            ancestor->get_child(0)->fix_node_height();
+            ancestor->get_child(1)->fix_node_height();
+            for (unsigned int leaf_idx = 2;
+                    leaf_idx < leaf_labels.size();
+                    ++leaf_idx) {
+                std::shared_ptr<NodeType> next_ancestor = std::make_shared<NodeType>(next_index, 0.0);
+                ++next_index;
+                next_ancestor->add_child(ancestor);
+                std::shared_ptr<NodeType> tip = std::make_shared<NodeType>(
+                        leaf_idx,
+                        leaf_labels.at(leaf_idx),
+                        0.0);
+                tip->fix_node_height();
+                next_ancestor->add_child(tip);
+                ancestor = next_ancestor;
+            }
+            this->set_root(ancestor);
         }
 };
 

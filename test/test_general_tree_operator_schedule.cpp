@@ -3,7 +3,7 @@
 #include "ecoevolity/general_tree_settings.hpp"
 #include "ecoevolity/settings_io.hpp"
 #include "ecoevolity/parameter.hpp"
-#include "ecoevolity/tree.hpp"
+#include "ecoevolity/poptree.hpp"
 
 
 TEST_CASE("Testing generalized BasePopulationTree config",
@@ -38,7 +38,7 @@ TEST_CASE("Testing generalized BasePopulationTree config",
         cfg_stream << "    yaml_allele_counts:\n";
         cfg_stream << "        path: \"diploid-dna-constant-missing.yml\"\n";
 
-        PopulationTreeSettings settings = PopulationTreeSettings(cfg_stream, cfg_path);
+        PopulationTreeAnalysisSettings settings = PopulationTreeAnalysisSettings(cfg_stream, cfg_path);
 
         GeneralTreeOperatorSchedule<BasePopulationTree> op_schedule(
                 settings.operator_settings,
@@ -100,7 +100,7 @@ TEST_CASE("Testing SplitLumpNodesRevJumpSampler operator with auto-tuning",
         cfg_stream << "            auto_optimize: [true, false, false]\n";
         cfg_stream << "            auto_optimize_delay: [100, 50, 20]\n";
 
-        PopulationTreeSettings settings = PopulationTreeSettings(cfg_stream, cfg_path);
+        PopulationTreeAnalysisSettings settings = PopulationTreeAnalysisSettings(cfg_stream, cfg_path);
 
         auto rj_op = settings.operator_settings->tunable_operators["SplitLumpNodesRevJumpSampler"];
         for (unsigned int i = 0; i < rj_op.get_number_of_operators(); ++i) {
@@ -159,7 +159,7 @@ TEST_CASE("Testing SplitLumpNodesRevJumpSampler operator",
         cfg_stream << "            auto_optimize: [false, false, false]\n";
         cfg_stream << "            auto_optimize_delay: [100, 50, 20]\n";
 
-        PopulationTreeSettings settings = PopulationTreeSettings(cfg_stream, cfg_path);
+        PopulationTreeAnalysisSettings settings = PopulationTreeAnalysisSettings(cfg_stream, cfg_path);
 
         auto rj_op = settings.operator_settings->tunable_operators["SplitLumpNodesRevJumpSampler"];
         for (unsigned int i = 0; i < rj_op.get_number_of_operators(); ++i) {
@@ -251,7 +251,7 @@ TEST_CASE("Testing SplitLumpNodesRevJumpSampler operator with some defaults",
         cfg_stream << "        SplitLumpNodesRevJumpSampler:\n";
         cfg_stream << "            tuning_parameter: [2.0, 5.0, 10.0]\n";
 
-        PopulationTreeSettings settings = PopulationTreeSettings(cfg_stream, cfg_path);
+        PopulationTreeAnalysisSettings settings = PopulationTreeAnalysisSettings(cfg_stream, cfg_path);
 
         auto rj_op = settings.operator_settings->tunable_operators["SplitLumpNodesRevJumpSampler"];
         for (unsigned int i = 0; i < rj_op.get_number_of_operators(); ++i) {
@@ -343,7 +343,7 @@ TEST_CASE("Testing SplitLumpNodesRevJumpSampler operator with zero weight",
         cfg_stream << "        SplitLumpNodesRevJumpSampler:\n";
         cfg_stream << "            weight: 0\n";
 
-        PopulationTreeSettings settings = PopulationTreeSettings(cfg_stream, cfg_path);
+        PopulationTreeAnalysisSettings settings = PopulationTreeAnalysisSettings(cfg_stream, cfg_path);
 
         auto rj_op = settings.operator_settings->tunable_operators["SplitLumpNodesRevJumpSampler"];
         for (unsigned int i = 0; i < rj_op.get_number_of_operators(); ++i) {
@@ -407,7 +407,7 @@ TEST_CASE("Testing SplitLumpNodesRevJumpSampler operator turn off",
         cfg_stream << "            auto_optimize: [false, false, false]\n";
         cfg_stream << "            auto_optimize_delay: [100, 50, 20]\n";
 
-        PopulationTreeSettings settings = PopulationTreeSettings(cfg_stream, cfg_path);
+        PopulationTreeAnalysisSettings settings = PopulationTreeAnalysisSettings(cfg_stream, cfg_path);
 
         auto rj_op = settings.operator_settings->tunable_operators["SplitLumpNodesRevJumpSampler"];
         for (unsigned int i = 0; i < rj_op.get_number_of_operators(); ++i) {
@@ -462,7 +462,7 @@ TEST_CASE("Testing bifurcating BasePopulationTree config",
         cfg_stream << "    yaml_allele_counts:\n";
         cfg_stream << "        path: \"diploid-dna-constant-missing.yml\"\n";
 
-        PopulationTreeSettings settings = PopulationTreeSettings(cfg_stream, cfg_path);
+        PopulationTreeAnalysisSettings settings = PopulationTreeAnalysisSettings(cfg_stream, cfg_path);
 
         GeneralTreeOperatorSchedule<BasePopulationTree> op_schedule(
                 settings.operator_settings,
@@ -512,7 +512,7 @@ TEST_CASE("Testing fixed tree BasePopulationTree config",
         cfg_stream << "    yaml_allele_counts:\n";
         cfg_stream << "        path: \"diploid-dna-constant-missing.yml\"\n";
 
-        PopulationTreeSettings settings = PopulationTreeSettings(cfg_stream, cfg_path);
+        PopulationTreeAnalysisSettings settings = PopulationTreeAnalysisSettings(cfg_stream, cfg_path);
 
         GeneralTreeOperatorSchedule<BasePopulationTree> op_schedule(
                 settings.operator_settings,

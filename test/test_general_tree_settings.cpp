@@ -2,7 +2,7 @@
 #include "ecoevolity/general_tree_settings.hpp"
 #include "ecoevolity/settings_io.hpp"
 #include "ecoevolity/parameter.hpp"
-#include "ecoevolity/tree.hpp"
+#include "ecoevolity/poptree.hpp"
 
 
 TEST_CASE("Testing basic settings", "[PopSizeSettings]") {
@@ -121,8 +121,8 @@ TEST_CASE("Testing unconstrained", "[PopSizeSettings]") {
     }
 }
 
-TEST_CASE("Testing PopulationTreeSettings with uniform_root_and_betas tree prior",
-        "[PopulationTreeSettings]") {
+TEST_CASE("Testing PopulationTreeAnalysisSettings with uniform_root_and_betas tree prior",
+        "[PopulationTreeAnalysisSettings]") {
     SECTION("Testing with uniform_root_and_betas tree prior") {
         std::string cfg_path = "data/dummy.yml";
 
@@ -156,7 +156,7 @@ TEST_CASE("Testing PopulationTreeSettings with uniform_root_and_betas tree prior
         std::cout << "Testing the following config:\n";
         std::cout << cfg_stream.str() << "\n";
 
-        PopulationTreeSettings settings = PopulationTreeSettings(cfg_stream, cfg_path);
+        PopulationTreeAnalysisSettings settings = PopulationTreeAnalysisSettings(cfg_stream, cfg_path);
 
         REQUIRE(settings.tree_model_settings.tree_prior->get_type() ==
                 EcoevolityOptions::TreePrior::uniform_root_and_betas);

@@ -23,7 +23,7 @@
 #include "assert.hpp"
 #include "error.hpp"
 
-#include "tree.hpp"
+#include "poptree.hpp"
 #include "general_tree_operator.hpp"
 #include "general_tree_operator_schedule.hpp"
 

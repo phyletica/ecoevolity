@@ -37,6 +37,18 @@ SCENARIO("split provides Python-like splitting of strings", "[string_util]") {
     }
 }
 
+SCENARIO("split_wspace provides Python-like splitting of strings", "[string_util]") {
+    SECTION("splitting string by white space") {
+        std::vector<std::string> elements = string_util::split_wspace("Test\tstring to\t\t\tTEST    split_wspace");
+        REQUIRE(elements.size() == 5);
+        REQUIRE(elements[0] == "Test");
+        REQUIRE(elements[1] == "string");
+        REQUIRE(elements[2] == "to");
+        REQUIRE(elements[3] == "TEST");
+        REQUIRE(elements[4] == "split_wspace");
+    }
+}
+
 TEST_CASE("Testing pad_int", "[string_util]") {
     SECTION("Testing pad_int") {
         REQUIRE(string_util::pad_int(0, 1) == "0");
@@ -224,5 +236,23 @@ TEST_CASE("Testing parse_map", "[string_util]") {
             string_util::parse_map(s, returned_map, ',', '=');
         }
         REQUIRE(returned_map == expected_map);
+    }
+}
+
+TEST_CASE("Testing strip single quotes", "[string_util]") {
+    SECTION("Testing strip single quotes") {
+        std::string s = "\'test\'";
+        std::string t = string_util::strip(s, "\'");
+        REQUIRE(s == "\'test\'");
+        REQUIRE(t == "test");
+    }
+}
+
+TEST_CASE("Testing strip double quotes", "[string_util]") {
+    SECTION("Testing strip double quotes") {
+        std::string s = "\"test\"";
+        std::string t = string_util::strip(s, "\"");
+        REQUIRE(s == "\"test\"");
+        REQUIRE(t == "test");
     }
 }

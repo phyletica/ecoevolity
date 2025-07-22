@@ -32,6 +32,7 @@ set(ECOEVOLITY_SOURCE_DIR "${SOURCE_DIR}/ecoevolity")
 set(EXTERNAL_PROJECT_DIR "${SOURCE_DIR}/external")
 set(NCL_SOURCE_DIR "${EXTERNAL_PROJECT_DIR}/ncl")
 set(YAML_CPP_SOURCE_DIR "${EXTERNAL_PROJECT_DIR}/yaml-cpp-master-ce056ac")
+# set(PLL_SOURCE_DIR "${EXTERNAL_PROJECT_DIR}/libpll-2-9be0d0ab")
 set(TEST_DIR "${BASE_DIR}/test")
 set(TEST_DATA_DIR "${TEST_DIR}/data")
 
@@ -60,6 +61,20 @@ if (NOT YAML_CPP_FOUND)
 endif()
 MESSAGE(STATUS "USING_BUNDLED_YAML_CPP: ${USING_BUNDLED_YAML_CPP}")
 
+#######################################################################
+# Set up pll variables
+
+option (USING_PLL "Build components requiring PLL" ON)
+
+if (USING_PLL)
+    include(FindPLL)
+    if ((NOT PLL_FOUND) OR ("${PLL_LIBRARY}" MATCHES "NOTFOUND"))
+        MESSAGE(STATUS "Could not find PLL library; proceeding without PLL components")
+        set(USING_PLL OFF)
+    else()
+        include_directories("${PLL_INCLUDE_DIR}")
+    endif()
+endif()
 
 #######################################################################
 # Find and set up threads variables

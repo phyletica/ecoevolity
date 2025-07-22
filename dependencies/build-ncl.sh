@@ -55,7 +55,7 @@ echo "    $install_dir"
 
 env_path="${dep_dir}/env-ncl.sh"
 echo export PATH="${install_dir}/bin:\${PATH}" > "$env_path"
-echo export LD_LIBRARY_PATH="${install_dir}/lib:\${LD_LIBRARY_PATH}" >> "$env_path"
+echo export LD_LIBRARY_PATH="${install_dir}/lib/ncl:\${LD_LIBRARY_PATH}" >> "$env_path"
 echo export PKG_CONFIG_PATH="${install_dir}/lib/pkgconfig:\${PKG_CONFIG_PATH}" >> "$env_path"
 echo export NCL_PREFIX="${install_dir}" >> "$env_path"
 

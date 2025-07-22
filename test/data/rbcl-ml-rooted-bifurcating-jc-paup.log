@@ -1,0 +1,113 @@
+
+P A U P *
+Version 4.0a (build 168) for Unix/Linux (built on Aug  2 2020 at 07:10:27)
+Tue Jul 22 16:26:41 2025
+
+
+paup>    set crit=like forcepolyt storebrlen;
+
+Optimality criterion set to likelihood.
+
+paup>    exe ./rbcl.nex;
+
+Processing of file "~/Dropbox/software/dev/ecoevolity/test/data/rbcl.nex" begins...
+
+Data read in DNA format
+
+Data matrix has 14 taxa, 60 characters
+Valid character-state symbols: ACGT
+Missing data identified by '?'
+Gaps identified by '-'
+"Equate" macros in effect:
+   R,r ==> {AG}
+   Y,y ==> {CT}
+   M,m ==> {AC}
+   K,k ==> {GT}
+   S,s ==> {CG}
+   W,w ==> {AT}
+   H,h ==> {ACT}
+   B,b ==> {CGT}
+   V,v ==> {ACG}
+   D,d ==> {AGT}
+   N,n ==> {ACGT}
+
+Processing of input file "rbcl.nex" completed.
+
+paup>    gettrees file=./rbcl-jc-rooted-bifurcating-ml.tre;
+
+Processing TREES block from file: ~/Dropbox/software/dev/ecoevolity/test/data/rbcl-jc-rooted-bifurcating-ml.tre
+  Keeping: trees from file (replacing any trees already in memory)
+  1 tree read from file
+
+  Time used = 0.00 sec (CPU time = 0.00 sec)
+
+paup>    lset nst=1 basefreq=equal rates=equal;
+
+paup>    lscores 1 / userbrlen;
+
+Likelihood scores of tree(s) in memory:
+---------------------------------------
+  60 characters are included
+  All characters have equal weight
+  Likelihood settings:
+    Current model:
+                             Data type = nucleotide
+                DNA substitution types = 1
+                     State frequencies = equal
+        Proportion of invariable sites = none
+               Rates at variable sites = equal
+                  Model correspondence = JC69
+
+    Number of distinct data patterns under this model = 21
+    Molecular clock not enforced
+    Branch lengths constrained to user-input values
+    Likelihood calculations performed in single precision
+    Vector processing enabled
+    Using standard Felsenstein pruning for computing likelihoods
+    Conditional-likelihood rescaling threshold = 1e-20
+    Using 1 thread on 4 physical (8 logical) processors
+
+  NOTE: One or more terminal branch lengths < 1e-08 reset to 1e-08
+
+Tree             1
+------------------
+-ln L      278.838
+
+Time used to compute likelihoods = 0.00 sec (CPU time = 0.00 sec)
+
+paup>    describetree 1 / plot=none brlens=sumonly;
+
+Tree description:
+
+  Unrooted tree(s) rooted using outgroup method
+
+  Note: No outgroup has been defined; tree is (arbitrarily) rooted at first taxon.
+  Optimality criterion = likelihood
+    60 characters are included
+    All characters have equal weight
+    Likelihood settings:
+      Current model:
+                               Data type = nucleotide
+                  DNA substitution types = 1
+                       State frequencies = equal
+          Proportion of invariable sites = none
+                 Rates at variable sites = equal
+                    Model correspondence = JC69
+
+      Number of distinct data patterns under this model = 21
+      Molecular clock not enforced
+      Branch lengths constrained to user-input values
+      Likelihood calculations performed in single precision
+      Vector processing enabled
+      Using standard Felsenstein pruning for computing likelihoods
+      Conditional-likelihood rescaling threshold = 1e-20
+      Using 1 thread on 4 physical (8 logical) processors
+
+Tree 1 ("rootmaxlike") (rooted using default outgroup)
+
+  NOTE: One or more terminal branch lengths < 1e-08 reset to 1e-08
+  Sum of branch lengths = 0.67882
+
+-Ln likelihood = 278.838
+
+paup>    log stop;

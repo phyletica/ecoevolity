@@ -349,7 +349,7 @@ int simphycoeval_main(int argc, char * argv[]) {
     }
 
     std::cout << "Parsing config file..." << std::endl;
-    PopulationTreeSettings settings(config_path);
+    PopulationTreeAnalysisSettings settings(config_path);
 
     if (max_one_variable_site_per_locus && settings.data_settings.constant_sites_removed()) {
         throw EcoevolityError(
@@ -357,17 +357,17 @@ int simphycoeval_main(int argc, char * argv[]) {
                 "using the \'--max-one-variable-site-per-locus\' option.");
     }
 
-    std::vector<PopulationTreeSettings> prior_settings_vector;
+    std::vector<PopulationTreeAnalysisSettings> prior_settings_vector;
     prior_settings_vector.reserve(num_prior_configs);
     for (auto path : prior_config_paths) {
-        prior_settings_vector.push_back( PopulationTreeSettings(path) );
+        prior_settings_vector.push_back( PopulationTreeAnalysisSettings(path) );
     }
     ECOEVOLITY_ASSERT(prior_settings_vector.size() == prior_config_paths.size());
 
     if (using_prior_config) {
         for (unsigned int i = 0; i < prior_config_paths.size(); ++i) {
             std::string prior_cfg_path = prior_config_paths.at(i);
-            PopulationTreeSettings prior_settings = prior_settings_vector.at(i);
+            PopulationTreeAnalysisSettings prior_settings = prior_settings_vector.at(i);
             if (settings.data_settings.get_path() !=
                     prior_settings.data_settings.get_path()) {
                 throw EcoevolityError(
@@ -469,7 +469,7 @@ int simphycoeval_main(int argc, char * argv[]) {
 
     // Prepare prior settings for writting configs for simulated datasets
     for (unsigned int prior_i = 0; prior_i < num_prior_configs; ++prior_i) {
-        PopulationTreeSettings & prior_settings = prior_settings_vector.at(prior_i);
+        PopulationTreeAnalysisSettings & prior_settings = prior_settings_vector.at(prior_i);
         if (prior_settings.tree_model_settings.starting_tree_settings.get_tree_source() ==
                 StartingTreeSettings::Source::path) {
             std::string starting_tree_path = settings.tree_model_settings.starting_tree_settings.get_tree_path();
@@ -624,7 +624,7 @@ int simphycoeval_main(int argc, char * argv[]) {
             sim_alignment_stream.close();
 
             for (unsigned int prior_i = 0; prior_i < num_prior_configs; ++prior_i) {
-                PopulationTreeSettings prior_settings = prior_settings_vector.at(prior_i);
+                PopulationTreeAnalysisSettings prior_settings = prior_settings_vector.at(prior_i);
 
                 prior_settings.data_settings.set_path(path::basename(sim_alignment_path));
 
