@@ -366,6 +366,59 @@ class PositiveRealParameter: public RealParameter {
         }
 };
 
+class ProportionParameter: public RealParameter {
+    public:
+        ProportionParameter() : RealParameter()
+        {
+            this->set_min(0.0);
+            this->set_max(1.0);
+        }
+        ProportionParameter(std::shared_ptr<ContinuousProbabilityDistribution> prior_ptr)
+                : RealParameter(prior_ptr)
+        {
+            this->set_min(0.0);
+            this->set_max(1.0);
+        }
+        ProportionParameter(double value, bool fix = false)
+                : RealParameter()
+        {
+            this->set_min(0.0);
+            this->set_max(1.0);
+            this->set_value(value);
+            this->is_fixed_ = fix;
+        }
+        ProportionParameter(std::shared_ptr<ContinuousProbabilityDistribution> prior_ptr, double value, bool fix = false)
+                : RealParameter(prior_ptr)
+        {
+            this->set_min(0.0);
+            this->set_max(1.0);
+            this->set_value(value);
+            this->is_fixed_ = fix;
+        }
+        ProportionParameter(
+                const PositiveRealParameterSettings& settings,
+                RandomNumberGenerator& rng) {
+            this->set_min(0.0);
+            this->set_max(1.0);
+            this->set_value(settings.get_value());
+            this->is_fixed_ = settings.is_fixed();
+            if (! this->is_fixed()) {
+                this->set_prior(settings.get_prior_settings().get_instance());
+            }
+            this->initialize_value(rng);
+        }
+        virtual ~ProportionParameter() { }
+        ProportionParameter& operator=(const ProportionParameter& p) {
+            this->value_ = p.value_;
+            this->stored_value_ = p.stored_value_;
+            this->max_ = p.max_;
+            this->min_ = p.min_;
+            this->is_fixed_ = p.is_fixed_;
+            this->prior = p.prior;
+            return * this;
+        }
+};
+
 class DiscountParameter: public RealParameter {
     public:
         DiscountParameter() : RealParameter()

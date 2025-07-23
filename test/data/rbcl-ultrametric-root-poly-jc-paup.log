@@ -1,7 +1,7 @@
 
 P A U P *
 Version 4.0a (build 168) for Unix/Linux (built on Aug  2 2020 at 07:10:27)
-Tue Jul 22 16:30:09 2025
+Wed Jul 23 16:50:11 2025
 
 
 paup>    set crit=like forcepolyt storebrlen;

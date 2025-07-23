@@ -43,7 +43,7 @@ namespace ecoevolity {
     
             void init(const std::string & path);
             void init_data(const std::string & path);
-            void init_model(const NucTreeAnalysisSettings& settings);
+            void init_model(const NucTreeAnalysisSettings& settings, RandomNumberGenerator& rng);
             void init_likelihood();
     
             void set_tree_to_upgma();
@@ -118,7 +118,7 @@ namespace ecoevolity {
             this->check_if_leaf_labels_match_data();
         }
     
-        this->init_model(settings);
+        this->init_model(settings, rng);
         this->init_likelihood();
     }
     
@@ -135,16 +135,25 @@ namespace ecoevolity {
     }
     
     template<class NodeType>
-    void SeqTree<NodeType>::init_model(const NucTreeAnalysisSettings& settings) {
+    void SeqTree<NodeType>::init_model(const NucTreeAnalysisSettings& settings,
+            RandomNumberGenerator& rng) {
         this->model_ = std::make_shared<Model>();
     
         QMatrixNucleotide::SharedPtr q = std::make_shared<QMatrixNucleotide>();
         q->set_state_freqs(settings.state_freq_settings.get_values());
         q->set_exchangeabilities(settings.rate_matrix_settings.get_values());
+
+        std::shared_ptr<PositiveRealParameter> asrv_one_over_shape = std::make_shared<PositiveRealParameter>(
+                settings.asrv_one_over_shape_settings,
+                rng);
+        std::shared_ptr<ProportionParameter> asrv_prop_invar = std::make_shared<ProportionParameter>(
+                settings.asrv_prop_invar_settings,
+                rng);
+
+        ASRV::SharedPtr asrv = std::make_shared<ASRV>();
+        asrv->init(settings.asrv_num_cats, asrv_one_over_shape, asrv_prop_invar);
     
-        this->model_->init(q,
-                settings.asrv_num_cats,
-                settings.asrv_one_over_shape_settings.get_value());
+        this->model_->init(q, asrv);
     }
     
     template<class NodeType>

@@ -83,3 +83,19 @@ TEST_CASE("Testing no partitioning GTR+G model on ML tree", "[pll]") {
         REQUIRE(diff == Approx(0.0).epsilon(0.0005));
     }
 }
+
+TEST_CASE("Testing no partitioning GTR+I+G model on ML tree", "[pll]") {
+    SECTION("Testing simple GTR+I+G model on ML tree") {
+        std::string config_path = "data/rbcl-ml-gtrig-config.yml";
+        NucTreeAnalysisSettings settings(config_path);
+        RandomNumberGenerator rng;
+        rng.set_seed(1);
+
+        ecoevolity::SeqTree<Node> tree(settings, rng);
+
+        double lnl = tree.compute_log_likelihood(1);
+        double expected_lnl = -266.461;
+        double diff = std::fabs(lnl - expected_lnl);
+        REQUIRE(diff == Approx(0.0).epsilon(0.0005));
+    }
+}

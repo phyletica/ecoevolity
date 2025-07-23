@@ -2068,6 +2068,7 @@ class NucTreeAnalysisSettings {
         PositiveRealParameterSettings rate_matrix_settings;
         unsigned int asrv_num_cats;
         PositiveRealParameterSettings asrv_one_over_shape_settings;
+        PositiveRealParameterSettings asrv_prop_invar_settings;
         
 
         // Constructors
@@ -2146,6 +2147,13 @@ class NucTreeAnalysisSettings {
                << "        mean: 1.0\n";
             n = YAML::Load(ss);
             this->asrv_one_over_shape_settings = PositiveRealParameterSettings(n);
+
+            ss.str("");
+            ss.clear();
+            ss << "value: 0.0\n"
+               << "estimate: false\n";
+            n = YAML::Load(ss);
+            this->asrv_prop_invar_settings = PositiveRealParameterSettings(n);
         }
 
         const std::string& get_config_path() const {
@@ -2196,6 +2204,8 @@ class NucTreeAnalysisSettings {
                 << indent << indent << indent << "parameters:\n"
                 << indent << indent << indent << indent << "one_over_shape:\n"
                 << this->asrv_one_over_shape_settings.to_string(5)
+                << indent << indent << "proportion_invariable_sites:\n"
+                << this->asrv_prop_invar_settings.to_string(3)
                 << "mcmc_settings:\n"
                 << indent << "chain_length: " << this->get_chain_length() << "\n"
                 << indent << "sample_frequency: " << this->get_sample_frequency() << "\n"
@@ -2451,6 +2461,9 @@ class NucTreeAnalysisSettings {
 
                 if (sub_node->first.as<std::string>() == "discrete_gamma") {
                     this->parse_discrete_gamma_settings(sub_node->second);
+                }
+                else if (sub_node->first.as<std::string>() == "proportion_invariable_sites") {
+                    this->asrv_prop_invar_settings = PositiveRealParameterSettings(sub_node->second);
                 }
                 else {
                     throw EcoevolityYamlConfigError(

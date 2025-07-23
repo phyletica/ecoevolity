@@ -1,7 +1,7 @@
 #nexus
 
 begin paup;
-    log start replace file=rbcl-ml-jc-paup.log;
+    log start replace file=rbcl-ml-gtrg-paup.log;
     set crit=like forcepolyt storebrlen;
     exe ./rbcl.nex;
     gettrees file=./rbcl-jc-ml.tre;

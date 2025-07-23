@@ -33,15 +33,15 @@ Gaps identified by '-'
 
 Processing of input file "rbcl.nex" completed.
 
-paup>    gettrees file=./rbcl-jc-rooted-bifurcating-ml.tre;
+paup>    gettrees file=./rbcl-jc-ml.tre;
 
-Processing TREES block from file: ~/Dropbox/software/dev/ecoevolity/test/data/rbcl-jc-rooted-bifurcating-ml.tre
+Processing TREES block from file: ~/Dropbox/software/dev/ecoevolity/test/data/rbcl-jc-ml.tre
   Keeping: trees from file (replacing any trees already in memory)
   1 tree read from file
 
   Time used = 0.00 sec (CPU time = 0.00 sec)
 
-paup>    lset nst=1 basefreq=equal rates=equal;
+paup>    lset nst=6 rmatrix=(0.08394222 0.34116704 0.03603322 0.15737940 0.30297095 0.07850717) basefreq=(0.309769 0.163380 0.121023 0.405828) rates=gamma shape=0.5 pinvar=0.7;
 
 paup>    lscores 1 / userbrlen;
 
@@ -52,11 +52,12 @@ Likelihood scores of tree(s) in memory:
   Likelihood settings:
     Current model:
                              Data type = nucleotide
-                DNA substitution types = 1
-                     State frequencies = equal
-        Proportion of invariable sites = none
-               Rates at variable sites = equal
-                  Model correspondence = JC69
+                DNA substitution types = 6
+                     Exchangeabilities = AC=1.06923 AG=4.34568 AT=0.45898 CG=2.00465 CT=3.85915 GT=1
+                     State frequencies = user-specified: A=0.309769 C=0.16338 G=0.121023 T=0.405828
+        Proportion of invariable sites = 0.7
+               Rates at variable sites = gamma, shape=0.5 (4 categories [mean])
+                  Model correspondence = GTR+I+G
 
     Number of distinct data patterns under this model = 21
     Molecular clock not enforced
@@ -71,7 +72,7 @@ Likelihood scores of tree(s) in memory:
 
 Tree             1
 ------------------
--ln L      278.838
+-ln L      266.461
 
 Time used to compute likelihoods = 0.00 sec (CPU time = 0.00 sec)
 
@@ -88,11 +89,12 @@ Tree description:
     Likelihood settings:
       Current model:
                                Data type = nucleotide
-                  DNA substitution types = 1
-                       State frequencies = equal
-          Proportion of invariable sites = none
-                 Rates at variable sites = equal
-                    Model correspondence = JC69
+                  DNA substitution types = 6
+                       Exchangeabilities = AC=1.06923 AG=4.34568 AT=0.45898 CG=2.00465 CT=3.85915 GT=1
+                       State frequencies = user-specified: A=0.309769 C=0.16338 G=0.121023 T=0.405828
+          Proportion of invariable sites = 0.7
+                 Rates at variable sites = gamma, shape=0.5 (4 categories [mean])
+                    Model correspondence = GTR+I+G
 
       Number of distinct data patterns under this model = 21
       Molecular clock not enforced
@@ -103,11 +105,11 @@ Tree description:
       Conditional-likelihood rescaling threshold = 1e-20
       Using 1 thread on 4 physical (8 logical) processors
 
-Tree 1 ("rootmaxlike") (rooted using default outgroup)
+Tree 1 ("maxlike") (rooted using default outgroup)
 
   NOTE: One or more terminal branch lengths < 1e-08 reset to 1e-08
   Sum of branch lengths = 0.67882
 
--Ln likelihood = 278.838
+-Ln likelihood = 266.461
 
 paup>    log stop;

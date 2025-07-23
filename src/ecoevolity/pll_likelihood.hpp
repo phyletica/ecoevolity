@@ -33,6 +33,7 @@ namespace ecoevolity {
             void                                    update_state_freqs();
             void                                    update_exchangeabilities();
             void                                    update_asrv_rates();
+            void                                    update_proportion_invariable_sites();
             void                                    set_tip_states();
             void                                    update_prob_matrices();
             void                                    update_operations();
@@ -116,7 +117,7 @@ namespace ecoevolity {
                 this->_data->get_num_sites(),                       // Length of alignment
                 1,                                                  // Number of substitution models
                 this->calc_num_edges_in_fully_resolved_tree(),      // Number of probability matrices to allocate
-                this->_model->get_asrv_num_categ(),                 // Number of discrete rate categories
+                this->_model->get_asrv()->get_num_categ(),          // Number of discrete rate categories
                 this->calc_num_internals_in_fully_resolved_tree(),  // Number of scale buffers to allocate
                 PLL_ATTRIB_ARCH_CPU);
                 // arch);                                              // What hardware accel to us
@@ -124,6 +125,10 @@ namespace ecoevolity {
         this->update_exchangeabilities();
         this->update_asrv_rates();
         this->set_tip_states();
+        if (this->_model->get_asrv()->is_invariable_sites_model()) {
+            // Update partition with info about which sites are invariant
+            pll_update_invariant_sites(this->_pll_partition);
+        }
     }
 
     template<class NodeType>
@@ -144,13 +149,21 @@ namespace ecoevolity {
 
     template<class NodeType>
     inline void Likelihood<NodeType>::update_asrv_rates() {
-        std::vector<double> asrv_rates(this->_model->get_asrv_num_categ());
+        std::vector<double> asrv_rates(this->_model->get_asrv()->get_num_categ());
         pll_compute_gamma_cats(
-                this->_model->get_asrv_shape(),
-                this->_model->get_asrv_num_categ(),
+                this->_model->get_asrv()->get_shape(),
+                this->_model->get_asrv()->get_num_categ(),
                 asrv_rates.data(),
                 PLL_GAMMA_RATES_MEAN);
         pll_set_category_rates(_pll_partition, asrv_rates.data());
+    }
+
+    template<class NodeType>
+    inline void Likelihood<NodeType>::update_proportion_invariable_sites() {
+        pll_update_invariant_sites_proportion(
+                _pll_partition,
+                0,
+                this->_model->get_asrv()->get_proportion_invariable_sites());
     }
 
     template<class NodeType>
@@ -212,7 +225,7 @@ namespace ecoevolity {
         ECOEVOLITY_ASSERT(branch_lengths.size() <= max_n_edges);
         ECOEVOLITY_ASSERT(matrix_indices.size() == branch_lengths.size());
 
-        std::vector<unsigned> q_matrix_indices_of_asrv_cats(this->_model->get_asrv_num_categ(), 0);
+        std::vector<unsigned> q_matrix_indices_of_asrv_cats(this->_model->get_asrv()->get_num_categ(), 0);
 
         pll_update_prob_matrices(
                 _pll_partition,
@@ -325,11 +338,14 @@ namespace ecoevolity {
         this->update_state_freqs();
         this->update_exchangeabilities();
         this->update_asrv_rates();
+        if (this->_model->get_asrv()->is_invariable_sites_model()) {
+            this->update_proportion_invariable_sites();
+        }
         this->update_prob_matrices();
         this->update_operations();
         this->update_partials();
 
-        std::vector<unsigned> q_matrix_indices_of_asrv_cats(this->_model->get_asrv_num_categ(), 0);
+        std::vector<unsigned> q_matrix_indices_of_asrv_cats(this->_model->get_asrv()->get_num_categ(), 0);
         unsigned n_nodes = this->calc_num_nodes_in_fully_resolved_tree();
         unsigned n_leaves = this->get_num_seqs();
         unsigned root_idx = n_nodes - 1;
