@@ -2515,7 +2515,12 @@ class DirichletComparisonSettings : public BaseComparisonSettings<DirichletTreeS
                             throw EcoevolityYamlConfigError("population_size_multipliers must be positive");
                         }
                     }
-                    this->population_size_multiplier_settings_.mean_normalize_values();
+                    if (! this->population_size_multiplier_settings_.get_values().empty()) {
+                        // If the config does not specify starting values, the
+                        // values vector will be empty at this point and
+                        // populated with a random draw from the prior later
+                        this->population_size_multiplier_settings_.mean_normalize_values();
+                    }
                 }
                 else if (parameter->first.as<std::string>() == "freq_1") {
                     this->freq_1_settings_ = PositiveRealParameterSettings(parameter->second);
