@@ -2670,7 +2670,7 @@ TEST_CASE("Testing SplitLumpNodesRevJumpSampler::merge with 3-2 shared tree with
         //                  = 1/(50*0.2)
         // HR = 1/(50*0.2) / 1/2 = 2/(50*0.2)
         
-        std::string expected_tree_str = "(A:0.2,B:0.2,C:0.2,D:0.2,E:0.2)[&height_index=0,height=0.2];";
+        std::string expected_tree_str = "(A[&height=0.0]:0.2,B[&height=0.0]:0.2,C[&height=0.0]:0.2,D[&height=0.0]:0.2,E[&height=0.0]:0.2)[&height_index=0,height=0.2];";
         BaseTree<Node> expected_tree(expected_tree_str);
 
         unsigned int nsamples = 20;
@@ -2774,16 +2774,16 @@ TEST_CASE("Testing SplitLumpNodesRevJumpSampler::split with 3-2 shared tree with
         //                  = 1/(18*0.1) = 1/1.8
         // HR = 1/4 / 1/1.8 = 1.8/4 = 0.45
         
-        BaseTree<Node> tree_cde("((A:0.05,B:0.05)[&height_index=0,height=0.05]:0.15,(C:0.1,D:0.1,E:0.1)[&height_index=1,height=0.1]:0.1)[&height_index=2,height=0.2];");
-        BaseTree<Node> tree_ab("((A:0.1,B:0.1)[&height_index=1,height=0.1]:0.1,(C:0.05,D:0.05,E:0.05)[&height_index=0,height=0.05]:0.15)[&height_index=2,height=0.2];");
+        BaseTree<Node> tree_cde("((A[&height=0.0]:0.05,B[&height=0.0]:0.05)[&height_index=0,height=0.05]:0.15,(C[&height=0.0]:0.1,D[&height=0.0]:0.1,E[&height=0.0]:0.1)[&height_index=1,height=0.1]:0.1)[&height_index=2,height=0.2];");
+        BaseTree<Node> tree_ab("((A[&height=0.0]:0.1,B[&height=0.0]:0.1)[&height_index=1,height=0.1]:0.1,(C[&height=0.0]:0.05,D[&height=0.0]:0.05,E[&height=0.0]:0.05)[&height_index=0,height=0.05]:0.15)[&height_index=2,height=0.2];");
 
-        BaseTree<Node> tree_abc("((A:0.1,B:0.1)[&height_index=1,height=0.1]:0.1,(C:0.1,(D:0.05,E:0.05)[&height_index=0,height=0.05]:0.05)[&height_index=1,height=0.1]:0.1)[&height_index=2,height=0.2];");
-        BaseTree<Node> tree_abd("((A:0.1,B:0.1)[&height_index=1,height=0.1]:0.1,(D:0.1,(C:0.05,E:0.05)[&height_index=0,height=0.05]:0.05)[&height_index=1,height=0.1]:0.1)[&height_index=2,height=0.2];");
-        BaseTree<Node> tree_abe("((A:0.1,B:0.1)[&height_index=1,height=0.1]:0.1,(E:0.1,(C:0.05,D:0.05)[&height_index=0,height=0.05]:0.05)[&height_index=1,height=0.1]:0.1)[&height_index=2,height=0.2];");
+        BaseTree<Node> tree_abc("((A[&height=0.0]:0.1,B[&height=0.0]:0.1)[&height_index=1,height=0.1]:0.1,(C[&height=0.0]:0.1,(D[&height=0.0]:0.05,E[&height=0.0]:0.05)[&height_index=0,height=0.05]:0.05)[&height_index=1,height=0.1]:0.1)[&height_index=2,height=0.2];");
+        BaseTree<Node> tree_abd("((A[&height=0.0]:0.1,B[&height=0.0]:0.1)[&height_index=1,height=0.1]:0.1,(D[&height=0.0]:0.1,(C[&height=0.0]:0.05,E[&height=0.0]:0.05)[&height_index=0,height=0.05]:0.05)[&height_index=1,height=0.1]:0.1)[&height_index=2,height=0.2];");
+        BaseTree<Node> tree_abe("((A[&height=0.0]:0.1,B[&height=0.0]:0.1)[&height_index=1,height=0.1]:0.1,(E[&height=0.0]:0.1,(C[&height=0.0]:0.05,D[&height=0.0]:0.05)[&height_index=0,height=0.05]:0.05)[&height_index=1,height=0.1]:0.1)[&height_index=2,height=0.2];");
 
-        BaseTree<Node> tree_c("((A:0.05,B:0.05)[&height_index=0,height=0.05]:0.15,(C:0.1,(D:0.05,E:0.05)[&height_index=0,height=0.05]:0.05)[&height_index=1,height=0.1]:0.1)[&height_index=2,height=0.2];");
-        BaseTree<Node> tree_d("((A:0.05,B:0.05)[&height_index=0,height=0.05]:0.15,(D:0.1,(C:0.05,E:0.05)[&height_index=0,height=0.05]:0.05)[&height_index=1,height=0.1]:0.1)[&height_index=2,height=0.2];");
-        BaseTree<Node> tree_e("((A:0.05,B:0.05)[&height_index=0,height=0.05]:0.15,(E:0.1,(C:0.05,D:0.05)[&height_index=0,height=0.05]:0.05)[&height_index=1,height=0.1]:0.1)[&height_index=2,height=0.2];");
+        BaseTree<Node> tree_c("((A[&height=0.0]:0.05,B[&height=0.0]:0.05)[&height_index=0,height=0.05]:0.15,(C[&height=0.0]:0.1,(D[&height=0.0]:0.05,E[&height=0.0]:0.05)[&height_index=0,height=0.05]:0.05)[&height_index=1,height=0.1]:0.1)[&height_index=2,height=0.2];");
+        BaseTree<Node> tree_d("((A[&height=0.0]:0.05,B[&height=0.0]:0.05)[&height_index=0,height=0.05]:0.15,(D[&height=0.0]:0.1,(C[&height=0.0]:0.05,E[&height=0.0]:0.05)[&height_index=0,height=0.05]:0.05)[&height_index=1,height=0.1]:0.1)[&height_index=2,height=0.2];");
+        BaseTree<Node> tree_e("((A[&height=0.0]:0.05,B[&height=0.0]:0.05)[&height_index=0,height=0.05]:0.15,(E[&height=0.0]:0.1,(C[&height=0.0]:0.05,D[&height=0.0]:0.05)[&height_index=0,height=0.05]:0.05)[&height_index=1,height=0.1]:0.1)[&height_index=2,height=0.2];");
 
         std::set<std::map< int, std::set<Split> > > choose_ab;
         choose_ab.insert(tree_cde.get_splits_by_height_index());
@@ -2970,10 +2970,10 @@ TEST_CASE("Testing SplitLumpNodesRevJumpSampler::propose from 2-1-1 shared tree 
         //                  = 1 * 1/3 = 1/6
         // HR = 1/3 / 5 = 1/3 * 1/5 = 1/15
         
-        BaseTree<Node> tree_ab_cde("((A:0.1,B:0.1)[&height_index=0,height=0.1]:0.1,(C:0.1,D:0.1,E:0.1)[&height_index=0,height=0.1]:0.1)[&height_index=1,height=0.2];");
-        BaseTree<Node> tree_ab_de_c("((A:0.05,B:0.05)[&height_index=0,height=0.05]:0.15,C:0.2,(D:0.05,E:0.05)[&height_index=0,height=0.05]:0.15)[&height_index=1,height=0.2];");
-        BaseTree<Node> tree_gen_ab("((A:0.02,B:0.02)[&height_index=0,height=0.02]:0.18,(C:0.1,(D:0.05,E:0.05)[&height_index=1,height=0.05]:0.05)[&height_index=2,height=0.1]:0.1)[&height_index=3,height=0.2];");
-        BaseTree<Node> tree_gen_de("((A:0.05,B:0.05)[&height_index=1,height=0.05]:0.15,(C:0.1,(D:0.02,E:0.02)[&height_index=0,height=0.02]:0.08)[&height_index=2,height=0.1]:0.1)[&height_index=3,height=0.2];");
+        BaseTree<Node> tree_ab_cde("((A[&height=0.0]:0.1,B[&height=0.0]:0.1)[&height_index=0,height=0.1]:0.1,(C[&height=0.0]:0.1,D[&height=0.0]:0.1,E[&height=0.0]:0.1)[&height_index=0,height=0.1]:0.1)[&height_index=1,height=0.2];");
+        BaseTree<Node> tree_ab_de_c("((A[&height=0.0]:0.05,B[&height=0.0]:0.05)[&height_index=0,height=0.05]:0.15,C[&height=0.0]:0.2,(D[&height=0.0]:0.05,E[&height=0.0]:0.05)[&height_index=0,height=0.05]:0.15)[&height_index=1,height=0.2];");
+        BaseTree<Node> tree_gen_ab("((A[&height=0.0]:0.02,B[&height=0.0]:0.02)[&height_index=0,height=0.02]:0.18,(C[&height=0.0]:0.1,(D[&height=0.0]:0.05,E[&height=0.0]:0.05)[&height_index=1,height=0.05]:0.05)[&height_index=2,height=0.1]:0.1)[&height_index=3,height=0.2];");
+        BaseTree<Node> tree_gen_de("((A[&height=0.0]:0.05,B[&height=0.0]:0.05)[&height_index=1,height=0.05]:0.15,(C[&height=0.0]:0.1,(D[&height=0.0]:0.02,E[&height=0.0]:0.02)[&height_index=0,height=0.02]:0.08)[&height_index=2,height=0.1]:0.1)[&height_index=3,height=0.2];");
 
         std::set<std::map< int, std::set<Split> > > merge_0;
         merge_0.insert(tree_ab_cde.get_splits_by_height_index());
@@ -3215,10 +3215,10 @@ TEST_CASE("Testing SplitLumpNodesRevJumpSampler::propose from 1-2-1 shared tree 
         //                  = 1/(4*0.05) = 1/0.2 = 5
         // HR = 1/3 / 5 = 1/15
         
-        BaseTree<Node> tree_merge_0("((A:0.1,B:0.1)[&height_index=0,height=0.1]:0.1,(C:0.1,D:0.1,E:0.1)[&height_index=0,height=0.1]:0.1)[&height_index=1,height=0.2];");
-        BaseTree<Node> tree_merge_1("(A:0.2,B:0.2,C:0.2,(D:0.05,E:0.05)[&height_index=0,height=0.05]:0.15)[&height_index=1,height=0.2];");
-        BaseTree<Node> tree_split_ab("((A:0.08,B:0.08)[&height_index=1,height=0.08]:0.12,(C:0.1,(D:0.05,E:0.05)[&height_index=0,height=0.05]:0.05)[&height_index=2,height=0.1]:0.1)[&height_index=3,height=0.2];");
-        BaseTree<Node> tree_split_cde("((A:0.1,B:0.1)[&height_index=2,height=0.1]:0.1,(C:0.08,(D:0.05,E:0.05)[&height_index=0,height=0.05]:0.03)[&height_index=1,height=0.08]:0.12)[&height_index=3,height=0.2];");
+        BaseTree<Node> tree_merge_0("((A[&height=0.0]:0.1,B[&height=0.0]:0.1)[&height_index=0,height=0.1]:0.1,(C[&height=0.0]:0.1,D[&height=0.0]:0.1,E[&height=0.0]:0.1)[&height_index=0,height=0.1]:0.1)[&height_index=1,height=0.2];");
+        BaseTree<Node> tree_merge_1("(A[&height=0.0]:0.2,B[&height=0.0]:0.2,C[&height=0.0]:0.2,(D[&height=0.0]:0.05,E[&height=0.0]:0.05)[&height_index=0,height=0.05]:0.15)[&height_index=1,height=0.2];");
+        BaseTree<Node> tree_split_ab("((A[&height=0.0]:0.08,B[&height=0.0]:0.08)[&height_index=1,height=0.08]:0.12,(C[&height=0.0]:0.1,(D[&height=0.0]:0.05,E[&height=0.0]:0.05)[&height_index=0,height=0.05]:0.05)[&height_index=2,height=0.1]:0.1)[&height_index=3,height=0.2];");
+        BaseTree<Node> tree_split_cde("((A[&height=0.0]:0.1,B[&height=0.0]:0.1)[&height_index=2,height=0.1]:0.1,(C[&height=0.0]:0.08,(D[&height=0.0]:0.05,E[&height=0.0]:0.05)[&height_index=0,height=0.05]:0.03)[&height_index=1,height=0.08]:0.12)[&height_index=3,height=0.2];");
 
         std::set<std::map< int, std::set<Split> > > merge_0;
         merge_0.insert(tree_merge_0.get_splits_by_height_index());
@@ -3451,11 +3451,11 @@ TEST_CASE("Testing SplitLumpNodesRevJumpSampler::propose from ((A,B),(C,D,E)*) t
         //                  = 1/(6*0.05) = 1/0.3
         // HR = 1/3 / 1/0.3 = 0.3/3 = 0.1
         
-        BaseTree<Node> tree_merge_0("((A:0.1,B:0.1)[&height_index=0,height=0.1]:0.1,(C:0.1,D:0.1,E:0.1)[&height_index=0,height=0.1]:0.1)[&height_index=1,height=0.2];");
-        BaseTree<Node> tree_merge_1("(A:0.2,B:0.2,(C:0.05,D:0.05,E:0.05)[&height_index=0,height=0.05]:0.15)[&height_index=1,height=0.2];");
-        BaseTree<Node> tree_split_de("((A:0.1,B:0.1)[&height_index=2,height=0.1]:0.1,(C:0.05,(D:0.02,E:0.02)[&height_index=0,height=0.02]:0.03)[&height_index=1,height=0.05]:0.15)[&height_index=3,height=0.2];");
-        BaseTree<Node> tree_split_ce("((A:0.1,B:0.1)[&height_index=2,height=0.1]:0.1,(D:0.05,(C:0.02,E:0.02)[&height_index=0,height=0.02]:0.03)[&height_index=1,height=0.05]:0.15)[&height_index=3,height=0.2];");
-        BaseTree<Node> tree_split_cd("((A:0.1,B:0.1)[&height_index=2,height=0.1]:0.1,(E:0.05,(C:0.02,D:0.02)[&height_index=0,height=0.02]:0.03)[&height_index=1,height=0.05]:0.15)[&height_index=3,height=0.2];");
+        BaseTree<Node> tree_merge_0("((A[&height=0.0]:0.1,B[&height=0.0]:0.1)[&height_index=0,height=0.1]:0.1,(C[&height=0.0]:0.1,D[&height=0.0]:0.1,E[&height=0.0]:0.1)[&height_index=0,height=0.1]:0.1)[&height_index=1,height=0.2];");
+        BaseTree<Node> tree_merge_1("(A[&height=0.0]:0.2,B[&height=0.0]:0.2,(C[&height=0.0]:0.05,D[&height=0.0]:0.05,E[&height=0.0]:0.05)[&height_index=0,height=0.05]:0.15)[&height_index=1,height=0.2];");
+        BaseTree<Node> tree_split_de("((A[&height=0.0]:0.1,B[&height=0.0]:0.1)[&height_index=2,height=0.1]:0.1,(C[&height=0.0]:0.05,(D[&height=0.0]:0.02,E[&height=0.0]:0.02)[&height_index=0,height=0.02]:0.03)[&height_index=1,height=0.05]:0.15)[&height_index=3,height=0.2];");
+        BaseTree<Node> tree_split_ce("((A[&height=0.0]:0.1,B[&height=0.0]:0.1)[&height_index=2,height=0.1]:0.1,(D[&height=0.0]:0.05,(C[&height=0.0]:0.02,E[&height=0.0]:0.02)[&height_index=0,height=0.02]:0.03)[&height_index=1,height=0.05]:0.15)[&height_index=3,height=0.2];");
+        BaseTree<Node> tree_split_cd("((A[&height=0.0]:0.1,B[&height=0.0]:0.1)[&height_index=2,height=0.1]:0.1,(E[&height=0.0]:0.05,(C[&height=0.0]:0.02,D[&height=0.0]:0.02)[&height_index=0,height=0.02]:0.03)[&height_index=1,height=0.05]:0.15)[&height_index=3,height=0.2];");
 
         std::set<std::map< int, std::set<Split> > > merge_0;
         merge_0.insert(tree_merge_0.get_splits_by_height_index());
@@ -3664,11 +3664,11 @@ TEST_CASE("Testing SplitLumpNodesRevJumpSampler::propose from ((A,B)*,(C,D,E)) t
         //                  = 1/(6*0.05) = 1/0.3
         // HR = 1/3 / 1/0.3 = 0.3/3 = 0.1
         
-        BaseTree<Node> tree_merge_0("((A:0.1,B:0.1)[&height_index=0,height=0.1]:0.1,(C:0.1,D:0.1,E:0.1)[&height_index=0,height=0.1]:0.1)[&height_index=1,height=0.2];");
-        BaseTree<Node> tree_merge_1("((A:0.05,B:0.05)[&height_index=0,height=0.05]:0.15,C:0.2,D:0.2,E:0.2)[&height_index=1,height=0.2];");
-        BaseTree<Node> tree_split_de("((A:0.05,B:0.05)[&height_index=0,height=0.05]:0.15,(C:0.1,(D:0.08,E:0.08)[&height_index=1,height=0.08]:0.02)[&height_index=2,height=0.1]:0.1)[&height_index=3,height=0.2];");
-        BaseTree<Node> tree_split_ce("((A:0.05,B:0.05)[&height_index=0,height=0.05]:0.15,(D:0.1,(C:0.08,E:0.08)[&height_index=1,height=0.08]:0.02)[&height_index=2,height=0.1]:0.1)[&height_index=3,height=0.2];");
-        BaseTree<Node> tree_split_cd("((A:0.05,B:0.05)[&height_index=0,height=0.05]:0.15,(E:0.1,(D:0.08,C:0.08)[&height_index=1,height=0.08]:0.02)[&height_index=2,height=0.1]:0.1)[&height_index=3,height=0.2];");
+        BaseTree<Node> tree_merge_0("((A[&height=0.0]:0.1,B[&height=0.0]:0.1)[&height_index=0,height=0.1]:0.1,(C[&height=0.0]:0.1,D[&height=0.0]:0.1,E[&height=0.0]:0.1)[&height_index=0,height=0.1]:0.1)[&height_index=1,height=0.2];");
+        BaseTree<Node> tree_merge_1("((A[&height=0.0]:0.05,B[&height=0.0]:0.05)[&height_index=0,height=0.05]:0.15,C[&height=0.0]:0.2,D[&height=0.0]:0.2,E[&height=0.0]:0.2)[&height_index=1,height=0.2];");
+        BaseTree<Node> tree_split_de("((A[&height=0.0]:0.05,B[&height=0.0]:0.05)[&height_index=0,height=0.05]:0.15,(C[&height=0.0]:0.1,(D[&height=0.0]:0.08,E[&height=0.0]:0.08)[&height_index=1,height=0.08]:0.02)[&height_index=2,height=0.1]:0.1)[&height_index=3,height=0.2];");
+        BaseTree<Node> tree_split_ce("((A[&height=0.0]:0.05,B[&height=0.0]:0.05)[&height_index=0,height=0.05]:0.15,(D[&height=0.0]:0.1,(C[&height=0.0]:0.08,E[&height=0.0]:0.08)[&height_index=1,height=0.08]:0.02)[&height_index=2,height=0.1]:0.1)[&height_index=3,height=0.2];");
+        BaseTree<Node> tree_split_cd("((A[&height=0.0]:0.05,B[&height=0.0]:0.05)[&height_index=0,height=0.05]:0.15,(E[&height=0.0]:0.1,(D[&height=0.0]:0.08,C[&height=0.0]:0.08)[&height_index=1,height=0.08]:0.02)[&height_index=2,height=0.1]:0.1)[&height_index=3,height=0.2];");
 
         std::set<std::map< int, std::set<Split> > > merge_0;
         merge_0.insert(tree_merge_0.get_splits_by_height_index());
