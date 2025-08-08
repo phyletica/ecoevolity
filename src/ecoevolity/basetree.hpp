@@ -2499,12 +2499,21 @@ class BaseTree {
             std::vector< std::shared_ptr<NodeType> > leaves = this->root_->get_leaves();
             unsigned int num_leaves = leaves.size();
 
-            this->root_->set_index(num_leaves);
+            std::shared_ptr<NodeType> new_root = std::make_shared<NodeType>(
+                    num_leaves,
+                    this->get_root_height());
+            new_root->set_height_parameter(this->root_->get_height_parameter());
+            new_root->set_label(this->root_->get_label());
 
-            for (unsigned int i = 0; i < num_leaves; ++i) {
-                leaves.at(i)->remove_parent();
-                leaves.at(i)->add_parent(this->root_);
+            for (auto leaf : leaves) {
+                std::shared_ptr<NodeType> new_leaf = std::make_shared<NodeType>(
+                        leaf->get_index(),
+                        leaf->get_label(),
+                        leaf->get_height());
+                new_leaf->fix_node_height();
+                new_root->add_child(new_leaf);
             }
+            this->set_root(new_root);
         }
 
         void set_tree_to_random_bifurcating(
@@ -2513,16 +2522,12 @@ class BaseTree {
             unsigned int num_leaves = leaves.size();
             unsigned int next_index = num_leaves;
 
-            this->root_->set_index(next_index);
+            std::shared_ptr<NodeType> new_root = std::make_shared<NodeType>(
+                    next_index,
+                    this->get_root_height());
             ++next_index;
-
-            for (unsigned int i = 0; i < num_leaves; ++i) {
-                leaves.at(i)->remove_parent();
-            }
-
-            for (unsigned int i = 0; i < this->root_->get_number_of_children(); ++i) {
-                this->root_->remove_child(i);
-            }
+            new_root->set_height_parameter(this->root_->get_height_parameter());
+            new_root->set_label(this->root_->get_label());
 
             std::vector< std::shared_ptr<NodeType> > existing_nodes;
         
@@ -2534,13 +2539,23 @@ class BaseTree {
         
             unsigned int leaf_idx = leaf_indices.back();
             leaf_indices.pop_back();
-            this->root_->add_child(leaves.at(leaf_idx));
-            existing_nodes.push_back(leaves.at(leaf_idx));
+            std::shared_ptr<NodeType> leaf1 = std::make_shared<NodeType>(
+                    leaf_idx,
+                    leaves.at(leaf_idx)->get_label(),
+                    leaves.at(leaf_idx)->get_height());
+            leaf1->fix_node_height();
+            new_root->add_child(leaf1);
+            existing_nodes.push_back(leaf1);
         
             leaf_idx = leaf_indices.back();
             leaf_indices.pop_back();
-            this->root_->add_child(leaves.at(leaf_idx));
-            existing_nodes.push_back(leaves.at(leaf_idx));
+            std::shared_ptr<NodeType> leaf2 = std::make_shared<NodeType>(
+                    leaf_idx,
+                    leaves.at(leaf_idx)->get_label(),
+                    leaves.at(leaf_idx)->get_height());
+            leaf2->fix_node_height();
+            new_root->add_child(leaf2);
+            existing_nodes.push_back(leaf2);
         
             unsigned int attach_idx;
             std::shared_ptr<NodeType> sib_node;
@@ -2548,6 +2563,11 @@ class BaseTree {
             while(leaf_indices.size() > 0) {
                 leaf_idx = leaf_indices.back();
                 leaf_indices.pop_back();
+                std::shared_ptr<NodeType> new_leaf = std::make_shared<NodeType>(
+                        leaf_idx,
+                        leaves.at(leaf_idx)->get_label(),
+                        leaves.at(leaf_idx)->get_height());
+                new_leaf->fix_node_height();
         
                 attach_idx = rng.uniform_int(0, existing_nodes.size() - 1);
                 sib_node = existing_nodes.at(attach_idx);
@@ -2560,11 +2580,12 @@ class BaseTree {
                 ++next_index;
                 sib_node->remove_parent();
                 new_node->add_child(sib_node);
-                new_node->add_child(leaves.at(leaf_idx));
+                new_node->add_child(new_leaf);
                 new_node->add_parent(parent_node);
-                existing_nodes.push_back(leaves.at(leaf_idx));
+                existing_nodes.push_back(new_leaf);
                 existing_nodes.push_back(new_node);
             }
+            this->set_root(new_root);
             // Draw heights from prior
             BaseTree::draw_from_prior(rng);
         }

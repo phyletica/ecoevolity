@@ -100,7 +100,7 @@ class BasePopulationTree : public BaseTree<PopulationNode> {
 
         void update_unique_allele_counts();
 
-        void update_leaf_label_indices();
+        void update_leaf_sizes_and_label_indices();
         void set_tree_to_upgma();
 
         void establish_tree_and_node_heights(

@@ -62,7 +62,7 @@ void BasePopulationTree::establish_tree_and_node_heights(
         throw EcoevolityError(message.str());
     }
     BaseTree::establish_tree_and_node_heights(tree_model_settings, rng);
-    this->update_leaf_label_indices();
+    this->update_leaf_sizes_and_label_indices();
 }
 
 void BasePopulationTree::establish_branch_and_mu_parameters(
@@ -520,17 +520,18 @@ void BasePopulationTree::check_if_leaf_labels_match_data() const {
     if ((pop_labels.size() != leaf_labels.size()) ||
             (! std::is_permutation(pop_labels.begin(), pop_labels.end(), leaf_labels.begin()))) {
         std::ostringstream message;
-        message << "Tip labels in provided tree do not match labels in data file";
+        message << "Tip labels in provided tree do not match population labels in data file";
         throw EcoevolityError(message.str());
 
     }
 }
 
-void BasePopulationTree::update_leaf_label_indices() {
+void BasePopulationTree::update_leaf_sizes_and_label_indices() {
     this->check_if_leaf_labels_match_data();
     // Make sure leaf indices match indices to data
     for (unsigned int i = 0; i < this->data_.get_number_of_populations(); ++i) {
         this->get_node(this->data_.get_population_label(i))->set_index(i);
+        this->get_node(this->data_.get_population_label(i))->resize(this->data_.get_max_allele_count(i));
     }
 }
 
