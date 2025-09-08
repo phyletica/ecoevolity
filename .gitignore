@@ -2,3 +2,4 @@
 .DS_Store
 build/
 test-suite-build/
+slurm-*.out
