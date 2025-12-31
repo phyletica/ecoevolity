@@ -125,6 +125,7 @@ namespace ecoevolity {
     template<class NodeType>
     void SeqTree<NodeType>::init(const std::string & path) {
         this->init_data(path);
+        // TODO: Add `init_partition` which will get stored as a member of `data_`
         this->init_tree_from_leaf_labels(this->data_->get_seq_labels());
     }
     
@@ -137,6 +138,8 @@ namespace ecoevolity {
     template<class NodeType>
     void SeqTree<NodeType>::init_model(const NucTreeAnalysisSettings& settings,
             RandomNumberGenerator& rng) {
+        // TODO: Need to update this to accommodate new interface to `Model`
+        // for partitioned models
         this->model_ = std::make_shared<Model>();
     
         QMatrixNucleotide::SharedPtr q = std::make_shared<QMatrixNucleotide>();
@@ -158,6 +161,8 @@ namespace ecoevolity {
     
     template<class NodeType>
     void SeqTree<NodeType>::init_likelihood() {
+        // TODO: Need to update `Likelihood` class for partitioned models and
+        // then update the initialization below
         this->likelihood_ = std::make_shared< Likelihood<NodeType> >();
         this->likelihood_->init(
                 this->data_,

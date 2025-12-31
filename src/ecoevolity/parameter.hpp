@@ -27,6 +27,7 @@
 #include "rng.hpp"
 #include "probability.hpp"
 #include "settings.hpp"
+#include "math_util.hpp"
 
 
 template<class VariableType>
@@ -233,7 +234,6 @@ class RealParameter: public RealVariable {
                        << " is outside the support of prior "
                        << this->prior->to_string();
                     throw EcoevolityParameterValueError(ss.str());
-                    throw EcoevolityParameterValueError("crap");
                 }
             }
         }
@@ -679,6 +679,511 @@ class LogProbabilityDensity: public RealVariable {
             this->max_ = p.max_;
             this->min_ = p.min_;
             this->is_fixed_ = p.is_fixed_;
+            return * this;
+        }
+};
+
+
+class RealVariableVector {
+    public:
+        typedef double                      variable_t;
+        typedef std::vector<variable_t>     vector_t;
+
+    protected:
+        vector_t                            values_;
+        vector_t                            stored_values_;
+        variable_t                          max_;
+        variable_t                          min_;
+        bool                                is_sum_constrained_ = false;
+        variable_t                          sum_constraint_ = 0.0;
+        variable_t                          sum_epsilon_ = 1e-6;
+        bool                                is_fixed_ = false;
+        bool                                values_are_initialized_ = false;
+
+    public:
+        // Constructors
+        RealVariableVector() {
+            this->max_ = std::numeric_limits<variable_t>::infinity();
+            this->min_ = -this->max_;
+        }
+        RealVariableVector(const vector_t & values, bool fix = false) : RealVariableVector() {
+            this->set_values(values);
+            this->is_fixed_ = fix;
+        }
+
+        virtual ~RealVariableVector() { }
+
+        RealVariableVector& operator=(const RealVariableVector& p) {
+            this->values_ = p.values_;
+            this->stored_values_ = p.stored_values_;
+            this->max_ = p.max_;
+            this->min_ = p.min_;
+            this->is_fixed_ = p.is_fixed_;
+            this->is_sum_constrained_ = p.is_sum_constrained_;
+            this->sum_constraint_ = p.sum_constraint_;
+            this->sum_epsilon_ = p.sum_epsilon_;
+            return * this;
+        }
+
+        //Methods
+        const vector_t & get_values() const { return this->values_; }
+        const variable_t * get_raw_values() const { return this->values_.data(); }
+        const vector_t & get_stored_values() const { return this->stored_values_; }
+        variable_t get_max() const { return this->max_; }
+        variable_t get_min() const { return this->min_; }
+        variable_t get_sum_constraint() const { return this->sum_constraint_; }
+        variable_t get_sum_epsilon() const { return this->sum_epsilon_; }
+        bool is_sum_constrained() const {return is_sum_constrained_; }
+
+        bool is_fixed() const { return this->is_fixed_; }
+        void fix() {
+            if (! this->values_are_initialized_) {
+                throw EcoevolityParameterValueError(
+                        "cannot fix parameter vector with uninitialized values");
+            }
+            this->is_fixed_ = true;
+        }
+        void estimate() {
+            this->is_fixed_ = false;
+        }
+
+        void set_sum_constraint(variable_t c) {
+            if ((c < this->min_) || (c > this->max_)) {
+                throw EcoevolityParameterValueError(
+                        "sum constraint is outside min/max");
+            }
+            this->sum_constraint_ = c;
+            this->is_sum_constrained_ = true;
+        }
+
+        void set_sum_epsilon(variable_t epsilon) {
+            if (epsilon < 0.0) {
+                throw EcoevolityParameterValueError(
+                        "sum epsilon cannot be negative");
+            }
+            this->sum_epsilon_ = epsilon;
+        }
+
+        void update_values(const vector_t & values) {
+            if (this->is_fixed()) {
+                return;
+            }
+            if (! this->values_are_initialized_) {
+                throw EcoevolityParameterValueError(
+                        "calling update_values but values have not been set yet");
+            }
+            this->store();
+            this->set_values(values);
+        }
+        void set_values(const vector_t & values) {
+            if (this->is_fixed()) {
+                return;
+            }
+            for (const auto v : values) {
+                if ((v < this->min_) || (v > this->max_)) {
+                    throw EcoevolityParameterValueError("value outside of parameter bounds");
+                }
+            }
+            if (! this->values_are_initialized_) {
+                this->values_.resize(values.size(), 0.0);
+            }
+            else if (values.size() != this->values_.size()) {
+                throw EcoevolityParameterValueError("value vector has incorrect number of values");
+            }
+            if (this->is_sum_constrained_) {
+                variable_t sum = std::accumulate(values.begin(), values.end(), 0.0);
+                double abs_diff = std::abs(sum - this->sum_constraint_);
+                if (abs_diff > this->sum_epsilon_) {
+                    throw EcoevolityParameterValueError("values do not sum to constraint");
+                }
+            }
+            this->values_ = values;
+            this->values_are_initialized_ = true;
+        }
+        void set_max(const variable_t & max) {
+            this->max_ = max;
+        }
+        void set_min(const variable_t & min) {
+            this->min_ = min;
+        }
+        void set_bounds(const variable_t & min, const variable_t & max) {
+            this->set_min(min);
+            this->set_max(max);
+        }
+
+        void store() {
+            this->stored_values_ = this->values_;
+        }
+
+        void restore() {
+            if (this->is_fixed()) {
+                return;
+            }
+            this->values_ = this->stored_values_;
+        }
+};
+
+template<class PriorType>
+class RealParameterVector: public RealVariableVector {
+    public:
+        typedef RealVariableVector::variable_t  variable_t;
+        typedef RealVariableVector::vector_t    vector_t;
+
+        typedef RealParameterVector<PriorType>  DerivedClass;
+        typedef RealVariableVector              BaseClass;
+
+        std::shared_ptr<PriorType> prior;
+
+        RealParameterVector()
+                : BaseClass()
+                { }
+        RealParameterVector(std::shared_ptr<PriorType> prior_ptr)
+                : BaseClass()
+        {
+            this->prior = prior_ptr;
+        }
+        RealParameterVector(BaseClass::vector_t values, bool fix = false)
+                : BaseClass(values, fix)
+                { }
+        RealParameterVector(std::shared_ptr<PriorType> prior_ptr, BaseClass::vector_t values, bool fix = false)
+                : BaseClass(values, fix)
+        {
+            this->prior = prior_ptr;
+        }
+        virtual ~RealParameterVector() { }
+        DerivedClass& operator=(const DerivedClass& p) {
+            this->values_ = p.values_;
+            this->stored_values_ = p.stored_values_;
+            this->max_ = p.max_;
+            this->min_ = p.min_;
+            this->is_fixed_ = p.is_fixed_;
+            this->is_sum_constrained_ = p.is_sum_constrained_;
+            this->sum_constraint_ = p.sum_constraint_;
+            this->sum_epsilon_ = p.sum_epsilon_;
+            this->prior = p.prior;
+            return * this;
+        }
+
+        virtual std::shared_ptr<PriorType> get_prior() const {
+            return this->prior;
+        }
+        virtual void set_prior(std::shared_ptr<PriorType> prior_ptr) {
+            this->prior = prior_ptr;
+        }
+        virtual void check_prior() const {
+            if (! this->prior) {
+                throw EcoevolityNullPointerError("tried to use null prior of real parameter");
+            }
+        }
+
+        virtual BaseClass::vector_t draw_from_prior(RandomNumberGenerator & rng) {
+            this->check_prior();
+            return this->prior->draw(rng);
+        }
+        virtual void set_values_from_prior(RandomNumberGenerator & rng) {
+            if (this->is_fixed()) {
+                return;
+            }
+            this->set_values(this->draw_from_prior(rng));
+        }
+        virtual void initialize_values(RandomNumberGenerator & rng) {
+            if (! this->values_are_initialized_) {
+                this->set_values_from_prior(rng);
+            }
+            else {
+                if (this->prior && (! this->prior->is_within_support(this->get_values()))) {
+                    throw EcoevolityParameterValueError("parameter vector value is outside support of prior");
+                }
+            }
+        }
+        virtual void update_values_from_prior(RandomNumberGenerator & rng) {
+            if (this->is_fixed()) {
+                return;
+            }
+            this->update_values(this->draw_from_prior(rng));
+        }
+        virtual std::vector<double> get_prior_mean() const {
+            this->check_prior();
+            return this->prior->get_mean();
+        }
+        virtual std::vector<double> get_prior_variance() const {
+            this->check_prior();
+            return this->prior->get_variance();
+        }
+        virtual double get_prior_min() const {
+            this->check_prior();
+            return this->prior->get_min();
+        }
+        virtual double get_prior_max() const {
+            this->check_prior();
+            return this->prior->get_max();
+        }
+        virtual std::string get_prior_name() const {
+            this->check_prior();
+            return this->prior->get_name();
+        }
+        virtual std::string get_prior_string() const {
+            this->check_prior();
+            return this->prior->to_string();
+        }
+        virtual double prior_ln_pdf() const {
+            if (this->is_fixed()) {
+                return 0.0;
+            }
+            this->check_prior();
+            return this->prior->ln_pdf(this->get_values());
+        }
+        virtual double prior_ln_pdf(std::vector<double> x) const {
+            if (this->is_fixed()) {
+                return 0.0;
+            }
+            this->check_prior();
+            return this->prior->ln_pdf(x);
+        }
+        virtual double relative_prior_ln_pdf() const {
+            if (this->is_fixed()) {
+                return 0.0;
+            }
+            this->check_prior();
+            return this->prior->relative_ln_pdf(this->get_values());
+        }
+        virtual double relative_prior_ln_pdf(std::vector<double> x) const {
+            if (this->is_fixed()) {
+                return 0.0;
+            }
+            this->check_prior();
+            return this->prior->relative_ln_pdf(x);
+        }
+};
+
+class PositiveRealVariableVector: public RealVariableVector {
+    public:
+        typedef RealVariableVector::variable_t  variable_t;
+        typedef RealVariableVector::vector_t    vector_t;
+
+        PositiveRealVariableVector() : RealVariableVector() {
+            this->set_min(0.0);
+        }
+        PositiveRealVariableVector(const vector_t & values, bool fix = false) : RealVariableVector() {
+            this->set_min(0.0);
+            this->set_values(values);
+            this->is_fixed_ = fix;
+        }
+        virtual ~PositiveRealVariableVector() { }
+        PositiveRealVariableVector& operator=(const PositiveRealVariableVector& p) {
+            this->values_ = p.values_;
+            this->stored_values_ = p.stored_values_;
+            this->max_ = p.max_;
+            this->min_ = p.min_;
+            this->is_fixed_ = p.is_fixed_;
+            this->is_sum_constrained_ = p.is_sum_constrained_;
+            this->sum_constraint_ = p.sum_constraint_;
+            this->sum_epsilon_ = p.sum_epsilon_;
+            return * this;
+        }
+};
+
+template<class PriorType>
+class PositiveRealParameterVector: public RealParameterVector<PriorType> {
+    public:
+        typedef RealVariableVector::variable_t  variable_t;
+        typedef RealVariableVector::vector_t    vector_t;
+
+        typedef RealParameterVector<PriorType> BaseClass;
+        typedef PositiveRealParameterVector<PriorType>  DerivedClass;
+
+        PositiveRealParameterVector() : BaseClass()
+        {
+            this->set_min(0.0);
+        }
+        PositiveRealParameterVector(std::shared_ptr<PriorType> prior_ptr)
+                : BaseClass(prior_ptr)
+        {
+            this->set_min(0.0);
+        }
+        PositiveRealParameterVector(const vector_t & values, bool fix = false)
+                : BaseClass()
+        {
+            this->set_min(0.0);
+            this->set_values(values);
+            this->is_fixed_ = fix;
+        }
+        PositiveRealParameterVector(std::shared_ptr<PriorType> prior_ptr, const vector_t & values, bool fix = false)
+                : BaseClass(prior_ptr)
+        {
+            this->set_min(0.0);
+            this->set_values(values);
+            this->is_fixed_ = fix;
+        }
+        PositiveRealParameterVector(
+                const PositiveRealParameterSettings& settings,
+                RandomNumberGenerator& rng) {
+            this->set_min(0.0);
+            this->set_values(settings.get_values());
+            this->is_fixed_ = settings.is_fixed();
+            if (! this->is_fixed()) {
+                this->set_prior(settings.get_prior_settings().get_instance());
+            }
+            this->initialize_values(rng);
+        }
+        virtual ~PositiveRealParameterVector() { }
+        DerivedClass& operator=(const DerivedClass& p) {
+            this->values_ = p.values_;
+            this->stored_values_ = p.stored_values_;
+            this->max_ = p.max_;
+            this->min_ = p.min_;
+            this->is_fixed_ = p.is_fixed_;
+            this->is_sum_constrained_ = p.is_sum_constrained_;
+            this->sum_constraint_ = p.sum_constraint_;
+            this->sum_epsilon_ = p.sum_epsilon_;
+            this->prior = p.prior;
+            return * this;
+        }
+};
+
+class ProportionVariableVector: public PositiveRealVariableVector {
+    public:
+        typedef RealVariableVector::variable_t  variable_t;
+        typedef RealVariableVector::vector_t    vector_t;
+
+        ProportionVariableVector() : PositiveRealVariableVector() {
+            this->set_min(0.0);
+            this->set_max(1.0);
+            this->set_sum_constraint(1.0);
+        }
+        ProportionVariableVector(const vector_t & values, bool fix = false) : PositiveRealVariableVector() {
+            this->set_min(0.0);
+            this->set_max(1.0);
+            this->set_sum_constraint(1.0);
+            this->set_values(values);
+            this->is_fixed_ = fix;
+        }
+        virtual ~ProportionVariableVector() { }
+        ProportionVariableVector& operator=(const ProportionVariableVector& p) {
+            this->values_ = p.values_;
+            this->stored_values_ = p.stored_values_;
+            this->max_ = p.max_;
+            this->min_ = p.min_;
+            this->is_fixed_ = p.is_fixed_;
+            this->is_sum_constrained_ = p.is_sum_constrained_;
+            this->sum_constraint_ = p.sum_constraint_;
+            this->sum_epsilon_ = p.sum_epsilon_;
+            return * this;
+        }
+
+        void set_unnormalized_values(const vector_t & values) {
+            for (const auto & v : values) {
+                if (v < 0.0) {
+                    throw EcoevolityParameterValueError("unnormalized values cannot be negative");
+                }
+            }
+            vector_t new_values = get_sum_normalized_vector(values);
+            this->set_values(new_values);
+        }
+};
+
+template<class PriorType>
+class BaseProportionParameterVector: public PositiveRealParameterVector<PriorType> {
+    public:
+        typedef RealVariableVector::variable_t  variable_t;
+        typedef RealVariableVector::vector_t    vector_t;
+
+        typedef PositiveRealParameterVector<PriorType> BaseClass;
+        typedef BaseProportionParameterVector<PriorType> DerivedClass;
+
+        BaseProportionParameterVector() : BaseClass()
+        {
+            this->set_min(0.0);
+            this->set_max(1.0);
+            this->set_sum_constraint(1.0);
+        }
+        BaseProportionParameterVector(std::shared_ptr<PriorType> prior_ptr)
+                : BaseClass(prior_ptr)
+        {
+            this->set_min(0.0);
+            this->set_max(1.0);
+            this->set_sum_constraint(1.0);
+        }
+        BaseProportionParameterVector(const vector_t & values, bool fix = false)
+                : BaseClass()
+        {
+            this->set_min(0.0);
+            this->set_max(1.0);
+            this->set_sum_constraint(1.0);
+            this->set_values(values);
+            this->is_fixed_ = fix;
+        }
+        BaseProportionParameterVector(std::shared_ptr<PriorType> prior_ptr, const vector_t & values, bool fix = false)
+                : BaseClass(prior_ptr)
+        {
+            this->set_min(0.0);
+            this->set_max(1.0);
+            this->set_sum_constraint(1.0);
+            this->set_values(values);
+            this->is_fixed_ = fix;
+        }
+        virtual ~BaseProportionParameterVector() { }
+        DerivedClass& operator=(const DerivedClass& p) {
+            this->values_ = p.values_;
+            this->stored_values_ = p.stored_values_;
+            this->max_ = p.max_;
+            this->min_ = p.min_;
+            this->is_fixed_ = p.is_fixed_;
+            this->is_sum_constrained_ = p.is_sum_constrained_;
+            this->sum_constraint_ = p.sum_constraint_;
+            this->sum_epsilon_ = p.sum_epsilon_;
+            this->prior = p.prior;
+            return * this;
+        }
+
+        void set_unnormalized_values(const vector_t & values) {
+            for (const auto & v : values) {
+                if (v < 0.0) {
+                    throw EcoevolityParameterValueError("unnormalized values cannot be negative");
+                }
+            }
+            vector_t new_values = get_sum_normalized_vector(values);
+            this->set_values(new_values);
+        }
+};
+
+class ProportionParameterVector: public BaseProportionParameterVector<DirichletDistribution> {
+    public:
+
+        typedef BaseProportionParameterVector<DirichletDistribution> BaseClass;
+
+        ProportionParameterVector() : BaseClass() { }
+
+        ProportionParameterVector(std::shared_ptr<DirichletDistribution> prior_ptr)
+                : BaseClass(prior_ptr) { }
+        ProportionParameterVector(const vector_t & values, bool fix = false)
+                : BaseClass(values, fix) { }
+        ProportionParameterVector(std::shared_ptr<DirichletDistribution> prior_ptr, const vector_t & values, bool fix = false)
+                : BaseClass(prior_ptr, values, fix) { }
+        ProportionParameterVector(
+                const PositiveRealParameterSettings& settings,
+                RandomNumberGenerator& rng) {
+            this->set_min(0.0);
+            this->set_max(1.0);
+            this->set_sum_constraint(1.0);
+            this->set_values(settings.get_values());
+            this->is_fixed_ = settings.is_fixed();
+            if (! this->is_fixed()) {
+                this->set_prior(settings.get_prior_settings().get_dirichlet_distribution_instance());
+            }
+            this->initialize_values(rng);
+        }
+        virtual ~ProportionParameterVector() { }
+        ProportionParameterVector& operator=(const ProportionParameterVector& p) {
+            this->values_ = p.values_;
+            this->stored_values_ = p.stored_values_;
+            this->max_ = p.max_;
+            this->min_ = p.min_;
+            this->is_fixed_ = p.is_fixed_;
+            this->is_sum_constrained_ = p.is_sum_constrained_;
+            this->sum_constraint_ = p.sum_constraint_;
+            this->sum_epsilon_ = p.sum_epsilon_;
+            this->prior = p.prior;
             return * this;
         }
 };

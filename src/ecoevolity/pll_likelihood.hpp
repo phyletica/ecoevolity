@@ -11,6 +11,7 @@ namespace ecoevolity {
 
     template<class NodeType>
     class Likelihood {
+        // TODO:: Need to update to accommodate partitioned data and model
         public:
                                                     Likelihood();
                                                     ~Likelihood();

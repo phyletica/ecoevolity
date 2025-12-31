@@ -530,7 +530,8 @@ class PositiveRealParameterSettings {
         ContinuousDistributionSettings prior_settings_;
 
         void init_from_yaml_node(const YAML::Node& node,
-                const bool allow_fix_without_value = false) {
+                const bool allow_fix_without_value = false,
+                const bool allow_singleton_vector = false) {
             bool prior_specified = false;
             bool value_specified = false;
             if (! node.IsMap()) {
@@ -564,7 +565,7 @@ class PositiveRealParameterSettings {
                             double val = v->as<double>();
                             this->values_.push_back(val);
                         }
-                        if (this->values_.size() < 2) {
+                        if ((! allow_singleton_vector) && ((this->values_.size() < 2)) {
                             throw EcoevolityPositiveRealParameterSettingError(
                                     "parameter vector must have at least 2 values"
                                     );
@@ -603,6 +604,10 @@ class PositiveRealParameterSettings {
 
             if ((this->is_vector_) && (prior_specified)) {
                 if (this->prior_settings_.get_name() != "dirichlet_distribution") {
+                    // TODO: Shouldn't require Dirichlet distribution on a
+                    // vector. It would be good to accommodate other
+                    // distributions, including independent univariate
+                    // distributions
                     throw EcoevolityPositiveRealParameterSettingError(
                             "multiple values requires dirichlet distribution prior"
                             );
@@ -612,6 +617,20 @@ class PositiveRealParameterSettings {
                     throw EcoevolityPositiveRealParameterSettingError(
                             "number of values must match number of dirichlet distribution parameters"
                             );
+                }
+            }
+
+            if ((this->is_vector_)
+                    && (value_specified)
+                    && (prior_specified)
+                    && (this->prior_settings_.get_name() == "dirichlet_distribution")
+                ) {
+                for (const auto & v: this->values_) {
+                    if (v <= 0.0) {
+                        throw EcoevolityPositiveRealParameterSettingError(
+                                "Parameters with a Dirichlet prior must be positive"
+                                );
+                    }
                 }
             }
             
@@ -675,7 +694,8 @@ class PositiveRealParameterSettings {
             }
         }
         PositiveRealParameterSettings(const YAML::Node& node,
-                const bool allow_fix_without_value = false) {
+                const bool allow_fix_without_value = false,
+                const bool allow_singleton_vector = false) {
             this->init_from_yaml_node(node, allow_fix_without_value);
         }
         virtual ~PositiveRealParameterSettings() { }

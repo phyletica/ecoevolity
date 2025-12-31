@@ -542,6 +542,15 @@ class DirichletDistribution {
             return true;
         }
 
+        bool is_within_support(const std::vector<double> & values) const {
+            for (const auto & x : values) {
+                if (! this->is_within_support(x)) {
+                    return false;
+                }
+            }
+            return true;
+        }
+
         double ln_pdf(const std::vector<double> & x) const {
             ECOEVOLITY_ASSERT(x.size() == this->parameters_.size());
             double r = 0.0;

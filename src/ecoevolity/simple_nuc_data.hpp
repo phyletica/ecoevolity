@@ -39,6 +39,8 @@ namespace ecoevolity {
  *
  */
     class NucData {
+        // TODO: Add `Partition` member and when this gets initiated, store
+        // subset alignments in a vector
         public:
                                                     NucData();
                                                     ~NucData();

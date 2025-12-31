@@ -2057,23 +2057,493 @@ class PopulationTreeAnalysisSettings {
         }
 };
 
+class NamedPositiveRealParameterSettings {
+    public:
+        std::string name;
+        PositiveRealParameterSettings settings;
+
+        // Constructors
+        NamedPositiveRealParameterSettings() { }
+        NamedPositiveRealParameterSettings(const YAML::Node& node) : NamedPositiveRealParameterSettings() {
+            this->init_from_yaml_node(node);
+        }
+        NamedPositiveRealParameterSettings(const NamedPositiveRealParameterSettings & other) {
+            this->name = other.name;
+            this->settings = other.settings;
+        }
+        virtual ~NamedPositiveRealParameterSettings() { }
+        NamedPositiveRealParameterSettings & operator=(const NamedPositiveRealParameterSettings & other) {
+            this->name = other.name;
+            this->settings = other.settings;
+            return * this;
+        }
+
+        std::string to_string(unsigned int indent_level = 0) const {
+            std::ostringstream ss;
+            ss << std::boolalpha;
+            std::string margin = string_util::get_indent(indent_level);
+            std::string indent = string_util::get_indent(1);
+            if (! this->name.empty()) {
+                ss << margin << "name: " << this->name << std::endl;
+            }
+            ss << this->settings.to_string(indent_level);
+            return ss.str();
+        }
+
+    protected:
+
+        void init_from_yaml_node(const YAML::Node& node) {
+            if (! node.IsMap()) {
+                std::string message = (
+                        "Expecting parameter settings to be a map, but found: " +
+                        YamlCppUtils::get_node_type(node));
+                throw EcoevolityYamlConfigError(message);
+            }
+
+            std::unordered_set<std::string> keys;
+
+            if (node["name"]) {
+                this->name = node["name"].as<std::string>();
+            }
+            YAML::Node new_node;
+            for (YAML::const_iterator sub_node = node.begin();
+                    sub_node != node.end();
+                    ++sub_node) {
+                if (sub_node->first.as<std::string>() != "name") {
+                    new_node[sub_node->first] = sub_node->second;
+                }
+            }
+            ECOEVOLITY_ASSERT(! new_node["name"]);
+            this->settings = PositiveRealParameterSettings(new_node);
+        }
+};
+
+class DiscreteGammaSettings {
+    public:
+        std::string name;
+        unsigned int num_cats;
+        PositiveRealParameterSettings one_over_shape_settings;
+
+        // Constructors
+        DiscreteGammaSettings() {
+            this->set_defaults();
+        }
+        DiscreteGammaSettings(const YAML::Node& node) : DiscreteGammaSettings() {
+            this->init_from_yaml_node(node);
+        }
+        DiscreteGammaSettings(const DiscreteGammaSettings & other) {
+            this->name = other.name;
+            this->num_cats = other.num_cats;
+            this->one_over_shape_settings = other.one_over_shape_settings;
+        }
+        virtual ~DiscreteGammaSettings() { }
+        DiscreteGammaSettings & operator=(const DiscreteGammaSettings & other) {
+            this->name = other.name;
+            this->num_cats = other.num_cats;
+            this->one_over_shape_settings = other.one_over_shape_settings;
+            return * this;
+        }
+
+        void set_defaults() {
+            YAML::Node n;
+            std::stringstream ss;
+
+            this->num_cats = 1;
+
+            ss << "value: 1.0\n"
+               << "estimate: False\n";
+            n = YAML::Load(ss);
+            this->one_over_shape_settings = PositiveRealParameterSettings(n);
+        }
+
+        std::string to_string(unsigned int indent_level = 0) const {
+            std::ostringstream ss;
+            ss << std::boolalpha;
+            std::string margin = string_util::get_indent(indent_level);
+            std::string indent = string_util::get_indent(1);
+            if (! this->name.empty()) {
+                ss << margin << "name: " << this->name << std::endl;
+            }
+            ss << margin << "number_of_categories: " << this->num_cats << std::endl
+               << margin << "parameters:" << std::endl
+               << margin << indent << "one_over_shape:" << std::endl
+               << this->one_over_shape_settings.to_string(indent_level + 2);
+            return ss.str();
+        }
+
+    protected:
+
+        void init_from_yaml_node(const YAML::Node& node) {
+            if (! node.IsMap()) {
+                std::string message = (
+                        "Expecting discrete_gamma to be a map, but found: " +
+                        YamlCppUtils::get_node_type(node));
+                throw EcoevolityYamlConfigError(message);
+            }
+
+            std::unordered_set<std::string> keys;
+            for (YAML::const_iterator sub_node = node.begin();
+                    sub_node != node.end();
+                    ++sub_node) {
+                if (keys.count(sub_node->first.as<std::string>()) > 0) {
+                    std::string message = (
+                            "Duplicate key in discrete_gamma: " +
+                            sub_node->first.as<std::string>());
+                    throw EcoevolityYamlConfigError(message);
+                }
+                keys.insert(sub_node->first.as<std::string>());
+
+                if (sub_node->first.as<std::string>() == "number_of_categories") {
+                    this->num_cats = sub_node->second.as<unsigned int>();
+                }
+                else if (sub_node->first.as<std::string>() == "name") {
+                    this->name = sub_node->second.as<std::string>();
+                }
+                else if (sub_node->first.as<std::string>() == "parameters") {
+                    this->parse_parameter_settings(sub_node->second);
+                }
+                else {
+                    throw EcoevolityYamlConfigError(
+                            "Unrecognized key in discrete_gamma: '" +
+                            sub_node->first.as<std::string>() + "'");
+                }
+            }
+        }
+
+        void parse_parameter_settings(const YAML::Node& node) {
+            if (! node.IsMap()) {
+                throw EcoevolityYamlConfigError(
+                        "Expecting discrete_gamma parameters node to be a map, but found: " +
+                        YamlCppUtils::get_node_type(node));
+            }
+            std::unordered_set<std::string> keys;
+            for (YAML::const_iterator sub_node = node.begin();
+                    sub_node != node.end();
+                    ++sub_node) {
+                if (keys.count(sub_node->first.as<std::string>()) > 0) {
+                    std::string message = (
+                            "Duplicate key in discrete_gamma parameters: " +
+                            sub_node->first.as<std::string>());
+                    throw EcoevolityYamlConfigError(message);
+                }
+                keys.insert(sub_node->first.as<std::string>());
+
+                if (sub_node->first.as<std::string>() == "one_over_shape") {
+                    this->one_over_shape_settings = PositiveRealParameterSettings(sub_node->second);
+                }
+                else {
+                    throw EcoevolityYamlConfigError(
+                            "Unrecognized key in discrete_gamma parameters: '" +
+                            sub_node->first.as<std::string>() + "'");
+                }
+            }
+        }
+};
+
+class NucSubsetSettings {
+    public:
+        std::string name;
+        std::vector<std::string> sites;
+
+        std::string state_freq_settings_name;
+        std::string state_freq_link;
+        NamedPositiveRealParameterSettings state_freq_settings;
+
+        std::string rate_matrix_settings_name;
+        std::string rate_matrix_link;
+        NamedPositiveRealParameterSettings rate_matrix_settings;
+
+        std::string discrete_gamma_settings_name;
+        std::string discrete_gamma_link;
+        DiscreteGammaSettings discrete_gamma_settings;
+
+        std::string prop_invar_settings_name;
+        std::string prop_invar_link;
+        NamedPositiveRealParameterSettings prop_invar_settings;
+        
+        // Constructors
+        NucSubsetSettings() { }
+        NucSubsetSettings(const YAML::Node& node) : NucSubsetSettings() {
+            this->init_from_yaml_node(node);
+        }
+        NucSubsetSettings(const NucSubsetSettings & other) {
+            this->name = other.name;
+            this->sites = other.sites;
+
+            this->state_freq_settings_name = other.state_freq_settings_name;
+            this->rate_matrix_settings_name = other.rate_matrix_settings_name;
+            this->discrete_gamma_settings_name = other.discrete_gamma_settings_name;
+            this->prop_invar_settings_name = other.prop_invar_settings_name;
+
+            this->state_freq_settings = other.state_freq_settings;
+            this->rate_matrix_settings = other.rate_matrix_settings;
+            this->discrete_gamma_settings = other.discrete_gamma_settings;
+            this->prop_invar_settings = other.prop_invar_settings;
+
+            this->state_freq_link = other.state_freq_link;
+            this->rate_matrix_link = other.rate_matrix_link;
+            this->discrete_gamma_link = other.discrete_gamma_link;
+            this->prop_invar_link = other.prop_invar_link;
+        }
+        virtual ~NucSubsetSettings() { }
+        NucSubsetSettings & operator=(const NucSubsetSettings & other) {
+            this->name = other.name;
+            this->sites = other.sites;
+
+            this->state_freq_settings_name = other.state_freq_settings_name;
+            this->rate_matrix_settings_name = other.rate_matrix_settings_name;
+            this->discrete_gamma_settings_name = other.discrete_gamma_settings_name;
+            this->prop_invar_settings_name = other.prop_invar_settings_name;
+
+            this->state_freq_settings = other.state_freq_settings;
+            this->rate_matrix_settings = other.rate_matrix_settings;
+            this->discrete_gamma_settings = other.discrete_gamma_settings;
+            this->prop_invar_settings = other.prop_invar_settings;
+
+            this->state_freq_link = other.state_freq_link;
+            this->rate_matrix_link = other.rate_matrix_link;
+            this->discrete_gamma_link = other.discrete_gamma_link;
+            this->prop_invar_link = other.prop_invar_link;
+            return * this;
+        }
+
+        std::string to_string(unsigned int indent_level = 0) const {
+            std::ostringstream ss;
+            ss << std::boolalpha;
+            std::string margin = string_util::get_indent(indent_level);
+            std::string indent = string_util::get_indent(1);
+            if (! this->name.empty()) {
+                ss << margin << "name: " << this->name << std::endl;
+            }
+            ss << margin << "sites: [ " << this->sites.at(0);
+            for (unsigned i = 1; i < this->sites.size(); ++i) {
+                ss << ", " << this->sites.at(i);
+            }
+            ss << " ]" << std::endl;
+            ss << margin << "mutation_parameters:" << std::endl;
+            ss << margin << indent << "state_frequencies:" << std::endl
+               << margin << indent << indent << "settings: " << this->state_freq_settings_name << std::endl;
+            if (! this->state_freq_link.empty()) {
+               ss << margin << indent << indent << "link: " << this->state_freq_link << std::endl;
+            }
+            ss << margin << indent << "rate_matrix:" << std::endl
+               << margin << indent << indent << "settings: " << this->rate_matrix_settings_name << std::endl;
+            if (! this->rate_matrix_link.empty()) {
+               ss << margin << indent << indent << "link: " << this->rate_matrix_link << std::endl;
+            }
+            ss << margin << indent << "among_site_rate_variation:" << std::endl;
+            ss << margin << indent << indent << "discrete_gamma:" << std::endl;
+            ss << margin << indent << indent << indent << "settings: " << this->discrete_gamma_settings_name << std::endl;
+            if (! this->discrete_gamma_link.empty()) {
+                ss << margin << indent << indent << indent << "link: " << this->discrete_gamma_link << std::endl;
+            }
+            ss << margin << indent << indent << "proportion_invariable_sites:" << std::endl;
+            ss << margin << indent << indent << indent << "settings: " << this->prop_invar_settings_name << std::endl;
+            if (! this->prop_invar_link.empty()) {
+                ss << margin << indent << indent << indent << "link: " << this->prop_invar_link << std::endl;
+            }
+            return ss.str();
+        }
+
+    protected:
+
+        void init_from_yaml_node(const YAML::Node& node) {
+            if (! node.IsMap()) {
+                std::string message = (
+                        "Expecting partition subset to be a map, but found: " +
+                        YamlCppUtils::get_node_type(node));
+                throw EcoevolityYamlConfigError(message);
+            }
+
+            std::unordered_set<std::string> keys;
+            for (YAML::const_iterator sub_node = node.begin();
+                    sub_node != node.end();
+                    ++sub_node) {
+                if (keys.count(sub_node->first.as<std::string>()) > 0) {
+                    std::string message = (
+                            "Duplicate key in subset: " +
+                            sub_node->first.as<std::string>());
+                    throw EcoevolityYamlConfigError(message);
+                }
+                keys.insert(sub_node->first.as<std::string>());
+
+                if (sub_node->first.as<std::string>() == "sites") {
+                    YAML::Node value_node = sub_node->second;
+                    if (! value_node.IsSequence()) {
+                        std::string message = (
+                                "Expecting subset sites to be a sequence, but found: " +
+                                YamlCppUtils::get_node_type(value_node));
+                        throw EcoevolityYamlConfigError(message);
+                    }
+                    this->sites.clear();
+                    for (YAML::const_iterator v = value_node.begin();
+                            v != value_node.end();
+                            ++v) {
+                        std::string val = v->as<std::string>();
+                        this->sites.push_back(val);
+                    }
+                }
+                else if (sub_node->first.as<std::string>() == "name") {
+                    this->name = sub_node->second.as<std::string>();
+                }
+                else if (sub_node->first.as<std::string>() == "mutation_parameters") {
+                    this->parse_mutation_parameters(sub_node->second);
+                }
+                else {
+                    throw EcoevolityYamlConfigError(
+                            "Unrecognized key in subset: '" +
+                            sub_node->first.as<std::string>() + "'");
+                }
+            }
+        }
+
+        void parse_mutation_parameters(const YAML::Node& node) {
+            if (! node.IsMap()) {
+                std::string message = (
+                        "Expecting subset mutation_parameters to be a map, but found: " +
+                        YamlCppUtils::get_node_type(node));
+                throw EcoevolityYamlConfigError(message);
+            }
+
+            std::unordered_set<std::string> keys;
+            for (YAML::const_iterator sub_node = node.begin();
+                    sub_node != node.end();
+                    ++sub_node) {
+                if (keys.count(sub_node->first.as<std::string>()) > 0) {
+                    std::string message = (
+                            "Duplicate key in subset mutation_parameters: " +
+                            sub_node->first.as<std::string>());
+                    throw EcoevolityYamlConfigError(message);
+                }
+                keys.insert(sub_node->first.as<std::string>());
+
+                if (sub_node->first.as<std::string>() == "state_frequencies:") {
+                    std::pair<std::string, std::string> settings_link = this->parse_settings_and_link(sub_node->second);
+                    this->state_freq_settings_name = settings_link.first;
+                    this->state_freq_link = settings_link.second;
+                }
+                else if (sub_node->first.as<std::string>() == "rate_matrix:") {
+                    std::pair<std::string, std::string> settings_link = this->parse_settings_and_link(sub_node->second);
+                    this->rate_matrix_settings_name = settings_link.first;
+                    this->rate_matrix_link = settings_link.second;
+                }
+                else if (sub_node->first.as<std::string>() == "among_site_rate_variation") {
+                    this->parse_asrv(sub_node->second);
+                }
+                else {
+                    throw EcoevolityYamlConfigError(
+                            "Unrecognized key in subset mutation_parameters: '" +
+                            sub_node->first.as<std::string>() + "'");
+                }
+            }
+        }
+
+        void parse_asrv(const YAML::Node& node) {
+            if (! node.IsMap()) {
+                std::string message = (
+                        "Expecting subset among_site_rate_variation to be a map, but found: " +
+                        YamlCppUtils::get_node_type(node));
+                throw EcoevolityYamlConfigError(message);
+            }
+
+            std::unordered_set<std::string> keys;
+            for (YAML::const_iterator sub_node = node.begin();
+                    sub_node != node.end();
+                    ++sub_node) {
+                if (keys.count(sub_node->first.as<std::string>()) > 0) {
+                    std::string message = (
+                            "Duplicate key in subset among_site_rate_variation: " +
+                            sub_node->first.as<std::string>());
+                    throw EcoevolityYamlConfigError(message);
+                }
+                keys.insert(sub_node->first.as<std::string>());
+
+                if (sub_node->first.as<std::string>() == "proportion_invariable_sites:") {
+                    std::pair<std::string, std::string> settings_link = this->parse_settings_and_link(sub_node->second);
+                    this->prop_invar_settings_name = settings_link.first;
+                    this->prop_invar_link = settings_link.second;
+                }
+                else if (sub_node->first.as<std::string>() == "discrete_gamma:") {
+                    std::pair<std::string, std::string> settings_link = this->parse_settings_and_link(sub_node->second);
+                    this->discrete_gamma_settings_name = settings_link.first;
+                    this->discrete_gamma_link = settings_link.second;
+                }
+                else {
+                    throw EcoevolityYamlConfigError(
+                            "Unrecognized key in subset among_site_rate_variation: '" +
+                            sub_node->first.as<std::string>() + "'");
+                }
+            }
+        }
+
+        std::pair<std::string, std::string> parse_settings_and_link(const YAML::Node& node) {
+            if (! node.IsMap()) {
+                std::string message = (
+                        "Expecting subset parameter settings to be a map, but found: " +
+                        YamlCppUtils::get_node_type(node));
+                throw EcoevolityYamlConfigError(message);
+            }
+            if (! node["settings"]) {
+                std::string message = (
+                        "Subset parameter settings must specify name of settings"
+                        );
+                throw EcoevolityYamlConfigError(message);
+
+            }
+
+            std::pair<std::string, std::string> settings_link;
+
+            std::unordered_set<std::string> keys;
+            for (YAML::const_iterator sub_node = node.begin();
+                    sub_node != node.end();
+                    ++sub_node) {
+                if (keys.count(sub_node->first.as<std::string>()) > 0) {
+                    std::string message = (
+                            "Duplicate key in subset parameter settings: " +
+                            sub_node->first.as<std::string>());
+                    throw EcoevolityYamlConfigError(message);
+                }
+                keys.insert(sub_node->first.as<std::string>());
+
+                if (sub_node->first.as<std::string>() == "settings") {
+                    settings_link.first = sub_node->second.as<std::string>();
+                }
+                else if (sub_node->first.as<std::string>() == "link") {
+                    settings_link.second = sub_node->second.as<std::string>();
+                }
+                else {
+                    throw EcoevolityYamlConfigError(
+                            "Unrecognized key in subset parameter settings: '" +
+                            sub_node->first.as<std::string>() + "'");
+                }
+            }
+            return settings_link;
+        }
+};
+
 class NucTreeAnalysisSettings {
     public:
+
+        typedef std::map<std::string, NamedPositiveRealParameterSettings>   param_settings_map_t;
+        typedef std::map<std::string, DiscreteGammaSettings>                gamma_settings_map_t;
+        typedef std::vector<NucSubsetSettings>                              partition_settings_t;
+
         // Public data members
         TreeModelSettings tree_model_settings;
         NucDataSettings data_settings;
         std::shared_ptr<GeneralTreeOperatorSettingsCollection> operator_settings;
 
-        PositiveRealParameterSettings state_freq_settings;
-        PositiveRealParameterSettings rate_matrix_settings;
-        unsigned int asrv_num_cats;
-        PositiveRealParameterSettings asrv_one_over_shape_settings;
-        PositiveRealParameterSettings asrv_prop_invar_settings;
-        
+        param_settings_map_t            state_freq_settings;
+        param_settings_map_t            rate_matrix_settings;
+        gamma_settings_map_t            discrete_gamma_settings;
+        param_settings_map_t            prop_invar_settings;
+        partition_settings_t            partition;
+        PositiveRealParameterSettings   subset_rel_rates;
 
         // Constructors
         NucTreeAnalysisSettings() {
-            this->set_defaults();
+            // this-set_defaults();
+            this->init_mutation_parameter_defaults();
             this->update_operator_settings_type();
         }
         NucTreeAnalysisSettings(
@@ -2097,6 +2567,10 @@ class NucTreeAnalysisSettings {
             this->data_settings = other.data_settings;
             this->state_freq_settings = other.state_freq_settings;
             this->rate_matrix_settings = other.rate_matrix_settings;
+            this->discrete_gamma_settings = other.discrete_gamma_settings;
+            this->prop_invar_settings = other.prop_invar_settings;
+            this->partition = other.partition;
+            this->subset_rel_rates = other.subset_rel_rates;
         }
         virtual ~NucTreeAnalysisSettings() { }
         NucTreeAnalysisSettings & operator=(const NucTreeAnalysisSettings & other) {
@@ -2111,49 +2585,11 @@ class NucTreeAnalysisSettings {
             this->data_settings = other.data_settings;
             this->state_freq_settings = other.state_freq_settings;
             this->rate_matrix_settings = other.rate_matrix_settings;
+            this->discrete_gamma_settings = other.discrete_gamma_settings;
+            this->prop_invar_settings = other.prop_invar_settings;
+            this->partition = other.partition;
+            this->subset_rel_rates = other.subset_rel_rates;
             return * this;
-        }
-
-        void set_defaults() {
-            YAML::Node n;
-            std::stringstream ss;
-
-            ss << "value: [ 1.0, 1.0, 1.0, 1.0, 1.0, 1.0 ]\n"
-               << "estimate: true\n"
-               << "prior:\n"
-               << "    dirichlet_distribution:\n"
-               << "        alpha: [ 1.0, 1.0, 1.0, 1.0, 1.0, 1.0 ]\n";
-            n = YAML::Load(ss);
-            this->rate_matrix_settings = PositiveRealParameterSettings(n);
-
-            ss.str("");
-            ss.clear();
-            ss << "value: [ 0.25, 0.25, 0.25, 0.25 ]\n"
-               << "estimate: true\n"
-               << "prior:\n"
-               << "    dirichlet_distribution:\n"
-               << "        alpha: [ 1.0, 1.0, 1.0, 1.0 ]\n";
-            n = YAML::Load(ss);
-            this->state_freq_settings = PositiveRealParameterSettings(n);
-
-            this->asrv_num_cats = 4;
-
-            ss.str("");
-            ss.clear();
-            ss << "value: 1.0\n"
-               << "estimate: true\n"
-               << "prior:\n"
-               << "    exponential_distribution:\n"
-               << "        mean: 1.0\n";
-            n = YAML::Load(ss);
-            this->asrv_one_over_shape_settings = PositiveRealParameterSettings(n);
-
-            ss.str("");
-            ss.clear();
-            ss << "value: 0.0\n"
-               << "estimate: false\n";
-            n = YAML::Load(ss);
-            this->asrv_prop_invar_settings = PositiveRealParameterSettings(n);
         }
 
         const std::string& get_config_path() const {
@@ -2193,20 +2629,34 @@ class NucTreeAnalysisSettings {
                 << this->data_settings.to_string(1)
                 << "tree_model:\n"
                 << this->tree_model_settings.to_string(1)
-                << "mutation_parameters:\n"
-                << indent << "state_frequencies:\n"
-                << this->state_freq_settings.to_string(2)
-                << indent << "rate_matrix:\n"
-                << this->rate_matrix_settings.to_string(2)
-                << indent << "among_site_rate_variation:\n"
-                << indent << indent << "discrete_gamma:\n"
-                << indent << indent << indent << "number_of_categories: " << this->asrv_num_cats << "\n"
-                << indent << indent << indent << "parameters:\n"
-                << indent << indent << indent << indent << "one_over_shape:\n"
-                << this->asrv_one_over_shape_settings.to_string(5)
-                << indent << indent << "proportion_invariable_sites:\n"
-                << this->asrv_prop_invar_settings.to_string(3)
-                << "mcmc_settings:\n"
+                << "mutation_parameters:\n";
+            for (const auto & sfs : this->state_freq_settings) {
+                out << indent << "state_frequencies:\n"
+                    << sfs.second.to_string(2);
+            }
+            for (const auto & rms : this->rate_matrix_settings) {
+                out << indent << "rate_matrix:\n"
+                    << rms.second.to_string(2);
+            }
+            out << indent << "among_site_rate_variation:\n";
+            for (const auto & dgs : this->discrete_gamma_settings) {
+                out << indent << indent << "discrete_gamma:\n"
+                    << dgs.second.to_string(3);
+            }
+            for (const auto & p_inv : this->prop_invar_settings) {
+                out << indent << indent << "proportion_invariable_sites:\n"
+                    << p_inv.second.to_string(3);
+            }
+            out << "partition:\n";
+            for (const auto & subset: this->partition) {
+                out << "- subset:\n"
+                    << subset.to_string(1);
+            }
+
+            out << "subset_relative_rates:\n"
+                << this->subset_rel_rates.to_string(1);
+
+            out << "mcmc_settings:\n"
                 << indent << "chain_length: " << this->get_chain_length() << "\n"
                 << indent << "sample_frequency: " << this->get_sample_frequency() << "\n"
                 << indent << "operators:\n"
@@ -2226,6 +2676,77 @@ class NucTreeAnalysisSettings {
         std::string tree_log_path_ = "phycoeval-trees-run-1.nex";
         std::string state_log_path_ = "phycoeval-state-run-1.log";
         std::string operator_log_path_ = "phycoeval-operator-run-1.log";
+
+        void init_mutation_parameter_defaults() {
+            this->state_freq_settings.clear();
+            this->rate_matrix_settings.clear();
+            this->discrete_gamma_settings.clear();
+            this->prop_invar_settings.clear();
+
+            YAML::Node n;
+            std::stringstream ss;
+
+            ss << "value: [ 1.0, 1.0, 1.0, 1.0, 1.0, 1.0 ]\n"
+               << "estimate: true\n"
+               << "prior:\n"
+               << "    dirichlet_distribution:\n"
+               << "        alpha: [ 1.0, 1.0, 1.0, 1.0, 1.0, 1.0 ]\n";
+            n = YAML::Load(ss);
+            ECOEVOLITY_ASSERT(this->rate_matrix_settings.count("default") == 0);
+            this->rate_matrix_settings["default"] = NamedPositiveRealParameterSettings(n);
+
+            ss.str("");
+            ss.clear();
+            ss << "value: [ 0.25, 0.25, 0.25, 0.25 ]\n"
+               << "estimate: true\n"
+               << "prior:\n"
+               << "    dirichlet_distribution:\n"
+               << "        alpha: [ 1.0, 1.0, 1.0, 1.0 ]\n";
+            n = YAML::Load(ss);
+            ECOEVOLITY_ASSERT(this->state_freq_settings.count("default") == 0);
+            this->state_freq_settings["default"] = NamedPositiveRealParameterSettings(n);
+
+            ss.str("");
+            ss.clear();
+            ss << "number_of_categories: 1\n"
+               << "parameters:\n"
+               << "    one_over_shape:\n"
+               << "        value: 1.0\n"
+               << "        estimate: false\n";
+            n = YAML::Load(ss);
+            ECOEVOLITY_ASSERT(this->discrete_gamma_settings.count("default") == 0);
+            this->discrete_gamma_settings["default"] = DiscreteGammaSettings(n);
+
+            ss.str("");
+            ss.clear();
+            ss << "value: 0.0\n"
+               << "estimate: false\n";
+            n = YAML::Load(ss);
+            ECOEVOLITY_ASSERT(this->prop_invar_settings.count("default") == 0);
+            this->prop_invar_settings["default"] = NamedPositiveRealParameterSettings(n);
+        }
+
+        void init_default_partition() {
+            YAML::Node n;
+            std::stringstream ss;
+
+            ss << "name: all-sites\n"
+               << "sites: [ 1-. ]\n";
+            n = YAML::Load(ss);
+            NucSubsetSettings subset(n);
+            this->partition.clear();
+            this->partition.push_back(subset);
+        }
+
+        void init_default_subset_rel_rates() {
+            YAML::Node n;
+            std::stringstream ss;
+
+            ss << "value: [ 1.0 ]\n"
+               << "estimate: false\n";
+            n = YAML:Load(ss);
+            this->subset_rel_rate_settings = PositiveRealParameterSettings(n, false, true);
+        }
 
         void set_output_paths_to_config_directory() {
             std::pair<std::string, std::string> prefix_ext = path::splitext(this->config_path_);
@@ -2290,6 +2811,9 @@ class NucTreeAnalysisSettings {
                 this->update_operator_settings_type();
             }
 
+            bool parsed_partition = false;
+
+            YAML::Node subset_rel_rates_node;
             std::unordered_set<std::string> keys;
             for (YAML::const_iterator top = top_level_node.begin();
                     top != top_level_node.end();
@@ -2316,11 +2840,41 @@ class NucTreeAnalysisSettings {
                 else if (top->first.as<std::string>() == "mutation_parameters") {
                     this->parse_mutation_parameters(top->second);
                 }
+                // parse partition subsets 
+                else if (top->first.as<std::string>() == "partition") {
+                    this->parse_partition_subsets(top->second);
+                    parsed_partition = true;
+                }
+                // delay parsing of subset relative rates 
+                else if (top->first.as<std::string>() == "subset_relative_rates:") {
+                    subset_rel_rates_node = top->second;
+                }
                 else {
                     throw EcoevolityYamlConfigError(
                             "Unrecognized top level key: '" +
                             top->first.as<std::string>() + "'");
                 }
+            }
+
+            if (! parsed_partition) {
+                this->init_default_partition();
+            }
+            this->update_partition_subsets();
+            if (subset_rel_rates_node.IsNull()) {
+                this->init_default_subset_rel_rates();
+            }
+            else {
+                this->subset_rel_rate_settings = PositiveRealParameterSettings(subset_rel_rates_node, false, true);
+            }
+            if (this->partition.size() != this->subset_rel_rate_settings.get_values().size()) {
+                std::ostringstream msg;
+                msg << "The number of subsets ("
+                    << this->partitions.size()
+                    << ") "
+                    << "does not match the number of subset relative rates ("
+                    << this->subset_rel_rate_settings.get_values().size()
+                    << ")";
+                throw EcoevolityYamlConfigError(msg.str());
             }
         }
 
@@ -2377,58 +2931,93 @@ class NucTreeAnalysisSettings {
                         "Expecting mutation_parameters node to be a map, but found: " +
                         YamlCppUtils::get_node_type(node));
             }
-            std::unordered_set<std::string> keys;
+
+            // std::unordered_set<std::string> keys;
             for (YAML::const_iterator sub_node = node.begin();
                     sub_node != node.end();
                     ++sub_node) {
-                if (keys.count(sub_node->first.as<std::string>()) > 0) {
-                    std::string message = (
-                            "Duplicate key in mutation_parameters: " +
-                            sub_node->first.as<std::string>());
-                    throw EcoevolityYamlConfigError(message);
-                }
-                keys.insert(sub_node->first.as<std::string>());
+                // if (keys.count(sub_node->first.as<std::string>()) > 0) {
+                //     std::string message = (
+                //             "Duplicate key in mutation_parameters: " +
+                //             sub_node->first.as<std::string>());
+                //     throw EcoevolityYamlConfigError(message);
+                // }
+                // keys.insert(sub_node->first.as<std::string>());
 
                 if (sub_node->first.as<std::string>() == "state_frequencies") {
-                    this->state_freq_settings = PositiveRealParameterSettings(sub_node->second);
-                    if (this->state_freq_settings.use_empirical_value()) {
+                    NamedPositiveRealParameterSettings sfs = NamedPositiveRealParameterSettings(sub_node->second);
+                    if (sfs.name.empty()) {
+                        throw EcoevolityYamlConfigError(
+                                "state_frequencies under mutation_parameters must have a name"
+                        );
+                    }
+                    else if (sfs.name == "default") {
+                        throw EcoevolityYamlConfigError(
+                                "Please do not use \'default\' to name mutation parameter settings"
+                        );
+                    }
+                    else if (this->state_freq_settings.count(sfs.name) > 0) {
+                        std::string msg = (
+                                "Duplicate state_frequencies name: " + sfs.name
+                        );
+                        throw EcoevolityYamlConfigError(msg);
+                    }
+                    if (sfs.settings.use_empirical_value()) {
                         throw EcoevolityPositiveRealParameterSettingError(
                                 "Using empirical nucleotide frequencies is not implemented yet"
                         );
                     }
-                    if (this->state_freq_settings.get_values().size() != 4) {
+                    if (sfs.settings.get_values().size() != 4) {
                         throw EcoevolityPositiveRealParameterSettingError(
                                 "Number of values for state_frequencies must be 4"
                         );
                     }
-                    for (const auto & freq : this->state_freq_settings.get_values()) {
+                    for (const auto & freq : sfs.settings.get_values()) {
                         if (freq < 0.0) {
                             throw EcoevolityPositiveRealParameterSettingError(
                                     "Values for state_frequencies must be non-negative"
                             );
                         }
                     }
-                    this->state_freq_settings.sum_normalize_values();
+                    sfs.settings.sum_normalize_values();
+                    this->state_freq_settings[sfs.name] = sfs;
                 }
                 else if (sub_node->first.as<std::string>() == "rate_matrix") {
-                    this->rate_matrix_settings = PositiveRealParameterSettings(sub_node->second);
-                    if (this->rate_matrix_settings.use_empirical_value()) {
+                    NamedPositiveRealParameterSettings rms = NamedPositiveRealParameterSettings(sub_node->second);
+                    if (rms.name.empty()) {
+                        throw EcoevolityYamlConfigError(
+                                "rate_matrix under mutation_parameters must have a name"
+                        );
+                    }
+                    else if (rms.name == "default") {
+                        throw EcoevolityYamlConfigError(
+                                "Please do not use \'default\' to name mutation parameter settings"
+                        );
+                    }
+                    else if (this->rate_matrix_settings.count(rms.name) > 0) {
+                        std::string msg = (
+                                "Duplicate rate_matrix name: " + rms.name
+                        );
+                        throw EcoevolityYamlConfigError(msg);
+                    }
+                    if (rms.settings.use_empirical_value()) {
                         throw EcoevolityPositiveRealParameterSettingError(
                                 "empirical value not supported for rate_matrix");
                     }
-                    if (this->rate_matrix_settings.get_values().size() != 6) {
+                    if (rms.settings.get_values().size() != 6) {
                         throw EcoevolityPositiveRealParameterSettingError(
                                 "Number of values for rate_matrix must be 6"
                         );
                     }
-                    for (const auto & rate : this->rate_matrix_settings.get_values()) {
+                    for (const auto & rate : rms.settings.get_values()) {
                         if (rate < 0.0) {
                             throw EcoevolityPositiveRealParameterSettingError(
                                     "Values for rate_matrix must be non-negative"
                             );
                         }
                     }
-                    this->rate_matrix_settings.sum_normalize_values();
+                    rms.settings.sum_normalize_values();
+                    this->rate_matrix_settings[rms.name] = rms;
                 }
                 else if (sub_node->first.as<std::string>() == "among_site_rate_variation") {
                     this->parse_asrv_parameters(sub_node->second);
@@ -2447,23 +3036,66 @@ class NucTreeAnalysisSettings {
                         "Expecting among_site_rate_variation node to be a map, but found: " +
                         YamlCppUtils::get_node_type(node));
             }
-            std::unordered_set<std::string> keys;
+            // std::unordered_set<std::string> keys;
             for (YAML::const_iterator sub_node = node.begin();
                     sub_node != node.end();
                     ++sub_node) {
-                if (keys.count(sub_node->first.as<std::string>()) > 0) {
-                    std::string message = (
-                            "Duplicate key in among_site_rate_variation: " +
-                            sub_node->first.as<std::string>());
-                    throw EcoevolityYamlConfigError(message);
-                }
-                keys.insert(sub_node->first.as<std::string>());
+                // if (keys.count(sub_node->first.as<std::string>()) > 0) {
+                //     std::string message = (
+                //             "Duplicate key in among_site_rate_variation: " +
+                //             sub_node->first.as<std::string>());
+                //     throw EcoevolityYamlConfigError(message);
+                // }
+                // keys.insert(sub_node->first.as<std::string>());
 
                 if (sub_node->first.as<std::string>() == "discrete_gamma") {
-                    this->parse_discrete_gamma_settings(sub_node->second);
+                    DiscreteGammaSettings dgs = DiscreteGammaSettings(sub_node->second);
+                    if (dgs.name.empty()) {
+                        throw EcoevolityYamlConfigError(
+                                "discrete_gamma under mutation_parameters must have a name"
+                        );
+                    }
+                    else if (dgs.name == "default") {
+                        throw EcoevolityYamlConfigError(
+                                "Please do not use \'default\' to name mutation parameter settings"
+                        );
+                    }
+                    else if (this->discrete_gamma_settings.count(dgs.name) > 0) {
+                        std::string msg = (
+                                "Duplicate discrete_gamma name: " + dgs.name
+                        );
+                        throw EcoevolityYamlConfigError(msg);
+                    }
+                    this->discrete_gamma_settings[dgs.name] = dgs;
                 }
                 else if (sub_node->first.as<std::string>() == "proportion_invariable_sites") {
-                    this->asrv_prop_invar_settings = PositiveRealParameterSettings(sub_node->second);
+                    NamedPositiveRealParameterSettings p_inv_settings = NamedPositiveRealParameterSettings(sub_node->second);
+                    if (p_inv_settings.name.empty()) {
+                        throw EcoevolityYamlConfigError(
+                                "proportion_invariable_sites under mutation_parameters must have a name"
+                        );
+                    }
+                    else if (p_inv_settings.name == "default") {
+                        throw EcoevolityYamlConfigError(
+                                "Please do not use \'default\' to name mutation parameter settings"
+                        );
+                    }
+                    else if (this->prop_invar_settings.count(p_inv_settings.name) > 0) {
+                        std::string msg = (
+                                "Duplicate proportion_invariable_sites name: " + p_inv_settings.name
+                        );
+                        throw EcoevolityYamlConfigError(msg);
+                    }
+                    if (p_inv_settings.settings.use_empirical_value()) {
+                        throw EcoevolityPositiveRealParameterSettingError(
+                                "empirical value not supported for proportion_invariable_sites");
+                    }
+                    double p_inv = p_inv_settings.settings.get_value();
+                    if ((p_inv < 0.0) || (p_inv > 1.0)) {
+                        throw EcoevolityPositiveRealParameterSettingError(
+                                "proportion_invariable_sites cannot be negative or greater than 1");
+                    }
+                    this->prop_invar_settings[p_inv_settings.name] = p_inv_settings;
                 }
                 else {
                     throw EcoevolityYamlConfigError(
@@ -2473,64 +3105,142 @@ class NucTreeAnalysisSettings {
             }
         }
 
-        void parse_discrete_gamma_settings(const YAML::Node& node) {
-            if (! node.IsMap()) {
+        void parse_partition_subsets(const YAML::Node& node) {
+            if (! node.IsSequence()) {
                 throw EcoevolityYamlConfigError(
-                        "Expecting discrete_gamma node to be a map, but found: " +
+                        "Expecting partition to be a sequence, but found: " +
                         YamlCppUtils::get_node_type(node));
             }
-            std::unordered_set<std::string> keys;
-            for (YAML::const_iterator sub_node = node.begin();
-                    sub_node != node.end();
-                    ++sub_node) {
-                if (keys.count(sub_node->first.as<std::string>()) > 0) {
-                    std::string message = (
-                            "Duplicate key in discrete_gamma: " +
-                            sub_node->first.as<std::string>());
-                    throw EcoevolityYamlConfigError(message);
-                }
-                keys.insert(sub_node->first.as<std::string>());
-
-                if (sub_node->first.as<std::string>() == "number_of_categories") {
-                    this->asrv_num_cats = sub_node->second.as<unsigned int>();
-                }
-                else if (sub_node->first.as<std::string>() == "parameters") {
-                    this->parse_discrete_gamma_parameters(sub_node->second);
-                }
-                else {
-                    throw EcoevolityYamlConfigError(
-                            "Unrecognized key in discrete_gamma: '" +
-                            sub_node->first.as<std::string>() + "'");
-                }
+            if (node.size() < 1) {
+                throw EcoevolityYamlConfigError("partition specified, but no subsets found");
             }
+            std::unordered_set<std::string> subset_names;
+            this->partition.clear();
+            for (unsigned int subset_idx = 0;
+                    subset_idx < node.size();
+                    ++subset_idx) {
+                YAML::Node subset_node = node[subset_idx];
+                if (! subset_node.IsMap()) {
+                    throw EcoevolityYamlConfigError(
+                            "Expecting each subset to be a map, but found: " +
+                            YamlCppUtils::get_node_type(subset_node));
+                }
+                // if (keys.count(sub_node->first.as<std::string>()) > 0) {
+                //     std::string message = (
+                //             "Duplicate key in among_site_rate_variation: " +
+                //             sub_node->first.as<std::string>());
+                //     throw EcoevolityYamlConfigError(message);
+                // }
+                // keys.insert(sub_node->first.as<std::string>());
+                if (subset_node.size() != 1) {
+                    throw EcoevolityYamlConfigError(
+                            "Each subset should only have one top-level key");
+                }
+                if (! subset_node["subset"]) {
+                    throw EcoevolityYamlConfigError(
+                            "Each subset should have a subset key");
+                }
+
+                NucSubsetSettings subset = NucSubsetSettings(subset_node["subset"]);
+
+                if (! subset.name.empty()) {
+                    if (subset_names.count(subset.name) > 0) {
+                        std::string msg = (
+                                "Duplicate subset name: " + subset.name
+                        );
+                        throw EcoevolityYamlConfigError(msg);
+                    }
+                    subset_names.insert(subset.name);
+                }
+
+                this->partition.push_back(subset);
+            }
+            ECOEVOLITY_ASSERT(node.size() == this->partition.size());
         }
 
-        void parse_discrete_gamma_parameters(const YAML::Node& node) {
-            if (! node.IsMap()) {
-                throw EcoevolityYamlConfigError(
-                        "Expecting discrete_gamma parameters node to be a map, but found: " +
-                        YamlCppUtils::get_node_type(node));
-            }
-            std::unordered_set<std::string> keys;
-            for (YAML::const_iterator sub_node = node.begin();
-                    sub_node != node.end();
-                    ++sub_node) {
-                if (keys.count(sub_node->first.as<std::string>()) > 0) {
-                    std::string message = (
-                            "Duplicate key in discrete_gamma parameters: " +
-                            sub_node->first.as<std::string>());
-                    throw EcoevolityYamlConfigError(message);
+        void update_partition_subsets() {
+            std::unordered_set<std::string> subset_names;
+            for (const auto & subset : this->partition) {
+                if (! subset.name.empty()) {
+                    subset_names.insert(subset.name);
                 }
-                keys.insert(sub_node->first.as<std::string>());
+            }
 
-                if (sub_node->first.as<std::string>() == "one_over_shape") {
-                    this->asrv_one_over_shape_settings = PositiveRealParameterSettings(sub_node->second);
+            for (auto subset : this->partition) {
+                if (subset.state_freq_settings_name.empty()) {
+                    subset.state_freq_settings_name = "default";
                 }
                 else {
-                    throw EcoevolityYamlConfigError(
-                            "Unrecognized key in discrete_gamma parameters: '" +
-                            sub_node->first.as<std::string>() + "'");
+                    if (this->state_freq_settings.count(subset.state_freq_settings_name) < 1) {
+                        throw EcoevolityYamlConfigError(
+                                "Subset with invalid state_frequencies settings name: " + subset.state_freq_settings_name
+                        );
+                    }
                 }
+                if ((! subset.state_freq_link.empty())
+                        && (subset_names.count(subset.state_freq_link) < 1)) {
+                    throw EcoevolityYamlConfigError(
+                            "Subset links state_frequencies to invalid subset name: " + subset.state_freq_link
+                    );
+                }
+                subset.state_freq_settings = this->state_freq_settings.at(subset.state_freq_settings_name);
+
+
+                if (subset.rate_matrix_settings_name.empty()) {
+                    subset.rate_matrix_settings_name = "default";
+                }
+                else {
+                    if (this->rate_matrix_settings.count(subset.rate_matrix_settings_name) < 1) {
+                        throw EcoevolityYamlConfigError(
+                                "Subset with invalid rate_matrix settings name: " + subset.rate_matrix_settings_name
+                        );
+                    }
+                }
+                if ((! subset.rate_matrix_link.empty())
+                        && (subset_names.count(subset.rate_matrix_link) < 1)) {
+                    throw EcoevolityYamlConfigError(
+                            "Subset links rate_matrix to invalid subset name: " + subset.rate_matrix_link
+                    );
+                }
+                subset.rate_matrix_settings = this->rate_matrix_settings.at(subset.rate_matrix_settings_name);
+
+
+                if (subset.discrete_gamma_settings_name.empty()) {
+                    subset.discrete_gamma_settings_name = "default";
+                }
+                else {
+                    if (this->discrete_gamma_settings.count(subset.discrete_gamma_settings_name) < 1) {
+                        throw EcoevolityYamlConfigError(
+                                "Subset with invalid discrete_gamma settings name: " + subset.discrete_gamma_settings_name
+                        );
+                    }
+                }
+                if ((! subset.discrete_gamma_link.empty())
+                        && (subset_names.count(subset.discrete_gamma_link) < 1)) {
+                    throw EcoevolityYamlConfigError(
+                            "Subset links discrete_gamma to invalid subset name: " + subset.discrete_gamma_link
+                    );
+                }
+                subset.discrete_gamma_settings = this->discrete_gamma_settings.at(subset.discrete_gamma_settings_name);
+
+
+                if (subset.prop_invar_settings_name.empty()) {
+                    subset.prop_invar_settings_name = "default";
+                }
+                else {
+                    if (this->prop_invar_settings.count(subset.prop_invar_settings_name) < 1) {
+                        throw EcoevolityYamlConfigError(
+                                "Subset with invalid proportion_invariable_sites settings name: " + subset.prop_invar_settings_name
+                        );
+                    }
+                }
+                if ((! subset.prop_invar_link.empty())
+                        && (subset_names.count(subset.prop_invar_link) < 1)) {
+                    throw EcoevolityYamlConfigError(
+                            "Subset links proportion_invariable_sites to invalid subset name: " + subset.prop_invar_link
+                    );
+                }
+                subset.prop_invar_settings = this->prop_invar_settings.at(subset.prop_invar_settings_name);
             }
         }
 

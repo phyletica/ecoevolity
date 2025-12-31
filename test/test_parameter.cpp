@@ -3,6 +3,7 @@
 
 #include "ecoevolity/probability.hpp"
 #include "ecoevolity/rng.hpp"
+#include "ecoevolity/settings.hpp"
 
 #include <limits>
 
@@ -1823,5 +1824,232 @@ TEST_CASE("Testing CoalescenceRateParameter prior and value", "[CoalescenceRateP
         REQUIRE(mx < p.get_prior_max());
         REQUIRE(mn == Approx(p.get_prior_min()).epsilon(0.001));
         REQUIRE(mx == Approx(p.get_prior_max()).epsilon(0.001));
+    }
+}
+
+TEST_CASE("Testing ProportionVariableVector constructors", "[ProportionVariableVector]") {
+
+    SECTION("Testing bare constructor") {
+        ProportionVariableVector p = ProportionVariableVector();
+        REQUIRE(p.get_max() == 1.0);
+        REQUIRE(p.get_min() == 0.0);
+        REQUIRE(p.is_fixed() == false);
+        REQUIRE(p.is_sum_constrained() == true);
+        REQUIRE(p.get_sum_constraint() == 1.0);
+
+        std::vector<double> unnormed_vals = {1, 3, 1, 5};
+        std::vector<double> expected_vals = {1/10.0, 3/10.0, 1/10.0, 5/10.0};
+        p.set_unnormalized_values(unnormed_vals);
+        std::vector<double> vals = p.get_values();
+        REQUIRE(vals.size() == expected_vals.size());
+        for (unsigned i = 0; i < vals.size(); ++i) {
+            double diff = std::abs(vals.at(i) - expected_vals.at(i));
+            REQUIRE(diff < 1e-10);
+        }
+
+        std::vector<double> updated_vals = {0.2, 0.3, 0.4, 0.1};
+        p.update_values(updated_vals);
+        vals = p.get_values();
+        REQUIRE(vals.size() == updated_vals.size());
+        for (unsigned i = 0; i < vals.size(); ++i) {
+            double diff = std::abs(vals.at(i) - updated_vals.at(i));
+            REQUIRE(diff < 1e-10);
+        }
+
+        p.restore();
+        vals = p.get_values();
+        REQUIRE(vals.size() == expected_vals.size());
+        for (unsigned i = 0; i < vals.size(); ++i) {
+            double diff = std::abs(vals.at(i) - expected_vals.at(i));
+            REQUIRE(diff < 1e-10);
+        }
+
+        p.fix();
+        REQUIRE(p.is_fixed() == true);
+        p.update_values(updated_vals);
+        vals = p.get_values();
+        REQUIRE(vals.size() == expected_vals.size());
+        for (unsigned i = 0; i < vals.size(); ++i) {
+            double diff = std::abs(vals.at(i) - expected_vals.at(i));
+            REQUIRE(diff < 1e-10);
+        }
+
+        p.set_values(updated_vals);
+        vals = p.get_values();
+        REQUIRE(vals.size() == expected_vals.size());
+        for (unsigned i = 0; i < vals.size(); ++i) {
+            double diff = std::abs(vals.at(i) - expected_vals.at(i));
+            REQUIRE(diff < 1e-10);
+        }
+    }
+
+    SECTION("Testing values constructor") {
+        std::vector<double> expected_vals = {0.4, 0.1, 0.3, 0.2};
+        ProportionVariableVector p = ProportionVariableVector(expected_vals);
+        REQUIRE(p.get_max() == 1.0);
+        REQUIRE(p.get_min() == 0.0);
+        REQUIRE(p.is_fixed() == false);
+        REQUIRE(p.is_sum_constrained() == true);
+        REQUIRE(p.get_sum_constraint() == 1.0);
+
+        std::vector<double> vals = p.get_values();
+        REQUIRE(vals.size() == expected_vals.size());
+        for (unsigned i = 0; i < vals.size(); ++i) {
+            double diff = std::abs(vals.at(i) - expected_vals.at(i));
+            REQUIRE(diff < 1e-10);
+        }
+
+        std::vector<double> updated_vals = {0.2, 0.3, 0.4, 0.1};
+        p.update_values(updated_vals);
+        vals = p.get_values();
+        REQUIRE(vals.size() == updated_vals.size());
+        for (unsigned i = 0; i < vals.size(); ++i) {
+            double diff = std::abs(vals.at(i) - updated_vals.at(i));
+            REQUIRE(diff < 1e-10);
+        }
+
+        p.restore();
+        vals = p.get_values();
+        REQUIRE(vals.size() == expected_vals.size());
+        for (unsigned i = 0; i < vals.size(); ++i) {
+            double diff = std::abs(vals.at(i) - expected_vals.at(i));
+            REQUIRE(diff < 1e-10);
+        }
+
+        p.fix();
+        REQUIRE(p.is_fixed() == true);
+        p.update_values(updated_vals);
+        vals = p.get_values();
+        REQUIRE(vals.size() == expected_vals.size());
+        for (unsigned i = 0; i < vals.size(); ++i) {
+            double diff = std::abs(vals.at(i) - expected_vals.at(i));
+            REQUIRE(diff < 1e-10);
+        }
+
+        p.set_values(updated_vals);
+        vals = p.get_values();
+        REQUIRE(vals.size() == expected_vals.size());
+        for (unsigned i = 0; i < vals.size(); ++i) {
+            double diff = std::abs(vals.at(i) - expected_vals.at(i));
+            REQUIRE(diff < 1e-10);
+        }
+    }
+
+    SECTION("Testing fixed values constructor") {
+        std::vector<double> expected_vals = {0.4, 0.1, 0.3, 0.2};
+        ProportionVariableVector p = ProportionVariableVector(expected_vals, true);
+        REQUIRE(p.get_max() == 1.0);
+        REQUIRE(p.get_min() == 0.0);
+        REQUIRE(p.is_fixed() == true);
+        REQUIRE(p.is_sum_constrained() == true);
+        REQUIRE(p.get_sum_constraint() == 1.0);
+
+        std::vector<double> vals = p.get_values();
+        REQUIRE(vals.size() == expected_vals.size());
+        for (unsigned i = 0; i < vals.size(); ++i) {
+            double diff = std::abs(vals.at(i) - expected_vals.at(i));
+            REQUIRE(diff < 1e-10);
+        }
+
+        std::vector<double> updated_vals = {0.2, 0.3, 0.4, 0.1};
+        p.update_values(updated_vals);
+        vals = p.get_values();
+        REQUIRE(vals.size() == expected_vals.size());
+        for (unsigned i = 0; i < vals.size(); ++i) {
+            double diff = std::abs(vals.at(i) - expected_vals.at(i));
+            REQUIRE(diff < 1e-10);
+        }
+
+        p.set_values(updated_vals);
+        vals = p.get_values();
+        REQUIRE(vals.size() == expected_vals.size());
+        for (unsigned i = 0; i < vals.size(); ++i) {
+            double diff = std::abs(vals.at(i) - expected_vals.at(i));
+            REQUIRE(diff < 1e-10);
+        }
+
+        p.restore();
+        vals = p.get_values();
+        REQUIRE(vals.size() == expected_vals.size());
+        for (unsigned i = 0; i < vals.size(); ++i) {
+            double diff = std::abs(vals.at(i) - expected_vals.at(i));
+            REQUIRE(diff < 1e-10);
+        }
+
+        p.estimate();
+        REQUIRE(p.is_fixed() == false);
+
+        p.update_values(updated_vals);
+        vals = p.get_values();
+        REQUIRE(vals.size() == updated_vals.size());
+        for (unsigned i = 0; i < vals.size(); ++i) {
+            double diff = std::abs(vals.at(i) - updated_vals.at(i));
+            REQUIRE(diff < 1e-10);
+        }
+
+        p.restore();
+        vals = p.get_values();
+        REQUIRE(vals.size() == expected_vals.size());
+        for (unsigned i = 0; i < vals.size(); ++i) {
+            double diff = std::abs(vals.at(i) - expected_vals.at(i));
+            REQUIRE(diff < 1e-10);
+        }
+
+    }
+}
+
+
+TEST_CASE("Testing ProportionParameterVector settings constructor", "[ProportionParameterVector]") {
+
+    SECTION("Testing settings constructor") {
+
+        RandomNumberGenerator rng = RandomNumberGenerator(123);
+
+        YAML::Node n;
+        std::stringstream ss;
+
+        ss << "value: [1, 1, 1, 1]\n"
+           << "estimate: true\n"
+           << "prior:\n"
+           << "    dirichlet_distribution:\n"
+           << "        alpha: [1000000.0, 0.1, 0.1, 0.1]\n";
+
+        n = YAML::Load(ss);
+
+        PositiveRealParameterSettings settings(n);
+        settings.sum_normalize_values();
+
+        ProportionParameterVector p(settings, rng);
+
+        std::vector<double> expected_vals = {0.25, 0.25, 0.25, 0.25};
+
+        std::vector<double> vals = p.get_values();
+        vals = p.get_values();
+        REQUIRE(vals.size() == expected_vals.size());
+        for (unsigned i = 0; i < vals.size(); ++i) {
+            double diff = std::abs(vals.at(i) - expected_vals.at(i));
+            REQUIRE(diff < 1e-10);
+        }
+
+        p.update_values_from_prior(rng);
+        vals = p.get_values();
+        REQUIRE(vals.size() == expected_vals.size());
+        REQUIRE((1.0 - vals.at(0)) > 0.0);
+        REQUIRE((1.0 - vals.at(0)) < 0.00001);
+        REQUIRE(vals.at(1) > 0.0);
+        REQUIRE(vals.at(1) < 0.00001);
+        REQUIRE(vals.at(2) > 0.0);
+        REQUIRE(vals.at(2) < 0.00001);
+        REQUIRE(vals.at(3) > 0.0);
+        REQUIRE(vals.at(3) < 0.00001);
+
+        p.restore();
+        vals = p.get_values();
+        REQUIRE(vals.size() == expected_vals.size());
+        for (unsigned i = 0; i < vals.size(); ++i) {
+            double diff = std::abs(vals.at(i) - expected_vals.at(i));
+            REQUIRE(diff < 1e-10);
+        }
+
     }
 }
