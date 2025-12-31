@@ -12,6 +12,11 @@ trap return_on_exit EXIT
 # get location of script
 dep_dir="$( cd -P "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 
+base_dir="$(dirname "$dep_dir")"
+
+echo "Loading modules specified in '../modules-to-load.sh'..."
+source "${base_dir}/modules-to-load.sh" >/dev/null 2>&1 || echo "  No modules loaded"
+
 ncl_build_dir="${dep_dir}/ncl-build"
 install_dir="${ncl_build_dir}/installed"
 
@@ -55,7 +60,7 @@ echo "    $install_dir"
 
 env_path="${dep_dir}/env-ncl.sh"
 echo export PATH="${install_dir}/bin:\${PATH}" > "$env_path"
-echo export LD_LIBRARY_PATH="${install_dir}/lib:\${LD_LIBRARY_PATH}" >> "$env_path"
+echo export LD_LIBRARY_PATH="${install_dir}/lib/ncl:\${LD_LIBRARY_PATH}" >> "$env_path"
 echo export PKG_CONFIG_PATH="${install_dir}/lib/pkgconfig:\${PKG_CONFIG_PATH}" >> "$env_path"
 echo export NCL_PREFIX="${install_dir}" >> "$env_path"
 

@@ -11,6 +11,11 @@ trap return_on_exit EXIT
 
 # get location of script
 dep_dir="$( cd -P "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+
+base_dir="$(dirname "$dep_dir")"
+
+echo "Loading modules specified in '../modules-to-load.sh'..."
+source "${base_dir}/modules-to-load.sh" >/dev/null 2>&1 || echo "  No modules loaded"
  
 yaml_cpp_build_dir="${dep_dir}/yaml-cpp-build"
 install_dir="${yaml_cpp_build_dir}/installed"
