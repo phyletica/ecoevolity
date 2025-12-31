@@ -5,10 +5,10 @@ set -e
 # get location of script
 this_dir="$(pwd)"
 
-echo "Loading modules specified in 'modules-to-load.sh'..."
-source "${this_dir}/modules-to-load.sh" >/dev/null 2>&1 || echo "  No modules loaded"
-
 base_dir="$(dirname "$this_dir")"
+
+echo "Loading modules specified in '../modules-to-load.sh'..."
+source "${base_dir}/modules-to-load.sh" >/dev/null 2>&1 || echo "  No modules loaded"
 
 test_env_path="${this_dir}/env-test-location.sh"
 if [ -e "$test_env_path" ]

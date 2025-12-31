@@ -13,8 +13,10 @@ trap return_on_exit EXIT
 # NOTE: this does not work with our Slurm submission system
 this_dir="$( cd -P "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 
-echo "Loading modules specified in 'modules-to-load.sh'..."
-source "${this_dir}/modules-to-load.sh" >/dev/null 2>&1 || echo "  No modules loaded"
+base_dir="$(dirname "$this_dir")"
+
+echo "Loading modules specified in '../modules-to-load.sh'..."
+source "${base_dir}/modules-to-load.sh" >/dev/null 2>&1 || echo "  No modules loaded"
 
 base_dir="$(dirname "$this_dir")"
 
