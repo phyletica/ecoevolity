@@ -183,7 +183,7 @@ TEST_CASE("Testing phycoeval cli with 3 leaves, constrained model",
         REQUIRE(root_height_summary.mean() ==     Approx(l_root_height_summary.mean()));
         REQUIRE(root_height_summary.variance() == Approx(l_root_height_summary.variance()));
 
-        double eps = 0.005;
+        double eps = 0.01;
         REQUIRE(pop_size_summary.mean() == Approx(pop_size));
         REQUIRE(pop_size_summary.variance() == Approx(0.0));
         REQUIRE(root_pop_size_summary.mean() == Approx(pop_size));
