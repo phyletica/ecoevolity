@@ -1,4 +1,4 @@
 sphinx
-recommonmark
-sphinxcontrib-bibtex<2.0.0
+myst-parser
+sphinxcontrib-bibtex
 sphinx-toolbox
