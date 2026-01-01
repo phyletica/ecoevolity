@@ -1,3 +1,61 @@
+Version 1.1.0 (working; not released)
+=====================================
+
+Breaking changes
+----------------
+
+-   Implementing smarter handling of missing data.
+
+    Previously, even if only one leaf population was missing a character, we
+    threw out the whole character (mirroring the behavior of beast/SNAPP).
+    However such a character can be informative about the pop sizes and
+    relationships of other populations.
+
+    Now, such a missing character is essentially ignored only for the clade
+    from which it is missing.
+
+    This will be needed for introducing migration (phylo networks), where
+    parent nodes of reticulating nodes can recceive no allele copies (going
+    back in time) from the daughter. So, we need to account for the probability
+    of a node having no allele copies.
+
+Changes
+-------
+
+-   Updating test suite behavior to avoid running slow tests by default.
+
+-   Updating dev tools. Updating build scripts for dependencies and adding test
+    scripts that are more HPC friendly.
+
+-   Adding cladogram ouptut option to ``sumphycoeval``. This makes it easier to
+    see shared/multifurcating divergences.
+
+-   Adding tests to confirm that loci (even individual sites) can be disjoint
+    in an alignment.
+    This should be true, because each site is independent and only ends up
+    being a count of total and "red" alleles (i.e., the sequence labels are
+    ignored).
+    For example, the following two alignments are represented identically as
+    biallelic data by ecoevolity (where "pop-1" and "pop-2" are the population
+    labels):
+
+        individual-1-locus-1_pop-1  ATT???
+        individual-2-locus-1_pop-1  ATT???
+        individual-1-locus-1_pop-2  TTT???
+        individual-2-locus-1_pop-2  ATA???
+        individual-1-locus-2_pop-1  ???GGC
+        individual-2-locus-2_pop-1  ???GGC
+        individual-1-locus-2_pop-2  ???GGA
+        individual-2-locus-2_pop-2  ???TGC
+
+    and
+
+        individual-1_pop-1  ATTGGC
+        individual-2_pop-1  ATTGGC
+        individual-1_pop-2  TTTGGA
+        individual-2_pop-2  ATATGC
+
+
 Version 1.0.0
 =============
 
