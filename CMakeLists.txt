@@ -35,6 +35,10 @@ set(YAML_CPP_SOURCE_DIR "${EXTERNAL_PROJECT_DIR}/yaml-cpp-master-ce056ac")
 set(TEST_DIR "${BASE_DIR}/test")
 set(TEST_DATA_DIR "${TEST_DIR}/data")
 
+#######################################################################
+# Test settings
+option (EXHAUSTIVE_TESTING "Run all unit tests" OFF)
+
 
 #######################################################################
 # Find and set up NCL variables
