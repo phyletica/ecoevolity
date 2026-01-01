@@ -1,23 +1,30 @@
-Version 1.1.0 (working; not released)
-=====================================
+Version 1.1.0
+=============
 
 Breaking changes
 ----------------
 
 -   Implementing smarter handling of missing data.
 
-    Previously, even if only one leaf population was missing a character, we
-    threw out the whole character (mirroring the behavior of beast/SNAPP).
-    However such a character can be informative about the pop sizes and
-    relationships of other populations.
+    Previously, even if only one leaf population was missing data for a
+    character, we threw out the whole character (mirroring the behavior of
+    beast/SNAPP).  However such a character can be informative about the pop
+    sizes and relationships of other populations.
 
-    Now, such a missing character is essentially ignored only for the clade
+    Now, such a missing character is essentially ignored only for the clade(s)
     from which it is missing.
 
     This will be needed for introducing migration (phylo networks), where
     parent nodes of reticulating nodes can recceive no allele copies (going
     back in time) from the daughter. So, we need to account for the probability
     of a node having no allele copies.
+
+    Results of analyses using previous versions that relied on the
+    ``--relax-missing-sites`` flag will differ from Version 1.1.0 onward.
+    In previous versions, this option enabled sites with missing data from one
+    or more tip populations to be completely ignored.
+    Now, such sites (unless data are missing from ALL tip populations), will be
+    used and influence the results.
 
 Changes
 -------
