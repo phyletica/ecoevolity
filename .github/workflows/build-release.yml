@@ -1,0 +1,215 @@
+name: Build and upload release binaries
+
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+
+jobs:
+
+  build_singularity_and_upload:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - uses: eWaterCycle/setup-apptainer@v2
+    - uses: actions/setup-python@v5
+      with:
+        python-version: 3.12
+
+    - name: Get version
+      id: get_version
+      run: |
+        echo "version=$(echo $GITHUB_REF | cut -d / -f 3)" >> $GITHUB_OUTPUT
+
+    - name: Create singularity image
+      id: create_image
+      run: |
+        PACKAGE=ecoevolity-${{ steps.get_version.outputs.version }}-linux64-intel-singularity.sif
+        singularity build --fakeroot --build-arg version=${{ steps.get_version.outputs.version }} ~/${PACKAGE} Singularity
+        echo "archive_name=${PACKAGE}" >> $GITHUB_OUTPUT
+        echo "archive_path=${HOME}/${PACKAGE}" >> $GITHUB_OUTPUT
+
+    - name: Upload Release Asset
+      uses: softprops/action-gh-release@v2
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        name: Release ${{ github.ref }}
+        draft: true
+        prerelease: false
+        files: ${{ steps.create_image.outputs.archive_path }}
+
+  build_and_upload:
+    strategy:
+      matrix:
+        name: [
+               ubuntu-22.04-amd64-gcc-12,
+               ubuntu-22.04-arm64-gcc-12,
+               macos-xcode-16-intel,
+               macos-xcode-26-arm,
+               ]
+
+        include:
+          - name: ubuntu-22.04-amd64-gcc-12
+            os: ubuntu-22.04
+            compiler: gcc
+            version: "12"
+            buildtype: "relwithdebinfo"
+            arch: "linux-amd64"
+
+          - name: ubuntu-22.04-arm64-gcc-12
+            os: ubuntu-22.04-arm
+            compiler: gcc
+            version: "12"
+            buildtype: "relwithdebinfo"
+            arch: "linux-arm64"
+
+          - name: macos-xcode-16-intel
+            os: macos-15-intel
+            compiler: xcode
+            version: "16"
+            buildtype: "relwithdebinfo"
+            arch: "mac-intel64"
+
+          - name: macos-xcode-26-arm
+            os: macos-latest
+            compiler: xcode
+            version: "26"
+            buildtype: "relwithdebinfo"
+            arch: "mac-arm64"
+
+    runs-on: ${{ matrix.os }}
+    container:
+      image: ${{ matrix.image || '' }}
+    steps:
+    - uses: actions/checkout@v4
+    - uses: actions/setup-python@v5
+      with:
+        python-version: 3.12
+
+    - name: Install (Linux)
+      if: runner.os == 'Linux' && matrix.name != 'windows'
+      run: |
+        if [ -n "${{ matrix.image }}" ]  ; then
+          apt-get update && apt-get install -y sudo build-essential git cmake
+        fi 
+
+        sudo apt-get update
+        sudo apt-get install -y ccache
+        if [ "${{ matrix.compiler }}" = "gcc" ]; then
+          sudo apt-get install -y g++-${{ matrix.version }}
+          echo "C_COMPILER=gcc-${{ matrix.version }}" >> $GITHUB_ENV
+          echo "CXX_COMPILER=g++-${{ matrix.version }}" >> $GITHUB_ENV
+
+          echo "CC=ccache gcc-${{ matrix.version }}" >> $GITHUB_ENV
+          echo "CXX=ccache g++-${{ matrix.version }}" >> $GITHUB_ENV
+        else
+          sudo apt-get install -y clang-${{ matrix.version }}
+          echo "C_COMPILER=clang-${{ matrix.version }}" >> $GITHUB_ENV
+          echo "CXX_COMPILER=clang++-${{ matrix.version }}" >> $GITHUB_ENV
+
+          echo "CC=ccache clang-${{ matrix.version }}" >> $GITHUB_ENV
+          echo "CXX=ccache clang++-${{ matrix.version }}" >> $GITHUB_ENV
+        fi
+
+    - name: Select XCode version (macOS)
+      if: runner.os == 'macOS'
+      uses: maxim-lobanov/setup-xcode@v1
+      with:
+        xcode-version: ${{ matrix.version }}
+
+    - name: Install (macOS)
+      if: runner.os == 'macOS'
+      run: |
+          brew install ccache coreutils
+
+    - name: ccache
+      uses: hendrikmuhs/ccache-action@v1.2
+      with:
+         key: ${{ matrix.name }}
+         restore-keys: |
+           ${{ matrix.name }}
+
+    - name: Configure and build
+      if: matrix.name != 'windows'
+      env:
+        OSX_VERSION_MIN: "11.0"
+      run: |
+
+        if [ ${{ runner.os }} = "macOS" ] && [ -n "${OSX_VERSION_MIN}" ]; then
+           MIN="-mmacosx-version-min=${OSX_VERSION_MIN}"
+           export CFLAGS="$CFLAGS $MIN"
+           export CXXFLAGS="$CXXFLAGS $MIN"
+           export LDFLAGS="$LDFLAGS $MIN"
+        fi
+
+        ccache -p
+        ccache -s
+
+        ./build.sh --threads --prefix $HOME/local --build-type relwithdebinfo
+
+        ccache -s
+
+    - name: Get version
+      id: get_version
+      run: |
+        echo "version=$(echo $GITHUB_REF | cut -d / -f 3)" >> $GITHUB_OUTPUT
+
+    - name: Ad hoc sign Mac executables
+      if: runner.os == 'macOS'
+      run: |
+        OUTPUT=$HOME/local
+        brew install findutils file-formula
+        for exe in $(gfind ${OUTPUT} -type f -executable -exec file --mime-type '{}' \; | grep x-mach-binary | sed 's/: application.*//') ; do
+           echo codesign --sign - --force --timestamp=none ${exe}
+           codesign --sign - --force --timestamp=none ${exe}
+        done
+
+    - name: Run tests and generate log
+      env:
+        OSX_VERSION_MIN: "11.0"
+      run: |
+
+        if [ ${{ runner.os }} = "macOS" ] && [ -n "${OSX_VERSION_MIN}" ]; then
+           MIN="-mmacosx-version-min=${OSX_VERSION_MIN}"
+           export CFLAGS="$CFLAGS $MIN"
+           export CXXFLAGS="$CXXFLAGS $MIN"
+           export LDFLAGS="$LDFLAGS $MIN"
+        fi
+
+        ccache -p
+        ccache -s
+
+        ./run-test-suite.sh 1>test-output-${{ matrix.name }}.log 2>&1
+
+        ccache -s
+
+    - name: Upload test log as artifact
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: test-output-log-${{ matrix.name }}
+        path: test-output-${{ matrix.name }}.log
+        retention-days: 7
+
+    - name: Create tarball
+      id: create_tarball
+      run: |
+        PREFIX=${HOME}/local
+        PACKAGE=ecoevolity-${{ steps.get_version.outputs.version }}
+        ARCH=${{ matrix.arch }}
+        TAR=${PACKAGE}-${ARCH}.tar.gz
+        cp -a $PREFIX $PACKAGE
+        tar -zcf $TAR ${PACKAGE}
+        echo "archive=${TAR}" >> $GITHUB_OUTPUT
+
+    - name: Upload Release Asset
+      uses: softprops/action-gh-release@v2
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        name: Release ${{ github.ref }}
+        draft: true
+        prerelease: false
+        files: ./${{ steps.create_tarball.outputs.archive }}
