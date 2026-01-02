@@ -88,29 +88,27 @@ jobs:
       with:
         python-version: 3.12
 
-    - name: Install (Linux)
-      if: runner.os == 'Linux' && matrix.name != 'windows'
+    - name: Install Linux dependencies
+      if: runner.os == 'Linux'
       run: |
-        if [ -n "${{ matrix.image }}" ]  ; then
-          apt-get update && apt-get install -y sudo build-essential git cmake
-        fi 
-
         sudo apt-get update
+        sudo apt-get install -y sudo build-essential git cmake
         sudo apt-get install -y ccache
-        if [ "${{ matrix.compiler }}" = "gcc" ]; then
-          sudo apt-get install -y g++-${{ matrix.version }}
-          echo "C_COMPILER=gcc-${{ matrix.version }}" >> $GITHUB_ENV
-          echo "CXX_COMPILER=g++-${{ matrix.version }}" >> $GITHUB_ENV
+        if [ "${{ matrix.compiler }}" = "gcc" ]
+        then
+            sudo apt-get install -y g++-${{ matrix.version }}
+            echo "C_COMPILER=gcc-${{ matrix.version }}" >> $GITHUB_ENV
+            echo "CXX_COMPILER=g++-${{ matrix.version }}" >> $GITHUB_ENV
 
-          echo "CC=ccache gcc-${{ matrix.version }}" >> $GITHUB_ENV
-          echo "CXX=ccache g++-${{ matrix.version }}" >> $GITHUB_ENV
+            echo "CC=ccache gcc-${{ matrix.version }}" >> $GITHUB_ENV
+            echo "CXX=ccache g++-${{ matrix.version }}" >> $GITHUB_ENV
         else
-          sudo apt-get install -y clang-${{ matrix.version }}
-          echo "C_COMPILER=clang-${{ matrix.version }}" >> $GITHUB_ENV
-          echo "CXX_COMPILER=clang++-${{ matrix.version }}" >> $GITHUB_ENV
+            sudo apt-get install -y clang-${{ matrix.version }}
+            echo "C_COMPILER=clang-${{ matrix.version }}" >> $GITHUB_ENV
+            echo "CXX_COMPILER=clang++-${{ matrix.version }}" >> $GITHUB_ENV
 
-          echo "CC=ccache clang-${{ matrix.version }}" >> $GITHUB_ENV
-          echo "CXX=ccache clang++-${{ matrix.version }}" >> $GITHUB_ENV
+            echo "CC=ccache clang-${{ matrix.version }}" >> $GITHUB_ENV
+            echo "CXX=ccache clang++-${{ matrix.version }}" >> $GITHUB_ENV
         fi
 
     - name: Select XCode version (macOS)
@@ -119,7 +117,7 @@ jobs:
       with:
         xcode-version: ${{ matrix.version }}
 
-    - name: Install (macOS)
+    - name: Install macOS dependencies
       if: runner.os == 'macOS'
       run: |
           brew install ccache coreutils
@@ -132,22 +130,31 @@ jobs:
            ${{ matrix.name }}
 
     - name: Configure and build
-      if: matrix.name != 'windows'
       env:
         OSX_VERSION_MIN: "11.0"
       run: |
 
-        if [ ${{ runner.os }} = "macOS" ] && [ -n "${OSX_VERSION_MIN}" ]; then
-           MIN="-mmacosx-version-min=${OSX_VERSION_MIN}"
-           export CFLAGS="$CFLAGS $MIN"
-           export CXXFLAGS="$CXXFLAGS $MIN"
-           export LDFLAGS="$LDFLAGS $MIN"
+        if [ ${{ runner.os }} = "macOS" ] && [ -n "${OSX_VERSION_MIN}" ]
+        then
+            MIN="-mmacosx-version-min=${OSX_VERSION_MIN}"
+            export CFLAGS="$CFLAGS $MIN"
+            export CXXFLAGS="$CXXFLAGS $MIN"
+            export LDFLAGS="$LDFLAGS $MIN"
         fi
 
         ccache -p
         ccache -s
 
-        ./build.sh --threads --prefix $HOME/local --build-type relwithdebinfo
+        # Static linking is not working for macOS
+        static_arg=""
+        if [ ${{ runner.os }} = "Linux" ]
+        then
+            static_arg="--static"
+        fi
+
+        echo "Build command:"
+        echo "  ./build.sh $static_arg --threads --prefix $HOME/local --build-type relwithdebinfo"
+        ./build.sh $static_arg --threads --prefix $HOME/local --build-type relwithdebinfo
 
         ccache -s
 
@@ -171,11 +178,12 @@ jobs:
         OSX_VERSION_MIN: "11.0"
       run: |
 
-        if [ ${{ runner.os }} = "macOS" ] && [ -n "${OSX_VERSION_MIN}" ]; then
-           MIN="-mmacosx-version-min=${OSX_VERSION_MIN}"
-           export CFLAGS="$CFLAGS $MIN"
-           export CXXFLAGS="$CXXFLAGS $MIN"
-           export LDFLAGS="$LDFLAGS $MIN"
+        if [ ${{ runner.os }} = "macOS" ] && [ -n "${OSX_VERSION_MIN}" ]
+        then
+            MIN="-mmacosx-version-min=${OSX_VERSION_MIN}"
+            export CFLAGS="$CFLAGS $MIN"
+            export CXXFLAGS="$CXXFLAGS $MIN"
+            export LDFLAGS="$LDFLAGS $MIN"
         fi
 
         ccache -p
