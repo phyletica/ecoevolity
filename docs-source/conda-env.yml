@@ -1,0 +1,14 @@
+name: eco-docs
+channels:
+  - conda-forge
+  - nodefaults 
+dependencies:
+  - python>=3.11
+  - sphinx>=8.2
+  - myst-parser
+  - sphinxcontrib-bibtex
+  - sphinx-toolbox
+  - GitPython
+  - pip
+  - pip:
+    - Sphinx-Substitution-Extensions
