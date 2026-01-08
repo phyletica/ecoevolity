@@ -6,10 +6,14 @@
 Gecko generalized phylogenetics 
 ********************************
 
+.. contents::
+    :local:
+    :depth: 3
+
 Objective
 =========
 
-Our goal is to learn how to set up, run, and interpret an |phyco| analysis in
+Our goal is to learn how to set up, run, and interpret a |phyco| analysis in
 order to infer phylogenies with shared and multifurcating divergences.
 
 Background Information
@@ -29,23 +33,16 @@ please :ref:`see here <phycobackground>`.
 Software Used in this Activity
 ==============================
 
-For this activity, we will be using |phyco| (part of the |eco| package) and
-|pyco|.
+For this activity, we will be using |phyco| (part of the |eco| package).
 If you haven't already done so, please follow the
 :ref:`instructions for installing ecoevolity <installation>`.
 Either installing |eco| directly or using the Docker image will work
 for this tutorial.
 
-While not required, you may want to install the programs
-|Tracer|_ (https://github.com/beast-dev/tracer/releases)
-and
-|Figtree|_ (https://github.com/rambaut/figtree/releases).
-|Tracer|_
-is a nice tool for visualizing the mixing and convergence behavior of Markov
-chain Monte Carlo (MCMC) analyses,
-and
-|Figtree|_ is a nice tool for visualizing phylogenetic trees.
-
+While not required, you may want to install the program
+|Tracer|_ (https://github.com/beast-dev/tracer/releases),
+a nice tool for visualizing the mixing and convergence behavior of Markov
+chain Monte Carlo (MCMC) analyses.
 
 Getting the example files for this tutorial
 ===========================================
@@ -143,8 +140,8 @@ linked characters :cite:`Oaks2021phycoeval`, we recommend that you
 analyze all of your characters (including the constant ones) and violate the
 assumption of unlinked characters.
 In short, |phyco| performs better when you use all of the sites (including the
-constant ones) compared to reducing the data to only one variable character per
-locus.
+constant ones) compared to reducing the data to only (effectively) unlinked
+variable characters.
 The example data sets we'll be analyzing consist of 50 loci each comprising
 about 90 linked sites.
 
@@ -432,7 +429,7 @@ like::
     
                                    Part of:
                                   Ecoevolity
-           Version 0.3.2 (docs 7be2cdd: 2021-08-17T15:46:18-05:00)
+            Version 1.1.0 (dev 041c63a: 2026-01-06T13:06:07-06:00)
     ======================================================================
     
     Usage: phycoeval [OPTIONS] YAML-CONFIG-FILE
@@ -460,7 +457,7 @@ like::
                             understand what you are doing when you use this option.
       --relax-missing-sites
                             By default, if a column is found for which there is no
-                            data for at least one population, phycoeval throws an
+                            data across all populations, phycoeval throws an
                             error. With this option, phycoeval will automatically
                             ignore such sites and only issue a warning.
       --relax-triallelic-sites
@@ -491,15 +488,14 @@ Oops, we got an error::
 
     #######################################################################
     ###############################  ERROR  ###############################
-    37 sites from the alignment in:
+    21 sites from the alignment in:
         'Cyrtodactylus-tutorial-data.nex'
-    have no data for at least one population.
+    have no data across all populations.
     #######################################################################
 
-This error message is telling us that we have 37 sites (columns) in our
-character matrix for which we have no data for at least one population.
-Such sites can be common in RADseq loci, because most assemblers enforce
-thresholds on missing data at the locus level (not for each site).
+This error message is telling us that we have 21 sites (columns) in our
+character matrix for which we have no data for any of our samples (rows).
+Such sites can be common when we subsample individuals from a larger dataset.
 Rather than removing these sites ourselves, we can tell |phyco| to ignore
 them.
 
@@ -551,13 +547,13 @@ At the very top, you will see something like::
     
                                    Part of:
                                   Ecoevolity
-           Version 0.3.2 (docs 7be2cdd: 2021-08-17T15:46:18-05:00)
+            Version 1.1.0 (dev e4f5e39: 2026-01-07T21:52:17-06:00)
     ======================================================================
     
-    Seed: 1384420509
+    Seed: 2036173920
     Using data in order to sample from the posterior distribution...
     Config path: phycoeval-config.yml
-
+    
 This gives us detailed information about the version of |eco| we are using
 (right down to the specific commit SHA).
 It also tells us what number was used to seed the random number generator; we
@@ -579,9 +575,9 @@ Next, you will see a summary of the data::
         Genotypes: diploid
         Markers are dominant? false
         Number of populations: 7
-        Number of sites: 4538
-        Number of variable sites: 102
-        Number of patterns: 29
+        Number of sites: 4554
+        Number of variable sites: 104
+        Number of patterns: 34
         Patterns folded? true
         Population label (max # of alleles sampled):
             philippinicusSibuyan (2)
@@ -592,7 +588,6 @@ Next, you will see a summary of the data::
             philippinicusTablas (2)
             philippinicusLuzonCamarinesNorte (2)
     ----------------------------------------------------------------------
-
 
 It is **very important** to look over this summary to make sure |phyco|
 "sees" your data the way you expect it should.
@@ -609,7 +604,6 @@ operator statistics::
     Tree log path: phycoeval-config-trees-run-1.nex
     State log path: phycoeval-config-state-run-1.log
     Operator log path: phycoeval-config-operator-run-1.log
-
 
 Next, |phyco| reports a summary of the state of the MCMC chain to the screen for
 every 10th sample it's logging to the output files.
@@ -794,11 +788,12 @@ to the leaf (tip) labels in the trees::
         5: philippinicusSibuyan
         6: philippinicusTablas
 
+These numbers will be used to refer to the leaf labels throughout the rest of
+the file.
+
 **summary_of_tree_sources**
 """""""""""""""""""""""""""
 
-These numbers will be used to refer to the leaf labels throughout the rest of
-the file.
 Next, it provides a summary about where all the tree samples came from::
 
     summary_of_tree_sources:
@@ -836,7 +831,7 @@ can be changed with the ``--min-split-freq`` option in |sumphyco|)::
 
 More specifically, for each split (clade) that is present in more
 than 10% of the posterior samples, the standard deviation of the
-frequencies across all the MCMC chain is calculated.
+frequencies across all the MCMC chains is calculated.
 Above, we are shown the mean and max of all these standard deviations of split
 frequencies (SDSF).
 If all the chains are sampling the same distribution of trees, their split
@@ -893,12 +888,12 @@ because you will see them many times in the summary file:
 """""""""""""""""""""""""""""
 
 Up next, there's a summary of the maximum *a posteriori* tree
-topologies (tree models):
+topologies (tree models)::
 
-summary_of_map_topologies:
-    - count: 280
-      frequency: 0.0538461538461538491
-      newick: ( ... )[& ... ]:0
+    summary_of_map_topologies:
+        - count: 280
+          frequency: 0.0538461538461538491
+          newick: ( ... )[& ... ]:0
 
 In my summary there is only 1, but there might be more than one if multiple
 topologies tie for the most frequently sampled.

@@ -1,6 +1,15 @@
 # -*- coding: utf-8 -*-
 
 import time
+import subprocess
+
+
+def get_latest_git_tag():
+    tag = subprocess.check_output(
+        ["git", "describe", "--tags", "--abbrev=0"],
+        stderr = subprocess.PIPE,
+        text = True).strip()
+    return tag
 
 # Ecoevolity documentation build configuration file, created by
 # sphinx-quickstart on Thu Jun 29 21:16:35 2017.
@@ -38,6 +47,7 @@ extensions = [
     'sphinx.ext.githubpages',
     'sphinx_toolbox.collapse',
     'myst_parser',
+    'sphinx_substitution_extensions',
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -113,14 +123,16 @@ html_sidebars = {
 # documentation.
 #
 html_theme_options = {
-        'logo': 'site-logo.svg',
-        'github_user': 'phyletica',
-        'github_repo': 'ecoevolity',
-        'github_button': True,
-        'github_banner': False,
-        # 'description': 'Estimating evolutionary coevality',
-        # 'show_powered_by': True,
-        'fixed_sidebar': True,
+    'logo': 'site-logo.svg',
+    'github_user': 'phyletica',
+    'github_repo': 'ecoevolity',
+    'github_button': True,
+    'github_banner': False,
+    # 'description': 'Estimating evolutionary coevality',
+    # 'show_powered_by': True,
+    'fixed_sidebar': True,
+    'font_family': 'sans-serif',
+    # 'font_size': '1.1rem',
 }
 
 # Add any paths that contain custom static files (such as style sheets) here,
@@ -301,6 +313,14 @@ epub_exclude_files = ['search.html']
 imgmath_image_format = "svg"
 imgmath_latex_preamble = latex_elements["preamble"]
 
+rst_prolog = """
+.. |eco_latest_tag| replace:: {eco_latest_tag}
+.. |eco_latest_tag_short| replace:: {eco_latest_tag_short}
+""".format(
+    eco_latest_tag = get_latest_git_tag(),
+    eco_latest_tag_short = get_latest_git_tag()[1:],
+)
+
 rst_epilog = """
 .. |jro| replace:: Jamie Oaks
 .. _jro: http://phyletica.org
@@ -317,6 +337,23 @@ rst_epilog = """
 .. |eco_url| replace:: http://phyletica.org/ecoevolity
 .. |eco_gh_url| replace:: https://github.com/phyletica/ecoevolity
 .. |eco_copyright| replace:: **Copyright 2015-{this_year} Jamie R. Oaks**
+
+.. |eco_latest_linux_amd_binaries| replace:: Linux AMD64 (x86_64; Intel64)
+.. _eco_latest_linux_amd_binaries: https://github.com/phyletica/ecoevolity/releases/latest/download/ecoevolity-{eco_latest_tag}-linux-amd64.tar.gz
+.. |eco_latest_linux_arm_binaries| replace:: Linux ARM64 (AArch64)
+.. _eco_latest_linux_arm_binaries: https://github.com/phyletica/ecoevolity/releases/latest/download/ecoevolity-{eco_latest_tag}-linux-arm64.tar.gz
+.. |eco_latest_mac_intel_binaries| replace:: Mac OS X (10.11+) Intel
+.. _eco_latest_mac_intel_binaries: https://github.com/phyletica/ecoevolity/releases/latest/download/ecoevolity-{eco_latest_tag}-mac-intel64.tar.gz
+.. |eco_latest_mac_arm_binaries| replace:: Mac OS X (10.11+) Apple Silicon
+.. _eco_latest_mac_arm_binaries: https://github.com/phyletica/ecoevolity/releases/latest/download/ecoevolity-{eco_latest_tag}-mac-arm64.tar.gz
+
+.. |eco_latest_source_zip| replace:: Ecoevolity {eco_latest_tag} Source Code
+.. _eco_latest_source_zip: https://github.com/phyletica/ecoevolity/archive/refs/tags/{eco_latest_tag}.zip
+.. |eco_latest_source_tar| replace:: ecoevolity source code
+.. _eco_latest_source_tar: https://github.com/phyletica/ecoevolity/archive/refs/tags/{eco_latest_tag}.tar.gz
+
+.. |eco_latest_singularity| replace:: Singularity Image
+.. _eco_latest_singularity: https://github.com/phyletica/ecoevolity/releases/latest/download/ecoevolity-{eco_latest_tag}-linux64-intel-singularity.sif
 
 .. |pyco| replace:: pycoevolity 
 .. _pyco: https://github.com/phyletica/pycoevolity
@@ -367,6 +404,9 @@ rst_epilog = """
 .. |git| replace:: Git
 .. _git: http://git-scm.com/
 
+.. |homebrew| replace:: Homebrew
+.. _homebrew: https://brew.sh/
+
 .. |yaml| replace:: YAML 
 .. _yaml: http://yaml.org/
 .. |yamllint| replace:: http://www.yamllint.com/
@@ -378,4 +418,7 @@ rst_epilog = """
 
 .. |cmake| replace:: CMake
 .. _cmake: https://cmake.org/
-""".format(this_year = time.strftime('%Y'))
+""".format(
+    this_year = time.strftime('%Y'),
+    eco_latest_tag = get_latest_git_tag(),
+)
