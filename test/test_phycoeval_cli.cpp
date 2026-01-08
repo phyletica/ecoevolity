@@ -215,3 +215,80 @@ TEST_CASE("Testing phycoeval cli with 3 leaves, constrained model",
         delete[] cfg_path;
     }
 }
+
+// These Cyrtodactylus data and config triggered an error introduced when
+// allowing sites with no data for some leaf populations
+// When merging pattern probabilities at internal nodes (merging pattern probs
+// from top of child branches into the bottom partials of the parent branch),
+// there was a for loop over number of children, rather than the number of
+// childen *with data*. This was causing an indexing error.
+TEST_CASE("Testing phycoeval cli with Cytrodactylus RAD data",
+        "[phycoeval]") {
+
+    SECTION("Testing Cytodactylus RAD data from tutorial") {
+        RandomNumberGenerator rng = RandomNumberGenerator(48937459);
+
+        unsigned int chain_length = 100;
+        unsigned int sample_frequency = 5;
+        unsigned int nsamples = (chain_length / sample_frequency) + 1;
+
+        std::string test_path = "data/Cyrtodactylus-tutorial-data.yml";
+        std::string log_path = "data/Cyrtodactylus-tutorial-data-state-run-1.log";
+        std::string tree_path = "data/Cyrtodactylus-tutorial-data-trees-run-1.nex";
+        REQUIRE(path::exists(test_path));
+
+        char arg0[] = "phycoeval";
+        char arg1[] = "--seed";
+        char arg2[] = "111";
+        char arg3[] = "--relax-missing-sites";
+        char * cfg_path = new char[test_path.size() + 1];
+        std::copy(test_path.begin(), test_path.end(), cfg_path);
+        cfg_path[test_path.size()] = '\0';
+        char * argv[] = {
+            &arg0[0],
+            &arg1[0],
+            &arg2[0],
+            &arg3[0],
+            cfg_path,
+            NULL
+        };
+        int argc = (int)(sizeof(argv) / sizeof(argv[0])) - 1;
+        int ret;
+
+        ret = phycoeval_main<BasePopulationTree>(argc, argv);
+        REQUIRE(ret == 0);
+
+        REQUIRE(path::exists(log_path));
+        REQUIRE(path::exists(tree_path));
+
+        std::vector< BasePopulationTree > trees;
+        get_trees<BasePopulationTree>(
+                tree_path,
+                "nexus",
+                trees,
+                0,
+                1e-6);
+
+        REQUIRE(trees.size() == nsamples);
+
+        spreadsheet::Spreadsheet prior_sample;
+        prior_sample.update(log_path);
+
+        SampleSummarizer<double> l_root_pop_size_summary = prior_sample.summarize<double>("pop_size_root");
+        REQUIRE(l_root_pop_size_summary.sample_size() == nsamples);
+
+        SampleSummarizer<double> l_root_height_summary = prior_sample.summarize<double>("root_height");
+        REQUIRE(l_root_height_summary.sample_size() == nsamples);
+        SampleSummarizer<double> l_height_alpha_summary = prior_sample.summarize<double>("alpha_of_height_beta_prior");
+        REQUIRE(l_height_alpha_summary.sample_size() == nsamples);
+        SampleSummarizer<double> l_height_beta_summary = prior_sample.summarize<double>("beta_of_height_beta_prior");
+        REQUIRE(l_height_beta_summary.sample_size() == nsamples);
+
+        SampleSummarizer<double> l_mu_rate_summary = prior_sample.summarize<double>("mutation_rate");
+        REQUIRE(l_mu_rate_summary.sample_size() == nsamples);
+        SampleSummarizer<double> l_freq_summary = prior_sample.summarize<double>("freq_1");
+        REQUIRE(l_freq_summary.sample_size() == nsamples);
+
+        delete[] cfg_path;
+    }
+}
