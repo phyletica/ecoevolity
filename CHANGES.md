@@ -1,3 +1,18 @@
+Version 1.1.1
+=============
+
+Changes
+-------
+
+-   Updating documentation configuration, phycoeval tutorial, and installation
+    instructions.
+
+-   Fixing bug introduced in v1.1.0 when allowing sites with no data for some
+    leaf populations. When merging site pattern probabilities from the top of
+    child branche to the bottom parent branches, we were looping over the
+    number of children, rather than the number of children with data, which was
+    causing an indexing error. This release fixes this bug.
+
 Version 1.1.0
 =============
 
@@ -44,7 +59,7 @@ Changes
     ignored).
     For example, the following two alignments are represented identically as
     biallelic data by ecoevolity (where "pop-1" and "pop-2" are the population
-    labels):
+    labels)::
 
         individual-1-locus-1_pop-1  ATT???
         individual-2-locus-1_pop-1  ATT???
@@ -55,7 +70,7 @@ Changes
         individual-1-locus-2_pop-2  ???GGA
         individual-2-locus-2_pop-2  ???TGC
 
-    and
+    and::
 
         individual-1_pop-1  ATTGGC
         individual-2_pop-1  ATTGGC
