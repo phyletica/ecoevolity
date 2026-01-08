@@ -60,7 +60,7 @@ summarizing the output of |eco|_.
     ##########
 
 .. toctree::
-    :maxdepth: 2
+    :maxdepth: 3
     :hidden:
     :name: hometoc
 

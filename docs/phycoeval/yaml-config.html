@@ -1,17 +1,17 @@
-
 <!DOCTYPE html>
 
-<html>
+<html lang="en" data-content_root="../">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
     <title>The Configuration File &#8212; Ecoevolity 0.1.0 documentation</title>
-    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
-    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
-    <script src="../_static/jquery.js"></script>
-    <script src="../_static/underscore.js"></script>
-    <script src="../_static/doctools.js"></script>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../_static/basic.css?v=b08954a9" />
+    <link rel="stylesheet" type="text/css" href="../_static/alabaster.css?v=f237fd5d" />
+    <script src="../_static/documentation_options.js?v=01f34227"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Tutorials" href="tutorials/index.html" />
@@ -19,17 +19,18 @@
    
   <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
   
+
   
-  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+  
 
   </head><body>
   <div class="document">
     
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
         <div class="sphinxsidebarwrapper">
 <p class="logo">
   <a href="../index.html">
-    <img class="logo" src="../_static/site-logo.svg" alt="Logo"/>
+    <img class="logo" src="../_static/site-logo.svg" alt="Logo" />
     
   </a>
 </p>
@@ -55,7 +56,15 @@
 <li class="toctree-l1 current"><a class="reference internal" href="index.html">Phycoeval</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="background.html">Background</a></li>
 <li class="toctree-l2"><a class="reference internal" href="biallelic-character-data.html">The Data</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">The Configuration File</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">The Configuration File</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#general-parameter-syntax">General parameter syntax</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#tree-model">tree_model</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#branch-parameters">branch_parameters</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#mutation-parameters">mutation_parameters</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#data">data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#mcmc-settings">mcmc_settings</a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="tutorials/index.html">Tutorials</a></li>
 </ul>
 </li>
@@ -79,16 +88,16 @@
   </ul></li>
 </ul>
 </div>
-<div id="searchbox" style="display: none" role="search">
+<search id="searchbox" style="display: none" role="search">
   <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="../search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
       <input type="submit" value="Go" />
     </form>
     </div>
-</div>
-<script>$('#searchbox').show(0);</script>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
 
 
 
@@ -105,10 +114,10 @@
 
           <div class="body" role="main">
             
-  <p><a class="reference external" href="index.html"><img alt="Phycoeval" src="../_images/phycoeval-logo-long.svg" width="95%" /></a></p>
-<div class="section" id="the-configuration-file">
-<span id="phycoconfigfile"></span><h1>The Configuration File<a class="headerlink" href="#the-configuration-file" title="Permalink to this headline">¶</a></h1>
-<div class="contents local topic" id="configuration-file-components">
+  <p><a class="reference external" href="index.html"><img alt="Phycoeval" src="../_images/phycoeval-logo-long.svg" style="width: 95%;" /></a></p>
+<section id="the-configuration-file">
+<span id="phycoconfigfile"></span><h1>The Configuration File<a class="headerlink" href="#the-configuration-file" title="Link to this heading">¶</a></h1>
+<nav class="contents local" id="configuration-file-components">
 <p class="topic-title">Configuration File Components</p>
 <ul class="simple">
 <li><p><a class="reference internal" href="#general-parameter-syntax" id="id5">General parameter syntax</a></p></li>
@@ -138,7 +147,7 @@
 <li><p><a class="reference internal" href="#data" id="id17">data</a></p></li>
 <li><p><a class="reference internal" href="#mcmc-settings" id="id18">mcmc_settings</a></p></li>
 </ul>
-</div>
+</nav>
 <p>You specify most of the settings for a <a class="reference external" href="http://phyletica.org/ecoevolity">phycoeval</a> analysis in a <a class="reference external" href="http://yaml.org/">YAML</a>-formatted
 configuration file.
 <a class="reference external" href="http://yaml.org/">YAML</a> is an “anti-markup” language and data standard that is much more human
@@ -219,8 +228,8 @@ within them.
 Across a given level of the hierarchy, order does not matter. E.g., the
 top-level groups of settings listed above can be arranged in any order.
 Anything proceeded by a ‘#’ is a comment that is ignored by <a class="reference external" href="http://phyletica.org/ecoevolity">phycoeval</a>.</p>
-<div class="section" id="general-parameter-syntax">
-<span id="param-syntax"></span><h2><a class="toc-backref" href="#id5">General parameter syntax</a><a class="headerlink" href="#general-parameter-syntax" title="Permalink to this headline">¶</a></h2>
+<section id="general-parameter-syntax">
+<span id="param-syntax"></span><h2><a class="toc-backref" href="#id5" role="doc-backlink">General parameter syntax</a><a class="headerlink" href="#general-parameter-syntax" title="Link to this heading">¶</a></h2>
 <p>Before we get into the specific syntax for each setting in the config file,
 let’s first
 look at the general syntax that applies
@@ -246,9 +255,9 @@ prior</strong>.</p></li>
 <li><p>The prior probability distribution. This is ignored if <code class="docutils literal notranslate"><span class="pre">estimate</span></code> is
 <code class="docutils literal notranslate"><span class="pre">false</span></code>.</p></li>
 </ol>
-</div>
-<div class="section" id="tree-model">
-<h2><a class="toc-backref" href="#id6">tree_model</a><a class="headerlink" href="#tree-model" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="tree-model">
+<h2><a class="toc-backref" href="#id6" role="doc-backlink">tree_model</a><a class="headerlink" href="#tree-model" title="Link to this heading">¶</a></h2>
 <p>Next, let’s walk through how to specify the tree model in the configration
 file.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">tree_model</span><span class="p">:</span>
@@ -268,8 +277,8 @@ file.</p>
                     <span class="n">estimate</span><span class="p">:</span> <span class="n">false</span>
 </pre></div>
 </div>
-<div class="section" id="tree-space">
-<h3><a class="toc-backref" href="#id7">tree_space</a><a class="headerlink" href="#tree-space" title="Permalink to this headline">¶</a></h3>
+<section id="tree-space">
+<h3><a class="toc-backref" href="#id7" role="doc-backlink">tree_space</a><a class="headerlink" href="#tree-space" title="Link to this heading">¶</a></h3>
 <p>There are three options for the <code class="docutils literal notranslate"><span class="pre">tree_space</span></code> setting:</p>
 <ol class="arabic">
 <li><p><code class="docutils literal notranslate"><span class="pre">tree_space:</span> <span class="pre">generalized</span></code></p>
@@ -286,9 +295,9 @@ must also provide a starting tree with the topology you wish to hold
 constant during the analyses.</p>
 </li>
 </ol>
-</div>
-<div class="section" id="starting-tree">
-<h3><a class="toc-backref" href="#id8">starting_tree</a><a class="headerlink" href="#starting-tree" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="starting-tree">
+<h3><a class="toc-backref" href="#id8" role="doc-backlink">starting_tree</a><a class="headerlink" href="#starting-tree" title="Link to this heading">¶</a></h3>
 <p>phycoeval will first check to see if <code class="docutils literal notranslate"><span class="pre">starting_tree</span></code> is set to one of two
 options:</p>
 <ol class="arabic">
@@ -313,9 +322,9 @@ phycoeval will try to interpret the setting as a newick-formatted tree string.</
 <p>So, in summary, you can specify a specific starting tree using a newick string
 or a path to a newick or nexus formatted tree, or you can specify the MCMC
 chain start with the comb tree or a random bifurcating tree.</p>
-</div>
-<div class="section" id="tree-prior">
-<span id="uniform-root-and-betas"></span><h3><a class="toc-backref" href="#id9">tree_prior</a><a class="headerlink" href="#tree-prior" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="tree-prior">
+<span id="uniform-root-and-betas"></span><h3><a class="toc-backref" href="#id9" role="doc-backlink">tree_prior</a><a class="headerlink" href="#tree-prior" title="Link to this heading">¶</a></h3>
 <p>Currently, the only <code class="docutils literal notranslate"><span class="pre">tree_prior</span></code> implemented in phycoeval is
 <code class="docutils literal notranslate"><span class="pre">uniform_root_and_betas</span></code>.
 This prior assumes that all topologies are equally probable <em>a priori</em>,
@@ -344,8 +353,8 @@ section fo the <code class="docutils literal notranslate"><span class="pre">unif
             <span class="n">estimate</span><span class="p">:</span> <span class="n">false</span>
 </pre></div>
 </div>
-<div class="section" id="root-height">
-<h4><a class="toc-backref" href="#id10">root_height</a><a class="headerlink" href="#root-height" title="Permalink to this headline">¶</a></h4>
+<section id="root-height">
+<h4><a class="toc-backref" href="#id10" role="doc-backlink">root_height</a><a class="headerlink" href="#root-height" title="Link to this heading">¶</a></h4>
 <p>The <code class="docutils literal notranslate"><span class="pre">root_height</span></code> parameter follows the
 <a class="reference internal" href="#param-syntax"><span class="std std-ref">general parameter syntax discussed above</span></a>.
 Valid continuous probability distributions for the <code class="docutils literal notranslate"><span class="pre">prior</span></code> include:</p>
@@ -377,18 +386,21 @@ scale or mean <strong>before</strong> shifting the distribution.</p>
 <code class="docutils literal notranslate"><span class="pre">min</span></code> and <code class="docutils literal notranslate"><span class="pre">max</span></code>.</p>
 </li>
 </ol>
-</div>
-<div class="section" id="alpha-of-node-height-beta-prior">
-<h4><a class="toc-backref" href="#id11">alpha_of_node_height_beta_prior</a><a class="headerlink" href="#alpha-of-node-height-beta-prior" title="Permalink to this headline">¶</a></h4>
+</section>
+<section id="alpha-of-node-height-beta-prior">
+<h4><a class="toc-backref" href="#id11" role="doc-backlink">alpha_of_node_height_beta_prior</a><a class="headerlink" href="#alpha-of-node-height-beta-prior" title="Link to this heading">¶</a></h4>
 <p>The <code class="docutils literal notranslate"><span class="pre">uniform_root_and_betas</span></code> tree prior assumes (<em>a priori</em>)
 that all non-root divergence times follow a scaled beta distribution
 between the present and the age of the youngest parent node of any
 node mapped to the divergence time
 (<a class="reference internal" href="#scaled-beta-divs-fig"><span class="std std-ref">see the figure below for an example</span></a>.</p>
-<div class="figure align-center" id="id4">
-<span id="scaled-beta-divs-fig"></span><a class="reference internal image-reference" href="../_images/rj-move-tree-cropped.svg"><img alt="Tree prior" src="../_images/rj-move-tree-cropped.svg" width="99%" /></a>
-<p class="caption"><span class="caption-text">An example of the scaled beta distributions on non-root divergence times.</span><a class="headerlink" href="#id4" title="Permalink to this image">¶</a></p>
-</div>
+<figure class="align-center" id="id4">
+<span id="scaled-beta-divs-fig"></span><a class="reference internal image-reference" href="../_images/rj-move-tree-cropped.svg"><img alt="Tree prior" src="../_images/rj-move-tree-cropped.svg" style="width: 99%;" />
+</a>
+<figcaption>
+<p><span class="caption-text">An example of the scaled beta distributions on non-root divergence times.</span><a class="headerlink" href="#id4" title="Link to this image">¶</a></p>
+</figcaption>
+</figure>
 <p>These are “scaled” betas, because, normally, a beta distribution has a lower
 and upper bound of 0 and 1, respectively.
 The beta distributions are scaled to be proper probability distributions (i.e.,
@@ -409,11 +421,11 @@ the non-root divergence times to 1 (this is the default for phycoeval).
 In general, the default is probably fine for most applications, and estimating
 <code class="docutils literal notranslate"><span class="pre">alpha_of_node_height_beta_prior</span></code> has not been well tested with simulated
 data.</p>
-</div>
-</div>
-</div>
-<div class="section" id="branch-parameters">
-<h2><a class="toc-backref" href="#id12">branch_parameters</a><a class="headerlink" href="#branch-parameters" title="Permalink to this headline">¶</a></h2>
+</section>
+</section>
+</section>
+<section id="branch-parameters">
+<h2><a class="toc-backref" href="#id12" role="doc-backlink">branch_parameters</a><a class="headerlink" href="#branch-parameters" title="Link to this heading">¶</a></h2>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">branch_parameters</span><span class="p">:</span>
     <span class="n">population_size</span><span class="p">:</span>
         <span class="n">equal_population_sizes</span><span class="p">:</span> <span class="n">true</span>
@@ -425,8 +437,8 @@ data.</p>
                 <span class="n">mean</span><span class="p">:</span> <span class="mf">0.0002</span>
 </pre></div>
 </div>
-<div class="section" id="population-size">
-<span id="phycopopsize"></span><h3><a class="toc-backref" href="#id13">population_size</a><a class="headerlink" href="#population-size" title="Permalink to this headline">¶</a></h3>
+<section id="population-size">
+<span id="phycopopsize"></span><h3><a class="toc-backref" href="#id13" role="doc-backlink">population_size</a><a class="headerlink" href="#population-size" title="Link to this heading">¶</a></h3>
 <p>The <code class="docutils literal notranslate"><span class="pre">population_size</span></code> parameter follows the
 <a class="reference internal" href="#param-syntax"><span class="std std-ref">general parameter syntax discussed above</span></a>,
 with the exception of one additional setting: <code class="docutils literal notranslate"><span class="pre">equal_population_sizes</span></code>.
@@ -449,7 +461,7 @@ between two randomly selected haploid genomes).
 The relationship between <code class="docutils literal notranslate"><span class="pre">population_size</span></code> (represented by
 <img class="math" src="../_images/math/2ed91a02448e36b59b6e45afd82b1f774c8e0636.svg" alt="\epopsize"/>) and <img class="math" src="../_images/math/1a8776d0edf53a7b984660b64c58a891015a585c.svg" alt="\theta"/> is:</p>
 <div class="math" id="equation-phycothetarelationship">
-<p><span class="eqno">(1)<a class="headerlink" href="#equation-phycothetarelationship" title="Permalink to this equation">¶</a></span><img src="../_images/math/ce4412e4df3b976ff3207c75806181fff8eedc3d.svg" alt="\textrm{ploidy} \times 2\epopsize\murate = \theta \\
+<p><span class="eqno">(1)<a class="headerlink" href="#equation-phycothetarelationship" title="Link to this equation">¶</a></span><img src="../_images/math/ce4412e4df3b976ff3207c75806181fff8eedc3d.svg" alt="\textrm{ploidy} \times 2\epopsize\murate = \theta \\
 \epopsize = \frac{\theta}{\textrm{ploidy} \times 2\murate}."/></p>
 </div><p>Thus, if you have prior expectation that <img class="math" src="../_images/math/fed2631119d9610e96c764946c4669cefeefb633.svg" alt="\theta = 0.002"/> and you’ve
 set the <code class="docutils literal notranslate"><span class="pre">mutation_rate</span></code> to 1.0 (i.e., <img class="math" src="../_images/math/5a82e979eece27b6b6e98549c0eb9bd2f129ad92.svg" alt="\murate = 1"/>) and
@@ -469,10 +481,10 @@ expectation for <code class="docutils literal notranslate"><span class="pre">pop
 <div class="math">
 <p><img src="../_images/math/7c666541d3c5f1cd3fa36f811eaf90220cf6abd4.svg" alt="\epopsize &amp;= \frac{\theta}{\textrm{ploidy} \times 2\murate} \\
           &amp;= \frac{0.004}{2 \times 2(0.00000001)} = \frac{0.002}{2} = \textrm{100,000}"/></p>
-</div></div>
-</div>
-<div class="section" id="mutation-parameters">
-<h2><a class="toc-backref" href="#id14">mutation_parameters</a><a class="headerlink" href="#mutation-parameters" title="Permalink to this headline">¶</a></h2>
+</div></section>
+</section>
+<section id="mutation-parameters">
+<h2><a class="toc-backref" href="#id14" role="doc-backlink">mutation_parameters</a><a class="headerlink" href="#mutation-parameters" title="Link to this heading">¶</a></h2>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">mutation_parameters</span><span class="p">:</span>
     <span class="n">freq_1</span><span class="p">:</span>
         <span class="n">value</span><span class="p">:</span> <span class="mf">0.5</span>
@@ -482,8 +494,8 @@ expectation for <code class="docutils literal notranslate"><span class="pre">pop
         <span class="n">estimate</span><span class="p">:</span> <span class="n">false</span>
 </pre></div>
 </div>
-<div class="section" id="mutation-rate">
-<h3><a class="toc-backref" href="#id15">mutation_rate</a><a class="headerlink" href="#mutation-rate" title="Permalink to this headline">¶</a></h3>
+<section id="mutation-rate">
+<h3><a class="toc-backref" href="#id15" role="doc-backlink">mutation_rate</a><a class="headerlink" href="#mutation-rate" title="Link to this heading">¶</a></h3>
 <p>The <code class="docutils literal notranslate"><span class="pre">mutation_rate</span></code> settings are for rate of mutation across the tree.
 .. How you scale this is up to you, but you need to make sure you are consistent
 .. in how you scale time and effective population sizes.
@@ -501,9 +513,9 @@ To help ensure the population sizes are scaled correctly, it can help to
 remember that <img class="math" src="../_images/math/3eb41ffb49e457b3b0583d74fa196638d841562c.svg" alt="\textrm{ploidy} \times 2\epopsize\murate"/> should
 equal the expected differences per base between two randomly selected genomes
 from a population.</p>
-</div>
-<div class="section" id="freq-1">
-<span id="phycofreq-1"></span><h3><a class="toc-backref" href="#id16">freq_1</a><a class="headerlink" href="#freq-1" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="freq-1">
+<span id="phycofreq-1"></span><h3><a class="toc-backref" href="#id16" role="doc-backlink">freq_1</a><a class="headerlink" href="#freq-1" title="Link to this heading">¶</a></h3>
 <p>The <code class="docutils literal notranslate"><span class="pre">freq_1</span></code> parameter is the equilibrium frequency of the “1” allele (or 1
 minus the frequency of the “0” allele).
 <strong>If you are using nucleotide data, we recommend that you fix the frequencies
@@ -543,10 +555,10 @@ Again, you shouldn’t do this for nucleotide data.</p>
 parameter.  You should get an error if you try to use it for any other
 parameters.</p>
 </div>
-</div>
-</div>
-<div class="section" id="data">
-<h2><a class="toc-backref" href="#id17">data</a><a class="headerlink" href="#data" title="Permalink to this headline">¶</a></h2>
+</section>
+</section>
+<section id="data">
+<h2><a class="toc-backref" href="#id17" role="doc-backlink">data</a><a class="headerlink" href="#data" title="Link to this heading">¶</a></h2>
 <p>This section of the configuration file tells phycoeval about the data we are
 asking it to analyze, and where it can find those data.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">ploidy</span><span class="p">:</span> <span class="mi">2</span>
@@ -651,9 +663,9 @@ population2_jro-003  0000...
 </pre></div>
 </div>
 </div>
-</div>
-<div class="section" id="mcmc-settings">
-<h2><a class="toc-backref" href="#id18">mcmc_settings</a><a class="headerlink" href="#mcmc-settings" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="mcmc-settings">
+<h2><a class="toc-backref" href="#id18" role="doc-backlink">mcmc_settings</a><a class="headerlink" href="#mcmc-settings" title="Link to this heading">¶</a></h2>
 <p>The <code class="docutils literal notranslate"><span class="pre">mcmc_settings</span></code> specify how long to run the MCMC
 chain, and how often to record a sample from it. For example:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">mcmc_settings</span><span class="p">:</span>
@@ -672,8 +684,8 @@ We recommend running several independent chains (analyses) to:</p>
 <li><p>Increase the number of samples from the posterior distribution (assuming
 the chains converged).</p></li>
 </ol>
-</div>
-</div>
+</section>
+</section>
 
 
           </div>

@@ -1,17 +1,17 @@
-
 <!DOCTYPE html>
 
-<html>
+<html lang="en" data-content_root="../../">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
     <title>Gecko generalized phylogenetics &#8212; Ecoevolity 0.1.0 documentation</title>
-    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
-    <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
-    <script src="../../_static/jquery.js"></script>
-    <script src="../../_static/underscore.js"></script>
-    <script src="../../_static/doctools.js"></script>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../../_static/basic.css?v=b08954a9" />
+    <link rel="stylesheet" type="text/css" href="../../_static/alabaster.css?v=f237fd5d" />
+    <script src="../../_static/documentation_options.js?v=01f34227"></script>
+    <script src="../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
     <link rel="next" title="Workshops" href="../../workshops/index.html" />
@@ -19,17 +19,18 @@
    
   <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
   
+
   
-  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+  
 
   </head><body>
   <div class="document">
     
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
         <div class="sphinxsidebarwrapper">
 <p class="logo">
   <a href="../../index.html">
-    <img class="logo" src="../../_static/site-logo.svg" alt="Logo"/>
+    <img class="logo" src="../../_static/site-logo.svg" alt="Logo" />
     
   </a>
 </p>
@@ -56,7 +57,10 @@
 <li class="toctree-l2"><a class="reference internal" href="../background.html">Background</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../biallelic-character-data.html">The Data</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../yaml-config.html">The Configuration File</a></li>
-<li class="toctree-l2 current"><a class="reference internal" href="index.html">Tutorials</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="index.html">Tutorials</a><ul class="current">
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Gecko generalized phylogenetics</a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../workshops/index.html">Workshops</a></li>
@@ -81,16 +85,16 @@
   </ul></li>
 </ul>
 </div>
-<div id="searchbox" style="display: none" role="search">
+<search id="searchbox" style="display: none" role="search">
   <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="../../search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
       <input type="submit" value="Go" />
     </form>
     </div>
-</div>
-<script>$('#searchbox').show(0);</script>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
 
 
 
@@ -107,46 +111,81 @@
 
           <div class="body" role="main">
             
-  <p><a class="reference external" href="index.html"><img alt="Phycoeval" src="../../_images/phycoeval-logo-long.svg" width="95%" /></a></p>
-<div class="section" id="gecko-generalized-phylogenetics">
-<span id="gecko-phy-tutorial"></span><h1>Gecko generalized phylogenetics<a class="headerlink" href="#gecko-generalized-phylogenetics" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="objective">
-<h2>Objective<a class="headerlink" href="#objective" title="Permalink to this headline">¶</a></h2>
-<p>Our goal is to learn how to set up, run, and interpret an phycoeval analysis in
+  <p><a class="reference external" href="index.html"><img alt="Phycoeval" src="../../_images/phycoeval-logo-long.svg" style="width: 95%;" /></a></p>
+<section id="gecko-generalized-phylogenetics">
+<span id="gecko-phy-tutorial"></span><h1>Gecko generalized phylogenetics<a class="headerlink" href="#gecko-generalized-phylogenetics" title="Link to this heading">¶</a></h1>
+<nav class="contents local" id="contents">
+<ul class="simple">
+<li><p><a class="reference internal" href="#objective" id="id13">Objective</a></p></li>
+<li><p><a class="reference internal" href="#background-information" id="id14">Background Information</a></p></li>
+<li><p><a class="reference internal" href="#software-used-in-this-activity" id="id15">Software Used in this Activity</a></p></li>
+<li><p><a class="reference internal" href="#getting-the-example-files-for-this-tutorial" id="id16">Getting the example files for this tutorial</a></p></li>
+<li><p><a class="reference internal" href="#the-data" id="id17">The Data</a></p>
+<ul>
+<li><p><a class="reference internal" href="#biallelic-characters" id="id18">Biallelic characters</a></p></li>
+<li><p><a class="reference internal" href="#linked-characters" id="id19">Linked characters</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#setting-up-the-phyco-configuration-file" id="id20">Setting up the phycoeval configuration file</a></p>
+<ul>
+<li><p><a class="reference internal" href="#data" id="id21">data</a></p></li>
+<li><p><a class="reference internal" href="#mutation-parameters" id="id22">mutation_parameters</a></p></li>
+<li><p><a class="reference internal" href="#branch-parameters" id="id23">branch_parameters</a></p></li>
+<li><p><a class="reference internal" href="#tree-model" id="id24">tree_model</a></p></li>
+<li><p><a class="reference internal" href="#how-to-calibrate-time" id="id25">How to calibrate time?</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#running-phyco" id="id26">Running phycoeval</a></p>
+<ul>
+<li><p><a class="reference internal" href="#checking-the-pre-mcmc-screen-output" id="id27">Checking the pre-MCMC screen output</a></p></li>
+<li><p><a class="reference internal" href="#the-output-files" id="id28">The Output Files</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#running-additional-chains" id="id29">Running additional chains</a></p></li>
+<li><p><a class="reference internal" href="#summarizing-the-results" id="id30">Summarizing the Results</a></p>
+<ul>
+<li><p><a class="reference internal" href="#assessing-convergence-and-mixing" id="id31">Assessing convergence and mixing</a></p></li>
+<li><p><a class="reference internal" href="#summarizing-the-posterior-samples-of-trees-and-other-parameters" id="id32">Summarizing the posterior samples of trees and other parameters</a></p>
+<ul>
+<li><p><a class="reference internal" href="#yaml-posterior-summary" id="id33">YAML posterior summary</a></p></li>
+<li><p><a class="reference internal" href="#annotated-map-tree" id="id34">Annotated MAP tree</a></p></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+<section id="objective">
+<h2><a class="toc-backref" href="#id13" role="doc-backlink">Objective</a><a class="headerlink" href="#objective" title="Link to this heading">¶</a></h2>
+<p>Our goal is to learn how to set up, run, and interpret a phycoeval analysis in
 order to infer phylogenies with shared and multifurcating divergences.</p>
-</div>
-<div class="section" id="background-information">
-<h2>Background Information<a class="headerlink" href="#background-information" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="background-information">
+<h2><a class="toc-backref" href="#id14" role="doc-backlink">Background Information</a><a class="headerlink" href="#background-information" title="Link to this heading">¶</a></h2>
 <p>Biogeographers are often interested in understanding how environmental changes
 affect diversification.
 When such processes simultaneously affected multiple ancestral species,
 this can produce patterns of shared divergences.
 Phycoeval provides a tool for testing such predictions using a fully phylogenetic
 Bayesian model choice approach
-<a class="bibtex reference internal" href="../../zbib/references.html#oaks2021phycoeval" id="id1">[20]</a>.</p>
+<span id="id1">[<a class="reference internal" href="../../zbib/references.html#id22" title="Jamie R. Oaks, Perry L. Wood, Jr., Cameron D. Siler, and Rafe M. Brown. Generalizing Bayesian phylogenetics to infer shared evolutionary events. Proceedings of the National Academy of Sciences, 119(29):e2121036119, 07 2022. URL: https://www.pnas.org/doi/abs/10.1073/pnas.2121036119, arXiv:https://www.pnas.org/doi/pdf/10.1073/pnas.2121036119, doi:10.1073/pnas.2121036119.">20</a>]</span>.</p>
 <p>For more detailed background information about the method implemented in phycoeval,
 please <a class="reference internal" href="../background.html#phycobackground"><span class="std std-ref">see here</span></a>.</p>
-</div>
-<div class="section" id="software-used-in-this-activity">
-<h2>Software Used in this Activity<a class="headerlink" href="#software-used-in-this-activity" title="Permalink to this headline">¶</a></h2>
-<p>For this activity, we will be using phycoeval (part of the ecoevolity package) and
-pycoevolity.
+</section>
+<section id="software-used-in-this-activity">
+<h2><a class="toc-backref" href="#id15" role="doc-backlink">Software Used in this Activity</a><a class="headerlink" href="#software-used-in-this-activity" title="Link to this heading">¶</a></h2>
+<p>For this activity, we will be using phycoeval (part of the ecoevolity package).
 If you haven’t already done so, please follow the
 <a class="reference internal" href="../../installation.html#installation"><span class="std std-ref">instructions for installing ecoevolity</span></a>.
 Either installing ecoevolity directly or using the Docker image will work
 for this tutorial.</p>
-<p>While not required, you may want to install the programs
-<a class="reference external" href="https://github.com/beast-dev/tracer/releases">Tracer</a> (<a class="reference external" href="https://github.com/beast-dev/tracer/releases">https://github.com/beast-dev/tracer/releases</a>)
-and
-<a class="reference external" href="https://github.com/rambaut/figtree/releases">Figtree</a> (<a class="reference external" href="https://github.com/rambaut/figtree/releases">https://github.com/rambaut/figtree/releases</a>).
-<a class="reference external" href="https://github.com/beast-dev/tracer/releases">Tracer</a>
-is a nice tool for visualizing the mixing and convergence behavior of Markov
-chain Monte Carlo (MCMC) analyses,
-and
-<a class="reference external" href="https://github.com/rambaut/figtree/releases">Figtree</a> is a nice tool for visualizing phylogenetic trees.</p>
-</div>
-<div class="section" id="getting-the-example-files-for-this-tutorial">
-<h2>Getting the example files for this tutorial<a class="headerlink" href="#getting-the-example-files-for-this-tutorial" title="Permalink to this headline">¶</a></h2>
+<p>While not required, you may want to install the program
+<a class="reference external" href="https://github.com/beast-dev/tracer/releases">Tracer</a> (<a class="reference external" href="https://github.com/beast-dev/tracer/releases">https://github.com/beast-dev/tracer/releases</a>),
+a nice tool for visualizing the mixing and convergence behavior of Markov
+chain Monte Carlo (MCMC) analyses.</p>
+</section>
+<section id="getting-the-example-files-for-this-tutorial">
+<h2><a class="toc-backref" href="#id16" role="doc-backlink">Getting the example files for this tutorial</a><a class="headerlink" href="#getting-the-example-files-for-this-tutorial" title="Link to this heading">¶</a></h2>
 <p>We will use <code class="docutils literal notranslate"><span class="pre">git</span></code> to download the data and phycoeval configuration file we need
 for this tutorial.
 To do this open your preferred shell (command-line) environment (e.g., Bash),
@@ -205,15 +244,15 @@ phycoeval how to analyze the data.</p>
 <p>You can ignore this file.</p>
 </li>
 </ol>
-</div>
-<div class="section" id="the-data">
-<h2>The Data<a class="headerlink" href="#the-data" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="the-data">
+<h2><a class="toc-backref" href="#id17" role="doc-backlink">The Data</a><a class="headerlink" href="#the-data" title="Link to this heading">¶</a></h2>
 <p>We will be analyzing 50 RADseq loci from 7 insular populations of bent-toed
 geckos (<em>Cyrtodactylus</em>) from the Philippines.
-This is a small subset of the data analyzed in <a class="bibtex reference internal" href="../../zbib/references.html#oaks2021phycoeval" id="id2">[20]</a>.
+This is a small subset of the data analyzed in <span id="id2">[<a class="reference internal" href="../../zbib/references.html#id22" title="Jamie R. Oaks, Perry L. Wood, Jr., Cameron D. Siler, and Rafe M. Brown. Generalizing Bayesian phylogenetics to infer shared evolutionary events. Proceedings of the National Academy of Sciences, 119(29):e2121036119, 07 2022. URL: https://www.pnas.org/doi/abs/10.1073/pnas.2121036119, arXiv:https://www.pnas.org/doi/pdf/10.1073/pnas.2121036119, doi:10.1073/pnas.2121036119.">20</a>]</span>.
 <a class="reference external" href="http://phyletica.org/ecoevolity">Phycoeval</a> assumes our characters have two-states (biallelic) and are unlinked.</p>
-<div class="section" id="biallelic-characters">
-<h3>Biallelic characters<a class="headerlink" href="#biallelic-characters" title="Permalink to this headline">¶</a></h3>
+<section id="biallelic-characters">
+<h3><a class="toc-backref" href="#id18" role="doc-backlink">Biallelic characters</a><a class="headerlink" href="#biallelic-characters" title="Link to this heading">¶</a></h3>
 <p>Phycoeval assumes all of your characters have at most two states (biallelic).
 If we provide phycoeval with nucleotide data, it will automatically recode the data
 as biallelic by considering the first character it finds in each column as
@@ -226,23 +265,23 @@ For characters (columns) with more than two states, you have two options:</p>
 <li><p>recode them as biallelic.</p></li>
 </ol>
 <p>Phycoeval will do the latter for you (more on this in a bit).</p>
-</div>
-<div class="section" id="linked-characters">
-<h3>Linked characters<a class="headerlink" href="#linked-characters" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="linked-characters">
+<h3><a class="toc-backref" href="#id19" role="doc-backlink">Linked characters</a><a class="headerlink" href="#linked-characters" title="Link to this heading">¶</a></h3>
 <p>Phycoeval also assumes all your characters are unlinked.
 Based on analyses of data simulated with
-linked characters <a class="bibtex reference internal" href="../../zbib/references.html#oaks2021phycoeval" id="id3">[20]</a>, we recommend that you
+linked characters <span id="id3">[<a class="reference internal" href="../../zbib/references.html#id22" title="Jamie R. Oaks, Perry L. Wood, Jr., Cameron D. Siler, and Rafe M. Brown. Generalizing Bayesian phylogenetics to infer shared evolutionary events. Proceedings of the National Academy of Sciences, 119(29):e2121036119, 07 2022. URL: https://www.pnas.org/doi/abs/10.1073/pnas.2121036119, arXiv:https://www.pnas.org/doi/pdf/10.1073/pnas.2121036119, doi:10.1073/pnas.2121036119.">20</a>]</span>, we recommend that you
 analyze all of your characters (including the constant ones) and violate the
 assumption of unlinked characters.
 In short, phycoeval performs better when you use all of the sites (including the
-constant ones) compared to reducing the data to only one variable character per
-locus.
+constant ones) compared to reducing the data to only (effectively) unlinked
+variable characters.
 The example data sets we’ll be analyzing consist of 50 loci each comprising
 about 90 linked sites.</p>
-</div>
-</div>
-<div class="section" id="setting-up-the-phyco-configuration-file">
-<h2>Setting up the phycoeval configuration file<a class="headerlink" href="#setting-up-the-phyco-configuration-file" title="Permalink to this headline">¶</a></h2>
+</section>
+</section>
+<section id="setting-up-the-phyco-configuration-file">
+<h2><a class="toc-backref" href="#id20" role="doc-backlink">Setting up the phycoeval configuration file</a><a class="headerlink" href="#setting-up-the-phyco-configuration-file" title="Link to this heading">¶</a></h2>
 <p>Once we have our nexus-formatted data ready, the next step in an phycoeval
 analysis is setting up the configuration file.
 Phycoeval requires a <a class="reference external" href="http://yaml.org/">YAML</a>-formatted configuration file.
@@ -304,8 +343,8 @@ information:</p>
 </div>
 <p>Let’s break this down to go over all the settings specified in this config.
 First, the <code class="docutils literal notranslate"><span class="pre">data</span></code> section.</p>
-<div class="section" id="data">
-<h3>data<a class="headerlink" href="#data" title="Permalink to this headline">¶</a></h3>
+<section id="data">
+<h3><a class="toc-backref" href="#id21" role="doc-backlink">data</a><a class="headerlink" href="#data" title="Link to this heading">¶</a></h3>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">data</span><span class="p">:</span>
     <span class="n">ploidy</span><span class="p">:</span> <span class="mi">2</span>
     <span class="n">constant_sites_removed</span><span class="p">:</span> <span class="n">false</span>
@@ -332,9 +371,9 @@ and</p></li>
 <li><p>the data are found in a file named <code class="docutils literal notranslate"><span class="pre">Cyrtodactylus-tutorial-data.nex</span></code> in
 the current directory</p></li>
 </ol>
-</div>
-<div class="section" id="mutation-parameters">
-<h3>mutation_parameters<a class="headerlink" href="#mutation-parameters" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="mutation-parameters">
+<h3><a class="toc-backref" href="#id22" role="doc-backlink">mutation_parameters</a><a class="headerlink" href="#mutation-parameters" title="Link to this heading">¶</a></h3>
 <p>The <code class="docutils literal notranslate"><span class="pre">mutation_parameters</span></code> section specifies that we wish to fix the rate of
 mutation to 1:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">mutation_rate</span><span class="p">:</span>
@@ -358,9 +397,9 @@ Phycoeval assumes biallelic data, and there are many ways to convert 4-state
 nucleotide data into 2-states.
 If we don’t constrain the frequencies to be equal, our results might vary
 depending on how choose to do this conversion.</p>
-</div>
-<div class="section" id="branch-parameters">
-<h3>branch_parameters<a class="headerlink" href="#branch-parameters" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="branch-parameters">
+<h3><a class="toc-backref" href="#id23" role="doc-backlink">branch_parameters</a><a class="headerlink" href="#branch-parameters" title="Link to this heading">¶</a></h3>
 <p>The <code class="docutils literal notranslate"><span class="pre">branch_parameters</span></code> section specifies how we wish to model
 the effective population sizes of branches across the tree:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">population_size</span><span class="p">:</span>
@@ -383,9 +422,9 @@ Because the mutation rate is fixed to 1 (see <code class="docutils literal notra
 the effective population size is scaled by the mutation rate,
 so we are putting a prior on
 <img class="math" src="../../_images/math/07154a281fa7a7b2fca07cf7dfcc27f139a20005.svg" alt="\epopsize\murate"/>.</p>
-</div>
-<div class="section" id="tree-model">
-<h3>tree_model<a class="headerlink" href="#tree-model" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="tree-model">
+<h3><a class="toc-backref" href="#id24" role="doc-backlink">tree_model</a><a class="headerlink" href="#tree-model" title="Link to this heading">¶</a></h3>
 <p>Next, the <code class="docutils literal notranslate"><span class="pre">tree_model</span></code> section specifies how we want phycoeval to model trees:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">tree_model</span><span class="p">:</span>
     <span class="n">tree_space</span><span class="p">:</span> <span class="n">generalized</span>
@@ -416,9 +455,9 @@ and we are placing an exponentially distributed prior distribution on
 it with a mean of 0.01.
 Given that the mutation rate is fixed to 1 (see <code class="docutils literal notranslate"><span class="pre">mutation_parameters</span></code> section
 above), this is in units of expected substitutions per site.</p>
-</div>
-<div class="section" id="how-to-calibrate-time">
-<h3>How to calibrate time?<a class="headerlink" href="#how-to-calibrate-time" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="how-to-calibrate-time">
+<h3><a class="toc-backref" href="#id25" role="doc-backlink">How to calibrate time?</a><a class="headerlink" href="#how-to-calibrate-time" title="Link to this heading">¶</a></h3>
 <details class="summary-scaling-to-absolute-time">
 <summary>Scaling to absolute time...</summary><p>Currently in phycoeval there are only two ways to calibrate time to be in units
 other than substitutions per site (e.g., years or millions of years).
@@ -484,10 +523,10 @@ years, we have to adjust our prior on the population size:</p>
 </div>
 <p>For more about specifying settings for population size parameter(s),
 <a class="reference internal" href="../yaml-config.html#phycopopsize"><span class="std std-ref">see here</span></a>.</p>
-</details></div>
-</div>
-<div class="section" id="running-phyco">
-<h2>Running phycoeval<a class="headerlink" href="#running-phyco" title="Permalink to this headline">¶</a></h2>
+</details></section>
+</section>
+<section id="running-phyco">
+<h2><a class="toc-backref" href="#id26" role="doc-backlink">Running phycoeval</a><a class="headerlink" href="#running-phyco" title="Link to this heading">¶</a></h2>
 <p>Now that we have our nexus-formatted data file and
 <a class="reference external" href="http://yaml.org/">YAML</a>-formatted config file ready,
 now we will use phycoeval to infer the phylogeny of our 7 geckos, including
@@ -504,7 +543,7 @@ like:</p>
 
                                <span class="n">Part</span> <span class="n">of</span><span class="p">:</span>
                               <span class="n">Ecoevolity</span>
-       <span class="n">Version</span> <span class="mf">0.3.2</span> <span class="p">(</span><span class="n">docs</span> <span class="mi">7</span><span class="n">be2cdd</span><span class="p">:</span> <span class="mi">2021</span><span class="o">-</span><span class="mi">08</span><span class="o">-</span><span class="mi">17</span><span class="n">T15</span><span class="p">:</span><span class="mi">46</span><span class="p">:</span><span class="mi">18</span><span class="o">-</span><span class="mi">05</span><span class="p">:</span><span class="mi">00</span><span class="p">)</span>
+        <span class="n">Version</span> <span class="mf">1.1.0</span> <span class="p">(</span><span class="n">dev</span> <span class="mi">041</span><span class="n">c63a</span><span class="p">:</span> <span class="mi">2026</span><span class="o">-</span><span class="mi">01</span><span class="o">-</span><span class="mi">06</span><span class="n">T13</span><span class="p">:</span><span class="mi">06</span><span class="p">:</span><span class="mi">07</span><span class="o">-</span><span class="mi">06</span><span class="p">:</span><span class="mi">00</span><span class="p">)</span>
 <span class="o">======================================================================</span>
 
 <span class="n">Usage</span><span class="p">:</span> <span class="n">phycoeval</span> <span class="p">[</span><span class="n">OPTIONS</span><span class="p">]</span> <span class="n">YAML</span><span class="o">-</span><span class="n">CONFIG</span><span class="o">-</span><span class="n">FILE</span>
@@ -514,9 +553,9 @@ like:</p>
 <span class="n">Options</span><span class="p">:</span>
   <span class="o">--</span><span class="n">version</span>             <span class="n">show</span> <span class="n">program</span><span class="s1">&#39;s version number and exit</span>
   <span class="o">-</span><span class="n">h</span><span class="p">,</span> <span class="o">--</span><span class="n">help</span>            <span class="n">show</span> <span class="n">this</span> <span class="n">help</span> <span class="n">message</span> <span class="ow">and</span> <span class="n">exit</span>
-  <span class="o">--</span><span class="n">seed</span><span class="o">=</span><span class="n">SEED</span>           <span class="n">Seed</span> <span class="k">for</span> <span class="n">random</span> <span class="n">number</span> <span class="n">generator</span><span class="o">.</span> <span class="n">Default</span><span class="p">:</span> <span class="n">Set</span> <span class="kn">from</span> <span class="nn">clock.</span>
-  <span class="o">--</span><span class="n">ignore</span><span class="o">-</span><span class="n">data</span>         <span class="n">Ignore</span> <span class="n">data</span> <span class="n">to</span> <span class="n">sample</span> <span class="kn">from</span> <span class="nn">the</span> <span class="n">prior</span> <span class="n">distribution</span><span class="o">.</span>
-                        <span class="n">Default</span><span class="p">:</span> <span class="n">Use</span> <span class="n">data</span> <span class="n">to</span> <span class="n">sample</span> <span class="kn">from</span> <span class="nn">the</span> <span class="n">posterior</span> <span class="n">distribution</span>
+  <span class="o">--</span><span class="n">seed</span><span class="o">=</span><span class="n">SEED</span>           <span class="n">Seed</span> <span class="k">for</span> <span class="n">random</span> <span class="n">number</span> <span class="n">generator</span><span class="o">.</span> <span class="n">Default</span><span class="p">:</span> <span class="n">Set</span> <span class="kn">from</span><span class="w"> </span><span class="nn">clock.</span>
+  <span class="o">--</span><span class="n">ignore</span><span class="o">-</span><span class="n">data</span>         <span class="n">Ignore</span> <span class="n">data</span> <span class="n">to</span> <span class="n">sample</span> <span class="kn">from</span><span class="w"> </span><span class="nn">the</span> <span class="n">prior</span> <span class="n">distribution</span><span class="o">.</span>
+                        <span class="n">Default</span><span class="p">:</span> <span class="n">Use</span> <span class="n">data</span> <span class="n">to</span> <span class="n">sample</span> <span class="kn">from</span><span class="w"> </span><span class="nn">the</span> <span class="n">posterior</span> <span class="n">distribution</span>
   <span class="o">--</span><span class="n">nthreads</span><span class="o">=</span><span class="n">NTHREADS</span>   <span class="n">Number</span> <span class="n">of</span> <span class="n">threads</span> <span class="n">to</span> <span class="n">use</span> <span class="k">for</span> <span class="n">likelihood</span> <span class="n">calculations</span><span class="o">.</span>
                         <span class="n">Default</span><span class="p">:</span> <span class="mi">1</span> <span class="p">(</span><span class="n">no</span> <span class="n">multithreading</span><span class="p">)</span><span class="o">.</span> <span class="n">If</span> <span class="n">you</span> <span class="n">are</span> <span class="n">using</span> <span class="n">the</span>
                         <span class="s1">&#39;--ignore-data&#39;</span> <span class="n">option</span><span class="p">,</span> <span class="n">no</span> <span class="n">likelihood</span> <span class="n">calculations</span>
@@ -532,7 +571,7 @@ like:</p>
                         <span class="n">understand</span> <span class="n">what</span> <span class="n">you</span> <span class="n">are</span> <span class="n">doing</span> <span class="n">when</span> <span class="n">you</span> <span class="n">use</span> <span class="n">this</span> <span class="n">option</span><span class="o">.</span>
   <span class="o">--</span><span class="n">relax</span><span class="o">-</span><span class="n">missing</span><span class="o">-</span><span class="n">sites</span>
                         <span class="n">By</span> <span class="n">default</span><span class="p">,</span> <span class="k">if</span> <span class="n">a</span> <span class="n">column</span> <span class="ow">is</span> <span class="n">found</span> <span class="k">for</span> <span class="n">which</span> <span class="n">there</span> <span class="ow">is</span> <span class="n">no</span>
-                        <span class="n">data</span> <span class="k">for</span> <span class="n">at</span> <span class="n">least</span> <span class="n">one</span> <span class="n">population</span><span class="p">,</span> <span class="n">phycoeval</span> <span class="n">throws</span> <span class="n">an</span>
+                        <span class="n">data</span> <span class="n">across</span> <span class="nb">all</span> <span class="n">populations</span><span class="p">,</span> <span class="n">phycoeval</span> <span class="n">throws</span> <span class="n">an</span>
                         <span class="n">error</span><span class="o">.</span> <span class="n">With</span> <span class="n">this</span> <span class="n">option</span><span class="p">,</span> <span class="n">phycoeval</span> <span class="n">will</span> <span class="n">automatically</span>
                         <span class="n">ignore</span> <span class="n">such</span> <span class="n">sites</span> <span class="ow">and</span> <span class="n">only</span> <span class="n">issue</span> <span class="n">a</span> <span class="n">warning</span><span class="o">.</span>
   <span class="o">--</span><span class="n">relax</span><span class="o">-</span><span class="n">triallelic</span><span class="o">-</span><span class="n">sites</span>
@@ -544,7 +583,7 @@ like:</p>
                         <span class="n">to</span> <span class="n">the</span> <span class="n">first</span> <span class="n">nucleotide</span> <span class="n">found</span> <span class="ow">and</span> <span class="n">state</span> <span class="mi">1</span> <span class="n">to</span> <span class="nb">all</span>
                         <span class="n">others</span><span class="o">.</span> <span class="n">If</span> <span class="n">you</span> <span class="n">do</span> <span class="ow">not</span> <span class="n">wish</span> <span class="n">to</span> <span class="n">recode</span> <span class="n">such</span> <span class="n">sites</span> <span class="ow">and</span>
                         <span class="n">prefer</span> <span class="n">to</span> <span class="n">ignore</span> <span class="n">them</span><span class="p">,</span> <span class="n">please</span> <span class="n">remove</span> <span class="nb">all</span> <span class="n">sites</span> <span class="k">with</span>
-                        <span class="n">more</span> <span class="n">than</span> <span class="n">two</span> <span class="n">nucleotide</span> <span class="n">states</span> <span class="kn">from</span> <span class="nn">your</span> <span class="n">DNA</span>
+                        <span class="n">more</span> <span class="n">than</span> <span class="n">two</span> <span class="n">nucleotide</span> <span class="n">states</span> <span class="kn">from</span><span class="w"> </span><span class="nn">your</span> <span class="n">DNA</span>
                         <span class="n">alignments</span><span class="o">.</span> <span class="n">NOTE</span><span class="p">:</span> <span class="n">only</span> <span class="n">alignments</span> <span class="n">of</span> <span class="n">nucleotides</span> <span class="n">are</span>
                         <span class="n">affected</span> <span class="n">by</span> <span class="n">this</span> <span class="n">option</span><span class="p">,</span> <span class="ow">not</span> <span class="n">alignments</span> <span class="n">of</span> <span class="n">standard</span>
                         <span class="n">characters</span> <span class="p">(</span><span class="n">i</span><span class="o">.</span><span class="n">e</span><span class="o">.</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span><span class="o">.</span>
@@ -562,16 +601,15 @@ see the <code class="docutils literal notranslate"><span class="pre">--nthreads<
 <p>Oops, we got an error:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1">#######################################################################</span>
 <span class="c1">###############################  ERROR  ###############################</span>
-<span class="mi">37</span> <span class="n">sites</span> <span class="kn">from</span> <span class="nn">the</span> <span class="n">alignment</span> <span class="ow">in</span><span class="p">:</span>
+<span class="mi">21</span> <span class="n">sites</span> <span class="kn">from</span><span class="w"> </span><span class="nn">the</span> <span class="n">alignment</span> <span class="ow">in</span><span class="p">:</span>
     <span class="s1">&#39;Cyrtodactylus-tutorial-data.nex&#39;</span>
-<span class="n">have</span> <span class="n">no</span> <span class="n">data</span> <span class="k">for</span> <span class="n">at</span> <span class="n">least</span> <span class="n">one</span> <span class="n">population</span><span class="o">.</span>
+<span class="n">have</span> <span class="n">no</span> <span class="n">data</span> <span class="n">across</span> <span class="nb">all</span> <span class="n">populations</span><span class="o">.</span>
 <span class="c1">#######################################################################</span>
 </pre></div>
 </div>
-<p>This error message is telling us that we have 37 sites (columns) in our
-character matrix for which we have no data for at least one population.
-Such sites can be common in RADseq loci, because most assemblers enforce
-thresholds on missing data at the locus level (not for each site).
+<p>This error message is telling us that we have 21 sites (columns) in our
+character matrix for which we have no data for any of our samples (rows).
+Such sites can be common when we subsample individuals from a larger dataset.
 Rather than removing these sites ourselves, we can tell phycoeval to ignore
 them.</p>
 <p>Before we do that, let’s talk about another common error you might see with
@@ -579,7 +617,7 @@ your own data that will look something like (you won’t get this error for the
 example data):</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1">#######################################################################</span>
 <span class="c1">###############################  ERROR  ###############################</span>
-<span class="mi">7</span> <span class="n">sites</span> <span class="kn">from</span> <span class="nn">the</span> <span class="n">alignment</span> <span class="ow">in</span><span class="p">:</span>
+<span class="mi">7</span> <span class="n">sites</span> <span class="kn">from</span><span class="w"> </span><span class="nn">the</span> <span class="n">alignment</span> <span class="ow">in</span><span class="p">:</span>
     <span class="s1">&#39;Cyrtodactylus-tutorial-data.nex&#39;</span>
 <span class="n">have</span> <span class="n">more</span> <span class="n">than</span> <span class="n">two</span> <span class="n">character</span> <span class="n">states</span><span class="o">.</span>
 <span class="c1">#######################################################################</span>
@@ -605,8 +643,8 @@ When we use this option, phycoeval will consider the first state in a column as
 <p>Now, you should be running!
 How long the analysis takes to run will depend on your computer, but
 it took about 2 minutes on my laptop.</p>
-<div class="section" id="checking-the-pre-mcmc-screen-output">
-<h3>Checking the pre-MCMC screen output<a class="headerlink" href="#checking-the-pre-mcmc-screen-output" title="Permalink to this headline">¶</a></h3>
+<section id="checking-the-pre-mcmc-screen-output">
+<h3><a class="toc-backref" href="#id27" role="doc-backlink">Checking the pre-MCMC screen output</a><a class="headerlink" href="#checking-the-pre-mcmc-screen-output" title="Link to this heading">¶</a></h3>
 <p>While the analysis is running, let’s scroll up in our console and look at the
 information phycoeval reported before the MCMC chain started sampling.
 This output goes by very quickly, but it’s <strong>very</strong> important to read it
@@ -618,11 +656,11 @@ At the very top, you will see something like:</p>
 
                                <span class="n">Part</span> <span class="n">of</span><span class="p">:</span>
                               <span class="n">Ecoevolity</span>
-       <span class="n">Version</span> <span class="mf">0.3.2</span> <span class="p">(</span><span class="n">docs</span> <span class="mi">7</span><span class="n">be2cdd</span><span class="p">:</span> <span class="mi">2021</span><span class="o">-</span><span class="mi">08</span><span class="o">-</span><span class="mi">17</span><span class="n">T15</span><span class="p">:</span><span class="mi">46</span><span class="p">:</span><span class="mi">18</span><span class="o">-</span><span class="mi">05</span><span class="p">:</span><span class="mi">00</span><span class="p">)</span>
+        <span class="n">Version</span> <span class="mf">1.1.0</span> <span class="p">(</span><span class="n">dev</span> <span class="n">e4f5e39</span><span class="p">:</span> <span class="mi">2026</span><span class="o">-</span><span class="mi">01</span><span class="o">-</span><span class="mi">07</span><span class="n">T21</span><span class="p">:</span><span class="mi">52</span><span class="p">:</span><span class="mi">17</span><span class="o">-</span><span class="mi">06</span><span class="p">:</span><span class="mi">00</span><span class="p">)</span>
 <span class="o">======================================================================</span>
 
-<span class="n">Seed</span><span class="p">:</span> <span class="mi">1384420509</span>
-<span class="n">Using</span> <span class="n">data</span> <span class="ow">in</span> <span class="n">order</span> <span class="n">to</span> <span class="n">sample</span> <span class="kn">from</span> <span class="nn">the</span> <span class="n">posterior</span> <span class="n">distribution</span><span class="o">...</span>
+<span class="n">Seed</span><span class="p">:</span> <span class="mi">2036173920</span>
+<span class="n">Using</span> <span class="n">data</span> <span class="ow">in</span> <span class="n">order</span> <span class="n">to</span> <span class="n">sample</span> <span class="kn">from</span><span class="w"> </span><span class="nn">the</span> <span class="n">posterior</span> <span class="n">distribution</span><span class="o">...</span>
 <span class="n">Config</span> <span class="n">path</span><span class="p">:</span> <span class="n">phycoeval</span><span class="o">-</span><span class="n">config</span><span class="o">.</span><span class="n">yml</span>
 </pre></div>
 </div>
@@ -644,9 +682,9 @@ Summary of data from &#39;Cyrtodactylus-tutorial-data.nex&#39;:
     Genotypes: diploid
     Markers are dominant? false
     Number of populations: 7
-    Number of sites: 4538
-    Number of variable sites: 102
-    Number of patterns: 29
+    Number of sites: 4554
+    Number of variable sites: 104
+    Number of patterns: 34
     Patterns folded? true
     Population label (max # of alleles sampled):
         philippinicusSibuyan (2)
@@ -679,9 +717,9 @@ every 10th sample it’s logging to the output files.
 After the chain finishes, phycoeval also reports statistics associated with all
 of the MCMC operators; this information is also logged to the file specified
 above as the <code class="docutils literal notranslate"><span class="pre">Operator</span> <span class="pre">log</span> <span class="pre">path</span></code>.</p>
-</div>
-<div class="section" id="the-output-files">
-<h3>The Output Files<a class="headerlink" href="#the-output-files" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="the-output-files">
+<h3><a class="toc-backref" href="#id28" role="doc-backlink">The Output Files</a><a class="headerlink" href="#the-output-files" title="Link to this heading">¶</a></h3>
 <p>After the analysis finishes, type <code class="docutils literal notranslate"><span class="pre">ls</span></code> at the command line:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">ls</span>
 </pre></div>
@@ -698,10 +736,10 @@ If you have convergence or mixing issues, this information can be useful for
 troubleshooting.</p>
 <p>If you open the <code class="docutils literal notranslate"><span class="pre">state</span></code> file, you’ll see it contains the log likelihood,
 prior, and parameter values associated with each MCMC sample.</p>
-</div>
-</div>
-<div class="section" id="running-additional-chains">
-<h2>Running additional chains<a class="headerlink" href="#running-additional-chains" title="Permalink to this headline">¶</a></h2>
+</section>
+</section>
+<section id="running-additional-chains">
+<h2><a class="toc-backref" href="#id29" role="doc-backlink">Running additional chains</a><a class="headerlink" href="#running-additional-chains" title="Link to this heading">¶</a></h2>
 <p>Before we start summarizing the results, let’s run a second chain so we can
 assess convergence and boost our posterior sample size.
 If you have multiple cores on your computer and you’ve compiled <a class="reference external" href="http://phyletica.org/ecoevolity">ecoevolity</a> to
@@ -726,11 +764,11 @@ It increases your sample size from the posterior distribution and allows you to
 better assess convergence.</p>
 <p>I ran 2 additional chains (4 total) on my computer, however, you can proceed
 with the steps below with only 2.</p>
-</div>
-<div class="section" id="summarizing-the-results">
-<h2>Summarizing the Results<a class="headerlink" href="#summarizing-the-results" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="assessing-convergence-and-mixing">
-<h3>Assessing convergence and mixing<a class="headerlink" href="#assessing-convergence-and-mixing" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="summarizing-the-results">
+<h2><a class="toc-backref" href="#id30" role="doc-backlink">Summarizing the Results</a><a class="headerlink" href="#summarizing-the-results" title="Link to this heading">¶</a></h2>
+<section id="assessing-convergence-and-mixing">
+<h3><a class="toc-backref" href="#id31" role="doc-backlink">Assessing convergence and mixing</a><a class="headerlink" href="#assessing-convergence-and-mixing" title="Link to this heading">¶</a></h3>
 <p>Before summarizing our posterior sample of trees and other parameter values, we
 will use the sumphycoeval command-line tool to assess whether our MCMC chains
 converged and mixed well, and if so, how many samples should we ignore from the
@@ -758,7 +796,7 @@ from the beginning of each chain, incrementing by 100 samples:</p>
 a text editor or any spreadsheet program (e.g., Excel) to view the table of
 convergence statistics.
 It should look something like:</p>
-<table class="colwidths-auto scrollwide docutils align-left" style="width: 99%">
+<table class="scrollwide docutils align-left" style="width: 99%">
 <thead>
 <tr class="row-odd"><th class="head"><p>burnin</p></th>
 <th class="head"><p>sample_size</p></th>
@@ -947,9 +985,9 @@ high ESS values, PSRF values close to 1, and PSRF &lt; 0.01.
 If you have <a class="reference external" href="https://github.com/beast-dev/tracer/releases">Tracer</a> installed, you can use it to open the
 <code class="docutils literal notranslate"><span class="pre">phycoeval-config-state-run-?.log</span></code>
 files and look at the convergence and mixing behavior of the chains.</p>
-</div>
-<div class="section" id="summarizing-the-posterior-samples-of-trees-and-other-parameters">
-<h3>Summarizing the posterior samples of trees and other parameters<a class="headerlink" href="#summarizing-the-posterior-samples-of-trees-and-other-parameters" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="summarizing-the-posterior-samples-of-trees-and-other-parameters">
+<h3><a class="toc-backref" href="#id32" role="doc-backlink">Summarizing the posterior samples of trees and other parameters</a><a class="headerlink" href="#summarizing-the-posterior-samples-of-trees-and-other-parameters" title="Link to this heading">¶</a></h3>
 <p>We have assessed the convergence and mixing of our
 MCMC chains and selected the number of samples we want to ignore
 from the beginning of each chain as “burn-in”;
@@ -971,8 +1009,8 @@ generations.</p>
 from each chain), write the maximum <em>a posteriori</em> (MAP) tree to a file named
 <code class="docutils literal notranslate"><span class="pre">cyrt-map-tree.nex</span></code>, and write a <a class="reference external" href="http://yaml.org/">YAML</a>-formatted summary of the posterior
 to a file named <code class="docutils literal notranslate"><span class="pre">posterior-summary.yml</span></code>.</p>
-<div class="section" id="yaml-posterior-summary">
-<h4>YAML posterior summary<a class="headerlink" href="#yaml-posterior-summary" title="Permalink to this headline">¶</a></h4>
+<section id="yaml-posterior-summary">
+<h4><a class="toc-backref" href="#id33" role="doc-backlink">YAML posterior summary</a><a class="headerlink" href="#yaml-posterior-summary" title="Link to this heading">¶</a></h4>
 <p>By default, sumphycoeval writes a <a class="reference external" href="http://yaml.org/">YAML</a>-formatted summary of the posterior
 sample of trees to standard output (i.e., to the terminal’s screen).
 In the command above, we used <code class="docutils literal notranslate"><span class="pre">&gt;</span> <span class="pre">posterior-summary.yml</span></code> to redirect
@@ -983,8 +1021,8 @@ modern programming languages have a package for parsing it.</p>
 <p>The <a class="reference external" href="http://yaml.org/">YAML</a>-formatted posterior summary is very rich with information.  We will
 walk through some of the <code class="docutils literal notranslate"><span class="pre">posterior-summary.yml</span></code> file to see what kinds of
 information it contains.</p>
-<div class="section" id="leaf-label-map">
-<h5><strong>leaf_label_map</strong><a class="headerlink" href="#leaf-label-map" title="Permalink to this headline">¶</a></h5>
+<section id="leaf-label-map">
+<h5><strong>leaf_label_map</strong><a class="headerlink" href="#leaf-label-map" title="Link to this heading">¶</a></h5>
 <p>It begins with a <code class="docutils literal notranslate"><span class="pre">leaf_label_map</span></code> that tells you the numbers that correspond
 to the leaf (tip) labels in the trees:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">leaf_label_map</span><span class="p">:</span>
@@ -997,12 +1035,12 @@ to the leaf (tip) labels in the trees:</p>
     <span class="mi">6</span><span class="p">:</span> <span class="n">philippinicusTablas</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="summary-of-tree-sources">
-<h5><strong>summary_of_tree_sources</strong><a class="headerlink" href="#summary-of-tree-sources" title="Permalink to this headline">¶</a></h5>
 <p>These numbers will be used to refer to the leaf labels throughout the rest of
-the file.
-Next, it provides a summary about where all the tree samples came from:</p>
+the file.</p>
+</section>
+<section id="summary-of-tree-sources">
+<h5><strong>summary_of_tree_sources</strong><a class="headerlink" href="#summary-of-tree-sources" title="Link to this heading">¶</a></h5>
+<p>Next, it provides a summary about where all the tree samples came from:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">summary_of_tree_sources</span><span class="p">:</span>
     <span class="n">total_number_of_trees_sampled</span><span class="p">:</span> <span class="mi">5200</span>
     <span class="n">sources</span><span class="p">:</span>
@@ -1024,9 +1062,9 @@ Next, it provides a summary about where all the tree samples came from:</p>
           <span class="n">number_of_trees_sampled</span><span class="p">:</span> <span class="mi">1300</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="summary-of-split-freq-std-deviations">
-<h5><strong>summary_of_split_freq_std_deviations</strong><a class="headerlink" href="#summary-of-split-freq-std-deviations" title="Permalink to this headline">¶</a></h5>
+</section>
+<section id="summary-of-split-freq-std-deviations">
+<h5><strong>summary_of_split_freq_std_deviations</strong><a class="headerlink" href="#summary-of-split-freq-std-deviations" title="Link to this heading">¶</a></h5>
 <p>Next is a summary of the standard deviations of the frequencies of all tree
 splits (clades) with a frequency greater than 10% (<code class="docutils literal notranslate"><span class="pre">min_frequency:</span> <span class="pre">0.1</span></code>; this
 can be changed with the <code class="docutils literal notranslate"><span class="pre">--min-split-freq</span></code> option in sumphycoeval):</p>
@@ -1039,16 +1077,16 @@ can be changed with the <code class="docutils literal notranslate"><span class="
 </div>
 <p>More specifically, for each split (clade) that is present in more
 than 10% of the posterior samples, the standard deviation of the
-frequencies across all the MCMC chain is calculated.
+frequencies across all the MCMC chains is calculated.
 Above, we are shown the mean and max of all these standard deviations of split
 frequencies (SDSF).
 If all the chains are sampling the same distribution of trees, their split
 frequencies should be similar (barring sampling error), so we want the SDSFs to
 be small (a mean SDSF &lt; 0.1 is a rule of thumb that is often used; but, that’s
 not a magic number!).</p>
-</div>
-<div class="section" id="tree-length">
-<h5><strong>tree_length</strong><a class="headerlink" href="#tree-length" title="Permalink to this headline">¶</a></h5>
+</section>
+<section id="tree-length">
+<h5><strong>tree_length</strong><a class="headerlink" href="#tree-length" title="Link to this heading">¶</a></h5>
 <p>Next, the <code class="docutils literal notranslate"><span class="pre">tree_length</span></code> section provides a summary of the total length (i.e.,
 the sum of all branch lengths) of sampled trees:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">tree_length</span><span class="p">:</span>
@@ -1085,19 +1123,17 @@ distribution); values close to one (e.g., &lt; 1.2) suggest the chains
 converged and are sampling from the same distribution.</p>
 </dd>
 </dl>
-</div>
-<div class="section" id="summary-of-map-topologies">
-<h5><strong>summary_of_map_topologies</strong><a class="headerlink" href="#summary-of-map-topologies" title="Permalink to this headline">¶</a></h5>
+</section>
+<section id="summary-of-map-topologies">
+<h5><strong>summary_of_map_topologies</strong><a class="headerlink" href="#summary-of-map-topologies" title="Link to this heading">¶</a></h5>
 <p>Up next, there’s a summary of the maximum <em>a posteriori</em> tree
 topologies (tree models):</p>
-<dl class="simple">
-<dt>summary_of_map_topologies:</dt><dd><ul class="simple">
-<li><p>count: 280
-frequency: 0.0538461538461538491
-newick: ( … )[&amp; … ]:0</p></li>
-</ul>
-</dd>
-</dl>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">summary_of_map_topologies</span><span class="p">:</span>
+    <span class="o">-</span> <span class="n">count</span><span class="p">:</span> <span class="mi">280</span>
+      <span class="n">frequency</span><span class="p">:</span> <span class="mf">0.0538461538461538491</span>
+      <span class="n">newick</span><span class="p">:</span> <span class="p">(</span> <span class="o">...</span> <span class="p">)[</span><span class="o">&amp;</span> <span class="o">...</span> <span class="p">]:</span><span class="mi">0</span>
+</pre></div>
+</div>
 <p>In my summary there is only 1, but there might be more than one if multiple
 topologies tie for the most frequently sampled.
 The <code class="docutils literal notranslate"><span class="pre">count</span></code> is the number of times the tree was sampled, and the
@@ -1107,9 +1143,9 @@ Lastly, the annotated MAP topology is provided in <code class="docutils literal 
 this is the same tree we told sumphycoeval to write to the
 <code class="docutils literal notranslate"><span class="pre">cyrt-map-tree.nex</span></code>, which we discuss more
 <a class="reference internal" href="#annotated-map-tree"><span class="std std-ref">in the section below</span></a>.</p>
-</div>
-<div class="section" id="topologies">
-<h5><strong>topologies</strong><a class="headerlink" href="#topologies" title="Permalink to this headline">¶</a></h5>
+</section>
+<section id="topologies">
+<h5><strong>topologies</strong><a class="headerlink" href="#topologies" title="Link to this heading">¶</a></h5>
 <p>Up next, the <code class="docutils literal notranslate"><span class="pre">topologies</span></code> section provides a list of <em>all</em> sampled topologies
 sorted from most to least frequent:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">topologies</span><span class="p">:</span>
@@ -1163,9 +1199,9 @@ Then the sampled values of the divergence time (or height)
 are summarized;
 <a class="reference internal" href="#sum-stat-defs"><span class="std std-ref">see above descriptions</span></a>
 of some of the more cryptic summary statistics.</p>
-</div>
-<div class="section" id="heights">
-<h5><strong>heights</strong><a class="headerlink" href="#heights" title="Permalink to this headline">¶</a></h5>
+</section>
+<section id="heights">
+<h5><strong>heights</strong><a class="headerlink" href="#heights" title="Link to this heading">¶</a></h5>
 <p>Next, the <code class="docutils literal notranslate"><span class="pre">heights</span></code> section provides a list of all sampled divergence events
 (or <code class="docutils literal notranslate"><span class="pre">heights</span></code>) in order of decreasing frequency (decreasing approximate
 posterior probability):</p>
@@ -1211,9 +1247,9 @@ followed by
 the summary of the sampled values of the height (divergence time);
 <a class="reference internal" href="#sum-stat-defs"><span class="std std-ref">see above descriptions</span></a>
 of some of the more cryptic summary statistics.</p>
-</div>
-<div class="section" id="splits">
-<h5><strong>splits</strong><a class="headerlink" href="#splits" title="Permalink to this headline">¶</a></h5>
+</section>
+<section id="splits">
+<h5><strong>splits</strong><a class="headerlink" href="#splits" title="Link to this heading">¶</a></h5>
 <p>The next section, <code class="docutils literal notranslate"><span class="pre">splits</span></code>, summarizes all of the splits that were
 sampled.
 Because phycoeval only estimates rooted trees, we can think of a split (branch)
@@ -1270,9 +1306,9 @@ file, you will also find a summaries for its <code class="docutils literal notra
 <code class="docutils literal notranslate"><span class="pre">length</span></code>, and <code class="docutils literal notranslate"><span class="pre">pop_size</span></code>.
 These are different from the summaries for the split, because it only
 summarizes the samples that had that particular node configuration.</p>
-</div>
-<div class="section" id="number-of-heights-summary">
-<h5><strong>number_of_heights_summary</strong><a class="headerlink" href="#number-of-heights-summary" title="Permalink to this headline">¶</a></h5>
+</section>
+<section id="number-of-heights-summary">
+<h5><strong>number_of_heights_summary</strong><a class="headerlink" href="#number-of-heights-summary" title="Link to this heading">¶</a></h5>
 <p>Next, the <code class="docutils literal notranslate"><span class="pre">number_of_heights_summary</span></code> section provides
 a summary of the number of independent divergence times (heights)
 across the posterior sample of trees;
@@ -1296,9 +1332,9 @@ for descriptions of some of the more cryptic summary statistics.</p>
     <span class="n">hpdi_95</span><span class="p">:</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">5</span><span class="p">]</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="number-of-heights">
-<h5><strong>number_of_heights</strong><a class="headerlink" href="#number-of-heights" title="Permalink to this headline">¶</a></h5>
+</section>
+<section id="number-of-heights">
+<h5><strong>number_of_heights</strong><a class="headerlink" href="#number-of-heights" title="Link to this heading">¶</a></h5>
 <p>The last section (<code class="docutils literal notranslate"><span class="pre">number_of_heights</span></code>) in the <a class="reference external" href="http://yaml.org/">YAML</a>-formatted posterior
 summary lists the numbers of divergence times (heights) sampled by our MCMC
 chains in order of decreasing frequency.
@@ -1333,9 +1369,9 @@ was 4, which has an approximate posterior probability  (<code class="docutils li
       <span class="n">cumulative_frequency</span><span class="p">:</span> <span class="mi">1</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="using-the-data-in-the-yaml-summary">
-<span id="parsing-yaml-summary"></span><h5>Using the data in the YAML summary<a class="headerlink" href="#using-the-data-in-the-yaml-summary" title="Permalink to this headline">¶</a></h5>
+</section>
+<section id="using-the-data-in-the-yaml-summary">
+<span id="parsing-yaml-summary"></span><h5>Using the data in the YAML summary<a class="headerlink" href="#using-the-data-in-the-yaml-summary" title="Link to this heading">¶</a></h5>
 <p><a class="reference external" href="http://yaml.org/">YAML</a> is a standard format that most modern programming languages are able to
 read and interpret.
 Below is an example of Python script that parses the <a class="reference external" href="http://yaml.org/">YAML</a> posterior summary
@@ -1343,8 +1379,8 @@ file and plots the posterior probability of all possible numbers of divergence
 events.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="ch">#! /usr/bin/env python3</span>
 
-<span class="kn">import</span> <span class="nn">yaml</span>
-<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">yaml</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
 
 <span class="c1"># Open the summary file and load the data using the yaml module</span>
 <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;posterior-summary.yml&quot;</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">stream</span><span class="p">:</span>
@@ -1372,17 +1408,20 @@ events.</p>
 <p>The script above requires the PyYAML and matplotlib packages to be installed.
 Once these are installed, running the script will generate a plot that looks
 something like</p>
-<div class="figure align-center" id="id8">
-<span id="phycoeval-tutorial-num-divs-plot"></span><a class="reference internal image-reference" href="../../_images/number-of-divergences.svg"><img alt="Number of divergences" src="../../_images/number-of-divergences.svg" width="99%" /></a>
-<p class="caption"><span class="caption-text">The approximate posterior probabilities of all possible numbers of
-divergences.</span><a class="headerlink" href="#id8" title="Permalink to this image">¶</a></p>
-</div>
+<figure class="align-center" id="id8">
+<span id="phycoeval-tutorial-num-divs-plot"></span><a class="reference internal image-reference" href="../../_images/number-of-divergences.svg"><img alt="Number of divergences" src="../../_images/number-of-divergences.svg" style="width: 99%;" />
+</a>
+<figcaption>
+<p><span class="caption-text">The approximate posterior probabilities of all possible numbers of
+divergences.</span><a class="headerlink" href="#id8" title="Link to this image">¶</a></p>
+</figcaption>
+</figure>
 <p>This is a simple example of how to take advantage of the information stored in
 the <a class="reference external" href="http://yaml.org/">YAML</a>-formatted posterior summary.</p>
-</div>
-</div>
-<div class="section" id="annotated-map-tree">
-<span id="id4"></span><h4>Annotated MAP tree<a class="headerlink" href="#annotated-map-tree" title="Permalink to this headline">¶</a></h4>
+</section>
+</section>
+<section id="annotated-map-tree">
+<span id="id4"></span><h4><a class="toc-backref" href="#id34" role="doc-backlink">Annotated MAP tree</a><a class="headerlink" href="#annotated-map-tree" title="Link to this heading">¶</a></h4>
 <p>With the <code class="docutils literal notranslate"><span class="pre">--map-tree-out</span> <span class="pre">cyrt-map-tree.nex</span></code> option above, we told sumphycoeval
 to write the maximum <em>a posteriori</em> (MAP) tree to a file named
 <code class="docutils literal notranslate"><span class="pre">cyrt-map-tree.nex</span></code>.
@@ -1405,10 +1444,13 @@ oldest and show you which nodes share the same divergence time
 across the tree.
 My MAP tree has three heights (divergence times), and the index “1” appears
 on two nodes, indicating that they share the same divergence time.</p>
-<div class="figure align-center" id="id9">
-<span id="map-tree-height-index"></span><a class="reference internal image-reference" href="../../_images/cyrt-map-tree-height-index.png"><img alt="height_index" src="../../_images/cyrt-map-tree-height-index.png" style="width: 99%;" /></a>
-<p class="caption"><span class="caption-text">The <code class="docutils literal notranslate"><span class="pre">height_index</span></code> attribute will show you which nodes share the same divergence times.</span><a class="headerlink" href="#id9" title="Permalink to this image">¶</a></p>
-</div>
+<figure class="align-center" id="id9">
+<span id="map-tree-height-index"></span><a class="reference internal image-reference" href="../../_images/cyrt-map-tree-height-index.png"><img alt="height_index" src="../../_images/cyrt-map-tree-height-index.png" style="width: 99%;" />
+</a>
+<figcaption>
+<p><span class="caption-text">The <code class="docutils literal notranslate"><span class="pre">height_index</span></code> attribute will show you which nodes share the same divergence times.</span><a class="headerlink" href="#id9" title="Link to this image">¶</a></p>
+</figcaption>
+</figure>
 <p>If you change the internal node labels to
 <code class="docutils literal notranslate"><span class="pre">index_freq</span></code>
 (“Style” -&gt; “Internal node text” -&gt; “index_freq”),
@@ -1416,21 +1458,27 @@ this will display the approximate posterior probabilities for each divergence
 event (height).
 For example, on my MAP tree, the posterior probability that the two clades with
 index “1” share the same divergence time is 0.497.</p>
-<div class="figure align-center" id="id10">
-<span id="map-tree-index-freq"></span><a class="reference internal image-reference" href="../../_images/cyrt-map-tree-index-freq.png"><img alt="index_freq" src="../../_images/cyrt-map-tree-index-freq.png" style="width: 99%;" /></a>
-<p class="caption"><span class="caption-text">The <code class="docutils literal notranslate"><span class="pre">index_freq</span></code> attribute is the posterior probability of each
-divergence event (height).</span><a class="headerlink" href="#id10" title="Permalink to this image">¶</a></p>
-</div>
+<figure class="align-center" id="id10">
+<span id="map-tree-index-freq"></span><a class="reference internal image-reference" href="../../_images/cyrt-map-tree-index-freq.png"><img alt="index_freq" src="../../_images/cyrt-map-tree-index-freq.png" style="width: 99%;" />
+</a>
+<figcaption>
+<p><span class="caption-text">The <code class="docutils literal notranslate"><span class="pre">index_freq</span></code> attribute is the posterior probability of each
+divergence event (height).</span><a class="headerlink" href="#id10" title="Link to this image">¶</a></p>
+</figcaption>
+</figure>
 <p>If you want to see the Bayesian support values that are typically shown
 on trees, change the internal node labels to <code class="docutils literal notranslate"><span class="pre">split_freq</span></code>.
 This will show the approximate posterior probabilities of all the splits
 (clades) across the tree.
 This is the “normal” support value shown on a tree that summarize the posterior
 sample of a Bayesian phylogenetic analysis.</p>
-<div class="figure align-center" id="id11">
-<span id="map-tree-split-freq"></span><a class="reference internal image-reference" href="../../_images/cyrt-map-tree-split-freq.png"><img alt="split_freq" src="../../_images/cyrt-map-tree-split-freq.png" style="width: 99%;" /></a>
-<p class="caption"><span class="caption-text">The <code class="docutils literal notranslate"><span class="pre">split_freq</span></code> attribute is the posterior probability of each split (clade).</span><a class="headerlink" href="#id11" title="Permalink to this image">¶</a></p>
-</div>
+<figure class="align-center" id="id11">
+<span id="map-tree-split-freq"></span><a class="reference internal image-reference" href="../../_images/cyrt-map-tree-split-freq.png"><img alt="split_freq" src="../../_images/cyrt-map-tree-split-freq.png" style="width: 99%;" />
+</a>
+<figcaption>
+<p><span class="caption-text">The <code class="docutils literal notranslate"><span class="pre">split_freq</span></code> attribute is the posterior probability of each split (clade).</span><a class="headerlink" href="#id11" title="Link to this image">¶</a></p>
+</figcaption>
+</figure>
 <p>However, split (clade) posterior probabilities are not very good at summarizing
 the support for polytomies (multifurcations) in the tree.
 To better understand why, please refer to
@@ -1440,11 +1488,14 @@ at the <code class="docutils literal notranslate"><span class="pre">node_freq</s
 (“Style” -&gt; “Internal node text” -&gt; “node_freq”).
 This displays the approximate posterior probability of each internal node in
 the MAP tree (we define a node by the splits that descend from it).</p>
-<div class="figure align-center" id="id12">
-<span id="map-tree-node-freq"></span><a class="reference internal image-reference" href="../../_images/cyrt-map-tree-node-freq.png"><img alt="node_freq" src="../../_images/cyrt-map-tree-node-freq.png" style="width: 99%;" /></a>
-<p class="caption"><span class="caption-text">The <code class="docutils literal notranslate"><span class="pre">node_freq</span></code> attribute is the posterior probability of each node (a
-split with a particular set of descendant splits).</span><a class="headerlink" href="#id12" title="Permalink to this image">¶</a></p>
-</div>
+<figure class="align-center" id="id12">
+<span id="map-tree-node-freq"></span><a class="reference internal image-reference" href="../../_images/cyrt-map-tree-node-freq.png"><img alt="node_freq" src="../../_images/cyrt-map-tree-node-freq.png" style="width: 99%;" />
+</a>
+<figcaption>
+<p><span class="caption-text">The <code class="docutils literal notranslate"><span class="pre">node_freq</span></code> attribute is the posterior probability of each node (a
+split with a particular set of descendant splits).</span><a class="headerlink" href="#id12" title="Link to this image">¶</a></p>
+</figcaption>
+</figure>
 <p>In addition to the node attributes above, there are also summaries of the:</p>
 <ul class="simple">
 <li><p>Divergence time (height) summarized by divergence event
@@ -1465,10 +1516,10 @@ are the means calculated over divergence events.
 By default, the <code class="docutils literal notranslate"><span class="pre">index_height_mean</span></code> is used, but if the
 <code class="docutils literal notranslate"><span class="pre">--median-heights</span></code> option is specified when running sumphycoeval,
 then <code class="docutils literal notranslate"><span class="pre">index_height_median</span></code> will be used.</p>
-</div>
-</div>
-</div>
-</div>
+</section>
+</section>
+</section>
+</section>
 
 
           </div>

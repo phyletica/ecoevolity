@@ -1,17 +1,17 @@
-
 <!DOCTYPE html>
 
-<html>
+<html lang="en" data-content_root="./">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
     <title>Glossary &#8212; Ecoevolity 0.1.0 documentation</title>
-    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
-    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
-    <script src="_static/jquery.js"></script>
-    <script src="_static/underscore.js"></script>
-    <script src="_static/doctools.js"></script>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="_static/basic.css?v=b08954a9" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css?v=f237fd5d" />
+    <script src="_static/documentation_options.js?v=01f34227"></script>
+    <script src="_static/doctools.js?v=9bcbadda"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Literature Cited" href="zbib/references.html" />
@@ -19,17 +19,18 @@
    
   <link rel="stylesheet" href="_static/custom.css" type="text/css" />
   
+
   
-  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+  
 
   </head><body>
   <div class="document">
     
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
         <div class="sphinxsidebarwrapper">
 <p class="logo">
   <a href="index.html">
-    <img class="logo" src="_static/site-logo.svg" alt="Logo"/>
+    <img class="logo" src="_static/site-logo.svg" alt="Logo" />
     
   </a>
 </p>
@@ -71,16 +72,16 @@
   </ul></li>
 </ul>
 </div>
-<div id="searchbox" style="display: none" role="search">
+<search id="searchbox" style="display: none" role="search">
   <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
       <input type="submit" value="Go" />
     </form>
     </div>
-</div>
-<script>$('#searchbox').show(0);</script>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
 
 
 
@@ -97,10 +98,10 @@
 
           <div class="body" role="main">
             
-  <div class="section" id="glossary">
-<span id="id1"></span><h1>Glossary<a class="headerlink" href="#glossary" title="Permalink to this headline">¶</a></h1>
+  <section id="glossary">
+<span id="id1"></span><h1>Glossary<a class="headerlink" href="#glossary" title="Link to this heading">¶</a></h1>
 <dl class="glossary">
-<dt id="term-Comparison-taxon">Comparison/taxon<a class="headerlink" href="#term-Comparison-taxon" title="Permalink to this term">¶</a></dt><dd><p>A taxon we are analyzing.
+<dt id="term-Comparison-taxon">Comparison/taxon<a class="headerlink" href="#term-Comparison-taxon" title="Link to this term">¶</a></dt><dd><p>A taxon we are analyzing.
 This can comprise two populations/species, in which case we are interested
 in the time that they diverged.
 This can also comprise a single population/species, in which case we are
@@ -113,27 +114,29 @@ their divergence times, we will often use “<strong>population pair</strong>”
 “<strong>pair</strong>” in place of “comparison.”</p>
 <p>We will use <img class="math" src="_images/math/363819176ddd5e7bd3f200a416e508d79dd75ba8.svg" alt="\ncomparisons{}"/> to denote the number of comparisons.</p>
 </dd>
-<dt id="term-Demographic-change-comparison">Demographic-change comparison<a class="headerlink" href="#term-Demographic-change-comparison" title="Permalink to this term">¶</a></dt><dd><p>A comparison comprising one population/species.
+<dt id="term-Demographic-change-comparison">Demographic-change comparison<a class="headerlink" href="#term-Demographic-change-comparison" title="Link to this term">¶</a></dt><dd><p>A comparison comprising one population/species.
 The mode we will assume for such a comparison is a population undergoing an
 instantaneous increase or decrease in effective population size at some
 time in the past.</p>
-<a class="reference internal image-reference" href="_images/demog-model-singleton.svg" id="demog-comparison-cartoon"><img alt="divergence comparison cartoon" class="align-center" id="demog-comparison-cartoon" src="_images/demog-model-singleton.svg" width="50%" /></a>
+<a class="reference internal image-reference" href="_images/demog-model-singleton.svg" id="demog-comparison-cartoon"><img alt="divergence comparison cartoon" class="align-center" id="demog-comparison-cartoon" src="_images/demog-model-singleton.svg" style="width: 50%;" />
+</a>
 </dd>
-<dt id="term-Divergence-comparison">Divergence comparison<a class="headerlink" href="#term-Divergence-comparison" title="Permalink to this term">¶</a></dt><dd><p>A comparison comprising two populations/species.
+<dt id="term-Divergence-comparison">Divergence comparison<a class="headerlink" href="#term-Divergence-comparison" title="Link to this term">¶</a></dt><dd><p>A comparison comprising two populations/species.
 The model we will assume for such a comparison is an ancestral population
 diverging into two descendant populations at some time in the past.</p>
-<a class="reference internal image-reference" href="_images/div-model-singleton.svg" id="divergence-comparison-cartoon"><img alt="divergence comparison cartoon" class="align-center" id="divergence-comparison-cartoon" src="_images/div-model-singleton.svg" width="50%" /></a>
+<a class="reference internal image-reference" href="_images/div-model-singleton.svg" id="divergence-comparison-cartoon"><img alt="divergence comparison cartoon" class="align-center" id="divergence-comparison-cartoon" src="_images/div-model-singleton.svg" style="width: 50%;" />
+</a>
 </dd>
-<dt id="term-Event-model">Event model<a class="headerlink" href="#term-Event-model" title="Permalink to this term">¶</a></dt><dd><p>(<img class="math" src="_images/math/ae3e428cd60d4fa463beb987ee91037fc31a0ad3.svg" alt="\eventtimemodel"/>) The number of events, their times, and the
+<dt id="term-Event-model">Event model<a class="headerlink" href="#term-Event-model" title="Link to this term">¶</a></dt><dd><p>(<img class="math" src="_images/math/ae3e428cd60d4fa463beb987ee91037fc31a0ad3.svg" alt="\eventtimemodel"/>) The number of events, their times, and the
 partitioning of the comparisons to those events.</p>
 </dd>
-<dt id="term-Event-subsets">Event subsets<a class="headerlink" href="#term-Event-subsets" title="Permalink to this term">¶</a></dt><dd><p>(<img class="math" src="_images/math/9967ce9b1048674fde362b27a71748ee5182a8e9.svg" alt="\eventtimesets"/>) The partitioning of the comparisons into subsets,
+<dt id="term-Event-subsets">Event subsets<a class="headerlink" href="#term-Event-subsets" title="Link to this term">¶</a></dt><dd><p>(<img class="math" src="_images/math/9967ce9b1048674fde362b27a71748ee5182a8e9.svg" alt="\eventtimesets"/>) The partitioning of the comparisons into subsets,
 each of which share an event.
 This can range from all comparisons being lumped together (<img class="math" src="_images/math/ad9ce84673b406808bb5e4ad976f5677a71e2402.svg" alt="nevents{}
 = 1"/>) to all comparisons being split up (<img class="math" src="_images/math/d7a8275c1d8bcbde68331ff6456295b78a678517.svg" alt="nevents{} =
 \ncomparisons{}"/>).</p>
 </dd>
-<dt id="term-Event-times">Event times<a class="headerlink" href="#term-Event-times" title="Permalink to this term">¶</a></dt><dd><p>(<img class="math" src="_images/math/bd2ce17a9b1a6af4e0ba53ee7bd9d3715e2f761e.svg" alt="\eventtimes"/>) The time at which one or more comparisons underwent
+<dt id="term-Event-times">Event times<a class="headerlink" href="#term-Event-times" title="Link to this term">¶</a></dt><dd><p>(<img class="math" src="_images/math/bd2ce17a9b1a6af4e0ba53ee7bd9d3715e2f761e.svg" alt="\eventtimes"/>) The time at which one or more comparisons underwent
 a divergence and/or demographic change.
 If we are only analyzing pairs of populations, we will often use
 “<strong>divergence event</strong>.”</p>
@@ -141,7 +144,7 @@ If we are only analyzing pairs of populations, we will often use
 range from one to the number of comparisons.</p>
 </dd>
 </dl>
-</div>
+</section>
 
 
           </div>

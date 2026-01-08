@@ -1,17 +1,17 @@
-
 <!DOCTYPE html>
 
-<html>
+<html lang="en" data-content_root="../">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
     <title>Background &#8212; Ecoevolity 0.1.0 documentation</title>
-    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
-    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
-    <script src="../_static/jquery.js"></script>
-    <script src="../_static/underscore.js"></script>
-    <script src="../_static/doctools.js"></script>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../_static/basic.css?v=b08954a9" />
+    <link rel="stylesheet" type="text/css" href="../_static/alabaster.css?v=f237fd5d" />
+    <script src="../_static/documentation_options.js?v=01f34227"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="The Data" href="biallelic-character-data.html" />
@@ -19,17 +19,18 @@
    
   <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
   
+
   
-  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+  
 
   </head><body>
   <div class="document">
     
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
         <div class="sphinxsidebarwrapper">
 <p class="logo">
   <a href="../index.html">
-    <img class="logo" src="../_static/site-logo.svg" alt="Logo"/>
+    <img class="logo" src="../_static/site-logo.svg" alt="Logo" />
     
   </a>
 </p>
@@ -52,7 +53,11 @@
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="index.html">Ecoevolity</a><ul class="current">
-<li class="toctree-l2 current"><a class="current reference internal" href="#">Background</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Background</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#priors-on-divergence-models">Priors on divergence models</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#inferring-shared-demographic-changes">Inferring shared demographic changes</a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="biallelic-character-data.html">The Data</a></li>
 <li class="toctree-l2"><a class="reference internal" href="yaml-config.html">The Configuration File</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tutorials/index.html">Tutorials</a></li>
@@ -79,16 +84,16 @@
   </ul></li>
 </ul>
 </div>
-<div id="searchbox" style="display: none" role="search">
+<search id="searchbox" style="display: none" role="search">
   <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="../search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
       <input type="submit" value="Go" />
     </form>
     </div>
-</div>
-<script>$('#searchbox').show(0);</script>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
 
 
 
@@ -105,51 +110,65 @@
 
           <div class="body" role="main">
             
-  <p><a class="reference external" href="index.html"><img alt="Ecoevolity" src="../_images/ecoevolity-logo.svg" width="95%" /></a></p>
-<div class="section" id="background">
-<span id="id1"></span><h1>Background<a class="headerlink" href="#background" title="Permalink to this headline">¶</a></h1>
+  <p><a class="reference external" href="index.html"><img alt="Ecoevolity" src="../_images/ecoevolity-logo.svg" style="width: 95%;" /></a></p>
+<section id="background">
+<span id="id1"></span><h1>Background<a class="headerlink" href="#background" title="Link to this heading">¶</a></h1>
 <p>How do community-scale processes affect diversification?
 Environmental processes that drive speciation across whole communities of
 species predict divergence times across taxa that are temporally clustered.
 Our goal with <a class="reference external" href="http://phyletica.org/ecoevolity">ecoevolity</a> is to provide a tool for testing such predictions
 in a full-likelihood Bayesian model choice framework
-<a class="bibtex reference internal" href="../zbib/references.html#oaks2018ecoevolity" id="id2">[14]</a>.
+<span id="id2">[<a class="reference internal" href="../zbib/references.html#id49" title="Jamie R. Oaks. Full Bayesian comparative phylogeography from genomic data. Systematic Biology, 68(3):371–395, 05 2019. URL: https://doi.org/10.1093/sysbio/syy063, doi:10.1093/sysbio/syy063.">14</a>]</span>.
 <a class="reference internal" href="#div-island-cartoon"><span class="std std-ref">The cartoon below</span></a> shows an example where two
 species of lizards co-diverge when their island is fragmented by rising sea
 levels.</p>
-<div class="figure align-center" id="id27" style="width: 90%">
-<span id="div-island-cartoon"></span><a class="reference internal image-reference" href="../_images/div-island-cartoon-event-labels.png"><img alt="divergence model cartoon" src="../_images/div-island-cartoon-event-labels.png" style="width: 600px;" /></a>
-<p class="caption"><span class="caption-text">A cartoon showing three pairs of insular lizard species, two of which
-co-diverged when the island was fragmented.</span><a class="headerlink" href="#id27" title="Permalink to this image">¶</a></p>
-</div>
+<figure class="align-center" id="id19" style="width: 90%">
+<span id="div-island-cartoon"></span><a class="reference internal image-reference" href="../_images/div-island-cartoon-event-labels.png"><img alt="divergence model cartoon" src="../_images/div-island-cartoon-event-labels.png" style="width: 600px;" />
+</a>
+<figcaption>
+<p><span class="caption-text">A cartoon showing three pairs of insular lizard species, two of which
+co-diverged when the island was fragmented.</span><a class="headerlink" href="#id19" title="Link to this image">¶</a></p>
+</figcaption>
+</figure>
 <p>If we collect genetic data from all six populations, and we want to
 evaluate whether the scenario above is a good explanation for the patterns
 in our data, there are other possible scenarios (models) that we need
 to consider.
 For example, perhaps all three pairs of populations diverged at the
 same time:</p>
-<div class="figure align-center" id="id28" style="width: 90%">
-<span id="divmodel-111"></span><a class="reference internal image-reference" href="../_images/div-model-111-labels.svg"><img alt="divergence model 111" src="../_images/div-model-111-labels.svg" width="600px" /></a>
-<p class="caption"><span class="caption-text">All three pairs of lizard species co-diverged.</span><a class="headerlink" href="#id28" title="Permalink to this image">¶</a></p>
-</div>
+<figure class="align-center" id="id20" style="width: 90%">
+<span id="divmodel-111"></span><a class="reference internal image-reference" href="../_images/div-model-111-labels.svg"><img alt="divergence model 111" src="../_images/div-model-111-labels.svg" style="width: 600px;" />
+</a>
+<figcaption>
+<p><span class="caption-text">All three pairs of lizard species co-diverged.</span><a class="headerlink" href="#id20" title="Link to this image">¶</a></p>
+</figcaption>
+</figure>
 <p>Also, there are three possible ways our three pairs of species could have
 diverged at two different times:</p>
-<div class="figure align-center" id="divmodel-211" style="width: 90%">
-<a class="reference internal image-reference" href="../_images/div-model-311-labels.svg"><img alt="divergence model 311" src="../_images/div-model-311-labels.svg" width="600px" /></a>
-</div>
-<div class="figure align-center" style="width: 90%">
-<a class="reference internal image-reference" href="../_images/div-model-131-labels.svg"><img alt="divergence model 131" src="../_images/div-model-131-labels.svg" width="600px" /></a>
-</div>
-<div class="figure align-center" id="id29" style="width: 90%">
-<a class="reference internal image-reference" href="../_images/div-model-113-labels.svg"><img alt="divergence model 113" src="../_images/div-model-113-labels.svg" width="600px" /></a>
-<p class="caption"><span class="caption-text">Three possible ways our three pairs of lizard species diverged at two
-different times.</span><a class="headerlink" href="#id29" title="Permalink to this image">¶</a></p>
-</div>
+<figure class="align-center" id="divmodel-211" style="width: 90%">
+<a class="reference internal image-reference" href="../_images/div-model-311-labels.svg"><img alt="divergence model 311" src="../_images/div-model-311-labels.svg" style="width: 600px;" />
+</a>
+</figure>
+<figure class="align-center" style="width: 90%">
+<a class="reference internal image-reference" href="../_images/div-model-131-labels.svg"><img alt="divergence model 131" src="../_images/div-model-131-labels.svg" style="width: 600px;" />
+</a>
+</figure>
+<figure class="align-center" id="id21" style="width: 90%">
+<a class="reference internal image-reference" href="../_images/div-model-113-labels.svg"><img alt="divergence model 113" src="../_images/div-model-113-labels.svg" style="width: 600px;" />
+</a>
+<figcaption>
+<p><span class="caption-text">Three possible ways our three pairs of lizard species diverged at two
+different times.</span><a class="headerlink" href="#id21" title="Link to this image">¶</a></p>
+</figcaption>
+</figure>
 <p>Finally, it’s also possible that all three pairs diverged independently:</p>
-<div class="figure align-center" id="id30" style="width: 90%">
-<span id="divmodel-123"></span><a class="reference internal image-reference" href="../_images/div-model-213-labels.svg"><img alt="divergence model 123" src="../_images/div-model-213-labels.svg" width="600px" /></a>
-<p class="caption"><span class="caption-text">Three independent divergences.</span><a class="headerlink" href="#id30" title="Permalink to this image">¶</a></p>
-</div>
+<figure class="align-center" id="id22" style="width: 90%">
+<span id="divmodel-123"></span><a class="reference internal image-reference" href="../_images/div-model-213-labels.svg"><img alt="divergence model 123" src="../_images/div-model-213-labels.svg" style="width: 600px;" />
+</a>
+<figcaption>
+<p><span class="caption-text">Three independent divergences.</span><a class="headerlink" href="#id22" title="Link to this image">¶</a></p>
+</figcaption>
+</figure>
 <p>If we want to test for patterns of shared (non-independent) divergences, this
 last scenario of independent divergences seems like a sensible null model.
 Overall, we have five possible models that differ in how the three pairs of
@@ -175,30 +194,30 @@ However, as the number of pairs we wish to compare increases, this
 ML approach becomes daunting.
 The number of possible models we need to consider is
 the <a class="reference external" href="http://en.wikipedia.org/wiki/Bell_number">Bell number</a>
-<a class="bibtex reference internal" href="../zbib/references.html#bell1934" id="id3">[2]</a>.
+<span id="id3">[<a class="reference internal" href="../zbib/references.html#id683" title="E. T. Bell. Exponential numbers. American Mathematical Monthly, 41:411-419, 1934.">2</a>]</span>.
 For 5, 10, and 20 pairs, there are 52, 115,975, and 51,724,158,235,372 possible
 divergence models, respectively.
 A Bayesian model-averaging approach is appealing, because it allows the data to
 determine which models are most relevant, and it allows us to make probability
 statements about the models given the data.</p>
 <p>Methods like msBayes
-<a class="bibtex reference internal" href="../zbib/references.html#hickerson2006" id="id4">[6]</a><a class="bibtex reference internal" href="../zbib/references.html#huang2011" id="id5">[8]</a>
+<span id="id4">[<a class="reference internal" href="../zbib/references.html#id801" title="Michael J. Hickerson, Eli A. Stahl, and H. A. Lessios. Test for simultaneous divergence using approximate Bayesian computation. Evolution, 60(12):2435-2453, 2006.">6</a>, <a class="reference internal" href="../zbib/references.html#id640" title="Wen Huang, Naoki Takebayashi, Yan Qi, and Michael J. Hickerson. MTML-msBayes: approximate Bayesian comparative phylogeographic inference from multiple taxa and multiple loci with rate heterogeneity. BMC Bioinformatics, 12:1, 2011. doi:10.1186/1471-2105-12-1.">8</a>]</span>
 and dpp-msbayes
-<a class="bibtex reference internal" href="../zbib/references.html#oaks2014dpp" id="id6">[13]</a>
+<span id="id5">[<a class="reference internal" href="../zbib/references.html#id58" title="Jamie R. Oaks. An improved approximate-bayesian model-choice method for estimating shared evolutionary history. BMC Evolutionary Biology, 14:150, 07 2014. URL: http://www.biomedcentral.com/1471-2148/14/150/abstract, doi:10.1186/1471-2148-14-150.">13</a>]</span>
 attempt to perform this type of model-averaging
 using approximate-likelihood Bayesian computation (ABC).
 Rather than compute the likelihood, these methods use simulations
 to approximate it.
 These methods often struggle to detect multiple divergence times across pairs
 of populations
-<a class="bibtex reference internal" href="../zbib/references.html#oaks2012" id="id7">[19]</a><a class="bibtex reference internal" href="../zbib/references.html#oaks2014reply" id="id8">[17]</a>,
+<span id="id6">[<a class="reference internal" href="../zbib/references.html#id55" title="Jamie R. Oaks, Charles W. Linkem, and Jeet Sukumaran. Implications of uniformly distributed, empirically informed priors for phylogeographical model selection: a reply to hickerson et al. Evolution, 68():3607–3617, 12 2014. URL: http://onlinelibrary.wiley.com/doi/10.1111/evo.12523/abstract, doi:10.1111/evo.12523.">17</a>, <a class="reference internal" href="../zbib/references.html#id62" title="Jamie R. Oaks, Jeet Sukumaran, Jacob A. Esselstyn, Charles W. Linkem, Cameron D. Siler, Mark T. Holder, and Rafe M. Brown. Evidence for climate-driven diversification? a caution for interpreting ABC inferences of simultaneous historical events. Evolution, 67(4):991–1010, 04 2013. doi:10.1111/j.1558-5646.2012.01840.x.">19</a>]</span>,
 are very sensitive to prior assumptions
-<a class="bibtex reference internal" href="../zbib/references.html#oaks2012" id="id9">[19]</a><a class="bibtex reference internal" href="../zbib/references.html#hickerson2013" id="id10">[7]</a><a class="bibtex reference internal" href="../zbib/references.html#oaks2014reply" id="id11">[17]</a>,
+<span id="id7">[<a class="reference internal" href="../zbib/references.html#id517" title="Michael J. Hickerson, Graham N. Stone, Konrad Lohse, Terrence. C. Demos, Xiaoou Xie, Cedric Landerer, and Naoki Takebayashi. Recommendations for using msbayes to incorporate uncertainty in selecting an ABC model prior: a response to Oaks et al. Evolution, 68(1):284–294, 2014. URL: http://doi.wiley.com/10.1111/evo.12241, doi:10.1111/evo.12241.">7</a>, <a class="reference internal" href="../zbib/references.html#id55" title="Jamie R. Oaks, Charles W. Linkem, and Jeet Sukumaran. Implications of uniformly distributed, empirically informed priors for phylogeographical model selection: a reply to hickerson et al. Evolution, 68():3607–3617, 12 2014. URL: http://onlinelibrary.wiley.com/doi/10.1111/evo.12523/abstract, doi:10.1111/evo.12523.">17</a>, <a class="reference internal" href="../zbib/references.html#id62" title="Jamie R. Oaks, Jeet Sukumaran, Jacob A. Esselstyn, Charles W. Linkem, Cameron D. Siler, Mark T. Holder, and Rafe M. Brown. Evidence for climate-driven diversification? a caution for interpreting ABC inferences of simultaneous historical events. Evolution, 67(4):991–1010, 04 2013. doi:10.1111/j.1558-5646.2012.01840.x.">19</a>]</span>,
 or have little information to update <em>a priori</em> expectations
-<a class="bibtex reference internal" href="../zbib/references.html#oaks2014dpp" id="id12">[13]</a>.
+<span id="id8">[<a class="reference internal" href="../zbib/references.html#id58" title="Jamie R. Oaks. An improved approximate-bayesian model-choice method for estimating shared evolutionary history. BMC Evolutionary Biology, 14:150, 07 2014. URL: http://www.biomedcentral.com/1471-2148/14/150/abstract, doi:10.1186/1471-2148-14-150.">13</a>]</span>.
 Furthermore, the loss of information inherent to ABC approaches can prevent
 them from accurately selecting models
-<a class="bibtex reference internal" href="../zbib/references.html#robert2011" id="id13">[22]</a><a class="bibtex reference internal" href="../zbib/references.html#marin2014" id="id14">[11]</a><a class="bibtex reference internal" href="../zbib/references.html#green2015" id="id15">[5]</a>.</p>
+<span id="id9">[<a class="reference internal" href="../zbib/references.html#id323" title="Peter J. Green, Krzysztof Łatuszyński, Marcelo Pereyra, and Christian P. Robert. Bayesian computation: a summary of the current state, and samples backwards and forwards. Statistics and Computing, 25(4):835–862, 2015. URL: https://doi.org/10.1007/s11222-015-9574-5, doi:10.1007/s11222-015-9574-5.">5</a>, <a class="reference internal" href="../zbib/references.html#id322" title="Jean‐Michel Marin, Natesh S. Pillai, Christian P. Robert, and Judith Rousseau. Relevant statistics for bayesian model choice. Journal of the Royal Statistical Society: Series B (Statistical Methodology), 76(5):833–859, 2013. URL: https://rss.onlinelibrary.wiley.com/doi/abs/10.1111/rssb.12056, arXiv:https://rss.onlinelibrary.wiley.com/doi/pdf/10.1111/rssb.12056, doi:10.1111/rssb.12056.">11</a>, <a class="reference internal" href="../zbib/references.html#id579" title="Christian P Robert, Jean-Marie Cornuet, Jean-Michel Marin, and Natesh S Pillai. Lack of confidence in approximate Bayesian computation model choice. Proceedings of the National Academy of Sciences, 108(37):15112–15117, September 2011.">22</a>]</span>.</p>
 <p>Our goal with <a class="reference external" href="http://phyletica.org/ecoevolity">ecoevolity</a> is to overcome some of these limitations by accommodating
 genomic data (which we’ll denote as <img class="math" src="../_images/math/707409ba5a0d21c07c5ff2eda74b28d0f26d1ae2.svg" alt="\alldata"/>), and using all the
 information in those data.
@@ -208,10 +227,10 @@ along their respective gene trees according to continuous time Markov chain of
 state change.
 It assumes a two-state equivalent of either the Jukes-Cantor (JC69) or general
 time-reversible (GTR) of nucleotide substitution
-<a class="bibtex reference internal" href="../zbib/references.html#jc1969" id="id16">[9]</a><a class="bibtex reference internal" href="../zbib/references.html#tavare1986" id="id17">[25]</a>.
+<span id="id10">[<a class="reference internal" href="../zbib/references.html#id365" title="Thomas. H. Jukes and Charles. R. Cantor. Evolution of protein molecules. In H. N. Munro, editor, Mammalian Protein Metabolism, volume III, chapter 24, pages 21–132. Academic Press, New York, 1969.">9</a>, <a class="reference internal" href="../zbib/references.html#id295" title="Simon Tavaré. Some probabilistic and statistical problems in the analysis of DNA sequences. In Robert M. Miura, editor, Some Mathematical Questions in Biology: DNA Sequence Analysis, pages 57–86. American Mathematical Society, Providence, Rhode Island, USA, 1986.">25</a>]</span>.
 Furthermore, ecoevolity assumes each gene tree branched within the populations
 according to a coalescent model
-<a class="bibtex reference internal" href="../zbib/references.html#kingman1982" id="id18">[10]</a>.
+<span id="id11">[<a class="reference internal" href="../zbib/references.html#id837" title="John F. C. Kingman. The coalescent. Stochastic processes and their applications, 13:235–248, 1982.">10</a>]</span>.
 Given one of the possible divergence models (<img class="math" src="../_images/math/7d50896ec0918c9cd3a24996a9b98da35121b6a1.svg" alt="\model"/>) and values of its
 parameters (<img class="math" src="../_images/math/3cf1eb608c623b46eb5ca8252425ca1bb78b5820.svg" alt="parameters"/>; divergence times, effective population sizes,
 and state frequencies), ecoevolity directly computes the probability of the
@@ -221,11 +240,11 @@ By doing so, ecoevolity effectively integrates over all possible gene trees and
 character substitution histories along those tries, during the likelihood
 calculation.
 This frees ecoevolity from having to estimate the gene trees, and is all thanks to
-the work of David Bryant and colleagues <a class="bibtex reference internal" href="../zbib/references.html#bryant2012" id="id19">[3]</a>.</p>
+the work of David Bryant and colleagues <span id="id12">[<a class="reference internal" href="../zbib/references.html#id558" title="David Bryant, Remco Bouckaert, Joseph Felsenstein, Noah A. Rosenberg, and Arindam Roychoudhury. Inferring species trees directly from biallelic genetic markers: bypassing gene trees in a full coalescent analysis. Molecular Biology and Evolution, 29(8):1917–1932, 2012. doi:10.1093/molbev/mss086.">3</a>]</span>.</p>
 <p>Using this likelihood function and Markov chain Monte Carlo (MCMC),
 Ecoevolity jointly samples the posterior across all possible models:</p>
 <div class="math" id="equation-jointposterior">
-<p><span class="eqno">(1)<a class="headerlink" href="#equation-jointposterior" title="Permalink to this equation">¶</a></span><img src="../_images/math/0099fa1dcb12275394b5c6afe12ddab3f48a9ced.svg" alt="\pr(\parameters, \model[i] \given \alldata) =
+<p><span class="eqno">(1)<a class="headerlink" href="#equation-jointposterior" title="Link to this equation">¶</a></span><img src="../_images/math/0099fa1dcb12275394b5c6afe12ddab3f48a9ced.svg" alt="\pr(\parameters, \model[i] \given \alldata) =
 \frac{
     \pr(\alldata \given \parameters, \model[i])
     \pr(\parameters \given \model[i])
@@ -242,7 +261,7 @@ Ecoevolity jointly samples the posterior across all possible models:</p>
 the parameters to approximate the posterior probabilities of the divergence
 models:</p>
 <div class="math" id="equation-marginalposterior">
-<p><span class="eqno">(2)<a class="headerlink" href="#equation-marginalposterior" title="Permalink to this equation">¶</a></span><img src="../_images/math/8b7aebc0646536ea6e6d47cd05e77ff9481d6820.svg" alt="\pr(\model[i] \given \alldata) &amp;=
+<p><span class="eqno">(2)<a class="headerlink" href="#equation-marginalposterior" title="Link to this equation">¶</a></span><img src="../_images/math/8b7aebc0646536ea6e6d47cd05e77ff9481d6820.svg" alt="\pr(\model[i] \given \alldata) &amp;=
 \frac{
     \int_{\parameters}
     \pr(\alldata \given \parameters, \model[i])
@@ -283,8 +302,8 @@ Accordingly, we <strong>highly recommend</strong> you analyze your data multiple
 using different prior settings (especially the prior on divergence times)
 to assess how sensitive your results are to the priors.</p>
 </div>
-<div class="section" id="priors-on-divergence-models">
-<span id="prior-on-divergence-models"></span><h2>Priors on divergence models<a class="headerlink" href="#priors-on-divergence-models" title="Permalink to this headline">¶</a></h2>
+<section id="priors-on-divergence-models">
+<span id="prior-on-divergence-models"></span><h2>Priors on divergence models<a class="headerlink" href="#priors-on-divergence-models" title="Link to this heading">¶</a></h2>
 <p>To sample from the posterior in Equation <a class="reference internal" href="#equation-jointposterior">(1)</a>,
 we have to assume a prior on all the possible ways our pairs of species
 diverged (divergence models).
@@ -293,19 +312,19 @@ events, and the assignment of the taxa to the events) as a random variable
 under three different distributions:
 The Dirichlet process, Pitman-Yor process, and uniform.
 Prior to Version 1.0.0, only the Dirichlet process was implemented.</p>
-<div class="section" id="dirichlet-process-prior">
-<span id="dp-prior-on-divergence-models"></span><h3>Dirichlet-process prior<a class="headerlink" href="#dirichlet-process-prior" title="Permalink to this headline">¶</a></h3>
+<section id="dirichlet-process-prior">
+<span id="dp-prior-on-divergence-models"></span><h3>Dirichlet-process prior<a class="headerlink" href="#dirichlet-process-prior" title="Link to this heading">¶</a></h3>
 <p>The basic idea of the Dirichlet process
-<a class="bibtex reference internal" href="../zbib/references.html#ferguson1973" id="id20">[4]</a><a class="bibtex reference internal" href="../zbib/references.html#antoniak1974" id="id21">[1]</a>
+<span id="id13">[<a class="reference internal" href="../zbib/references.html#id550" title="Charles E. Antoniak. Mixtures of Dirichlet processes with applications to Bayesian nonparametric problems. Annals of Statistics, 2(6):1152–1174, 1974.">1</a>, <a class="reference internal" href="../zbib/references.html#id607" title="Thomas S Ferguson. A Bayesian Analysis of Some Nonparametric Problems. The Annals of Statistics, 1(2):209–230, March 1973.">4</a>]</span>
 is quite simple; we assign species
 pairs to divergence events one at a time following a very simple rule.
 When assigning the <img class="math" src="../_images/math/ea81a5e81081e0f84c8898a08c57438c3163a071.svg" alt="n^{th}"/> pair, we assign it to its own
 event (i.e., a new divergence event) with probability</p>
 <div class="math" id="equation-dppnewcat">
-<p><span class="eqno">(3)<a class="headerlink" href="#equation-dppnewcat" title="Permalink to this equation">¶</a></span><img src="../_images/math/0efc7ec41bcd1e233bb49cfd9e100b2b40b9827e.svg" alt="\frac{\alpha}{\alpha + n -1}"/></p>
+<p><span class="eqno">(3)<a class="headerlink" href="#equation-dppnewcat" title="Link to this equation">¶</a></span><img src="../_images/math/0efc7ec41bcd1e233bb49cfd9e100b2b40b9827e.svg" alt="\frac{\alpha}{\alpha + n -1}"/></p>
 </div><p>or you assign it to an existing event <img class="math" src="../_images/math/9dd0fca08511a9e1e7a5a9b5583826f2ab695bd1.svg" alt="x"/> with probability</p>
 <div class="math" id="equation-dppexistingcat">
-<p><span class="eqno">(4)<a class="headerlink" href="#equation-dppexistingcat" title="Permalink to this equation">¶</a></span><img src="../_images/math/62f733e8bbe9fdf7817f071294799f4ad0f2bfb5.svg" alt="\frac{n_x}{\alpha + n -1}"/></p>
+<p><span class="eqno">(4)<a class="headerlink" href="#equation-dppexistingcat" title="Link to this equation">¶</a></span><img src="../_images/math/62f733e8bbe9fdf7817f071294799f4ad0f2bfb5.svg" alt="\frac{n_x}{\alpha + n -1}"/></p>
 </div><p>where <img class="math" src="../_images/math/44d89a769ae8b6c4f012093eb4fa62cafd22db29.svg" alt="n_x"/> is the number of pairs already assigned to
 event <img class="math" src="../_images/math/9dd0fca08511a9e1e7a5a9b5583826f2ab695bd1.svg" alt="x"/>.
 Let’s walk through an example using our three pairs of lizard species.
@@ -325,20 +344,23 @@ prior probability of all five possible models.
 Notice toward the end of the animation, as the concentration parameter
 increases we place more probability on the divergence models with more
 independent divergence events (less shared divergences).</p>
-<div class="figure align-center" id="id31" style="width: 90%">
-<span id="dpp-tree"></span><a class="reference internal image-reference" href="../_images/dpp-3-example.gif"><img alt="DPP example" src="../_images/dpp-3-example.gif" style="width: 600px;" /></a>
-<p class="caption"><span class="caption-text">An example of the Dirichlet process.</span><a class="headerlink" href="#id31" title="Permalink to this image">¶</a></p>
-</div>
+<figure class="align-center" id="id23" style="width: 90%">
+<span id="dpp-tree"></span><a class="reference internal image-reference" href="../_images/dpp-3-example.gif"><img alt="DPP example" src="../_images/dpp-3-example.gif" style="width: 600px;" />
+</a>
+<figcaption>
+<p><span class="caption-text">An example of the Dirichlet process.</span><a class="headerlink" href="#id23" title="Link to this image">¶</a></p>
+</figcaption>
+</figure>
 <p>Notice that the Dirichlet process prior (DPP) is not motivated by any
 biological processes.
 Rather, we use it because it is flexible (we can adjust or estimate the
 concentration parameter), and mathematically convenient; it allows us to use
-Gibbs sampling <a class="bibtex reference internal" href="../zbib/references.html#neal2000" id="id22">[12]</a> to sample across divergence models.</p>
-</div>
-<div class="section" id="pitman-yor-process-prior">
-<span id="pyp-prior-on-divergence-models"></span><h3>Pitman-Yor process prior<a class="headerlink" href="#pitman-yor-process-prior" title="Permalink to this headline">¶</a></h3>
+Gibbs sampling <span id="id14">[<a class="reference internal" href="../zbib/references.html#id899" title="R. M. Neal. Markov chain sampling methods for Dirichlet process mixture models. Journal of Computational and Graphical Statistics, 9:249-265, 2000.">12</a>]</span> to sample across divergence models.</p>
+</section>
+<section id="pitman-yor-process-prior">
+<span id="pyp-prior-on-divergence-models"></span><h3>Pitman-Yor process prior<a class="headerlink" href="#pitman-yor-process-prior" title="Link to this heading">¶</a></h3>
 <p>One of the newly implemented ways of modeling shared divergences is
-the Pitman-Yor process (PYP) <a class="bibtex reference internal" href="../zbib/references.html#pitmanyor1997" id="id23">[21]</a>.
+the Pitman-Yor process (PYP) <span id="id15">[<a class="reference internal" href="../zbib/references.html#id666" title="Jim Pitman and Marc Yor. The two-parameter Poisson-Dirichlet distribution derived from a stable subordinator. Annals of Probability, 25(2):855-900, 1997.">21</a>]</span>.
 The PYP is a generalization of the Dirichlet process.
 It adds an additional parameter called the “discount” parameter, which
 we will denote as <img class="math" src="../_images/math/df4b4e36a15e9b9041061074b6e5141aa12b3f16.svg" alt="d"/>.
@@ -349,12 +371,12 @@ process (the DP has exponential tails).</p>
 When assigning the <img class="math" src="../_images/math/ea81a5e81081e0f84c8898a08c57438c3163a071.svg" alt="n^{th}"/> pair, we assign it to its own event (i.e., a
 new divergence event with a unique time) with probability</p>
 <div class="math" id="equation-pypnewcat">
-<p><span class="eqno">(5)<a class="headerlink" href="#equation-pypnewcat" title="Permalink to this equation">¶</a></span><img src="../_images/math/8352ee8db585ef4071b72cc3293c256ed40a2e60.svg" alt="\frac{\alpha + k d}{\alpha + n -1}"/></p>
+<p><span class="eqno">(5)<a class="headerlink" href="#equation-pypnewcat" title="Link to this equation">¶</a></span><img src="../_images/math/8352ee8db585ef4071b72cc3293c256ed40a2e60.svg" alt="\frac{\alpha + k d}{\alpha + n -1}"/></p>
 </div><p>where <img class="math" src="../_images/math/c387d3af1b09825f0e99b2f48ebf0397d16ad71e.svg" alt="k"/> is the number of events that currently exist (i.e., that
 already have a pair assigned to it).
 Or, we assign it to an existing event <img class="math" src="../_images/math/9dd0fca08511a9e1e7a5a9b5583826f2ab695bd1.svg" alt="x"/> with probability</p>
 <div class="math" id="equation-pypexistingcat">
-<p><span class="eqno">(6)<a class="headerlink" href="#equation-pypexistingcat" title="Permalink to this equation">¶</a></span><img src="../_images/math/6d1bd8761705996c562302f9a78e59d1619b2d25.svg" alt="\frac{n_x - d}{\alpha + n -1}"/></p>
+<p><span class="eqno">(6)<a class="headerlink" href="#equation-pypexistingcat" title="Link to this equation">¶</a></span><img src="../_images/math/6d1bd8761705996c562302f9a78e59d1619b2d25.svg" alt="\frac{n_x - d}{\alpha + n -1}"/></p>
 </div><p>where <img class="math" src="../_images/math/44d89a769ae8b6c4f012093eb4fa62cafd22db29.svg" alt="n_x"/> is the number of pairs already assigned to
 event <img class="math" src="../_images/math/9dd0fca08511a9e1e7a5a9b5583826f2ab695bd1.svg" alt="x"/>.</p>
 <p>The animation below illustrates how the these rules of the PYP determine the
@@ -363,10 +385,13 @@ Notice toward the end of the animation, as the discount parameter
 increases we place more probability on the divergence models with more
 independent divergence events (less shared divergences).
 Again, when the discount parameter is zero, the PYP is equivalent to the DP.</p>
-<div class="figure align-center" id="id32" style="width: 90%">
-<span id="pyp-tree"></span><a class="reference internal image-reference" href="../_images/pyp-3-example.gif"><img alt="PYP example" src="../_images/pyp-3-example.gif" style="width: 600px;" /></a>
-<p class="caption"><span class="caption-text">An example of the Pitman-Yor process.</span><a class="headerlink" href="#id32" title="Permalink to this image">¶</a></p>
-</div>
+<figure class="align-center" id="id24" style="width: 90%">
+<span id="pyp-tree"></span><a class="reference internal image-reference" href="../_images/pyp-3-example.gif"><img alt="PYP example" src="../_images/pyp-3-example.gif" style="width: 600px;" />
+</a>
+<figcaption>
+<p><span class="caption-text">An example of the Pitman-Yor process.</span><a class="headerlink" href="#id24" title="Link to this image">¶</a></p>
+</figcaption>
+</figure>
 <p><a class="reference external" href="http://phyletica.org/pyp-demo/">Click here for a larger, interactive demonstration of the PYP</a>.</p>
 <p>With an extra parameter, the PYP has greater flexibility than the DP.
 We can adjust both the concentration and discount parameters to fit our prior
@@ -377,8 +402,8 @@ The PYP preserves the mathematical conveniences of the DP.
 We can quickly calculate the probability of any model, and
 the exchangeability property still allows us to use Gibbs sampling to
 sample across possible divergence models.</p>
-<div class="section" id="uniform-prior">
-<span id="uniform-prior-on-divergence-models"></span><h4>Uniform prior<a class="headerlink" href="#uniform-prior" title="Permalink to this headline">¶</a></h4>
+<section id="uniform-prior">
+<span id="uniform-prior-on-divergence-models"></span><h4>Uniform prior<a class="headerlink" href="#uniform-prior" title="Link to this heading">¶</a></h4>
 <p>We have also implemented a uniform prior over divergence models, where we
 assume <em>a priori</em> that every possible divergence model (every way of grouping
 the divergence times of the population pairs) is equally probable.
@@ -416,13 +441,6 @@ relative probability to help make the tables readable).</p>
 </dl>
 <p>Split weight <img class="math" src="../_images/math/c7f34e4d1ae4a54da2231f4f16f866e000dc828d.svg" alt="s = 1.0"/>:</p>
 <table class="docutils align-default">
-<colgroup>
-<col style="width: 11%" />
-<col style="width: 18%" />
-<col style="width: 19%" />
-<col style="width: 27%" />
-<col style="width: 25%" />
-</colgroup>
 <tbody>
 <tr class="row-odd"><td><p><img class="math" src="../_images/math/c387d3af1b09825f0e99b2f48ebf0397d16ad71e.svg" alt="k"/></p></td>
 <td><p><img class="math" src="../_images/math/402272f73cd28afb71f367dbdeb46e55c087299e.svg" alt="S(N,k)"/></p></td>
@@ -458,13 +476,6 @@ relative probability to help make the tables readable).</p>
 </table>
 <p>Split weight <img class="math" src="../_images/math/6450067262fc0fbedcb5b42371a8e9a71dba930d.svg" alt="s = 2.0"/>:</p>
 <table class="docutils align-default">
-<colgroup>
-<col style="width: 11%" />
-<col style="width: 18%" />
-<col style="width: 19%" />
-<col style="width: 27%" />
-<col style="width: 25%" />
-</colgroup>
 <tbody>
 <tr class="row-odd"><td><p><img class="math" src="../_images/math/c387d3af1b09825f0e99b2f48ebf0397d16ad71e.svg" alt="k"/></p></td>
 <td><p><img class="math" src="../_images/math/402272f73cd28afb71f367dbdeb46e55c087299e.svg" alt="S(N,k)"/></p></td>
@@ -500,13 +511,6 @@ relative probability to help make the tables readable).</p>
 </table>
 <p>Split weight <img class="math" src="../_images/math/7dc6dc400622d1cebe16093510adeb930640034b.svg" alt="s = \frac{1}{2}"/>:</p>
 <table class="docutils align-default">
-<colgroup>
-<col style="width: 11%" />
-<col style="width: 18%" />
-<col style="width: 19%" />
-<col style="width: 27%" />
-<col style="width: 25%" />
-</colgroup>
 <tbody>
 <tr class="row-odd"><td><p><img class="math" src="../_images/math/c387d3af1b09825f0e99b2f48ebf0397d16ad71e.svg" alt="k"/></p></td>
 <td><p><img class="math" src="../_images/math/402272f73cd28afb71f367dbdeb46e55c087299e.svg" alt="S(N,k)"/></p></td>
@@ -540,25 +544,27 @@ relative probability to help make the tables readable).</p>
 </tr>
 </tbody>
 </table>
-</div>
-</div>
-</div>
-<div class="section" id="inferring-shared-demographic-changes">
-<h2>Inferring shared demographic changes<a class="headerlink" href="#inferring-shared-demographic-changes" title="Permalink to this headline">¶</a></h2>
+</section>
+</section>
+</section>
+<section id="inferring-shared-demographic-changes">
+<h2>Inferring shared demographic changes<a class="headerlink" href="#inferring-shared-demographic-changes" title="Link to this heading">¶</a></h2>
 <p>In addition to the divergence models discussed above, with ecoevolity, you can also
 infer shared changes in effective population size.
 For example, insular species of lizards might increase their population sizes
 when their island coalesces with another island:</p>
-<div class="figure align-center" style="width: 90%">
-<a class="reference internal image-reference" href="../_images/demog-island-cartoon-event-labels.png"><img alt="divergence model cartoon" src="../_images/demog-island-cartoon-event-labels.png" style="width: 600px;" /></a>
-</div>
+<figure class="align-center" style="width: 90%">
+<a class="reference internal image-reference" href="../_images/demog-island-cartoon-event-labels.png"><img alt="divergence model cartoon" src="../_images/demog-island-cartoon-event-labels.png" style="width: 600px;" />
+</a>
+</figure>
 <p>Also, ecoevolity allows you to infer a mix of divergences and population
 expansions/contractions:</p>
-<div class="figure align-center" style="width: 90%">
-<a class="reference internal image-reference" href="../_images/mixed-island-cartoon-event-labels.png"><img alt="divergence model cartoon" src="../_images/mixed-island-cartoon-event-labels.png" style="width: 600px;" /></a>
-</div>
-</div>
-</div>
+<figure class="align-center" style="width: 90%">
+<a class="reference internal image-reference" href="../_images/mixed-island-cartoon-event-labels.png"><img alt="divergence model cartoon" src="../_images/mixed-island-cartoon-event-labels.png" style="width: 600px;" />
+</a>
+</figure>
+</section>
+</section>
 
 
           </div>
