@@ -1317,3 +1317,13 @@ are the means calculated over divergence events.
 By default, the ``index_height_mean`` is used, but if the
 ``--median-heights`` option is specified when running |sumphyco|,
 then ``index_height_median`` will be used.
+
+
+Wrap up
+=======
+
+After working through this exercise, we hope that we helped you understand
+
+-   How to prepare data and a configuration file for running |phyco|
+-   How to interpret the output of a |phyco| analysis
+-   The model and computation underlying |phyco|
