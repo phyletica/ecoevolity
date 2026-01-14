@@ -34,6 +34,7 @@ else()
         "${TEST_DIR}/test_simphycoeval_cli.cpp"
         "${TEST_DIR}/test_ecoevolity_cli.cpp"
         "${TEST_DIR}/test_simcoevolity_cli.cpp"
+        "${TEST_DIR}/test_wtheta_cli.cpp"
         )
 endif()
 
@@ -51,6 +52,7 @@ set(ECOEVOLITY_SOURCES
     "${ECOEVOLITY_SOURCE_DIR}/phycoeval.cpp"
     "${ECOEVOLITY_SOURCE_DIR}/simphycoeval.cpp"
     "${ECOEVOLITY_SOURCE_DIR}/sumphycoeval.cpp"
+    "${ECOEVOLITY_SOURCE_DIR}/wtheta.cpp"
     "${ECOEVOLITY_SOURCE_DIR}/data.cpp")
 
 if (BUILD_WITH_THREADS)

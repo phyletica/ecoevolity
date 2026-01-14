@@ -1,3 +1,14 @@
+Next Release
+============
+
+Changes
+-------
+
+-   Adding ``wtheta`` command line tool for getting Watterson's theta estimates
+    for all populations specified in a config file for ``phycoeval`` or
+    ``ecoevolity``.
+
+
 Version 1.1.1
 =============
 
@@ -12,6 +23,7 @@ Changes
     child branche to the bottom parent branches, we were looping over the
     number of children, rather than the number of children with data, which was
     causing an indexing error. This release fixes this bug.
+
 
 Version 1.1.0
 =============

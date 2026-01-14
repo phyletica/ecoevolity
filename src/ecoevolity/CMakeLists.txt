@@ -15,6 +15,7 @@ set(ECOEVOLITY_SOURCES
     simphycoeval.cpp
     sumphycoeval.cpp
     nex2yml.cpp
+    wtheta.cpp
     dpprobs.cpp
     swprobs.cpp
     sumcoevolity.cpp
@@ -68,6 +69,11 @@ install(TARGETS sumcoevolity
 add_executable(nex2yml nex2yml_main.cpp)
 target_link_libraries(nex2yml ${LIBRARIES_TO_LINK})
 install(TARGETS nex2yml
+        DESTINATION bin)
+
+add_executable(wtheta wtheta_main.cpp)
+target_link_libraries(wtheta ${LIBRARIES_TO_LINK})
+install(TARGETS wtheta
         DESTINATION bin)
 
 add_executable(phycoeval phycoeval_main.cpp)
