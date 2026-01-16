@@ -60,6 +60,13 @@ class ContinuousProbabilityDistribution {
         virtual double draw(RandomNumberGenerator & rng) const = 0;
         
         virtual bool is_within_support(double x) const = 0;
+
+        virtual std::vector<double> get_parameters() const = 0;
+
+        virtual unsigned int get_number_of_parameters() const {
+            std::vector<double> parameters = this->get_parameters();
+            return parameters.size();
+        }
 };
 
 class ImproperUniformDistribution : public ContinuousProbabilityDistribution {
@@ -102,6 +109,15 @@ class ImproperUniformDistribution : public ContinuousProbabilityDistribution {
         bool is_within_support(double x) const {
             return true;
         }
+
+        std::vector<double> get_parameters() const {
+            std::vector<double> params;
+            return params;
+        }
+
+        ImproperUniformDistribution get_new_distribution(const std::vector<double> & parameters) {
+            return ImproperUniformDistribution();
+        }
 };
 
 class ImproperPositiveUniformDistribution: public ImproperUniformDistribution {
@@ -141,6 +157,15 @@ class ImproperPositiveUniformDistribution: public ImproperUniformDistribution {
             return rng.uniform_real(
                     0.0,
                     std::numeric_limits<double>::max());
+        }
+
+        std::vector<double> get_parameters() const {
+            std::vector<double> params;
+            return params;
+        }
+
+        ImproperPositiveUniformDistribution get_new_distribution(const std::vector<double> & parameters) {
+            return ImproperPositiveUniformDistribution();
         }
 };
 
@@ -213,6 +238,16 @@ class UniformDistribution : public ContinuousProbabilityDistribution {
 
         double draw(RandomNumberGenerator & rng) const {
             return rng.uniform_real(this->min_, this->max_);
+        }
+
+        std::vector<double> get_parameters() const {
+            std::vector<double> params {this->min_, this->max_};
+            return params;
+        }
+
+        UniformDistribution get_new_distribution(const std::vector<double> & parameters) {
+            ECOEVOLITY_ASSERT(parameters.size() == 2);
+            return UniformDistribution(parameters.at(0), parameters.at(1));
         }
 };
 
@@ -329,6 +364,16 @@ class BetaDistribution: public ContinuousProbabilityDistribution {
                     this->alpha_,
                     this->beta_);
         }
+
+        std::vector<double> get_parameters() const {
+            std::vector<double> params {this->alpha_, this->beta_};
+            return params;
+        }
+
+        BetaDistribution get_new_distribution(const std::vector<double> & parameters) {
+            ECOEVOLITY_ASSERT(parameters.size() == 2);
+            return BetaDistribution(parameters.at(0), parameters.at(1));
+        }
 };
 
 class OffsetGammaDistribution : public ContinuousProbabilityDistribution {
@@ -343,10 +388,7 @@ class OffsetGammaDistribution : public ContinuousProbabilityDistribution {
             this->ln_constant_ = -1.0*(this->shape_ * std::log(this->scale_) + ln_gamma);
         }
 
-    public:
-        OffsetGammaDistribution() { }
-        ~OffsetGammaDistribution() { }
-        OffsetGammaDistribution(double shape, double scale, double offset) {
+        void init(double shape, double scale, double offset) {
             if ((shape <= 0.0) || (scale <= 0.0)) {
                 throw EcoevolityProbabilityDistributionError(
                         "Shape and scale must be greater than zero for gamma distribution");
@@ -355,6 +397,13 @@ class OffsetGammaDistribution : public ContinuousProbabilityDistribution {
             this->scale_ = scale;
             this->min_ = offset;
             this->compute_ln_constant();
+        }
+
+    public:
+        OffsetGammaDistribution() { }
+        ~OffsetGammaDistribution() { }
+        OffsetGammaDistribution(double shape, double scale, double offset) {
+            this->init(shape, scale, offset);
         }
         OffsetGammaDistribution& operator=(const OffsetGammaDistribution& other) {
             this->min_ = other.min_;
@@ -424,6 +473,16 @@ class OffsetGammaDistribution : public ContinuousProbabilityDistribution {
         double draw(RandomNumberGenerator & rng) const {
             return this->min_ + rng.gamma(this->shape_, this->scale_);
         }
+
+        std::vector<double> get_parameters() const {
+            std::vector<double> params {this->shape_, this->scale_, this->min_};
+            return params;
+        }
+
+        OffsetGammaDistribution get_new_distribution(const std::vector<double> & parameters) {
+            ECOEVOLITY_ASSERT(parameters.size() == 3);
+            return OffsetGammaDistribution(parameters.at(0), parameters.at(1), parameters.at(2));
+        }
 };
 
 class GammaDistribution : public OffsetGammaDistribution {
@@ -431,7 +490,6 @@ class GammaDistribution : public OffsetGammaDistribution {
         GammaDistribution() : OffsetGammaDistribution() { }
         ~GammaDistribution() { }
         GammaDistribution(double shape, double scale) : OffsetGammaDistribution(shape, scale, 0.0) { }
-
         GammaDistribution& operator=(const GammaDistribution& other) {
             this->min_ = other.min_;
             this->shape_ = other.shape_;
@@ -445,18 +503,31 @@ class GammaDistribution : public OffsetGammaDistribution {
             ss << this->get_name() << "(shape = " << this->shape_ << ", scale = " << this->scale_ << ")";
             return ss.str();
         }
+
+        std::vector<double> get_parameters() const {
+            std::vector<double> params {this->shape_, this->scale_};
+            return params;
+        }
+        GammaDistribution get_new_distribution(const std::vector<double> & parameters) {
+            ECOEVOLITY_ASSERT(parameters.size() == 2);
+            return GammaDistribution(parameters.at(0), parameters.at(1));
+        }
 };
 
 class OffsetExponentialDistribution : public OffsetGammaDistribution {
     public:
         OffsetExponentialDistribution() : OffsetGammaDistribution() { }
         ~OffsetExponentialDistribution() { }
-        OffsetExponentialDistribution(double lambda, double offset)
-                : OffsetGammaDistribution(1.0, 1.0/lambda, offset) {
+        OffsetExponentialDistribution(double lambda, double offset) {
+            // Using OffsetExponentialDistribution init rather than list
+            // initializer list so we can check that lambda is not zero before
+            // dividing by it
             if (lambda <= 0.0) {
                 throw EcoevolityProbabilityDistributionError(
                         "lambda must be greater than 0 for exponential distribution");
             }
+            // use OffsetGammaDistribution init with shape = 1
+            OffsetGammaDistribution::init(1.0, 1.0/lambda, offset);
         }
         OffsetExponentialDistribution& operator=(const OffsetExponentialDistribution& other) {
             this->min_ = other.min_;
@@ -479,6 +550,20 @@ class OffsetExponentialDistribution : public OffsetGammaDistribution {
             ss << this->get_name() << "(lambda = " << this->get_lambda() << ", offset = " << this->min_ << ")";
             return ss.str();
         }
+
+        std::vector<double> get_parameters() const {
+            std::vector<double> params {this->scale_, this->min_};
+            return params;
+        }
+
+        OffsetExponentialDistribution get_new_distribution(const std::vector<double> & parameters) {
+            ECOEVOLITY_ASSERT(parameters.size() == 2);
+            // Since get_parameters returns scale (rather than lambda), we
+            // assume first element of parameters is the scale parameter, so we
+            // pass the reciprocal to the OffsetExponentialDistribution
+            // constructor, which expects lambda
+            return OffsetExponentialDistribution(1.0/parameters.at(0), parameters.at(1));
+        }
 };
 
 class ExponentialDistribution: public OffsetExponentialDistribution {
@@ -500,6 +585,20 @@ class ExponentialDistribution: public OffsetExponentialDistribution {
             std::ostringstream ss;
             ss << this->get_name() << "(lambda = " << this->get_lambda() << ")";
             return ss.str();
+        }
+
+        std::vector<double> get_parameters() const {
+            std::vector<double> params {this->scale_};
+            return params;
+        }
+
+        ExponentialDistribution get_new_distribution(const std::vector<double> & parameters) {
+            ECOEVOLITY_ASSERT(parameters.size() == 1);
+            // Since get_parameters returns scale (rather than lambda), we
+            // assume first element of parameters is the scale parameter, so we
+            // pass the reciprocal to the ExponentialDistribution
+            // constructor, which expects lambda
+            return ExponentialDistribution(1.0/parameters.at(0));
         }
 };
 
@@ -625,8 +724,17 @@ class DirichletDistribution {
             return this->max_;
         }
 
-        const std::vector<double>& get_parameters() const {
+        std::vector<double> get_parameters() const {
             return this->parameters_;
+        }
+
+        unsigned int get_number_of_parameters() const{
+            return this->parameters_.size();
+        }
+
+        DirichletDistribution get_new_distribution(const std::vector<double> & parameters) {
+            ECOEVOLITY_ASSERT(parameters.size() == this->parameters_.size());
+            return DirichletDistribution(parameters);
         }
 
         std::string get_name() const {
