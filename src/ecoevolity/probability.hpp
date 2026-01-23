@@ -38,6 +38,8 @@ class ContinuousProbabilityDistribution {
             return * this;
         }
 
+        virtual std::unique_ptr<ContinuousProbabilityDistribution> clone() const = 0;
+
         static double ln_gamma_function(double x) {
             return std::lgamma(x);
         }
@@ -75,6 +77,10 @@ class ImproperUniformDistribution : public ContinuousProbabilityDistribution {
         ~ImproperUniformDistribution() { }
         ImproperUniformDistribution& operator=(const ImproperUniformDistribution& other) {
             return * this;
+        }
+
+        std::unique_ptr<ContinuousProbabilityDistribution> clone() const override {
+            return std::unique_ptr<ContinuousProbabilityDistribution>(new ImproperUniformDistribution(*this));
         }
 
         std::string get_name() const {
@@ -126,6 +132,10 @@ class ImproperPositiveUniformDistribution: public ImproperUniformDistribution {
         ~ImproperPositiveUniformDistribution() { }
         ImproperPositiveUniformDistribution& operator=(const ImproperPositiveUniformDistribution& other) {
             return * this;
+        }
+
+        std::unique_ptr<ContinuousProbabilityDistribution> clone() const override {
+            return std::unique_ptr<ContinuousProbabilityDistribution>(new ImproperPositiveUniformDistribution(*this));
         }
 
         std::string get_name() const {
@@ -192,6 +202,10 @@ class UniformDistribution : public ContinuousProbabilityDistribution {
             this->max_ = other.max_;
             this->ln_density_ = other.ln_density_;
             return * this;
+        }
+
+        std::unique_ptr<ContinuousProbabilityDistribution> clone() const override {
+            return std::unique_ptr<ContinuousProbabilityDistribution>(new UniformDistribution(*this));
         }
 
         double relative_ln_pdf(double x) const {
@@ -275,6 +289,10 @@ class BetaDistribution: public ContinuousProbabilityDistribution {
             this->alpha_ = other.alpha_;
             this->beta_ = other.beta_;
             return * this;
+        }
+
+        std::unique_ptr<ContinuousProbabilityDistribution> clone() const override {
+            return std::unique_ptr<ContinuousProbabilityDistribution>(new BetaDistribution(*this));
         }
 
         bool is_within_support(double x) const {
@@ -413,6 +431,10 @@ class OffsetGammaDistribution : public ContinuousProbabilityDistribution {
             return * this;
         }
 
+        std::unique_ptr<ContinuousProbabilityDistribution> clone() const override {
+            return std::unique_ptr<ContinuousProbabilityDistribution>(new OffsetGammaDistribution(*this));
+        }
+
         bool is_within_support(double x) const {
             if ((x < this->min_) || ((x == this->min_) && (this->shape_ > 1.0))) {
                 return false;
@@ -498,6 +520,10 @@ class GammaDistribution : public OffsetGammaDistribution {
             return * this;
         }
 
+        std::unique_ptr<ContinuousProbabilityDistribution> clone() const override {
+            return std::unique_ptr<ContinuousProbabilityDistribution>(new GammaDistribution(*this));
+        }
+
         std::string to_string() const {
             std::ostringstream ss;
             ss << this->get_name() << "(shape = " << this->shape_ << ", scale = " << this->scale_ << ")";
@@ -535,6 +561,10 @@ class OffsetExponentialDistribution : public OffsetGammaDistribution {
             this->scale_ = other.scale_;
             this->ln_constant_ = other.ln_constant_;
             return * this;
+        }
+
+        std::unique_ptr<ContinuousProbabilityDistribution> clone() const override {
+            return std::unique_ptr<ContinuousProbabilityDistribution>(new OffsetExponentialDistribution(*this));
         }
 
         double get_lambda() const {
@@ -579,6 +609,10 @@ class ExponentialDistribution: public OffsetExponentialDistribution {
             this->scale_ = other.scale_;
             this->ln_constant_ = other.ln_constant_;
             return * this;
+        }
+
+        std::unique_ptr<ContinuousProbabilityDistribution> clone() const override {
+            return std::unique_ptr<ContinuousProbabilityDistribution>(new ExponentialDistribution(*this));
         }
 
         std::string to_string() const {

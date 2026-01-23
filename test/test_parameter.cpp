@@ -1825,3 +1825,178 @@ TEST_CASE("Testing CoalescenceRateParameter prior and value", "[CoalescenceRateP
         REQUIRE(mx == Approx(p.get_prior_max()).epsilon(0.001));
     }
 }
+
+
+TEST_CASE("HyperDistribution constructor", "[HyperDistribution]") {
+    SECTION("Testing parameter number error") {
+        RandomNumberGenerator rng = RandomNumberGenerator(123);
+
+        std::shared_ptr<ContinuousProbabilityDistribution> exp_dist = std::make_shared<ExponentialDistribution>(0.1);
+        PositiveRealParameter p1 = PositiveRealParameter(exp_dist, 1.0);
+        PositiveRealParameter p2 = PositiveRealParameter(exp_dist, 2.0);
+        PositiveRealParameter p3 = PositiveRealParameter(exp_dist, 3.0);
+        std::vector< std::unique_ptr<RealParameter> > parameters;
+        parameters.push_back(p1.clone());
+        parameters.push_back(p2.clone());
+        parameters.push_back(p3.clone());
+
+        REQUIRE_THROWS_AS(HyperDistribution<ExponentialDistribution>(parameters, rng), EcoevolityProbabilityDistributionError &);
+    }
+
+    SECTION("Testing constructor with initialized parameters") {
+        RandomNumberGenerator rng = RandomNumberGenerator(123);
+
+        std::shared_ptr<ContinuousProbabilityDistribution> exp_dist = std::make_shared<ExponentialDistribution>(0.1);
+        PositiveRealParameter p1 = PositiveRealParameter(exp_dist, 1.0);
+        PositiveRealParameter p2 = PositiveRealParameter(exp_dist, 2.0);
+        PositiveRealParameter p3 = PositiveRealParameter(exp_dist, 3.0);
+        std::vector< std::unique_ptr<RealParameter> > parameters;
+        parameters.push_back(p1.clone());
+        parameters.push_back(p2.clone());
+        parameters.push_back(p3.clone());
+
+        HyperDistribution<OffsetGammaDistribution> hd(parameters, rng);
+        REQUIRE(hd.get_number_of_parameters() == 3);
+        REQUIRE(hd.get_parameter_value(0) == 1.0);
+        REQUIRE(hd.get_parameter_value(1) == 2.0);
+        REQUIRE(hd.get_parameter_value(2) == 3.0);
+    }
+
+    SECTION("Testing constructor with uninitialized parameters") {
+        RandomNumberGenerator rng = RandomNumberGenerator(123);
+
+        std::shared_ptr<ContinuousProbabilityDistribution> uni_dist1 = std::make_shared<UniformDistribution>(1.0, 1.1);
+        std::shared_ptr<ContinuousProbabilityDistribution> uni_dist2 = std::make_shared<UniformDistribution>(2.0, 2.1);
+        std::shared_ptr<ContinuousProbabilityDistribution> uni_dist3 = std::make_shared<UniformDistribution>(3.0, 3.1);
+        PositiveRealParameter p1 = PositiveRealParameter(uni_dist1);
+        PositiveRealParameter p2 = PositiveRealParameter(uni_dist2);
+        PositiveRealParameter p3 = PositiveRealParameter(uni_dist3);
+        std::vector< std::unique_ptr<RealParameter> > parameters;
+        parameters.push_back(p1.clone());
+        parameters.push_back(p2.clone());
+        parameters.push_back(p3.clone());
+
+        HyperDistribution<OffsetGammaDistribution> hd(parameters, rng);
+        REQUIRE(hd.get_number_of_parameters() == 3);
+        REQUIRE(hd.get_parameter_value(0) >= 1.0);
+        REQUIRE(hd.get_parameter_value(0) <= 1.1);
+        REQUIRE(hd.get_parameter_value(1) >= 2.0);
+        REQUIRE(hd.get_parameter_value(1) <= 2.1);
+        REQUIRE(hd.get_parameter_value(2) >= 3.0);
+        REQUIRE(hd.get_parameter_value(2) <= 3.1);
+
+        REQUIRE(hd.parameter_prior_ln_pdf(0) == Approx(std::log(1.0/0.1)));
+        REQUIRE(hd.parameter_prior_ln_pdf(1) == Approx(std::log(1.0/0.1)));
+        REQUIRE(hd.parameter_prior_ln_pdf(2) == Approx(std::log(1.0/0.1)));
+        REQUIRE(hd.parameter_prior_ln_pdf() == Approx(std::log(1.0/0.1) * 3.0));
+
+        REQUIRE(hd.parameter_relative_prior_ln_pdf(0) == Approx(std::log(1.0/0.1)));
+        REQUIRE(hd.parameter_relative_prior_ln_pdf(1) == Approx(std::log(1.0/0.1)));
+        REQUIRE(hd.parameter_relative_prior_ln_pdf(2) == Approx(std::log(1.0/0.1)));
+        REQUIRE(hd.parameter_relative_prior_ln_pdf() == Approx(std::log(1.0/0.1) * 3.0));
+
+        REQUIRE(hd.get_distribution().get_mean() == Approx(
+                    (hd.get_parameter_value(0) * hd.get_parameter_value(1))
+                    + hd.get_parameter_value(2)));
+
+        for (unsigned int i = 0; i < 20; ++i) {
+            double prev_val1 = hd.get_parameter_value(0);
+            double prev_val2 = hd.get_parameter_value(1);
+            double prev_val3 = hd.get_parameter_value(2);
+            double prev_ln_pdf = hd.ln_pdf(5.0);
+            REQUIRE(hd.get_parameter_value(0) == prev_val1);
+            REQUIRE(hd.get_parameter_value(1) == prev_val2);
+            REQUIRE(hd.get_parameter_value(2) == prev_val3);
+            REQUIRE(hd.ln_pdf(5.0) == Approx(prev_ln_pdf));
+            hd.store();
+            hd.set_parameters_from_priors(rng);
+            REQUIRE(hd.get_parameter_value(0) != prev_val1);
+            REQUIRE(hd.get_parameter_value(1) != prev_val2);
+            REQUIRE(hd.get_parameter_value(2) != prev_val3);
+            REQUIRE(hd.ln_pdf(5.0) != Approx(prev_ln_pdf));
+            hd.restore();
+            REQUIRE(hd.get_parameter_value(0) == prev_val1);
+            REQUIRE(hd.get_parameter_value(1) == prev_val2);
+            REQUIRE(hd.get_parameter_value(2) == prev_val3);
+            REQUIRE(hd.ln_pdf(5.0) == Approx(prev_ln_pdf));
+            hd.set_parameters_from_priors(rng);
+            REQUIRE(hd.get_number_of_parameters() == 3);
+            REQUIRE(hd.get_parameter_value(0) >= 1.0);
+            REQUIRE(hd.get_parameter_value(0) <= 1.1);
+            REQUIRE(hd.get_parameter_value(1) >= 2.0);
+            REQUIRE(hd.get_parameter_value(1) <= 2.1);
+            REQUIRE(hd.get_parameter_value(2) >= 3.0);
+            REQUIRE(hd.get_parameter_value(2) <= 3.1);
+            REQUIRE(hd.parameter_prior_ln_pdf(0) == Approx(std::log(1.0/0.1)));
+            REQUIRE(hd.parameter_prior_ln_pdf(1) == Approx(std::log(1.0/0.1)));
+            REQUIRE(hd.parameter_prior_ln_pdf(2) == Approx(std::log(1.0/0.1)));
+            REQUIRE(hd.parameter_prior_ln_pdf() == Approx(std::log(1.0/0.1) * 3.0));
+            REQUIRE(hd.parameter_relative_prior_ln_pdf(0) == Approx(std::log(1.0/0.1)));
+            REQUIRE(hd.parameter_relative_prior_ln_pdf(1) == Approx(std::log(1.0/0.1)));
+            REQUIRE(hd.parameter_relative_prior_ln_pdf(2) == Approx(std::log(1.0/0.1)));
+            REQUIRE(hd.parameter_relative_prior_ln_pdf() == Approx(std::log(1.0/0.1) * 3.0));
+
+            REQUIRE(hd.get_distribution().get_mean() == Approx(
+                        (hd.get_parameter_value(0) * hd.get_parameter_value(1))
+                        + hd.get_parameter_value(2)));
+        }
+    }
+}
+
+TEST_CASE("HyperDistribution pdf", "[HyperDistribution]") {
+    SECTION("Testing HyperDistribution pdf") {
+        RandomNumberGenerator rng = RandomNumberGenerator(123);
+
+        std::shared_ptr<ContinuousProbabilityDistribution> uni_dist1 = std::make_shared<UniformDistribution>(0.0, 10.0);
+        std::shared_ptr<ContinuousProbabilityDistribution> uni_dist2 = std::make_shared<UniformDistribution>(20.0, 30.0);
+        PositiveRealParameter p1 = PositiveRealParameter(uni_dist1, 5.0);
+        PositiveRealParameter p2 = PositiveRealParameter(uni_dist2, 25.0);
+        std::vector< std::unique_ptr<RealParameter> > parameters;
+        parameters.push_back(p1.clone());
+        parameters.push_back(p2.clone());
+
+        HyperDistribution<UniformDistribution> hd(parameters, rng);
+
+        REQUIRE(hd.parameter_prior_ln_pdf(0) == Approx(std::log(1.0/10.0)));
+        REQUIRE(hd.base_ln_pdf(4.9) == -std::numeric_limits<double>::infinity());
+        REQUIRE(hd.ln_pdf(4.9) == -std::numeric_limits<double>::infinity());
+        REQUIRE(hd.parameter_prior_ln_pdf(1) == Approx(std::log(1.0/10.0)));
+        REQUIRE(hd.base_ln_pdf(25.1) == -std::numeric_limits<double>::infinity());
+        REQUIRE(hd.ln_pdf(25.1) == -std::numeric_limits<double>::infinity());
+        REQUIRE(hd.parameter_prior_ln_pdf() == Approx(std::log(1.0/10.0) * 2.0));
+        REQUIRE(hd.base_ln_pdf(5.1) == Approx(std::log(1.0/20.0)));
+        REQUIRE(hd.ln_pdf(5.1) == Approx( (std::log(1.0/10.0) * 2.0) + std::log(1.0/20.0) ));
+        REQUIRE(hd.base_ln_pdf(24.0) == Approx(std::log(1.0/20.0)));
+        REQUIRE(hd.ln_pdf(24.0) == Approx( (std::log(1.0/10.0) * 2.0) + std::log(1.0/20.0) ));
+
+        for (unsigned int i = 0; i < 20; ++i) {
+            hd.set_parameters_from_priors(rng);
+            REQUIRE(hd.parameter_prior_ln_pdf(0) == Approx(std::log(1.0/10.0)));
+            REQUIRE(hd.parameter_prior_ln_pdf(1) == Approx(std::log(1.0/10.0)));
+            REQUIRE(hd.parameter_prior_ln_pdf() == Approx(std::log(1.0/10.0) * 2.0));
+            double lower = hd.get_parameter_value(0);
+            double upper = hd.get_parameter_value(1);
+            REQUIRE(lower >= 0.0);
+            REQUIRE(lower <= 10.0);
+            REQUIRE(upper >= 20.0);
+            REQUIRE(upper <= 30.0);
+            REQUIRE(hd.base_ln_pdf(lower - 1.0) == -std::numeric_limits<double>::infinity());
+            REQUIRE(hd.ln_pdf(lower - 1.0) == -std::numeric_limits<double>::infinity());
+            REQUIRE(hd.base_ln_pdf(upper + 1.0) == -std::numeric_limits<double>::infinity());
+            REQUIRE(hd.ln_pdf(upper + 1.0) == -std::numeric_limits<double>::infinity());
+            REQUIRE(hd.base_ln_pdf(lower + 1.0) == Approx(std::log(1.0 / (upper-lower))));
+            REQUIRE(hd.ln_pdf(lower + 1.0) == Approx( (std::log(1.0/10.0) * 2.0) + std::log(1.0 / (upper-lower)) ));
+            REQUIRE(hd.base_ln_pdf(upper - 1.0) == Approx(std::log(1.0 / (upper-lower))));
+            REQUIRE(hd.ln_pdf(upper - 1.0) == Approx( (std::log(1.0/10.0) * 2.0) + std::log(1.0 / (upper-lower)) ));
+            for (unsigned int j = 0; j < 20; ++j) {
+                double x = hd.draw(rng);
+                REQUIRE(x >= lower);
+                REQUIRE(x <= upper);
+                double y = hd.draw(rng);
+                REQUIRE( x != y );
+                REQUIRE(y >= lower);
+                REQUIRE(y <= upper);
+            }
+        }
+    }
+}
