@@ -4,6 +4,7 @@
 #include "ecoevolity/node.hpp"
 #include "ecoevolity/treesum.hpp"
 #include "ecoevolity/path.hpp"
+#include "ecoevolity/spreadsheet.hpp"
 
 
 TEST_CASE("Testing missing target tree", "[sumphycoeval]") {
@@ -127,6 +128,7 @@ TEST_CASE("Testing working example", "[sumphycoeval]") {
         char t_path[] = "data/4-tip-target-tree-14-23-shared.nex";
 
         char t_out_path[] = "data/tmp-target-tree-out-sumphyco1.nex";
+        char th_out_path[] = "data/tmp-target-tree-sample-history-out-sumphyco1.tsv";
         char m_out_path[] = "data/tmp-map-tree-out-sumphyco1.nex";
 
         char exe[] = "sumphycoeval";
@@ -134,6 +136,7 @@ TEST_CASE("Testing working example", "[sumphycoeval]") {
         char burnin[] = "2";
         char t_flag[] = "--target-tree";
         char t_out_flag[] = "--target-tree-out";
+        char th_out_flag[] = "--target-tree-sample-history-out";
         char m_out_flag[] = "--map-tree-out";
         char sf_flag[] = "--min-split-freq";
         char sf[] = "0.1";
@@ -150,6 +153,8 @@ TEST_CASE("Testing working example", "[sumphycoeval]") {
             &t_path[0],
             &t_out_flag[0],
             &t_out_path[0],
+            &th_out_flag[0],
+            &th_out_path[0],
             &m_out_flag[0],
             &m_out_path[0],
             &source1[0],
@@ -169,6 +174,7 @@ TEST_CASE("Testing working example", "[sumphycoeval]") {
         REQUIRE(ret == 0);
 
         REQUIRE(path::exists(t_out_path));
+        REQUIRE(path::exists(th_out_path));
         REQUIRE(path::exists(m_out_path));
 
         std::vector<std::string> source_tree_paths {
@@ -210,5 +216,15 @@ TEST_CASE("Testing working example", "[sumphycoeval]") {
 
         REQUIRE(expected_target_stream.str() == target_stream.str());
         REQUIRE(expected_map_stream.str() == map_stream.str());
+
+        spreadsheet::Spreadsheet target_sample_history;
+        target_sample_history.update(th_out_path);
+        std::vector<unsigned int> file_indices = target_sample_history.get<unsigned int>("file_index");
+        std::vector<unsigned int> tree_indices = target_sample_history.get<unsigned int>("tree_index");
+        // First 2 trees from 4th file removed as burnin
+        std::vector<unsigned int> expected_file_indices {3, 3, 3, 3};
+        std::vector<unsigned int> expected_tree_indices {2, 3, 4, 5};
+        REQUIRE(file_indices == expected_file_indices);
+        REQUIRE(tree_indices == expected_tree_indices);
     }
 }

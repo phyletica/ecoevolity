@@ -81,6 +81,13 @@ int sumphycoeval_main(int argc, char * argv[]) {
             .help("Path to a file where the annotated target tree "
                   "will be written in nexus format. Default: Do not write a "
                   "nexus-formatted file of the annotated target tree.");
+    parser.add_option("--tsho", "--target-tree-sample-history-out")
+            .action("store")
+            .dest("target_tree_sample_history_out_path")
+            .set_default("")
+            .help("Path to a file where the MCMC sample history of the target "
+                  "tree is written. Default: Do not write a sample history "
+                  "of the target tree.");
     parser.add_option("--mo", "--map-tree-out")
             .action("store")
             .dest("map_tree_out_path")
@@ -303,6 +310,25 @@ int sumphycoeval_main(int argc, char * argv[]) {
                 "not provided.");
     }
 
+    std::string target_tree_sample_history_out_path;
+    bool writing_target_sample_history = false;
+    if (options.is_set_by_user("target_tree_sample_history_out_path")) {
+        target_tree_sample_history_out_path = options.get("target_tree_sample_history_out_path").get_str();
+        writing_target_sample_history = true;
+        if (prevent_overwrite && path::exists(target_tree_sample_history_out_path)) {
+            throw EcoevolityError("Target tree MCMC sample history path \'" +
+                    target_tree_sample_history_out_path +
+                    "\' already exists. Please specify a different path or use "
+                    "the \'--force\' option to overwrite the file.");
+        }
+    }
+
+    if (writing_target_sample_history && (! target_tree_provided)) {
+        throw EcoevolityError(
+                "Target tree MCMC sample history output path was specified, "
+                "but a target tree was not provided.");
+    }
+
     std::string map_tree_out_path;
     bool writing_map_to_nexus = false;
     if (options.is_set_by_user("map_tree_out_path")) {
@@ -346,6 +372,17 @@ int sumphycoeval_main(int argc, char * argv[]) {
             std::ostringstream message;
             message << "ERROR: Could not open target-tree output file \'"
                     << target_tree_out_path
+                    << "\'\n";
+            throw EcoevolityError(message.str());
+        }
+    }
+    std::ofstream target_tree_sample_history_out_stream;
+    if (writing_target_sample_history) {
+        target_tree_sample_history_out_stream.open(target_tree_sample_history_out_path);
+        if (! target_tree_sample_history_out_stream.is_open()) {
+            std::ostringstream message;
+            message << "ERROR: Could not open target tree MCMC history output file \'"
+                    << target_tree_sample_history_out_path
                     << "\'\n";
             throw EcoevolityError(message.str());
         }
@@ -402,6 +439,20 @@ int sumphycoeval_main(int argc, char * argv[]) {
                 target_tree_out_stream,
                 precision);
         target_tree_out_stream.close();
+    }
+    if (writing_target_sample_history) {
+        std::cerr << "Writing target tree MCMC sample history to:\n"
+                  << "  " << target_tree_sample_history_out_path << std::endl;
+        std::pair< std::vector<unsigned int>, std::vector<unsigned int> > target_sample_history;
+        target_sample_history = tree_sample.get_target_tree_sample_history();
+        ECOEVOLITY_ASSERT(target_sample_history.first.size() == target_sample_history.second.size());
+        target_tree_sample_history_out_stream << "file_index\ttree_index" << std::endl;
+        for (unsigned int sample_idx = 0;
+                sample_idx < target_sample_history.first.size();
+                ++sample_idx) {
+            target_tree_sample_history_out_stream << target_sample_history.first.at(sample_idx) << "\t" << target_sample_history.second.at(sample_idx) << std::endl;
+        }
+        target_tree_sample_history_out_stream.close();
     }
     if (writing_map_to_nexus) {
         std::cerr << "Writing annotated MAP trees to:\n"
