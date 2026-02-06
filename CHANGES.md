@@ -9,6 +9,15 @@ Changes
     ``ecoevolity``.
 
 
+Version 1.1.2
+=============
+
+Changes
+-------
+-   Adding ``--target-tree-sample-history-out`` option to ``sumphycoeval`` to
+    write out the MCMC sampling history of the specified target tree..
+
+
 Version 1.1.1
 =============
 
