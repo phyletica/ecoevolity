@@ -47,7 +47,10 @@ class ContinuousProbabilityDistribution {
         virtual double ln_pdf(double x) const = 0;
         virtual double relative_ln_pdf(double x) const = 0;
         virtual double get_mean() const = 0;
+        virtual double get_center() const = 0;
         virtual double get_variance() const = 0;
+        virtual double get_std_dev() const = 0;
+        virtual double get_spread() const = 0;
 
         virtual double get_min() const {
             return -std::numeric_limits<double>::infinity();
@@ -65,9 +68,44 @@ class ContinuousProbabilityDistribution {
 
         virtual std::vector<double> get_parameters() const = 0;
 
+        virtual std::vector<double> get_transformed_parameters() const = 0;
+
         virtual unsigned int get_number_of_parameters() const {
             std::vector<double> parameters = this->get_parameters();
             return parameters.size();
+        }
+
+        virtual std::unique_ptr<ContinuousProbabilityDistribution> get_new_distribution(
+                const std::vector<double> & parameters,
+                const bool using_transformed_parameters = false) const = 0;
+
+        virtual double get_alpha() const {
+            throw EcoevolityProbabilityDistributionError(
+                    "get_alpha undefinded");
+        }
+        virtual double get_beta() const {
+            throw EcoevolityProbabilityDistributionError(
+                    "get_beta undefinded");
+        }
+        virtual double get_scale() const {
+            throw EcoevolityProbabilityDistributionError(
+                    "get_scale undefinded");
+        }
+        virtual double get_shape() const {
+            throw EcoevolityProbabilityDistributionError(
+                    "get_shape undefinded");
+        }
+        virtual double get_offset() const {
+            throw EcoevolityProbabilityDistributionError(
+                    "get_offset undefinded");
+        }
+        virtual double get_lambda() const {
+            throw EcoevolityProbabilityDistributionError(
+                    "get_lambda undefinded");
+        }
+        virtual double get_concentration() const {
+            throw EcoevolityProbabilityDistributionError(
+                    "get_concentration undefinded");
         }
 };
 
@@ -101,9 +139,21 @@ class ImproperUniformDistribution : public ContinuousProbabilityDistribution {
             throw EcoevolityProbabilityDistributionError(
                     "The mean is undefinded for ImproperUniformDistribution");
         }
+        double get_center() const {
+            throw EcoevolityProbabilityDistributionError(
+                    "The center is undefinded for ImproperUniformDistribution");
+        }
         double get_variance() const {
             throw EcoevolityProbabilityDistributionError(
                     "The variance is undefinded for ImproperUniformDistribution");
+        }
+        double get_std_dev() const {
+            throw EcoevolityProbabilityDistributionError(
+                    "The std dev is undefinded for ImproperUniformDistribution");
+        }
+        double get_spread() const {
+            throw EcoevolityProbabilityDistributionError(
+                    "The spread is undefinded for ImproperUniformDistribution");
         }
 
         double draw(RandomNumberGenerator & rng) const {
@@ -121,8 +171,15 @@ class ImproperUniformDistribution : public ContinuousProbabilityDistribution {
             return params;
         }
 
-        ImproperUniformDistribution get_new_distribution(const std::vector<double> & parameters) {
-            return ImproperUniformDistribution();
+        std::vector<double> get_transformed_parameters() const {
+            std::vector<double> params;
+            return params;
+        }
+
+        std::unique_ptr<ContinuousProbabilityDistribution> get_new_distribution(
+                const std::vector<double> & parameters,
+                const bool using_transformed_parameters = false) const {
+            return std::unique_ptr<ContinuousProbabilityDistribution>(new ImproperUniformDistribution());
         }
 };
 
@@ -174,8 +231,15 @@ class ImproperPositiveUniformDistribution: public ImproperUniformDistribution {
             return params;
         }
 
-        ImproperPositiveUniformDistribution get_new_distribution(const std::vector<double> & parameters) {
-            return ImproperPositiveUniformDistribution();
+        std::vector<double> get_transformed_parameters() const {
+            std::vector<double> params;
+            return params;
+        }
+
+        std::unique_ptr<ContinuousProbabilityDistribution> get_new_distribution(
+                const std::vector<double> & parameters,
+                const bool using_transformed_parameters = false) const {
+            return std::unique_ptr<ContinuousProbabilityDistribution>(new ImproperPositiveUniformDistribution());
         }
 };
 
@@ -229,9 +293,18 @@ class UniformDistribution : public ContinuousProbabilityDistribution {
         double get_mean() const {
             return ((this->min_ + this->max_) / 2.0);
         }
+        double get_center() const {
+            return this->get_mean();
+        }
 
         double get_variance() const {
             return ((this->max_ - this->min_) * (this->max_ - this->min_) / 12.0);
+        }
+        double get_std_dev() const {
+            return std::sqrt(this->get_variance());
+        }
+        double get_spread() const {
+            return this->get_std_dev();
         }
 
         double get_min() const {
@@ -259,9 +332,31 @@ class UniformDistribution : public ContinuousProbabilityDistribution {
             return params;
         }
 
-        UniformDistribution get_new_distribution(const std::vector<double> & parameters) {
+        std::vector<double> get_transformed_parameters() const {
+            std::vector<double> params {this->get_center(), this->get_spread()};
+            return params;
+
+        }
+
+        std::vector<double> get_raw_parameters(const std::vector<double> & transformed_parameters) const {
+            ECOEVOLITY_ASSERT(transformed_parameters.size() == 2);
+            double mean = transformed_parameters.at(0);
+            double std_dev = transformed_parameters.at(1);
+            double mn = mean - (std_dev * std::sqrt(3));
+            double mx = mean + (std_dev * std::sqrt(3));
+            std::vector<double> params {mn, mx};
+            return params;
+        }
+
+        std::unique_ptr<ContinuousProbabilityDistribution> get_new_distribution(
+                const std::vector<double> & parameters,
+                const bool using_transformed_parameters = false) const {
             ECOEVOLITY_ASSERT(parameters.size() == 2);
-            return UniformDistribution(parameters.at(0), parameters.at(1));
+            std::vector<double> params = parameters;
+            if (using_transformed_parameters) {
+                params = this->get_raw_parameters(parameters);
+            }
+            return std::unique_ptr<ContinuousProbabilityDistribution>(new UniformDistribution(params.at(0), params.at(1)));
         }
 };
 
@@ -343,9 +438,21 @@ class BetaDistribution: public ContinuousProbabilityDistribution {
         double get_mean() const {
             return (this->alpha_ / (this->alpha_ + this->beta_));
         }
+        double get_center() const {
+            return this->get_mean();
+        }
         double get_variance() const {
             const double ab = this->alpha_ + this->beta_;
             return (this->alpha_ * this->beta_) / (ab * ab * (ab + 1.0));
+        }
+        double get_std_dev() const {
+            return std::sqrt(this->get_variance());
+        }
+        double get_concentration() const {
+            return this->alpha_ + this->beta_;
+        }
+        double get_spread() const {
+            return 1.0 / this->get_concentration();
         }
 
         double get_min() const {
@@ -388,9 +495,31 @@ class BetaDistribution: public ContinuousProbabilityDistribution {
             return params;
         }
 
-        BetaDistribution get_new_distribution(const std::vector<double> & parameters) {
+        std::vector<double> get_transformed_parameters() const {
+            std::vector<double> params {this->get_center(), this->get_spread()};
+            return params;
+
+        }
+
+        std::vector<double> get_raw_parameters(const std::vector<double> & transformed_parameters) const {
+            ECOEVOLITY_ASSERT(transformed_parameters.size() == 2);
+            double mean = transformed_parameters.at(0);
+            double conc = 1.0 / transformed_parameters.at(1);
+            double a = mean * conc;
+            double b = (1.0 - mean) * conc;
+            std::vector<double> params {a, b};
+            return params;
+        }
+
+        std::unique_ptr<ContinuousProbabilityDistribution> get_new_distribution(
+                const std::vector<double> & parameters,
+                const bool using_transformed_parameters = false) const {
             ECOEVOLITY_ASSERT(parameters.size() == 2);
-            return BetaDistribution(parameters.at(0), parameters.at(1));
+            std::vector<double> params = parameters;
+            if (using_transformed_parameters) {
+                params = this->get_raw_parameters(parameters);
+            }
+            return std::unique_ptr<ContinuousProbabilityDistribution>(new BetaDistribution(params.at(0), params.at(1)));
         }
 };
 
@@ -465,8 +594,17 @@ class OffsetGammaDistribution : public ContinuousProbabilityDistribution {
         double get_mean() const {
             return (this->shape_ * this->scale_) + this->min_;
         }
+        double get_center() const {
+            return this->shape_ * this->scale_;
+        }
         double get_variance() const {
             return this->shape_ * this->scale_ * this->scale_;
+        }
+        double get_std_dev() const {
+            return std::sqrt(this->get_variance());
+        }
+        double get_spread() const {
+            return this->get_std_dev();
         }
 
         double get_min() const {
@@ -501,9 +639,32 @@ class OffsetGammaDistribution : public ContinuousProbabilityDistribution {
             return params;
         }
 
-        OffsetGammaDistribution get_new_distribution(const std::vector<double> & parameters) {
+        std::vector<double> get_transformed_parameters() const {
+            std::vector<double> params {this->get_center(), this->get_spread(), this->min_};
+            return params;
+
+        }
+
+        std::vector<double> get_raw_parameters(const std::vector<double> & transformed_parameters) const {
+            ECOEVOLITY_ASSERT(transformed_parameters.size() == 3);
+            double mean = transformed_parameters.at(0);
+            double std_dev = transformed_parameters.at(1);
+            double offset = transformed_parameters.at(2);
+            double shape = (mean * mean) / (std_dev * std_dev);
+            double scale = (std_dev * std_dev) / mean;
+            std::vector<double> params {shape, scale, offset};
+            return params;
+        }
+
+        std::unique_ptr<ContinuousProbabilityDistribution> get_new_distribution(
+                const std::vector<double> & parameters,
+                const bool using_transformed_parameters = false) const {
             ECOEVOLITY_ASSERT(parameters.size() == 3);
-            return OffsetGammaDistribution(parameters.at(0), parameters.at(1), parameters.at(2));
+            std::vector<double> params = parameters;
+            if (using_transformed_parameters) {
+                params = this->get_raw_parameters(parameters);
+            }
+            return std::unique_ptr<ContinuousProbabilityDistribution>(new OffsetGammaDistribution(params.at(0), params.at(1), params.at(2)));
         }
 };
 
@@ -534,9 +695,32 @@ class GammaDistribution : public OffsetGammaDistribution {
             std::vector<double> params {this->shape_, this->scale_};
             return params;
         }
-        GammaDistribution get_new_distribution(const std::vector<double> & parameters) {
+
+        std::vector<double> get_transformed_parameters() const {
+            std::vector<double> params {this->get_center(), this->get_spread()};
+            return params;
+
+        }
+
+        std::vector<double> get_raw_parameters(const std::vector<double> & transformed_parameters) const {
+            ECOEVOLITY_ASSERT(transformed_parameters.size() == 2);
+            double mean = transformed_parameters.at(0);
+            double std_dev = transformed_parameters.at(1);
+            double shape = (mean * mean) / (std_dev * std_dev);
+            double scale = (std_dev * std_dev) / mean;
+            std::vector<double> params {shape, scale};
+            return params;
+        }
+
+        std::unique_ptr<ContinuousProbabilityDistribution> get_new_distribution(
+                const std::vector<double> & parameters,
+                const bool using_transformed_parameters = false) const {
             ECOEVOLITY_ASSERT(parameters.size() == 2);
-            return GammaDistribution(parameters.at(0), parameters.at(1));
+            std::vector<double> params = parameters;
+            if (using_transformed_parameters) {
+                params = this->get_raw_parameters(parameters);
+            }
+            return std::unique_ptr<ContinuousProbabilityDistribution>(new GammaDistribution(params.at(0), params.at(1)));
         }
 };
 
@@ -586,13 +770,29 @@ class OffsetExponentialDistribution : public OffsetGammaDistribution {
             return params;
         }
 
-        OffsetExponentialDistribution get_new_distribution(const std::vector<double> & parameters) {
+        std::vector<double> get_transformed_parameters() const {
+            // Because get_parameters returns the mean of the exponential
+            // distribution (the scale from the base gamma distributions), we
+            // don't need to do any transformation.
+            return this->get_parameters();
+        }
+
+        std::vector<double> get_raw_parameters(const std::vector<double> & transformed_parameters) const {
+            ECOEVOLITY_ASSERT(transformed_parameters.size() == 2);
+            // No transformation occurs for the exponential distribution,
+            // because the scale_ member is the mean already
+            return transformed_parameters;
+        }
+
+        std::unique_ptr<ContinuousProbabilityDistribution> get_new_distribution(
+                const std::vector<double> & parameters,
+                const bool using_transformed_parameters = false) const {
             ECOEVOLITY_ASSERT(parameters.size() == 2);
             // Since get_parameters returns scale (rather than lambda), we
             // assume first element of parameters is the scale parameter, so we
             // pass the reciprocal to the OffsetExponentialDistribution
             // constructor, which expects lambda
-            return OffsetExponentialDistribution(1.0/parameters.at(0), parameters.at(1));
+            return std::unique_ptr<ContinuousProbabilityDistribution>(new OffsetExponentialDistribution(1.0/parameters.at(0), parameters.at(1)));
         }
 };
 
@@ -626,13 +826,29 @@ class ExponentialDistribution: public OffsetExponentialDistribution {
             return params;
         }
 
-        ExponentialDistribution get_new_distribution(const std::vector<double> & parameters) {
+        std::vector<double> get_transformed_parameters() const {
+            // Because get_parameters returns the mean of the exponential
+            // distribution (the scale from the base gamma distributions), we
+            // don't need to do any transformation.
+            return this->get_parameters();
+        }
+
+        std::vector<double> get_raw_parameters(const std::vector<double> & transformed_parameters) const {
+            ECOEVOLITY_ASSERT(transformed_parameters.size() == 1);
+            // No transformation occurs for the exponential distribution,
+            // because the scale_ member is the mean already
+            return transformed_parameters;
+        }
+
+        std::unique_ptr<ContinuousProbabilityDistribution> get_new_distribution(
+                const std::vector<double> & parameters,
+                const bool using_transformed_parameters = false) const {
             ECOEVOLITY_ASSERT(parameters.size() == 1);
             // Since get_parameters returns scale (rather than lambda), we
             // assume first element of parameters is the scale parameter, so we
             // pass the reciprocal to the ExponentialDistribution
             // constructor, which expects lambda
-            return ExponentialDistribution(1.0/parameters.at(0));
+            return std::unique_ptr<ContinuousProbabilityDistribution>(new ExponentialDistribution(1.0/parameters.at(0)));
         }
 };
 
@@ -766,7 +982,7 @@ class DirichletDistribution {
             return this->parameters_.size();
         }
 
-        DirichletDistribution get_new_distribution(const std::vector<double> & parameters) {
+        DirichletDistribution get_new_distribution(const std::vector<double> & parameters) const {
             ECOEVOLITY_ASSERT(parameters.size() == this->parameters_.size());
             return DirichletDistribution(parameters);
         }

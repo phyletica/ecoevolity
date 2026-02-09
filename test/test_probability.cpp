@@ -23,17 +23,17 @@ TEST_CASE("Testing ImproperUniformDistribution", "[ImproperUniformDistribution]"
         std::vector<double> params = u.get_parameters();
         REQUIRE(params.size() == 0);
         REQUIRE(u.get_number_of_parameters() == 0);
-        ImproperUniformDistribution u2 = u.get_new_distribution(u.get_parameters());
-        REQUIRE(u2.get_max() == std::numeric_limits<double>::infinity());
-        REQUIRE(u2.get_min() == -std::numeric_limits<double>::infinity());
-        REQUIRE(u2.to_string() == "uniform(-inf, +inf)");
-        REQUIRE_THROWS_AS(u2.get_mean(), EcoevolityProbabilityDistributionError &);
-        REQUIRE_THROWS_AS(u2.get_variance(), EcoevolityProbabilityDistributionError &);
-        REQUIRE_THROWS_AS(u2.ln_pdf(1.0), EcoevolityProbabilityDistributionError &);
-        REQUIRE(u2.relative_ln_pdf(1.0) == 0.0);
-        REQUIRE(u2.relative_ln_pdf(100.0) == 0.0);
-        REQUIRE(u2.relative_ln_pdf(-1.0) == 0.0);
-        REQUIRE(u2.relative_ln_pdf(0.0) == 0.0);
+        std::unique_ptr<ContinuousProbabilityDistribution> u2 = u.get_new_distribution(u.get_parameters());
+        REQUIRE(u2->get_max() == std::numeric_limits<double>::infinity());
+        REQUIRE(u2->get_min() == -std::numeric_limits<double>::infinity());
+        REQUIRE(u2->to_string() == "uniform(-inf, +inf)");
+        REQUIRE_THROWS_AS(u2->get_mean(), EcoevolityProbabilityDistributionError &);
+        REQUIRE_THROWS_AS(u2->get_variance(), EcoevolityProbabilityDistributionError &);
+        REQUIRE_THROWS_AS(u2->ln_pdf(1.0), EcoevolityProbabilityDistributionError &);
+        REQUIRE(u2->relative_ln_pdf(1.0) == 0.0);
+        REQUIRE(u2->relative_ln_pdf(100.0) == 0.0);
+        REQUIRE(u2->relative_ln_pdf(-1.0) == 0.0);
+        REQUIRE(u2->relative_ln_pdf(0.0) == 0.0);
     }
 }
 
@@ -55,17 +55,17 @@ TEST_CASE("Testing ImproperPositiveUniformDistribution", "[ImproperPositiveUnifo
         std::vector<double> params = u.get_parameters();
         REQUIRE(params.size() == 0);
         REQUIRE(u.get_number_of_parameters() == 0);
-        ImproperPositiveUniformDistribution u2 = u.get_new_distribution(u.get_parameters());
-        REQUIRE(u2.get_max() == std::numeric_limits<double>::infinity());
-        REQUIRE(u2.get_min() == 0.0);
-        REQUIRE(u2.to_string() == "uniform(0, +inf)");
-        REQUIRE_THROWS_AS(u2.get_mean(), EcoevolityProbabilityDistributionError &);
-        REQUIRE_THROWS_AS(u2.get_variance(), EcoevolityProbabilityDistributionError &);
-        REQUIRE_THROWS_AS(u2.ln_pdf(1.0), EcoevolityProbabilityDistributionError &);
-        REQUIRE(u2.relative_ln_pdf(1.0) == 0.0);
-        REQUIRE(u2.relative_ln_pdf(100.0) == 0.0);
-        REQUIRE(u2.relative_ln_pdf(-1.0) == -std::numeric_limits<double>::infinity());
-        REQUIRE(u2.relative_ln_pdf(0.0) == 0.0);
+        std::unique_ptr<ContinuousProbabilityDistribution> u2 = u.get_new_distribution(u.get_parameters());
+        REQUIRE(u2->get_max() == std::numeric_limits<double>::infinity());
+        REQUIRE(u2->get_min() == 0.0);
+        REQUIRE(u2->to_string() == "uniform(0, +inf)");
+        REQUIRE_THROWS_AS(u2->get_mean(), EcoevolityProbabilityDistributionError &);
+        REQUIRE_THROWS_AS(u2->get_variance(), EcoevolityProbabilityDistributionError &);
+        REQUIRE_THROWS_AS(u2->ln_pdf(1.0), EcoevolityProbabilityDistributionError &);
+        REQUIRE(u2->relative_ln_pdf(1.0) == 0.0);
+        REQUIRE(u2->relative_ln_pdf(100.0) == 0.0);
+        REQUIRE(u2->relative_ln_pdf(-1.0) == -std::numeric_limits<double>::infinity());
+        REQUIRE(u2->relative_ln_pdf(0.0) == 0.0);
     }
 }
 
@@ -166,25 +166,45 @@ TEST_CASE("Testing UniformDistribution", "[UniformDistribution]") {
         std::vector<double> params = u.get_parameters();
         REQUIRE(expected_params == params);
         REQUIRE(u.get_number_of_parameters() == 2);
-        UniformDistribution u2 = u.get_new_distribution(params);
+        std::unique_ptr<ContinuousProbabilityDistribution> u2 = u.get_new_distribution(params);
 
-        REQUIRE(u2.get_max() == 20.0);
-        REQUIRE(u2.get_min() == 10.0);
-        REQUIRE(u2.to_string() == "uniform(10, 20)");
-        REQUIRE(u2.get_mean() == 15.0);
-        REQUIRE(u2.get_variance() == Approx(25.0/3.0));
-        REQUIRE(u2.relative_ln_pdf(10.0) == Approx(std::log(0.1)));
-        REQUIRE(u2.relative_ln_pdf(20.0) == Approx(std::log(0.1)));
-        REQUIRE(u2.relative_ln_pdf(11.0) == Approx(std::log(0.1)));
-        REQUIRE(u2.ln_pdf(10.0) == Approx(std::log(0.1)));
-        REQUIRE(u2.ln_pdf(20.0) == Approx(std::log(0.1)));
-        REQUIRE(u2.ln_pdf(11.0) == Approx(std::log(0.1)));
-        REQUIRE(u2.relative_ln_pdf(9.9) == -std::numeric_limits<double>::infinity());
-        REQUIRE(u2.relative_ln_pdf(20.01) == -std::numeric_limits<double>::infinity());
-        REQUIRE(u2.relative_ln_pdf(-15.0) == -std::numeric_limits<double>::infinity());
-        REQUIRE(u2.ln_pdf(9.9) == -std::numeric_limits<double>::infinity());
-        REQUIRE(u2.ln_pdf(20.01) == -std::numeric_limits<double>::infinity());
-        REQUIRE(u2.ln_pdf(-15.0) == -std::numeric_limits<double>::infinity());
+        REQUIRE(u2->get_max() == 20.0);
+        REQUIRE(u2->get_min() == 10.0);
+        REQUIRE(u2->to_string() == "uniform(10, 20)");
+        REQUIRE(u2->get_mean() == 15.0);
+        REQUIRE(u2->get_variance() == Approx(25.0/3.0));
+        REQUIRE(u2->relative_ln_pdf(10.0) == Approx(std::log(0.1)));
+        REQUIRE(u2->relative_ln_pdf(20.0) == Approx(std::log(0.1)));
+        REQUIRE(u2->relative_ln_pdf(11.0) == Approx(std::log(0.1)));
+        REQUIRE(u2->ln_pdf(10.0) == Approx(std::log(0.1)));
+        REQUIRE(u2->ln_pdf(20.0) == Approx(std::log(0.1)));
+        REQUIRE(u2->ln_pdf(11.0) == Approx(std::log(0.1)));
+        REQUIRE(u2->relative_ln_pdf(9.9) == -std::numeric_limits<double>::infinity());
+        REQUIRE(u2->relative_ln_pdf(20.01) == -std::numeric_limits<double>::infinity());
+        REQUIRE(u2->relative_ln_pdf(-15.0) == -std::numeric_limits<double>::infinity());
+        REQUIRE(u2->ln_pdf(9.9) == -std::numeric_limits<double>::infinity());
+        REQUIRE(u2->ln_pdf(20.01) == -std::numeric_limits<double>::infinity());
+        REQUIRE(u2->ln_pdf(-15.0) == -std::numeric_limits<double>::infinity());
+
+        std::unique_ptr<ContinuousProbabilityDistribution> u3 = u2->get_new_distribution(u2->get_transformed_parameters(), true);
+
+        REQUIRE(u3->get_max() == 20.0);
+        REQUIRE(u3->get_min() == 10.0);
+        REQUIRE(u3->to_string() == "uniform(10, 20)");
+        REQUIRE(u3->get_mean() == 15.0);
+        REQUIRE(u3->get_variance() == Approx(25.0/3.0));
+        REQUIRE(u3->relative_ln_pdf(10.0) == Approx(std::log(0.1)));
+        REQUIRE(u3->relative_ln_pdf(20.0) == Approx(std::log(0.1)));
+        REQUIRE(u3->relative_ln_pdf(11.0) == Approx(std::log(0.1)));
+        REQUIRE(u3->ln_pdf(10.0) == Approx(std::log(0.1)));
+        REQUIRE(u3->ln_pdf(20.0) == Approx(std::log(0.1)));
+        REQUIRE(u3->ln_pdf(11.0) == Approx(std::log(0.1)));
+        REQUIRE(u3->relative_ln_pdf(9.9) == -std::numeric_limits<double>::infinity());
+        REQUIRE(u3->relative_ln_pdf(20.01) == -std::numeric_limits<double>::infinity());
+        REQUIRE(u3->relative_ln_pdf(-15.0) == -std::numeric_limits<double>::infinity());
+        REQUIRE(u3->ln_pdf(9.9) == -std::numeric_limits<double>::infinity());
+        REQUIRE(u3->ln_pdf(20.01) == -std::numeric_limits<double>::infinity());
+        REQUIRE(u3->ln_pdf(-15.0) == -std::numeric_limits<double>::infinity());
     }
 }
 
@@ -252,24 +272,43 @@ TEST_CASE("Testing BetaDistribution", "[BetaDistribution]") {
         std::vector<double> params = f.get_parameters();
         REQUIRE(params == expected_params);
         REQUIRE(f.get_number_of_parameters() == 2);
-        BetaDistribution f2 = f.get_new_distribution(params);
+        std::unique_ptr<ContinuousProbabilityDistribution> f2 = f.get_new_distribution(params);
 
-        REQUIRE(f2.to_string() == "beta(1, 1)");
-        REQUIRE(f2.get_min() == 0.0);
-        REQUIRE(f2.get_max() == 1.0);
-        REQUIRE(f2.get_alpha() == a);
-        REQUIRE(f2.get_beta() == b);
-        REQUIRE(f2.get_mean() == Approx(expected_mean));
-        REQUIRE(f2.get_variance() == Approx(expected_variance));
+        REQUIRE(f2->to_string() == "beta(1, 1)");
+        REQUIRE(f2->get_min() == 0.0);
+        REQUIRE(f2->get_max() == 1.0);
+        REQUIRE(f2->get_alpha() == a);
+        REQUIRE(f2->get_beta() == b);
+        REQUIRE(f2->get_mean() == Approx(expected_mean));
+        REQUIRE(f2->get_variance() == Approx(expected_variance));
 
-        REQUIRE(f2.ln_pdf(-0.01) == -std::numeric_limits<double>::infinity());
-        REQUIRE(f2.ln_pdf(0) == -std::numeric_limits<double>::infinity());
-        REQUIRE(f2.ln_pdf(1.0) == -std::numeric_limits<double>::infinity());
-        REQUIRE(f2.ln_pdf(1.1) == -std::numeric_limits<double>::infinity());
+        REQUIRE(f2->ln_pdf(-0.01) == -std::numeric_limits<double>::infinity());
+        REQUIRE(f2->ln_pdf(0) == -std::numeric_limits<double>::infinity());
+        REQUIRE(f2->ln_pdf(1.0) == -std::numeric_limits<double>::infinity());
+        REQUIRE(f2->ln_pdf(1.1) == -std::numeric_limits<double>::infinity());
 
-        REQUIRE(f2.ln_pdf(0.1) == Approx(0.0));
-        REQUIRE(f2.ln_pdf(0.5) == Approx(0.0));
-        REQUIRE(f2.ln_pdf(0.9) == Approx(0.0));
+        REQUIRE(f2->ln_pdf(0.1) == Approx(0.0));
+        REQUIRE(f2->ln_pdf(0.5) == Approx(0.0));
+        REQUIRE(f2->ln_pdf(0.9) == Approx(0.0));
+
+        std::unique_ptr<ContinuousProbabilityDistribution> f3 = f2->get_new_distribution(f2->get_transformed_parameters(), true);
+
+        REQUIRE(f3->to_string() == "beta(1, 1)");
+        REQUIRE(f3->get_min() == 0.0);
+        REQUIRE(f3->get_max() == 1.0);
+        REQUIRE(f3->get_alpha() == a);
+        REQUIRE(f3->get_beta() == b);
+        REQUIRE(f3->get_mean() == Approx(expected_mean));
+        REQUIRE(f3->get_variance() == Approx(expected_variance));
+
+        REQUIRE(f3->ln_pdf(-0.01) == -std::numeric_limits<double>::infinity());
+        REQUIRE(f3->ln_pdf(0) == -std::numeric_limits<double>::infinity());
+        REQUIRE(f3->ln_pdf(1.0) == -std::numeric_limits<double>::infinity());
+        REQUIRE(f3->ln_pdf(1.1) == -std::numeric_limits<double>::infinity());
+
+        REQUIRE(f3->ln_pdf(0.1) == Approx(0.0));
+        REQUIRE(f3->ln_pdf(0.5) == Approx(0.0));
+        REQUIRE(f3->ln_pdf(0.9) == Approx(0.0));
     }
 
     SECTION("Testing BetaDistribution(0.5, 0.5)") {
@@ -328,25 +367,45 @@ TEST_CASE("Testing BetaDistribution", "[BetaDistribution]") {
         std::vector<double> params = f.get_parameters();
         REQUIRE(params == expected_params);
         REQUIRE(f.get_number_of_parameters() == 2);
-        BetaDistribution f2 = f.get_new_distribution(params);
+        std::unique_ptr<ContinuousProbabilityDistribution> f2 = f.get_new_distribution(params);
 
-        REQUIRE(f2.to_string() == "beta(0.5, 0.5)");
-        REQUIRE(f2.get_min() == 0.0);
-        REQUIRE(f2.get_max() == 1.0);
-        REQUIRE(f2.get_alpha() == a);
-        REQUIRE(f2.get_beta() == b);
-        REQUIRE(f2.get_mean() == Approx(expected_mean));
-        REQUIRE(f2.get_variance() == Approx(expected_variance));
+        REQUIRE(f2->to_string() == "beta(0.5, 0.5)");
+        REQUIRE(f2->get_min() == 0.0);
+        REQUIRE(f2->get_max() == 1.0);
+        REQUIRE(f2->get_alpha() == a);
+        REQUIRE(f2->get_beta() == b);
+        REQUIRE(f2->get_mean() == Approx(expected_mean));
+        REQUIRE(f2->get_variance() == Approx(expected_variance));
 
-        REQUIRE(f2.ln_pdf(-0.01) == -std::numeric_limits<double>::infinity());
-        REQUIRE(f2.ln_pdf(0) == -std::numeric_limits<double>::infinity());
-        REQUIRE(f2.ln_pdf(1.0) == -std::numeric_limits<double>::infinity());
-        REQUIRE(f2.ln_pdf(1.1) == -std::numeric_limits<double>::infinity());
+        REQUIRE(f2->ln_pdf(-0.01) == -std::numeric_limits<double>::infinity());
+        REQUIRE(f2->ln_pdf(0) == -std::numeric_limits<double>::infinity());
+        REQUIRE(f2->ln_pdf(1.0) == -std::numeric_limits<double>::infinity());
+        REQUIRE(f2->ln_pdf(1.1) == -std::numeric_limits<double>::infinity());
 
         // numbers from scipy.stats.beta.logpdf
-        REQUIRE(f2.ln_pdf(0.1) == Approx(0.059242918476535955));
-        REQUIRE(f2.ln_pdf(0.5) == Approx(-0.45158270528945466));
-        REQUIRE(f2.ln_pdf(0.9) == Approx(0.059242918476536177));
+        REQUIRE(f2->ln_pdf(0.1) == Approx(0.059242918476535955));
+        REQUIRE(f2->ln_pdf(0.5) == Approx(-0.45158270528945466));
+        REQUIRE(f2->ln_pdf(0.9) == Approx(0.059242918476536177));
+
+        std::unique_ptr<ContinuousProbabilityDistribution> f3 = f2->get_new_distribution(f2->get_transformed_parameters(), true);
+
+        REQUIRE(f3->to_string() == "beta(0.5, 0.5)");
+        REQUIRE(f3->get_min() == 0.0);
+        REQUIRE(f3->get_max() == 1.0);
+        REQUIRE(f3->get_alpha() == a);
+        REQUIRE(f3->get_beta() == b);
+        REQUIRE(f3->get_mean() == Approx(expected_mean));
+        REQUIRE(f3->get_variance() == Approx(expected_variance));
+
+        REQUIRE(f3->ln_pdf(-0.01) == -std::numeric_limits<double>::infinity());
+        REQUIRE(f3->ln_pdf(0) == -std::numeric_limits<double>::infinity());
+        REQUIRE(f3->ln_pdf(1.0) == -std::numeric_limits<double>::infinity());
+        REQUIRE(f3->ln_pdf(1.1) == -std::numeric_limits<double>::infinity());
+
+        // numbers from scipy.stats.beta.logpdf
+        REQUIRE(f3->ln_pdf(0.1) == Approx(0.059242918476535955));
+        REQUIRE(f3->ln_pdf(0.5) == Approx(-0.45158270528945466));
+        REQUIRE(f3->ln_pdf(0.9) == Approx(0.059242918476536177));
     }
 
     SECTION("Testing BetaDistribution(5, 1)") {
@@ -404,25 +463,45 @@ TEST_CASE("Testing BetaDistribution", "[BetaDistribution]") {
         std::vector<double> params = f.get_parameters();
         REQUIRE(params == expected_params);
         REQUIRE(f.get_number_of_parameters() == 2);
-        BetaDistribution f2 = f.get_new_distribution(params);
+        std::unique_ptr<ContinuousProbabilityDistribution> f2 = f.get_new_distribution(params);
 
-        REQUIRE(f2.to_string() == "beta(5, 1)");
-        REQUIRE(f2.get_min() == 0.0);
-        REQUIRE(f2.get_max() == 1.0);
-        REQUIRE(f2.get_alpha() == a);
-        REQUIRE(f2.get_beta() == b);
-        REQUIRE(f2.get_mean() == Approx(expected_mean));
-        REQUIRE(f2.get_variance() == Approx(expected_variance));
+        REQUIRE(f2->to_string() == "beta(5, 1)");
+        REQUIRE(f2->get_min() == 0.0);
+        REQUIRE(f2->get_max() == 1.0);
+        REQUIRE(f2->get_alpha() == a);
+        REQUIRE(f2->get_beta() == b);
+        REQUIRE(f2->get_mean() == Approx(expected_mean));
+        REQUIRE(f2->get_variance() == Approx(expected_variance));
 
-        REQUIRE(f2.ln_pdf(-0.01) == -std::numeric_limits<double>::infinity());
-        REQUIRE(f2.ln_pdf(0) == -std::numeric_limits<double>::infinity());
-        REQUIRE(f2.ln_pdf(1.0) == -std::numeric_limits<double>::infinity());
-        REQUIRE(f2.ln_pdf(1.1) == -std::numeric_limits<double>::infinity());
+        REQUIRE(f2->ln_pdf(-0.01) == -std::numeric_limits<double>::infinity());
+        REQUIRE(f2->ln_pdf(0) == -std::numeric_limits<double>::infinity());
+        REQUIRE(f2->ln_pdf(1.0) == -std::numeric_limits<double>::infinity());
+        REQUIRE(f2->ln_pdf(1.1) == -std::numeric_limits<double>::infinity());
 
         // numbers from scipy.stats.beta.logpdf
-        REQUIRE(f2.ln_pdf(0.1) == Approx(-7.6009024595420813));
-        REQUIRE(f2.ln_pdf(0.5) == Approx(-1.1631508098056809));
-        REQUIRE(f2.ln_pdf(0.9) == Approx(1.1879958498027952));
+        REQUIRE(f2->ln_pdf(0.1) == Approx(-7.6009024595420813));
+        REQUIRE(f2->ln_pdf(0.5) == Approx(-1.1631508098056809));
+        REQUIRE(f2->ln_pdf(0.9) == Approx(1.1879958498027952));
+
+        std::unique_ptr<ContinuousProbabilityDistribution> f3 = f2->get_new_distribution(f2->get_transformed_parameters(), true);
+
+        REQUIRE(f3->to_string() == "beta(5, 1)");
+        REQUIRE(f3->get_min() == 0.0);
+        REQUIRE(f3->get_max() == 1.0);
+        REQUIRE(f3->get_alpha() == Approx(a));
+        REQUIRE(f3->get_beta() == Approx(b));
+        REQUIRE(f3->get_mean() == Approx(expected_mean));
+        REQUIRE(f3->get_variance() == Approx(expected_variance));
+
+        REQUIRE(f3->ln_pdf(-0.01) == -std::numeric_limits<double>::infinity());
+        REQUIRE(f3->ln_pdf(0) == -std::numeric_limits<double>::infinity());
+        REQUIRE(f3->ln_pdf(1.0) == -std::numeric_limits<double>::infinity());
+        REQUIRE(f3->ln_pdf(1.1) == -std::numeric_limits<double>::infinity());
+
+        // numbers from scipy.stats.beta.logpdf
+        REQUIRE(f3->ln_pdf(0.1) == Approx(-7.6009024595420813));
+        REQUIRE(f3->ln_pdf(0.5) == Approx(-1.1631508098056809));
+        REQUIRE(f3->ln_pdf(0.9) == Approx(1.1879958498027952));
     }
 
     SECTION("Testing BetaDistribution(1, 5)") {
@@ -480,25 +559,45 @@ TEST_CASE("Testing BetaDistribution", "[BetaDistribution]") {
         std::vector<double> params = f.get_parameters();
         REQUIRE(params == expected_params);
         REQUIRE(f.get_number_of_parameters() == 2);
-        BetaDistribution f2 = f.get_new_distribution(params);
+        std::unique_ptr<ContinuousProbabilityDistribution> f2 = f.get_new_distribution(params);
 
-        REQUIRE(f2.to_string() == "beta(1, 5)");
-        REQUIRE(f2.get_min() == 0.0);
-        REQUIRE(f2.get_max() == 1.0);
-        REQUIRE(f2.get_alpha() == a);
-        REQUIRE(f2.get_beta() == b);
-        REQUIRE(f2.get_mean() == Approx(expected_mean));
-        REQUIRE(f2.get_variance() == Approx(expected_variance));
+        REQUIRE(f2->to_string() == "beta(1, 5)");
+        REQUIRE(f2->get_min() == 0.0);
+        REQUIRE(f2->get_max() == 1.0);
+        REQUIRE(f2->get_alpha() == a);
+        REQUIRE(f2->get_beta() == b);
+        REQUIRE(f2->get_mean() == Approx(expected_mean));
+        REQUIRE(f2->get_variance() == Approx(expected_variance));
 
-        REQUIRE(f2.ln_pdf(-0.01) == -std::numeric_limits<double>::infinity());
-        REQUIRE(f2.ln_pdf(0) == -std::numeric_limits<double>::infinity());
-        REQUIRE(f2.ln_pdf(1.0) == -std::numeric_limits<double>::infinity());
-        REQUIRE(f2.ln_pdf(1.1) == -std::numeric_limits<double>::infinity());
+        REQUIRE(f2->ln_pdf(-0.01) == -std::numeric_limits<double>::infinity());
+        REQUIRE(f2->ln_pdf(0) == -std::numeric_limits<double>::infinity());
+        REQUIRE(f2->ln_pdf(1.0) == -std::numeric_limits<double>::infinity());
+        REQUIRE(f2->ln_pdf(1.1) == -std::numeric_limits<double>::infinity());
 
         // numbers from scipy.stats.beta.logpdf
-        REQUIRE(f2.ln_pdf(0.9) == Approx(-7.6009024595420813));
-        REQUIRE(f2.ln_pdf(0.5) == Approx(-1.1631508098056809));
-        REQUIRE(f2.ln_pdf(0.1) == Approx(1.1879958498027952));
+        REQUIRE(f2->ln_pdf(0.9) == Approx(-7.6009024595420813));
+        REQUIRE(f2->ln_pdf(0.5) == Approx(-1.1631508098056809));
+        REQUIRE(f2->ln_pdf(0.1) == Approx(1.1879958498027952));
+
+        std::unique_ptr<ContinuousProbabilityDistribution> f3 = f2->get_new_distribution(f2->get_transformed_parameters(), true);
+
+        REQUIRE(f3->to_string() == "beta(1, 5)");
+        REQUIRE(f3->get_min() == 0.0);
+        REQUIRE(f3->get_max() == 1.0);
+        REQUIRE(f3->get_alpha() == Approx(a));
+        REQUIRE(f3->get_beta() == Approx(b));
+        REQUIRE(f3->get_mean() == Approx(expected_mean));
+        REQUIRE(f3->get_variance() == Approx(expected_variance));
+
+        REQUIRE(f3->ln_pdf(-0.01) == -std::numeric_limits<double>::infinity());
+        REQUIRE(f3->ln_pdf(0) == -std::numeric_limits<double>::infinity());
+        REQUIRE(f3->ln_pdf(1.0) == -std::numeric_limits<double>::infinity());
+        REQUIRE(f3->ln_pdf(1.1) == -std::numeric_limits<double>::infinity());
+
+        // numbers from scipy.stats.beta.logpdf
+        REQUIRE(f3->ln_pdf(0.9) == Approx(-7.6009024595420813));
+        REQUIRE(f3->ln_pdf(0.5) == Approx(-1.1631508098056809));
+        REQUIRE(f3->ln_pdf(0.1) == Approx(1.1879958498027952));
     }
 }
 
@@ -644,27 +743,49 @@ TEST_CASE("Testing OffsetGammaDistribution", "[OffsetGammaDistribution]") {
         std::vector<double> params = f.get_parameters();
         REQUIRE(params == expected_params);
         REQUIRE(f.get_number_of_parameters() == 3);
-        OffsetGammaDistribution f2 = f.get_new_distribution(params);
+        std::unique_ptr<ContinuousProbabilityDistribution> f2 = f.get_new_distribution(params);
 
-        REQUIRE(f2.to_string() == "gamma(shape = 1, scale = 1, offset = 0)");
-        REQUIRE(f2.get_min() == 0.0);
-        REQUIRE(f2.get_max() == std::numeric_limits<double>::infinity());
-        REQUIRE(f2.get_mean() == 1.0);
-        REQUIRE(f2.get_variance() == 1.0);
+        REQUIRE(f2->to_string() == "gamma(shape = 1, scale = 1, offset = 0)");
+        REQUIRE(f2->get_min() == 0.0);
+        REQUIRE(f2->get_max() == std::numeric_limits<double>::infinity());
+        REQUIRE(f2->get_mean() == 1.0);
+        REQUIRE(f2->get_variance() == 1.0);
 
-        REQUIRE(f2.get_offset() == 0.0);
-        REQUIRE(f2.get_shape() == 1.0);
-        REQUIRE(f2.get_scale() == 1.0);
+        REQUIRE(f2->get_offset() == 0.0);
+        REQUIRE(f2->get_shape() == 1.0);
+        REQUIRE(f2->get_scale() == 1.0);
 
-        REQUIRE(f2.ln_pdf(-0.01) == -std::numeric_limits<double>::infinity());
-        REQUIRE(f2.ln_pdf(0.0) == 0.0);
-        REQUIRE(f2.relative_ln_pdf(0.0) == 0.0);
-        REQUIRE(f2.ln_pdf(0.01) == -0.01);
-        REQUIRE(f2.relative_ln_pdf(0.01) == -0.01);
-        REQUIRE(f2.ln_pdf(1.0) == -1.0);
-        REQUIRE(f2.relative_ln_pdf(1.0) == -1.0);
-        REQUIRE(f2.ln_pdf(100.0) == -100.0);
-        REQUIRE(f2.relative_ln_pdf(100.0) == -100.0);
+        REQUIRE(f2->ln_pdf(-0.01) == -std::numeric_limits<double>::infinity());
+        REQUIRE(f2->ln_pdf(0.0) == 0.0);
+        REQUIRE(f2->relative_ln_pdf(0.0) == 0.0);
+        REQUIRE(f2->ln_pdf(0.01) == -0.01);
+        REQUIRE(f2->relative_ln_pdf(0.01) == -0.01);
+        REQUIRE(f2->ln_pdf(1.0) == -1.0);
+        REQUIRE(f2->relative_ln_pdf(1.0) == -1.0);
+        REQUIRE(f2->ln_pdf(100.0) == -100.0);
+        REQUIRE(f2->relative_ln_pdf(100.0) == -100.0);
+
+        std::unique_ptr<ContinuousProbabilityDistribution> f3 = f2->get_new_distribution(f2->get_transformed_parameters(), true);
+
+        REQUIRE(f3->to_string() == "gamma(shape = 1, scale = 1, offset = 0)");
+        REQUIRE(f3->get_min() == 0.0);
+        REQUIRE(f3->get_max() == std::numeric_limits<double>::infinity());
+        REQUIRE(f3->get_mean() == Approx(1.0));
+        REQUIRE(f3->get_variance() == Approx(1.0));
+
+        REQUIRE(f3->get_offset() == 0.0);
+        REQUIRE(f3->get_shape() == Approx(1.0));
+        REQUIRE(f3->get_scale() == Approx(1.0));
+
+        REQUIRE(f3->ln_pdf(-0.01) == -std::numeric_limits<double>::infinity());
+        REQUIRE(f3->ln_pdf(0.0) == 0.0);
+        REQUIRE(f3->relative_ln_pdf(0.0) == 0.0);
+        REQUIRE(f3->ln_pdf(0.01) == -0.01);
+        REQUIRE(f3->relative_ln_pdf(0.01) == -0.01);
+        REQUIRE(f3->ln_pdf(1.0) == -1.0);
+        REQUIRE(f3->relative_ln_pdf(1.0) == -1.0);
+        REQUIRE(f3->ln_pdf(100.0) == -100.0);
+        REQUIRE(f3->relative_ln_pdf(100.0) == -100.0);
     }
 
     SECTION("Testing constructor errors") {
@@ -718,22 +839,39 @@ TEST_CASE("Testing OffsetGammaDistribution", "[OffsetGammaDistribution]") {
         std::vector<double> params = f.get_parameters();
         REQUIRE(params == expected_params);
         REQUIRE(f.get_number_of_parameters() == 3);
-        OffsetGammaDistribution f2 = f.get_new_distribution(params);
+        std::unique_ptr<ContinuousProbabilityDistribution> f2 = f.get_new_distribution(params);
 
-        REQUIRE(f2.to_string() == "gamma(shape = 2, scale = 4, offset = 5)");
-        REQUIRE(f2.get_min() == 5.0);
-        REQUIRE(f2.get_max() == std::numeric_limits<double>::infinity());
-        REQUIRE(f2.get_mean() == 13.0);
-        REQUIRE(f2.get_variance() == 32.0);
-        REQUIRE(f2.ln_pdf(5.0) == -std::numeric_limits<double>::infinity());
-        REQUIRE(f2.ln_pdf(4.9) == -std::numeric_limits<double>::infinity());
-        REQUIRE(f2.ln_pdf(6.0) == Approx(-3.0225887222397811));
-        REQUIRE(f2.ln_pdf(13.0) == Approx(-2.6931471805599454));
-        REQUIRE(f2.ln_pdf(105.0) == Approx(-23.167418536251692));
+        REQUIRE(f2->to_string() == "gamma(shape = 2, scale = 4, offset = 5)");
+        REQUIRE(f2->get_min() == 5.0);
+        REQUIRE(f2->get_max() == std::numeric_limits<double>::infinity());
+        REQUIRE(f2->get_mean() == 13.0);
+        REQUIRE(f2->get_variance() == 32.0);
+        REQUIRE(f2->ln_pdf(5.0) == -std::numeric_limits<double>::infinity());
+        REQUIRE(f2->ln_pdf(4.9) == -std::numeric_limits<double>::infinity());
+        REQUIRE(f2->ln_pdf(6.0) == Approx(-3.0225887222397811));
+        REQUIRE(f2->ln_pdf(13.0) == Approx(-2.6931471805599454));
+        REQUIRE(f2->ln_pdf(105.0) == Approx(-23.167418536251692));
 
-        REQUIRE(f2.get_offset() == 5.0);
-        REQUIRE(f2.get_shape() == 2.0);
-        REQUIRE(f2.get_scale() == 4.0);
+        REQUIRE(f2->get_offset() == 5.0);
+        REQUIRE(f2->get_shape() == 2.0);
+        REQUIRE(f2->get_scale() == 4.0);
+
+        std::unique_ptr<ContinuousProbabilityDistribution> f3 = f2->get_new_distribution(f2->get_transformed_parameters(), true);
+
+        REQUIRE(f3->to_string() == "gamma(shape = 2, scale = 4, offset = 5)");
+        REQUIRE(f3->get_min() == 5.0);
+        REQUIRE(f3->get_max() == std::numeric_limits<double>::infinity());
+        REQUIRE(f3->get_mean() == Approx(13.0));
+        REQUIRE(f3->get_variance() == Approx(32.0));
+        REQUIRE(f3->ln_pdf(5.0) == -std::numeric_limits<double>::infinity());
+        REQUIRE(f3->ln_pdf(4.9) == -std::numeric_limits<double>::infinity());
+        REQUIRE(f3->ln_pdf(6.0) == Approx(-3.0225887222397811));
+        REQUIRE(f3->ln_pdf(13.0) == Approx(-2.6931471805599454));
+        REQUIRE(f3->ln_pdf(105.0) == Approx(-23.167418536251692));
+
+        REQUIRE(f3->get_offset() == 5.0);
+        REQUIRE(f3->get_shape() == Approx(2.0));
+        REQUIRE(f3->get_scale() == Approx(4.0));
     }
 
     SECTION("Testing OffsetGammaDistribution(0.1, 100, -5)") {
@@ -829,27 +967,49 @@ TEST_CASE("Testing GammaDistribution", "[GammaDistribution]") {
         std::vector<double> params = f.get_parameters();
         REQUIRE(params == expected_params);
         REQUIRE(f.get_number_of_parameters() == 2);
-        GammaDistribution f2 = f.get_new_distribution(params);
+        std::unique_ptr<ContinuousProbabilityDistribution> f2 = f.get_new_distribution(params);
 
-        REQUIRE(f2.to_string() == "gamma(shape = 1, scale = 1)");
-        REQUIRE(f2.get_min() == 0.0);
-        REQUIRE(f2.get_max() == std::numeric_limits<double>::infinity());
-        REQUIRE(f2.get_mean() == 1.0);
-        REQUIRE(f2.get_variance() == 1.0);
+        REQUIRE(f2->to_string() == "gamma(shape = 1, scale = 1)");
+        REQUIRE(f2->get_min() == 0.0);
+        REQUIRE(f2->get_max() == std::numeric_limits<double>::infinity());
+        REQUIRE(f2->get_mean() == 1.0);
+        REQUIRE(f2->get_variance() == 1.0);
 
-        REQUIRE(f2.ln_pdf(-0.01) == -std::numeric_limits<double>::infinity());
-        REQUIRE(f2.ln_pdf(0.0) == 0.0);
-        REQUIRE(f2.relative_ln_pdf(0.0) == 0.0);
-        REQUIRE(f2.ln_pdf(0.01) == -0.01);
-        REQUIRE(f2.relative_ln_pdf(0.01) == -0.01);
-        REQUIRE(f2.ln_pdf(1.0) == -1.0);
-        REQUIRE(f2.relative_ln_pdf(1.0) == -1.0);
-        REQUIRE(f2.ln_pdf(100.0) == -100.0);
-        REQUIRE(f2.relative_ln_pdf(100.0) == -100.0);
+        REQUIRE(f2->ln_pdf(-0.01) == -std::numeric_limits<double>::infinity());
+        REQUIRE(f2->ln_pdf(0.0) == 0.0);
+        REQUIRE(f2->relative_ln_pdf(0.0) == 0.0);
+        REQUIRE(f2->ln_pdf(0.01) == -0.01);
+        REQUIRE(f2->relative_ln_pdf(0.01) == -0.01);
+        REQUIRE(f2->ln_pdf(1.0) == -1.0);
+        REQUIRE(f2->relative_ln_pdf(1.0) == -1.0);
+        REQUIRE(f2->ln_pdf(100.0) == -100.0);
+        REQUIRE(f2->relative_ln_pdf(100.0) == -100.0);
 
-        REQUIRE(f2.get_offset() == 0.0);
-        REQUIRE(f2.get_shape() == 1.0);
-        REQUIRE(f2.get_scale() == 1.0);
+        REQUIRE(f2->get_offset() == 0.0);
+        REQUIRE(f2->get_shape() == 1.0);
+        REQUIRE(f2->get_scale() == 1.0);
+
+        std::unique_ptr<ContinuousProbabilityDistribution> f3 = f2->get_new_distribution(f2->get_transformed_parameters(), true);
+
+        REQUIRE(f3->to_string() == "gamma(shape = 1, scale = 1)");
+        REQUIRE(f3->get_min() == 0.0);
+        REQUIRE(f3->get_max() == std::numeric_limits<double>::infinity());
+        REQUIRE(f3->get_mean() == Approx(1.0));
+        REQUIRE(f3->get_variance() == Approx(1.0));
+
+        REQUIRE(f3->ln_pdf(-0.01) == -std::numeric_limits<double>::infinity());
+        REQUIRE(f3->ln_pdf(0.0) == 0.0);
+        REQUIRE(f3->relative_ln_pdf(0.0) == 0.0);
+        REQUIRE(f3->ln_pdf(0.01) == -0.01);
+        REQUIRE(f3->relative_ln_pdf(0.01) == -0.01);
+        REQUIRE(f3->ln_pdf(1.0) == -1.0);
+        REQUIRE(f3->relative_ln_pdf(1.0) == -1.0);
+        REQUIRE(f3->ln_pdf(100.0) == -100.0);
+        REQUIRE(f3->relative_ln_pdf(100.0) == -100.0);
+
+        REQUIRE(f3->get_offset() == 0.0);
+        REQUIRE(f3->get_shape() == Approx(1.0));
+        REQUIRE(f3->get_scale() == Approx(1.0));
     }
     SECTION("Testing constructor errors") {
         REQUIRE_THROWS_AS(GammaDistribution(0.0, 1.0), EcoevolityProbabilityDistributionError &);
@@ -902,22 +1062,39 @@ TEST_CASE("Testing GammaDistribution", "[GammaDistribution]") {
         std::vector<double> params = f.get_parameters();
         REQUIRE(params == expected_params);
         REQUIRE(f.get_number_of_parameters() == 2);
-        GammaDistribution f2 = f.get_new_distribution(params);
+        std::unique_ptr<ContinuousProbabilityDistribution> f2 = f.get_new_distribution(params);
 
-        REQUIRE(f2.to_string() == "gamma(shape = 2, scale = 4)");
-        REQUIRE(f2.get_min() == 0.0);
-        REQUIRE(f2.get_max() == std::numeric_limits<double>::infinity());
-        REQUIRE(f2.get_mean() == 8.0);
-        REQUIRE(f2.get_variance() == 32.0);
-        REQUIRE(f2.ln_pdf(0.0) == -std::numeric_limits<double>::infinity());
-        REQUIRE(f2.ln_pdf(-0.1) == -std::numeric_limits<double>::infinity());
-        REQUIRE(f2.ln_pdf(1.0) == Approx(-3.0225887222397811));
-        REQUIRE(f2.ln_pdf(8.0) == Approx(-2.6931471805599454));
-        REQUIRE(f2.ln_pdf(100.0) == Approx(-23.167418536251692));
+        REQUIRE(f2->to_string() == "gamma(shape = 2, scale = 4)");
+        REQUIRE(f2->get_min() == 0.0);
+        REQUIRE(f2->get_max() == std::numeric_limits<double>::infinity());
+        REQUIRE(f2->get_mean() == 8.0);
+        REQUIRE(f2->get_variance() == 32.0);
+        REQUIRE(f2->ln_pdf(0.0) == -std::numeric_limits<double>::infinity());
+        REQUIRE(f2->ln_pdf(-0.1) == -std::numeric_limits<double>::infinity());
+        REQUIRE(f2->ln_pdf(1.0) == Approx(-3.0225887222397811));
+        REQUIRE(f2->ln_pdf(8.0) == Approx(-2.6931471805599454));
+        REQUIRE(f2->ln_pdf(100.0) == Approx(-23.167418536251692));
 
-        REQUIRE(f2.get_offset() == 0.0);
-        REQUIRE(f2.get_shape() == 2.0);
-        REQUIRE(f2.get_scale() == 4.0);
+        REQUIRE(f2->get_offset() == 0.0);
+        REQUIRE(f2->get_shape() == 2.0);
+        REQUIRE(f2->get_scale() == 4.0);
+
+        std::unique_ptr<ContinuousProbabilityDistribution> f3 = f2->get_new_distribution(f2->get_transformed_parameters(), true);
+
+        REQUIRE(f3->to_string() == "gamma(shape = 2, scale = 4)");
+        REQUIRE(f3->get_min() == 0.0);
+        REQUIRE(f3->get_max() == std::numeric_limits<double>::infinity());
+        REQUIRE(f3->get_mean() == Approx(8.0));
+        REQUIRE(f3->get_variance() == Approx(32.0));
+        REQUIRE(f3->ln_pdf(0.0) == -std::numeric_limits<double>::infinity());
+        REQUIRE(f3->ln_pdf(-0.1) == -std::numeric_limits<double>::infinity());
+        REQUIRE(f3->ln_pdf(1.0) == Approx(-3.0225887222397811));
+        REQUIRE(f3->ln_pdf(8.0) == Approx(-2.6931471805599454));
+        REQUIRE(f3->ln_pdf(100.0) == Approx(-23.167418536251692));
+
+        REQUIRE(f3->get_offset() == 0.0);
+        REQUIRE(f3->get_shape() == Approx(2.0));
+        REQUIRE(f3->get_scale() == Approx(4.0));
     }
 
     SECTION("Testing GammaDistribution(0.1, 100)") {
@@ -1012,25 +1189,45 @@ TEST_CASE("Testing OffsetExponentialDistribution", "[OffsetExponentialDistributi
         std::vector<double> params = f.get_parameters();
         REQUIRE(params == expected_params);
         REQUIRE(f.get_number_of_parameters() == 2);
-        OffsetExponentialDistribution f2 = f.get_new_distribution(params);
+        std::unique_ptr<ContinuousProbabilityDistribution> f2 = f.get_new_distribution(params);
 
-        REQUIRE(f2.to_string() == "exp(lambda = 1, offset = 0)");
+        REQUIRE(f2->to_string() == "exp(lambda = 1, offset = 0)");
 
-        REQUIRE(f2.get_max() == std::numeric_limits<double>::infinity());
-        REQUIRE(f2.get_min() == 0.0);
-        REQUIRE(f2.get_offset() == 0.0);
-        REQUIRE(f2.get_shape() == 1.0);
-        REQUIRE(f2.get_scale() == 1.0);
-        REQUIRE(f2.get_lambda() == 1.0);
+        REQUIRE(f2->get_max() == std::numeric_limits<double>::infinity());
+        REQUIRE(f2->get_min() == 0.0);
+        REQUIRE(f2->get_offset() == 0.0);
+        REQUIRE(f2->get_shape() == 1.0);
+        REQUIRE(f2->get_scale() == 1.0);
+        REQUIRE(f2->get_lambda() == 1.0);
 
-        REQUIRE(f2.get_mean() == 1.0);
-        REQUIRE(f2.get_variance() == 1.0);
+        REQUIRE(f2->get_mean() == 1.0);
+        REQUIRE(f2->get_variance() == 1.0);
 
-        REQUIRE(f2.ln_pdf(-0.01) == -std::numeric_limits<double>::infinity());
-        REQUIRE(f2.ln_pdf(0.0) == 0.0);
-        REQUIRE(f2.ln_pdf(0.01) == -0.01);
-        REQUIRE(f2.ln_pdf(1.0) == -1.0);
-        REQUIRE(f2.ln_pdf(100.0) == -100.0);
+        REQUIRE(f2->ln_pdf(-0.01) == -std::numeric_limits<double>::infinity());
+        REQUIRE(f2->ln_pdf(0.0) == 0.0);
+        REQUIRE(f2->ln_pdf(0.01) == -0.01);
+        REQUIRE(f2->ln_pdf(1.0) == -1.0);
+        REQUIRE(f2->ln_pdf(100.0) == -100.0);
+
+        std::unique_ptr<ContinuousProbabilityDistribution> f3 = f2->get_new_distribution(f2->get_transformed_parameters(), true);
+
+        REQUIRE(f3->to_string() == "exp(lambda = 1, offset = 0)");
+
+        REQUIRE(f3->get_max() == std::numeric_limits<double>::infinity());
+        REQUIRE(f3->get_min() == 0.0);
+        REQUIRE(f3->get_offset() == 0.0);
+        REQUIRE(f3->get_shape() == Approx(1.0));
+        REQUIRE(f3->get_scale() == Approx(1.0));
+        REQUIRE(f3->get_lambda() == Approx(1.0));
+
+        REQUIRE(f3->get_mean() == Approx(1.0));
+        REQUIRE(f3->get_variance() == Approx(1.0));
+
+        REQUIRE(f3->ln_pdf(-0.01) == -std::numeric_limits<double>::infinity());
+        REQUIRE(f3->ln_pdf(0.0) == 0.0);
+        REQUIRE(f3->ln_pdf(0.01) == -0.01);
+        REQUIRE(f3->ln_pdf(1.0) == -1.0);
+        REQUIRE(f3->ln_pdf(100.0) == -100.0);
     }
 
     SECTION("Testing constructor errors") {
@@ -1086,25 +1283,45 @@ TEST_CASE("Testing OffsetExponentialDistribution", "[OffsetExponentialDistributi
         std::vector<double> params = f.get_parameters();
         REQUIRE(params == expected_params);
         REQUIRE(f.get_number_of_parameters() == 2);
-        OffsetExponentialDistribution f2 = f.get_new_distribution(params);
+        std::unique_ptr<ContinuousProbabilityDistribution> f2 = f.get_new_distribution(params);
 
-        REQUIRE(f2.to_string() == "exp(lambda = 5, offset = -5)");
+        REQUIRE(f2->to_string() == "exp(lambda = 5, offset = -5)");
 
-        REQUIRE(f2.get_max() == std::numeric_limits<double>::infinity());
-        REQUIRE(f2.get_min() == -5.0);
-        REQUIRE(f2.get_offset() == -5.0);
-        REQUIRE(f2.get_shape() == 1.0);
-        REQUIRE(f2.get_scale() == Approx(1.0/5.0));
-        REQUIRE(f2.get_lambda() == 5.0);
+        REQUIRE(f2->get_max() == std::numeric_limits<double>::infinity());
+        REQUIRE(f2->get_min() == -5.0);
+        REQUIRE(f2->get_offset() == -5.0);
+        REQUIRE(f2->get_shape() == 1.0);
+        REQUIRE(f2->get_scale() == Approx(1.0/5.0));
+        REQUIRE(f2->get_lambda() == 5.0);
 
-        REQUIRE(f2.get_mean() == Approx(-4.8));
-        REQUIRE(f2.get_variance() == Approx(1.0/25.0));
+        REQUIRE(f2->get_mean() == Approx(-4.8));
+        REQUIRE(f2->get_variance() == Approx(1.0/25.0));
 
-        REQUIRE(f2.ln_pdf(-5.01) == -std::numeric_limits<double>::infinity());
-        REQUIRE(f2.ln_pdf(-5.0) == Approx(1.6094379124341003));
-        REQUIRE(f2.ln_pdf(-4.99) == Approx(1.5594379124341002));
-        REQUIRE(f2.ln_pdf(-4.0) == Approx(-3.3905620875658995));
-        REQUIRE(f2.ln_pdf(95.0) == Approx(-498.39056208756591));
+        REQUIRE(f2->ln_pdf(-5.01) == -std::numeric_limits<double>::infinity());
+        REQUIRE(f2->ln_pdf(-5.0) == Approx(1.6094379124341003));
+        REQUIRE(f2->ln_pdf(-4.99) == Approx(1.5594379124341002));
+        REQUIRE(f2->ln_pdf(-4.0) == Approx(-3.3905620875658995));
+        REQUIRE(f2->ln_pdf(95.0) == Approx(-498.39056208756591));
+
+        std::unique_ptr<ContinuousProbabilityDistribution> f3 = f2->get_new_distribution(f2->get_transformed_parameters(), true);
+
+        REQUIRE(f3->to_string() == "exp(lambda = 5, offset = -5)");
+
+        REQUIRE(f3->get_max() == std::numeric_limits<double>::infinity());
+        REQUIRE(f3->get_min() == -5.0);
+        REQUIRE(f3->get_offset() == -5.0);
+        REQUIRE(f3->get_shape() == Approx(1.0));
+        REQUIRE(f3->get_scale() == Approx(1.0/5.0));
+        REQUIRE(f3->get_lambda() == Approx(5.0));
+
+        REQUIRE(f3->get_mean() == Approx(-4.8));
+        REQUIRE(f3->get_variance() == Approx(1.0/25.0));
+
+        REQUIRE(f3->ln_pdf(-5.01) == -std::numeric_limits<double>::infinity());
+        REQUIRE(f3->ln_pdf(-5.0) == Approx(1.6094379124341003));
+        REQUIRE(f3->ln_pdf(-4.99) == Approx(1.5594379124341002));
+        REQUIRE(f3->ln_pdf(-4.0) == Approx(-3.3905620875658995));
+        REQUIRE(f3->ln_pdf(95.0) == Approx(-498.39056208756591));
     }
 }
 
@@ -1207,25 +1424,45 @@ TEST_CASE("Testing ExponentialDistribution", "[ExponentialDistribution]") {
         std::vector<double> params = f.get_parameters();
         REQUIRE(params == expected_params);
         REQUIRE(f.get_number_of_parameters() == 1);
-        ExponentialDistribution f2 = f.get_new_distribution(params);
+        std::unique_ptr<ContinuousProbabilityDistribution> f2 = f.get_new_distribution(params);
 
-        REQUIRE(f2.to_string() == "exp(lambda = 5)");
+        REQUIRE(f2->to_string() == "exp(lambda = 5)");
 
-        REQUIRE(f2.get_max() == std::numeric_limits<double>::infinity());
-        REQUIRE(f2.get_min() == 0.0);
-        REQUIRE(f2.get_offset() == 0.0);
-        REQUIRE(f2.get_shape() == 1.0);
-        REQUIRE(f2.get_scale() == Approx(1.0/5.0));
-        REQUIRE(f2.get_lambda() == 5.0);
+        REQUIRE(f2->get_max() == std::numeric_limits<double>::infinity());
+        REQUIRE(f2->get_min() == 0.0);
+        REQUIRE(f2->get_offset() == 0.0);
+        REQUIRE(f2->get_shape() == 1.0);
+        REQUIRE(f2->get_scale() == Approx(1.0/5.0));
+        REQUIRE(f2->get_lambda() == 5.0);
 
-        REQUIRE(f2.get_mean() == Approx(0.2));
-        REQUIRE(f2.get_variance() == Approx(1.0/25.0));
+        REQUIRE(f2->get_mean() == Approx(0.2));
+        REQUIRE(f2->get_variance() == Approx(1.0/25.0));
 
-        REQUIRE(f2.ln_pdf(-0.01) == -std::numeric_limits<double>::infinity());
-        REQUIRE(f2.ln_pdf(0.0) == Approx(1.6094379124341003));
-        REQUIRE(f2.ln_pdf(0.01) == Approx(1.5594379124341002));
-        REQUIRE(f2.ln_pdf(1.0) == Approx(-3.3905620875658995));
-        REQUIRE(f2.ln_pdf(100.0) == Approx(-498.39056208756591));
+        REQUIRE(f2->ln_pdf(-0.01) == -std::numeric_limits<double>::infinity());
+        REQUIRE(f2->ln_pdf(0.0) == Approx(1.6094379124341003));
+        REQUIRE(f2->ln_pdf(0.01) == Approx(1.5594379124341002));
+        REQUIRE(f2->ln_pdf(1.0) == Approx(-3.3905620875658995));
+        REQUIRE(f2->ln_pdf(100.0) == Approx(-498.39056208756591));
+
+        std::unique_ptr<ContinuousProbabilityDistribution> f3 = f2->get_new_distribution(f2->get_transformed_parameters(), true);
+
+        REQUIRE(f3->to_string() == "exp(lambda = 5)");
+
+        REQUIRE(f3->get_max() == std::numeric_limits<double>::infinity());
+        REQUIRE(f3->get_min() == 0.0);
+        REQUIRE(f3->get_offset() == 0.0);
+        REQUIRE(f3->get_shape() == Approx(1.0));
+        REQUIRE(f3->get_scale() == Approx(1.0/5.0));
+        REQUIRE(f3->get_lambda() == Approx(5.0));
+
+        REQUIRE(f3->get_mean() == Approx(0.2));
+        REQUIRE(f3->get_variance() == Approx(1.0/25.0));
+
+        REQUIRE(f3->ln_pdf(-0.01) == -std::numeric_limits<double>::infinity());
+        REQUIRE(f3->ln_pdf(0.0) == Approx(1.6094379124341003));
+        REQUIRE(f3->ln_pdf(0.01) == Approx(1.5594379124341002));
+        REQUIRE(f3->ln_pdf(1.0) == Approx(-3.3905620875658995));
+        REQUIRE(f3->ln_pdf(100.0) == Approx(-498.39056208756591));
     }
 
     SECTION("Testing ExponentialDistribution(5) with base pointer") {

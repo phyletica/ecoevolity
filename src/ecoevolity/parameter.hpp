@@ -199,8 +199,8 @@ class RealParameter: public RealVariable {
             return * this;
         }
 
-        virtual std::unique_ptr<RealParameter> clone() const {
-            return std::unique_ptr<RealParameter>(new RealParameter(*this));
+        virtual std::shared_ptr<RealParameter> clone() const {
+            return std::make_shared<RealParameter>(*this);
         }
 
         virtual std::shared_ptr<ContinuousProbabilityDistribution> get_prior() const {
@@ -369,8 +369,8 @@ class PositiveRealParameter: public RealParameter {
             return * this;
         }
 
-        std::unique_ptr<RealParameter> clone() const override{
-            return std::unique_ptr<RealParameter>(new PositiveRealParameter(*this));
+        std::shared_ptr<RealParameter> clone() const override{
+            return std::make_shared<RealParameter>(*this);
         }
 };
 
@@ -426,8 +426,8 @@ class DiscountParameter: public RealParameter {
             return * this;
         }
 
-        std::unique_ptr<RealParameter> clone() const override{
-            return std::unique_ptr<RealParameter>(new DiscountParameter(*this));
+        std::shared_ptr<RealParameter> clone() const override{
+            return std::make_shared<RealParameter>(*this);
         }
 
         // override set_value method, because the discount parameter cannot be
@@ -466,8 +466,8 @@ class CoalescenceRateParameter: public PositiveRealParameter {
             return * this;
         }
 
-        std::unique_ptr<RealParameter> clone() const override{
-            return std::unique_ptr<RealParameter>(new CoalescenceRateParameter(*this));
+        std::shared_ptr<RealParameter> clone() const override{
+            return std::make_shared<RealParameter>(*this);
         }
 
         static double get_population_size_from_rate(double coalescence_rate) {
@@ -647,18 +647,19 @@ class LogProbabilityDensity: public RealVariable {
 };
 
 
-template<class DistributionType>
 class HyperDistribution {
     protected:
-        DistributionType distribution_;
-        // Using pointers to enable polymorphism for the parameters controlling
-        // the distribution_
-        std::vector< std::unique_ptr<RealParameter> > parameters_;
-        typedef HyperDistribution<DistributionType> DerivedHyperDistribution;
+        // Using pointers to enable polymorphism for the base distribution and
+        // parameters controlling the base distribution_
+        std::unique_ptr<ContinuousProbabilityDistribution> distribution_;
+        std::vector< std::shared_ptr<RealParameter> > parameters_;
+        bool using_transformed_parameters_;
 
         void update_distribution() {
             std::vector<double> params = this->get_parameter_values();
-            this->distribution_ = this->distribution_.get_new_distribution(params);
+            this->distribution_ = this->distribution_->get_new_distribution(
+                    params,
+                    this->using_transformed_parameters_);
         }
 
         void initialize_parameters(RandomNumberGenerator & rng) {
@@ -669,56 +670,67 @@ class HyperDistribution {
 
     public:
 
+        HyperDistribution() {
+            this->clear();
+        }
+
         HyperDistribution(
-                const std::vector< std::unique_ptr<RealParameter> > & parameters,
-                RandomNumberGenerator & rng
+                const std::unique_ptr<ContinuousProbabilityDistribution> dummy_distribution,
+                const std::vector< std::shared_ptr<RealParameter> > & parameters,
+                RandomNumberGenerator & rng,
+                const bool using_transformed_parameters = false
                 ) {
-            if (parameters.size() != this->distribution_.get_number_of_parameters()) {
+            this->clear();
+            this->distribution_ = dummy_distribution->clone();
+            if (parameters.size() != this->distribution_->get_number_of_parameters()) {
                 std::ostringstream msg;
                 msg << "Tried to construct a "
-                    << this->distribution_.get_name()
+                    << this->distribution_->get_name()
                     << " HyperDistribution with "
                     << parameters.size()
                     << " parameters; expecting "
-                    << this->distribution_.get_number_of_parameters()
+                    << this->distribution_->get_number_of_parameters()
                     << " parameters." << std::endl;
                 throw EcoevolityProbabilityDistributionError(msg.str());
             }
-            this->parameters_.clear();
-            this->parameters_.reserve(parameters.size());
-            // Populate parameters_ member vector with unique pointers to deep
-            // copies of the provided parameters
-            for (const auto & p : parameters) {
-                this->parameters_.push_back(p->clone());
-            }
+            this->parameters_ = parameters;
             this->initialize_parameters(rng);
+            this->using_transformed_parameters_ = using_transformed_parameters;
 
-            this->distribution_ = DistributionType();
             this->update_distribution();
         }
 
         ~HyperDistribution() { }
 
-        DerivedHyperDistribution& operator=(const DerivedHyperDistribution& d) {
+        HyperDistribution& operator=(const HyperDistribution& d) {
             this->parameters_.clear();
             this->parameters_.reserve(d.get_number_of_parameters());
             for (unsigned int i = 0; i < d.get_number_of_parameters(); ++i) {
-                this->parameters_.push_back(d.get_parameter(i)->clone());
+                this->parameters_.push_back(d.get_parameter(i).clone());
             }
-            this->initialize_parameters();
 
-            this->distribution_ = DistributionType();
-            ECOEVOLITY_ASSERT(this->distribution_.get_name() == d.get_distribution().get_name());
+            this->using_transformed_parameters_ = d.using_transformed_parameters();
+            this->distribution_ = d.get_distribution()->clone();
             this->update_distribution();
             return * this;
         }
 
-        const DistributionType & get_distribution() const {
+        void clear() {
+            this->distribution_ = nullptr;
+            this->parameters_.clear();
+            this->using_transformed_parameters_ = false;
+        }
+
+        const std::unique_ptr<ContinuousProbabilityDistribution> & get_distribution() const {
             return this->distribution_;
         }
 
         unsigned int get_number_of_parameters() const {
             return this->parameters_.size();
+        }
+
+        bool using_transformed_parameters() const {
+            return this->using_transformed_parameters_;
         }
 
         std::shared_ptr<ContinuousProbabilityDistribution> get_parameter_prior(unsigned int parameter_index) const {
@@ -861,14 +873,14 @@ class HyperDistribution {
         }
 
         double draw(RandomNumberGenerator & rng) const {
-            return this->distribution_.draw(rng);
+            return this->distribution_->draw(rng);
         }
 
         double base_ln_pdf(double value) const {
-            return this->distribution_.ln_pdf(value);
+            return this->distribution_->ln_pdf(value);
         }
         double base_relative_ln_pdf(double value) const {
-            return this->distribution_.relative_ln_pdf(value);
+            return this->distribution_->relative_ln_pdf(value);
         }
         double parameter_prior_ln_pdf(unsigned int parameter_index) const {
             ECOEVOLITY_ASSERT(parameter_index < this->parameters_.size());
