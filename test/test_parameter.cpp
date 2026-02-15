@@ -1856,7 +1856,7 @@ TEST_CASE("HyperDistribution constructor", "[HyperDistribution]") {
         }
         OffsetGammaDistribution dummy_dist;
 
-        std::unique_ptr<ContinuousProbabilityDistribution> base_dist = dummy_dist.get_new_distribution(param_vals, false);
+        std::shared_ptr<ContinuousProbabilityDistribution> base_dist = dummy_dist.get_new_distribution(param_vals, false);
         HyperDistribution hd(dummy_dist.clone(), parameters, rng, false);
         REQUIRE(hd.get_number_of_parameters() == 3);
         REQUIRE(hd.get_parameter_value(0) == 1.0);

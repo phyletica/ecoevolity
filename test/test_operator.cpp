@@ -76678,13 +76678,13 @@ TEST_CASE("Testing ReversibleJumpSampler propose_jump_to_gap with 2 pairs and sp
                         min_height = comparisons->get_height(j);
                     }
                 }
-                double expected_ln_prior_ratio = comparisons->get_log_prior_density_of_height(min_height);
+                double expected_ln_prior_ratio = comparisons->get_log_base_prior_density_of_height(min_height);
                 expected_ln_hastings += expected_ln_prior_ratio;
             }
             else if (comparisons->get_number_of_events() == 1) {
                 std::cout << "merging\n";
                 expected_ln_hastings = std::log(1.0 / (max_height * 2.0));
-                double expected_ln_prior_ratio = -comparisons->get_log_prior_density_of_height(min_height);
+                double expected_ln_prior_ratio = -comparisons->get_log_base_prior_density_of_height(min_height);
                 expected_ln_hastings += expected_ln_prior_ratio;
             }
             else {

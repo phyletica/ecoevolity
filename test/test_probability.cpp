@@ -23,7 +23,7 @@ TEST_CASE("Testing ImproperUniformDistribution", "[ImproperUniformDistribution]"
         std::vector<double> params = u.get_parameters();
         REQUIRE(params.size() == 0);
         REQUIRE(u.get_number_of_parameters() == 0);
-        std::unique_ptr<ContinuousProbabilityDistribution> u2 = u.get_new_distribution(u.get_parameters());
+        std::shared_ptr<ContinuousProbabilityDistribution> u2 = u.get_new_distribution(u.get_parameters());
         REQUIRE(u2->get_max() == std::numeric_limits<double>::infinity());
         REQUIRE(u2->get_min() == -std::numeric_limits<double>::infinity());
         REQUIRE(u2->to_string() == "uniform(-inf, +inf)");
@@ -55,7 +55,7 @@ TEST_CASE("Testing ImproperPositiveUniformDistribution", "[ImproperPositiveUnifo
         std::vector<double> params = u.get_parameters();
         REQUIRE(params.size() == 0);
         REQUIRE(u.get_number_of_parameters() == 0);
-        std::unique_ptr<ContinuousProbabilityDistribution> u2 = u.get_new_distribution(u.get_parameters());
+        std::shared_ptr<ContinuousProbabilityDistribution> u2 = u.get_new_distribution(u.get_parameters());
         REQUIRE(u2->get_max() == std::numeric_limits<double>::infinity());
         REQUIRE(u2->get_min() == 0.0);
         REQUIRE(u2->to_string() == "uniform(0, +inf)");
@@ -166,7 +166,7 @@ TEST_CASE("Testing UniformDistribution", "[UniformDistribution]") {
         std::vector<double> params = u.get_parameters();
         REQUIRE(expected_params == params);
         REQUIRE(u.get_number_of_parameters() == 2);
-        std::unique_ptr<ContinuousProbabilityDistribution> u2 = u.get_new_distribution(params);
+        std::shared_ptr<ContinuousProbabilityDistribution> u2 = u.get_new_distribution(params);
 
         REQUIRE(u2->get_max() == 20.0);
         REQUIRE(u2->get_min() == 10.0);
@@ -186,7 +186,7 @@ TEST_CASE("Testing UniformDistribution", "[UniformDistribution]") {
         REQUIRE(u2->ln_pdf(20.01) == -std::numeric_limits<double>::infinity());
         REQUIRE(u2->ln_pdf(-15.0) == -std::numeric_limits<double>::infinity());
 
-        std::unique_ptr<ContinuousProbabilityDistribution> u3 = u2->get_new_distribution(u2->get_transformed_parameters(), true);
+        std::shared_ptr<ContinuousProbabilityDistribution> u3 = u2->get_new_distribution(u2->get_transformed_parameters(), true);
 
         REQUIRE(u3->get_max() == 20.0);
         REQUIRE(u3->get_min() == 10.0);
@@ -272,7 +272,7 @@ TEST_CASE("Testing BetaDistribution", "[BetaDistribution]") {
         std::vector<double> params = f.get_parameters();
         REQUIRE(params == expected_params);
         REQUIRE(f.get_number_of_parameters() == 2);
-        std::unique_ptr<ContinuousProbabilityDistribution> f2 = f.get_new_distribution(params);
+        std::shared_ptr<ContinuousProbabilityDistribution> f2 = f.get_new_distribution(params);
 
         REQUIRE(f2->to_string() == "beta(1, 1)");
         REQUIRE(f2->get_min() == 0.0);
@@ -291,7 +291,7 @@ TEST_CASE("Testing BetaDistribution", "[BetaDistribution]") {
         REQUIRE(f2->ln_pdf(0.5) == Approx(0.0));
         REQUIRE(f2->ln_pdf(0.9) == Approx(0.0));
 
-        std::unique_ptr<ContinuousProbabilityDistribution> f3 = f2->get_new_distribution(f2->get_transformed_parameters(), true);
+        std::shared_ptr<ContinuousProbabilityDistribution> f3 = f2->get_new_distribution(f2->get_transformed_parameters(), true);
 
         REQUIRE(f3->to_string() == "beta(1, 1)");
         REQUIRE(f3->get_min() == 0.0);
@@ -367,7 +367,7 @@ TEST_CASE("Testing BetaDistribution", "[BetaDistribution]") {
         std::vector<double> params = f.get_parameters();
         REQUIRE(params == expected_params);
         REQUIRE(f.get_number_of_parameters() == 2);
-        std::unique_ptr<ContinuousProbabilityDistribution> f2 = f.get_new_distribution(params);
+        std::shared_ptr<ContinuousProbabilityDistribution> f2 = f.get_new_distribution(params);
 
         REQUIRE(f2->to_string() == "beta(0.5, 0.5)");
         REQUIRE(f2->get_min() == 0.0);
@@ -387,7 +387,7 @@ TEST_CASE("Testing BetaDistribution", "[BetaDistribution]") {
         REQUIRE(f2->ln_pdf(0.5) == Approx(-0.45158270528945466));
         REQUIRE(f2->ln_pdf(0.9) == Approx(0.059242918476536177));
 
-        std::unique_ptr<ContinuousProbabilityDistribution> f3 = f2->get_new_distribution(f2->get_transformed_parameters(), true);
+        std::shared_ptr<ContinuousProbabilityDistribution> f3 = f2->get_new_distribution(f2->get_transformed_parameters(), true);
 
         REQUIRE(f3->to_string() == "beta(0.5, 0.5)");
         REQUIRE(f3->get_min() == 0.0);
@@ -463,7 +463,7 @@ TEST_CASE("Testing BetaDistribution", "[BetaDistribution]") {
         std::vector<double> params = f.get_parameters();
         REQUIRE(params == expected_params);
         REQUIRE(f.get_number_of_parameters() == 2);
-        std::unique_ptr<ContinuousProbabilityDistribution> f2 = f.get_new_distribution(params);
+        std::shared_ptr<ContinuousProbabilityDistribution> f2 = f.get_new_distribution(params);
 
         REQUIRE(f2->to_string() == "beta(5, 1)");
         REQUIRE(f2->get_min() == 0.0);
@@ -483,7 +483,7 @@ TEST_CASE("Testing BetaDistribution", "[BetaDistribution]") {
         REQUIRE(f2->ln_pdf(0.5) == Approx(-1.1631508098056809));
         REQUIRE(f2->ln_pdf(0.9) == Approx(1.1879958498027952));
 
-        std::unique_ptr<ContinuousProbabilityDistribution> f3 = f2->get_new_distribution(f2->get_transformed_parameters(), true);
+        std::shared_ptr<ContinuousProbabilityDistribution> f3 = f2->get_new_distribution(f2->get_transformed_parameters(), true);
 
         REQUIRE(f3->to_string() == "beta(5, 1)");
         REQUIRE(f3->get_min() == 0.0);
@@ -559,7 +559,7 @@ TEST_CASE("Testing BetaDistribution", "[BetaDistribution]") {
         std::vector<double> params = f.get_parameters();
         REQUIRE(params == expected_params);
         REQUIRE(f.get_number_of_parameters() == 2);
-        std::unique_ptr<ContinuousProbabilityDistribution> f2 = f.get_new_distribution(params);
+        std::shared_ptr<ContinuousProbabilityDistribution> f2 = f.get_new_distribution(params);
 
         REQUIRE(f2->to_string() == "beta(1, 5)");
         REQUIRE(f2->get_min() == 0.0);
@@ -579,7 +579,7 @@ TEST_CASE("Testing BetaDistribution", "[BetaDistribution]") {
         REQUIRE(f2->ln_pdf(0.5) == Approx(-1.1631508098056809));
         REQUIRE(f2->ln_pdf(0.1) == Approx(1.1879958498027952));
 
-        std::unique_ptr<ContinuousProbabilityDistribution> f3 = f2->get_new_distribution(f2->get_transformed_parameters(), true);
+        std::shared_ptr<ContinuousProbabilityDistribution> f3 = f2->get_new_distribution(f2->get_transformed_parameters(), true);
 
         REQUIRE(f3->to_string() == "beta(1, 5)");
         REQUIRE(f3->get_min() == 0.0);
@@ -743,7 +743,7 @@ TEST_CASE("Testing OffsetGammaDistribution", "[OffsetGammaDistribution]") {
         std::vector<double> params = f.get_parameters();
         REQUIRE(params == expected_params);
         REQUIRE(f.get_number_of_parameters() == 3);
-        std::unique_ptr<ContinuousProbabilityDistribution> f2 = f.get_new_distribution(params);
+        std::shared_ptr<ContinuousProbabilityDistribution> f2 = f.get_new_distribution(params);
 
         REQUIRE(f2->to_string() == "gamma(shape = 1, scale = 1, offset = 0)");
         REQUIRE(f2->get_min() == 0.0);
@@ -765,7 +765,7 @@ TEST_CASE("Testing OffsetGammaDistribution", "[OffsetGammaDistribution]") {
         REQUIRE(f2->ln_pdf(100.0) == -100.0);
         REQUIRE(f2->relative_ln_pdf(100.0) == -100.0);
 
-        std::unique_ptr<ContinuousProbabilityDistribution> f3 = f2->get_new_distribution(f2->get_transformed_parameters(), true);
+        std::shared_ptr<ContinuousProbabilityDistribution> f3 = f2->get_new_distribution(f2->get_transformed_parameters(), true);
 
         REQUIRE(f3->to_string() == "gamma(shape = 1, scale = 1, offset = 0)");
         REQUIRE(f3->get_min() == 0.0);
@@ -839,7 +839,7 @@ TEST_CASE("Testing OffsetGammaDistribution", "[OffsetGammaDistribution]") {
         std::vector<double> params = f.get_parameters();
         REQUIRE(params == expected_params);
         REQUIRE(f.get_number_of_parameters() == 3);
-        std::unique_ptr<ContinuousProbabilityDistribution> f2 = f.get_new_distribution(params);
+        std::shared_ptr<ContinuousProbabilityDistribution> f2 = f.get_new_distribution(params);
 
         REQUIRE(f2->to_string() == "gamma(shape = 2, scale = 4, offset = 5)");
         REQUIRE(f2->get_min() == 5.0);
@@ -856,7 +856,7 @@ TEST_CASE("Testing OffsetGammaDistribution", "[OffsetGammaDistribution]") {
         REQUIRE(f2->get_shape() == 2.0);
         REQUIRE(f2->get_scale() == 4.0);
 
-        std::unique_ptr<ContinuousProbabilityDistribution> f3 = f2->get_new_distribution(f2->get_transformed_parameters(), true);
+        std::shared_ptr<ContinuousProbabilityDistribution> f3 = f2->get_new_distribution(f2->get_transformed_parameters(), true);
 
         REQUIRE(f3->to_string() == "gamma(shape = 2, scale = 4, offset = 5)");
         REQUIRE(f3->get_min() == 5.0);
@@ -967,7 +967,7 @@ TEST_CASE("Testing GammaDistribution", "[GammaDistribution]") {
         std::vector<double> params = f.get_parameters();
         REQUIRE(params == expected_params);
         REQUIRE(f.get_number_of_parameters() == 2);
-        std::unique_ptr<ContinuousProbabilityDistribution> f2 = f.get_new_distribution(params);
+        std::shared_ptr<ContinuousProbabilityDistribution> f2 = f.get_new_distribution(params);
 
         REQUIRE(f2->to_string() == "gamma(shape = 1, scale = 1)");
         REQUIRE(f2->get_min() == 0.0);
@@ -989,7 +989,7 @@ TEST_CASE("Testing GammaDistribution", "[GammaDistribution]") {
         REQUIRE(f2->get_shape() == 1.0);
         REQUIRE(f2->get_scale() == 1.0);
 
-        std::unique_ptr<ContinuousProbabilityDistribution> f3 = f2->get_new_distribution(f2->get_transformed_parameters(), true);
+        std::shared_ptr<ContinuousProbabilityDistribution> f3 = f2->get_new_distribution(f2->get_transformed_parameters(), true);
 
         REQUIRE(f3->to_string() == "gamma(shape = 1, scale = 1)");
         REQUIRE(f3->get_min() == 0.0);
@@ -1062,7 +1062,7 @@ TEST_CASE("Testing GammaDistribution", "[GammaDistribution]") {
         std::vector<double> params = f.get_parameters();
         REQUIRE(params == expected_params);
         REQUIRE(f.get_number_of_parameters() == 2);
-        std::unique_ptr<ContinuousProbabilityDistribution> f2 = f.get_new_distribution(params);
+        std::shared_ptr<ContinuousProbabilityDistribution> f2 = f.get_new_distribution(params);
 
         REQUIRE(f2->to_string() == "gamma(shape = 2, scale = 4)");
         REQUIRE(f2->get_min() == 0.0);
@@ -1079,7 +1079,7 @@ TEST_CASE("Testing GammaDistribution", "[GammaDistribution]") {
         REQUIRE(f2->get_shape() == 2.0);
         REQUIRE(f2->get_scale() == 4.0);
 
-        std::unique_ptr<ContinuousProbabilityDistribution> f3 = f2->get_new_distribution(f2->get_transformed_parameters(), true);
+        std::shared_ptr<ContinuousProbabilityDistribution> f3 = f2->get_new_distribution(f2->get_transformed_parameters(), true);
 
         REQUIRE(f3->to_string() == "gamma(shape = 2, scale = 4)");
         REQUIRE(f3->get_min() == 0.0);
@@ -1189,7 +1189,7 @@ TEST_CASE("Testing OffsetExponentialDistribution", "[OffsetExponentialDistributi
         std::vector<double> params = f.get_parameters();
         REQUIRE(params == expected_params);
         REQUIRE(f.get_number_of_parameters() == 2);
-        std::unique_ptr<ContinuousProbabilityDistribution> f2 = f.get_new_distribution(params);
+        std::shared_ptr<ContinuousProbabilityDistribution> f2 = f.get_new_distribution(params);
 
         REQUIRE(f2->to_string() == "exp(lambda = 1, offset = 0)");
 
@@ -1209,7 +1209,7 @@ TEST_CASE("Testing OffsetExponentialDistribution", "[OffsetExponentialDistributi
         REQUIRE(f2->ln_pdf(1.0) == -1.0);
         REQUIRE(f2->ln_pdf(100.0) == -100.0);
 
-        std::unique_ptr<ContinuousProbabilityDistribution> f3 = f2->get_new_distribution(f2->get_transformed_parameters(), true);
+        std::shared_ptr<ContinuousProbabilityDistribution> f3 = f2->get_new_distribution(f2->get_transformed_parameters(), true);
 
         REQUIRE(f3->to_string() == "exp(lambda = 1, offset = 0)");
 
@@ -1283,7 +1283,7 @@ TEST_CASE("Testing OffsetExponentialDistribution", "[OffsetExponentialDistributi
         std::vector<double> params = f.get_parameters();
         REQUIRE(params == expected_params);
         REQUIRE(f.get_number_of_parameters() == 2);
-        std::unique_ptr<ContinuousProbabilityDistribution> f2 = f.get_new_distribution(params);
+        std::shared_ptr<ContinuousProbabilityDistribution> f2 = f.get_new_distribution(params);
 
         REQUIRE(f2->to_string() == "exp(lambda = 5, offset = -5)");
 
@@ -1303,7 +1303,7 @@ TEST_CASE("Testing OffsetExponentialDistribution", "[OffsetExponentialDistributi
         REQUIRE(f2->ln_pdf(-4.0) == Approx(-3.3905620875658995));
         REQUIRE(f2->ln_pdf(95.0) == Approx(-498.39056208756591));
 
-        std::unique_ptr<ContinuousProbabilityDistribution> f3 = f2->get_new_distribution(f2->get_transformed_parameters(), true);
+        std::shared_ptr<ContinuousProbabilityDistribution> f3 = f2->get_new_distribution(f2->get_transformed_parameters(), true);
 
         REQUIRE(f3->to_string() == "exp(lambda = 5, offset = -5)");
 
@@ -1424,7 +1424,7 @@ TEST_CASE("Testing ExponentialDistribution", "[ExponentialDistribution]") {
         std::vector<double> params = f.get_parameters();
         REQUIRE(params == expected_params);
         REQUIRE(f.get_number_of_parameters() == 1);
-        std::unique_ptr<ContinuousProbabilityDistribution> f2 = f.get_new_distribution(params);
+        std::shared_ptr<ContinuousProbabilityDistribution> f2 = f.get_new_distribution(params);
 
         REQUIRE(f2->to_string() == "exp(lambda = 5)");
 
@@ -1444,7 +1444,7 @@ TEST_CASE("Testing ExponentialDistribution", "[ExponentialDistribution]") {
         REQUIRE(f2->ln_pdf(1.0) == Approx(-3.3905620875658995));
         REQUIRE(f2->ln_pdf(100.0) == Approx(-498.39056208756591));
 
-        std::unique_ptr<ContinuousProbabilityDistribution> f3 = f2->get_new_distribution(f2->get_transformed_parameters(), true);
+        std::shared_ptr<ContinuousProbabilityDistribution> f3 = f2->get_new_distribution(f2->get_transformed_parameters(), true);
 
         REQUIRE(f3->to_string() == "exp(lambda = 5)");
 

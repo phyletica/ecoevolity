@@ -3701,7 +3701,7 @@ double DirichletProcessGibbsSampler::propose(RandomNumberGenerator& rng,
         std::vector<double> auxiliary_heights;
         auxiliary_heights.reserve(number_of_aux_categories);
         for (unsigned int i = 0; i < number_of_aux_categories; ++i) {
-            double fresh_height = comparisons->get_draw_from_node_height_prior(rng);
+            double fresh_height = comparisons->get_draw_from_node_height_base_prior(rng);
             auxiliary_heights.push_back(fresh_height);
             tree->set_root_height(fresh_height);
             double lnl = tree->compute_log_likelihood(nthreads);
@@ -3867,7 +3867,7 @@ double PitmanYorProcessGibbsSampler::propose(RandomNumberGenerator& rng,
         std::vector<double> auxiliary_heights;
         auxiliary_heights.reserve(number_of_aux_categories);
         for (unsigned int i = 0; i < number_of_aux_categories; ++i) {
-            double fresh_height = comparisons->get_draw_from_node_height_prior(rng);
+            double fresh_height = comparisons->get_draw_from_node_height_base_prior(rng);
             auxiliary_heights.push_back(fresh_height);
             tree->set_root_height(fresh_height);
             double lnl = tree->compute_log_likelihood(nthreads);
@@ -4045,7 +4045,7 @@ double ReversibleJumpSampler::propose_jump_to_prior(RandomNumberGenerator& rng,
                 comparisons->get_shared_event_indices();
         unsigned int i = rng.uniform_int(0, shared_indices.size() - 1);
         unsigned int event_index = shared_indices.at(i);
-        double new_height = comparisons->get_draw_from_node_height_prior(rng);
+        double new_height = comparisons->get_draw_from_node_height_base_prior(rng);
 
         std::vector<unsigned int> tree_indices = comparisons->get_indices_of_mapped_trees(event_index);
         unsigned int num_mapped_nodes = tree_indices.size();
@@ -4217,7 +4217,7 @@ double ReversibleJumpSampler::propose_jump_to_gap(RandomNumberGenerator& rng,
 
         double ln_model_prior_ratio = std::log(comparisons->get_concentration());
 
-        double ln_height_prior_ratio = comparisons->get_log_prior_density_of_height(new_height);
+        double ln_height_prior_ratio = comparisons->get_log_base_prior_density_of_height(new_height);
 
         // The probability of forward split move (just proposed) is the product of the probabilites of
         //   1) choosing the shared event to split
@@ -4269,7 +4269,7 @@ double ReversibleJumpSampler::propose_jump_to_gap(RandomNumberGenerator& rng,
     unsigned int i = rng.uniform_int(0, candidate_indices.size() - 1);
     unsigned int height_index = candidate_indices.at(i);
 
-    double ln_height_prior_ratio = 0.0 - comparisons->get_log_prior_density_of_height(comparisons->get_height(height_index));
+    double ln_height_prior_ratio = 0.0 - comparisons->get_log_base_prior_density_of_height(comparisons->get_height(height_index));
 
     unsigned int target_height_index = comparisons->get_nearest_larger_height_index(height_index);
     unsigned int new_merged_event_index = comparisons->merge_height(height_index, target_height_index);

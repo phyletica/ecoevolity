@@ -29,8 +29,13 @@
 #include "assert.hpp"
 #include "rng.hpp"
 
+// Forward declare HyperDistribution so it can be declared as a friend
+class HyperDistribution;
 
 class ContinuousProbabilityDistribution {
+    private:
+        friend class HyperDistribution;
+
     public:
         ContinuousProbabilityDistribution() { }
         virtual ~ContinuousProbabilityDistribution() { }
@@ -38,7 +43,7 @@ class ContinuousProbabilityDistribution {
             return * this;
         }
 
-        virtual std::unique_ptr<ContinuousProbabilityDistribution> clone() const = 0;
+        virtual std::shared_ptr<ContinuousProbabilityDistribution> clone() const = 0;
 
         static double ln_gamma_function(double x) {
             return std::lgamma(x);
@@ -75,7 +80,7 @@ class ContinuousProbabilityDistribution {
             return parameters.size();
         }
 
-        virtual std::unique_ptr<ContinuousProbabilityDistribution> get_new_distribution(
+        virtual std::shared_ptr<ContinuousProbabilityDistribution> get_new_distribution(
                 const std::vector<double> & parameters,
                 const bool using_transformed_parameters = false) const = 0;
 
@@ -107,9 +112,17 @@ class ContinuousProbabilityDistribution {
             throw EcoevolityProbabilityDistributionError(
                     "get_concentration undefinded");
         }
+
+    protected:
+        virtual void update_parameters(
+                const std::vector<double> & parameters,
+                const bool using_transformed_parameters = false) const = 0;
 };
 
 class ImproperUniformDistribution : public ContinuousProbabilityDistribution {
+    private:
+        friend class HyperDistribution;
+
     public:
         ImproperUniformDistribution() { }
         ~ImproperUniformDistribution() { }
@@ -117,8 +130,8 @@ class ImproperUniformDistribution : public ContinuousProbabilityDistribution {
             return * this;
         }
 
-        std::unique_ptr<ContinuousProbabilityDistribution> clone() const override {
-            return std::unique_ptr<ContinuousProbabilityDistribution>(new ImproperUniformDistribution(*this));
+        std::shared_ptr<ContinuousProbabilityDistribution> clone() const override {
+            return std::make_shared<ContinuousProbabilityDistribution>(*this);
         }
 
         std::string get_name() const {
@@ -176,14 +189,26 @@ class ImproperUniformDistribution : public ContinuousProbabilityDistribution {
             return params;
         }
 
-        std::unique_ptr<ContinuousProbabilityDistribution> get_new_distribution(
+        std::shared_ptr<ContinuousProbabilityDistribution> get_new_distribution(
                 const std::vector<double> & parameters,
                 const bool using_transformed_parameters = false) const {
-            return std::unique_ptr<ContinuousProbabilityDistribution>(new ImproperUniformDistribution());
+            return std::shared_ptr<ContinuousProbabilityDistribution>(new ImproperUniformDistribution());
+        }
+
+    protected:
+
+        void update_parameters(
+                const std::vector<double> & parameters,
+                const bool using_transformed_parameters = false) const {
+            // Nothing to do for this distribution
+            return;
         }
 };
 
 class ImproperPositiveUniformDistribution: public ImproperUniformDistribution {
+    private:
+        friend class HyperDistribution;
+
     public:
         ImproperPositiveUniformDistribution() { }
         ~ImproperPositiveUniformDistribution() { }
@@ -191,8 +216,8 @@ class ImproperPositiveUniformDistribution: public ImproperUniformDistribution {
             return * this;
         }
 
-        std::unique_ptr<ContinuousProbabilityDistribution> clone() const override {
-            return std::unique_ptr<ContinuousProbabilityDistribution>(new ImproperPositiveUniformDistribution(*this));
+        std::shared_ptr<ContinuousProbabilityDistribution> clone() const override {
+            return std::make_shared<ContinuousProbabilityDistribution>(*this);
         }
 
         std::string get_name() const {
@@ -236,30 +261,50 @@ class ImproperPositiveUniformDistribution: public ImproperUniformDistribution {
             return params;
         }
 
-        std::unique_ptr<ContinuousProbabilityDistribution> get_new_distribution(
+        std::shared_ptr<ContinuousProbabilityDistribution> get_new_distribution(
                 const std::vector<double> & parameters,
                 const bool using_transformed_parameters = false) const {
-            return std::unique_ptr<ContinuousProbabilityDistribution>(new ImproperPositiveUniformDistribution());
+            return std::shared_ptr<ContinuousProbabilityDistribution>(new ImproperPositiveUniformDistribution());
+        }
+
+    protected:
+
+        void update_parameters(
+                const std::vector<double> & parameters,
+                const bool using_transformed_parameters = false) const {
+            // Nothing to do for this distribution
+            return;
         }
 };
 
 class UniformDistribution : public ContinuousProbabilityDistribution {
+    private:
+        friend class HyperDistribution;
+
     protected:
         double min_ = 0.0;
         double max_ = 1.0;
         double ln_density_ = 0.0;
 
-    public:
-        UniformDistribution() { }
-        ~UniformDistribution() { }
-        UniformDistribution(double a, double b) {
+        void _update_density() {
+            this->ln_density_ = -1.0 * std::log(this->max_ - this->min_);
+        }
+
+        void _update_parameters(double a, double b) {
             if (b <= a) {
                 throw EcoevolityProbabilityDistributionError(
                         "The upper limit must be greater than lower limit for UniformDistribution");
             }
             this->min_ = a;
             this->max_ = b;
-            this->ln_density_ = -1.0 * std::log(b - a);
+            this->_update_density();
+        }
+
+    public:
+        UniformDistribution() { }
+        ~UniformDistribution() { }
+        UniformDistribution(double a, double b) {
+            this->_update_parameters(a, b);
         }
         UniformDistribution& operator=(const UniformDistribution& other) {
             this->min_ = other.min_;
@@ -268,8 +313,8 @@ class UniformDistribution : public ContinuousProbabilityDistribution {
             return * this;
         }
 
-        std::unique_ptr<ContinuousProbabilityDistribution> clone() const override {
-            return std::unique_ptr<ContinuousProbabilityDistribution>(new UniformDistribution(*this));
+        std::shared_ptr<ContinuousProbabilityDistribution> clone() const override {
+            return std::make_shared<ContinuousProbabilityDistribution>(*this);
         }
 
         double relative_ln_pdf(double x) const {
@@ -348,7 +393,7 @@ class UniformDistribution : public ContinuousProbabilityDistribution {
             return params;
         }
 
-        std::unique_ptr<ContinuousProbabilityDistribution> get_new_distribution(
+        std::shared_ptr<ContinuousProbabilityDistribution> get_new_distribution(
                 const std::vector<double> & parameters,
                 const bool using_transformed_parameters = false) const {
             ECOEVOLITY_ASSERT(parameters.size() == 2);
@@ -356,27 +401,47 @@ class UniformDistribution : public ContinuousProbabilityDistribution {
             if (using_transformed_parameters) {
                 params = this->get_raw_parameters(parameters);
             }
-            return std::unique_ptr<ContinuousProbabilityDistribution>(new UniformDistribution(params.at(0), params.at(1)));
+            return std::shared_ptr<ContinuousProbabilityDistribution>(new UniformDistribution(params.at(0), params.at(1)));
+        }
+
+    protected:
+
+        void update_parameters(
+                const std::vector<double> & parameters,
+                const bool using_transformed_parameters = false) const {
+            ECOEVOLITY_ASSERT(parameters.size() == 2);
+            std::vector<double> params = parameters;
+            if (using_transformed_parameters) {
+                params = this->get_raw_parameters(parameters);
+            }
+            this->_update_parameters(params.at(0), params.at(1));
         }
 };
 
 class BetaDistribution: public ContinuousProbabilityDistribution {
+    private:
+        friend class HyperDistribution;
+
     protected:
         double min_ = 0.0;
         double max_ = 1.0;
         double alpha_ = 1.0;
         double beta_ = 1.0;
 
-    public:
-        BetaDistribution() { }
-        ~BetaDistribution() { }
-        BetaDistribution(double alpha, double beta) {
+        void _update_parameters(double alpha, double beta) {
             if ((alpha <= 0.0) || (beta <= 0.0)) {
                 throw EcoevolityProbabilityDistributionError(
                         "alpha and beta must be greater than zero for beta distribution");
             }
             this->alpha_ = alpha;
             this->beta_ = beta;
+        }
+
+    public:
+        BetaDistribution() { }
+        ~BetaDistribution() { }
+        BetaDistribution(double alpha, double beta) {
+            this->_update_parameters(alpha, beta);
         }
         BetaDistribution& operator=(const BetaDistribution& other) {
             this->min_ = other.min_;
@@ -386,8 +451,8 @@ class BetaDistribution: public ContinuousProbabilityDistribution {
             return * this;
         }
 
-        std::unique_ptr<ContinuousProbabilityDistribution> clone() const override {
-            return std::unique_ptr<ContinuousProbabilityDistribution>(new BetaDistribution(*this));
+        std::shared_ptr<ContinuousProbabilityDistribution> clone() const override {
+            return std::make_shared<ContinuousProbabilityDistribution>(*this);
         }
 
         bool is_within_support(double x) const {
@@ -511,7 +576,7 @@ class BetaDistribution: public ContinuousProbabilityDistribution {
             return params;
         }
 
-        std::unique_ptr<ContinuousProbabilityDistribution> get_new_distribution(
+        std::shared_ptr<ContinuousProbabilityDistribution> get_new_distribution(
                 const std::vector<double> & parameters,
                 const bool using_transformed_parameters = false) const {
             ECOEVOLITY_ASSERT(parameters.size() == 2);
@@ -519,11 +584,27 @@ class BetaDistribution: public ContinuousProbabilityDistribution {
             if (using_transformed_parameters) {
                 params = this->get_raw_parameters(parameters);
             }
-            return std::unique_ptr<ContinuousProbabilityDistribution>(new BetaDistribution(params.at(0), params.at(1)));
+            return std::shared_ptr<ContinuousProbabilityDistribution>(new BetaDistribution(params.at(0), params.at(1)));
+        }
+
+    protected:
+
+        void update_parameters(
+                const std::vector<double> & parameters,
+                const bool using_transformed_parameters = false) const {
+            ECOEVOLITY_ASSERT(parameters.size() == 2);
+            std::vector<double> params = parameters;
+            if (using_transformed_parameters) {
+                params = this->get_raw_parameters(parameters);
+            }
+            this->_update_parameters(params.at(0), params.at(1));
         }
 };
 
 class OffsetGammaDistribution : public ContinuousProbabilityDistribution {
+    private:
+        friend class HyperDistribution;
+
     protected:
         double min_ = 0.0;
         double shape_ = 1.0;
@@ -535,7 +616,7 @@ class OffsetGammaDistribution : public ContinuousProbabilityDistribution {
             this->ln_constant_ = -1.0*(this->shape_ * std::log(this->scale_) + ln_gamma);
         }
 
-        void init(double shape, double scale, double offset) {
+        void _update_parameters(double shape, double scale, double offset) {
             if ((shape <= 0.0) || (scale <= 0.0)) {
                 throw EcoevolityProbabilityDistributionError(
                         "Shape and scale must be greater than zero for gamma distribution");
@@ -550,7 +631,7 @@ class OffsetGammaDistribution : public ContinuousProbabilityDistribution {
         OffsetGammaDistribution() { }
         ~OffsetGammaDistribution() { }
         OffsetGammaDistribution(double shape, double scale, double offset) {
-            this->init(shape, scale, offset);
+            this->_update_parameters(shape, scale, offset);
         }
         OffsetGammaDistribution& operator=(const OffsetGammaDistribution& other) {
             this->min_ = other.min_;
@@ -560,8 +641,8 @@ class OffsetGammaDistribution : public ContinuousProbabilityDistribution {
             return * this;
         }
 
-        std::unique_ptr<ContinuousProbabilityDistribution> clone() const override {
-            return std::unique_ptr<ContinuousProbabilityDistribution>(new OffsetGammaDistribution(*this));
+        std::shared_ptr<ContinuousProbabilityDistribution> clone() const override {
+            return std::make_shared<ContinuousProbabilityDistribution>(*this);
         }
 
         bool is_within_support(double x) const {
@@ -656,7 +737,7 @@ class OffsetGammaDistribution : public ContinuousProbabilityDistribution {
             return params;
         }
 
-        std::unique_ptr<ContinuousProbabilityDistribution> get_new_distribution(
+        std::shared_ptr<ContinuousProbabilityDistribution> get_new_distribution(
                 const std::vector<double> & parameters,
                 const bool using_transformed_parameters = false) const {
             ECOEVOLITY_ASSERT(parameters.size() == 3);
@@ -664,11 +745,27 @@ class OffsetGammaDistribution : public ContinuousProbabilityDistribution {
             if (using_transformed_parameters) {
                 params = this->get_raw_parameters(parameters);
             }
-            return std::unique_ptr<ContinuousProbabilityDistribution>(new OffsetGammaDistribution(params.at(0), params.at(1), params.at(2)));
+            return std::shared_ptr<ContinuousProbabilityDistribution>(new OffsetGammaDistribution(params.at(0), params.at(1), params.at(2)));
+        }
+
+    protected:
+
+        void update_parameters(
+                const std::vector<double> & parameters,
+                const bool using_transformed_parameters = false) const {
+            ECOEVOLITY_ASSERT(parameters.size() == 3);
+            std::vector<double> params = parameters;
+            if (using_transformed_parameters) {
+                params = this->get_raw_parameters(parameters);
+            }
+            this->_update_parameters(params.at(0), params.at(1), params.at(2));
         }
 };
 
 class GammaDistribution : public OffsetGammaDistribution {
+    private:
+        friend class HyperDistribution;
+
     public:
         GammaDistribution() : OffsetGammaDistribution() { }
         ~GammaDistribution() { }
@@ -681,8 +778,8 @@ class GammaDistribution : public OffsetGammaDistribution {
             return * this;
         }
 
-        std::unique_ptr<ContinuousProbabilityDistribution> clone() const override {
-            return std::unique_ptr<ContinuousProbabilityDistribution>(new GammaDistribution(*this));
+        std::shared_ptr<ContinuousProbabilityDistribution> clone() const override {
+            return std::make_shared<ContinuousProbabilityDistribution>(*this);
         }
 
         std::string to_string() const {
@@ -712,7 +809,7 @@ class GammaDistribution : public OffsetGammaDistribution {
             return params;
         }
 
-        std::unique_ptr<ContinuousProbabilityDistribution> get_new_distribution(
+        std::shared_ptr<ContinuousProbabilityDistribution> get_new_distribution(
                 const std::vector<double> & parameters,
                 const bool using_transformed_parameters = false) const {
             ECOEVOLITY_ASSERT(parameters.size() == 2);
@@ -720,24 +817,45 @@ class GammaDistribution : public OffsetGammaDistribution {
             if (using_transformed_parameters) {
                 params = this->get_raw_parameters(parameters);
             }
-            return std::unique_ptr<ContinuousProbabilityDistribution>(new GammaDistribution(params.at(0), params.at(1)));
+            return std::shared_ptr<ContinuousProbabilityDistribution>(new GammaDistribution(params.at(0), params.at(1)));
+        }
+
+    protected:
+
+        void update_parameters(
+                const std::vector<double> & parameters,
+                const bool using_transformed_parameters = false) const {
+            ECOEVOLITY_ASSERT(parameters.size() == 2);
+            std::vector<double> params = parameters;
+            if (using_transformed_parameters) {
+                params = this->get_raw_parameters(parameters);
+            }
+            this->_update_parameters(params.at(0), params.at(1), 0.0);
         }
 };
 
 class OffsetExponentialDistribution : public OffsetGammaDistribution {
-    public:
-        OffsetExponentialDistribution() : OffsetGammaDistribution() { }
-        ~OffsetExponentialDistribution() { }
-        OffsetExponentialDistribution(double lambda, double offset) {
-            // Using OffsetExponentialDistribution init rather than list
-            // initializer list so we can check that lambda is not zero before
-            // dividing by it
+    private:
+        friend class HyperDistribution;
+
+    protected:
+        void _update_parameters(double lambda, double offset) {
+            // Using OffsetExponentialDistribution _update_parameters rather
+            // than list initializer list so we can check that lambda is not
+            // zero before dividing by it
             if (lambda <= 0.0) {
                 throw EcoevolityProbabilityDistributionError(
                         "lambda must be greater than 0 for exponential distribution");
             }
             // use OffsetGammaDistribution init with shape = 1
-            OffsetGammaDistribution::init(1.0, 1.0/lambda, offset);
+            OffsetGammaDistribution::_update_parameters(1.0, 1.0/lambda, offset);
+        }
+
+    public:
+        OffsetExponentialDistribution() : OffsetGammaDistribution() { }
+        ~OffsetExponentialDistribution() { }
+        OffsetExponentialDistribution(double lambda, double offset) {
+            this->_update_parameters(lambda, offset);
         }
         OffsetExponentialDistribution& operator=(const OffsetExponentialDistribution& other) {
             this->min_ = other.min_;
@@ -747,8 +865,8 @@ class OffsetExponentialDistribution : public OffsetGammaDistribution {
             return * this;
         }
 
-        std::unique_ptr<ContinuousProbabilityDistribution> clone() const override {
-            return std::unique_ptr<ContinuousProbabilityDistribution>(new OffsetExponentialDistribution(*this));
+        std::shared_ptr<ContinuousProbabilityDistribution> clone() const override {
+            return std::make_shared<ContinuousProbabilityDistribution>(*this);
         }
 
         double get_lambda() const {
@@ -784,7 +902,7 @@ class OffsetExponentialDistribution : public OffsetGammaDistribution {
             return transformed_parameters;
         }
 
-        std::unique_ptr<ContinuousProbabilityDistribution> get_new_distribution(
+        std::shared_ptr<ContinuousProbabilityDistribution> get_new_distribution(
                 const std::vector<double> & parameters,
                 const bool using_transformed_parameters = false) const {
             ECOEVOLITY_ASSERT(parameters.size() == 2);
@@ -792,11 +910,27 @@ class OffsetExponentialDistribution : public OffsetGammaDistribution {
             // assume first element of parameters is the scale parameter, so we
             // pass the reciprocal to the OffsetExponentialDistribution
             // constructor, which expects lambda
-            return std::unique_ptr<ContinuousProbabilityDistribution>(new OffsetExponentialDistribution(1.0/parameters.at(0), parameters.at(1)));
+            return std::shared_ptr<ContinuousProbabilityDistribution>(new OffsetExponentialDistribution(1.0/parameters.at(0), parameters.at(1)));
+        }
+
+    protected:
+
+        void update_parameters(
+                const std::vector<double> & parameters,
+                const bool using_transformed_parameters = false) const {
+            ECOEVOLITY_ASSERT(parameters.size() == 2);
+            // Since get_parameters returns scale (rather than lambda), we
+            // assume first element of parameters is the scale parameter, so we
+            // pass the reciprocal to the OffsetExponentialDistribution
+            // constructor, which expects lambda
+            this->_update_parameters(1.0/parameters.at(0), parameters.at(1));
         }
 };
 
 class ExponentialDistribution: public OffsetExponentialDistribution {
+    private:
+        friend class HyperDistribution;
+
     public:
         ExponentialDistribution() : OffsetExponentialDistribution() { }
         ~ExponentialDistribution() { }
@@ -811,8 +945,8 @@ class ExponentialDistribution: public OffsetExponentialDistribution {
             return * this;
         }
 
-        std::unique_ptr<ContinuousProbabilityDistribution> clone() const override {
-            return std::unique_ptr<ContinuousProbabilityDistribution>(new ExponentialDistribution(*this));
+        std::shared_ptr<ContinuousProbabilityDistribution> clone() const override {
+            return std::make_shared<ContinuousProbabilityDistribution>(*this);
         }
 
         std::string to_string() const {
@@ -840,7 +974,7 @@ class ExponentialDistribution: public OffsetExponentialDistribution {
             return transformed_parameters;
         }
 
-        std::unique_ptr<ContinuousProbabilityDistribution> get_new_distribution(
+        std::shared_ptr<ContinuousProbabilityDistribution> get_new_distribution(
                 const std::vector<double> & parameters,
                 const bool using_transformed_parameters = false) const {
             ECOEVOLITY_ASSERT(parameters.size() == 1);
@@ -848,7 +982,20 @@ class ExponentialDistribution: public OffsetExponentialDistribution {
             // assume first element of parameters is the scale parameter, so we
             // pass the reciprocal to the ExponentialDistribution
             // constructor, which expects lambda
-            return std::unique_ptr<ContinuousProbabilityDistribution>(new ExponentialDistribution(1.0/parameters.at(0)));
+            return std::shared_ptr<ContinuousProbabilityDistribution>(new ExponentialDistribution(1.0/parameters.at(0)));
+        }
+
+    protected:
+
+        void update_parameters(
+                const std::vector<double> & parameters,
+                const bool using_transformed_parameters = false) const {
+            ECOEVOLITY_ASSERT(parameters.size() == 1);
+            // Since get_parameters returns scale (rather than lambda), we
+            // assume first element of parameters is the scale parameter, so we
+            // pass the reciprocal to the OffsetExponentialDistribution
+            // constructor, which expects lambda
+            this->_update_parameters(1.0/parameters.at(0), 0.0);
         }
 };
 

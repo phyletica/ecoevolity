@@ -99,7 +99,7 @@ void BaseComparisonPopulationTreeCollection::restore_model_state() {
     if (this->node_heights_.size() < this->stored_node_heights_.size()) {
         this->node_heights_.push_back(
                 std::make_shared<PositiveRealParameter>(
-                    this->node_height_prior_));
+                    this->node_height_prior_->get_distribution()));
     }
     else if (this->node_heights_.size() > this->stored_node_heights_.size()){
         this->node_heights_.pop_back();
@@ -601,7 +601,7 @@ void BaseComparisonPopulationTreeCollection::remove_height(
 void BaseComparisonPopulationTreeCollection::add_height(
         double height,
         const std::vector<unsigned int>& mapped_tree_indices) {
-    this->node_heights_.push_back(std::make_shared<PositiveRealParameter>(this->node_height_prior_, height));
+    this->node_heights_.push_back(std::make_shared<PositiveRealParameter>(this->node_height_prior_->get_distribution(), height));
     for (auto tree_idx : mapped_tree_indices) {
         this->node_height_indices_.at(tree_idx) = this->node_heights_.size() - 1;
         this->trees_.at(tree_idx)->set_root_height_parameter(this->node_heights_.back());
@@ -888,7 +888,7 @@ void BaseComparisonPopulationTreeCollection::set_node_height_indices(
         for (unsigned int i = 0; i < (new_num_heights - num_heights); ++i) {
             this->node_heights_.push_back(
                     std::make_shared<PositiveRealParameter>(
-                        this->node_height_prior_));
+                        this->node_height_prior_->get_distribution()));
         }
     }
     else if (new_num_heights < num_heights) {
@@ -980,7 +980,7 @@ void BaseComparisonPopulationTreeCollection::draw_heights_from_prior(RandomNumbe
         for (unsigned int i = 0; i < (new_num_heights - num_heights); ++i) {
             this->node_heights_.push_back(
                     std::make_shared<PositiveRealParameter>(
-                        this->node_height_prior_));
+                        this->node_height_prior_->get_distribution()));
         }
     }
     else if (new_num_heights < num_heights) {
@@ -1003,6 +1003,7 @@ void BaseComparisonPopulationTreeCollection::draw_heights_from_prior(RandomNumbe
 void BaseComparisonPopulationTreeCollection::draw_from_prior(RandomNumberGenerator& rng) {
     this->concentration_->set_value_from_prior(rng);
     this->discount_->set_value_from_prior(rng);
+    this->node_height_prior_->set_parameters_from_priors(rng);
     this->draw_heights_from_prior(rng);
     for (unsigned int i = 0; i < this->trees_.size(); ++i) {
         this->trees_.at(i)->draw_from_prior(rng);
@@ -1073,7 +1074,8 @@ ComparisonPopulationTreeCollection::ComparisonPopulationTreeCollection(
         ) : BaseComparisonPopulationTreeCollection() {
     this->state_log_path_ = settings.get_state_log_path();
     this->operator_log_path_ = settings.get_operator_log_path();
-    this->node_height_prior_ = settings.get_time_prior_settings().get_instance();
+    // this->node_height_prior_ = settings.get_time_prior_settings().get_instance();
+    this->node_height_prior_ = HyperDistribution(settings.get_time_prior_settings(), rng);
     this->concentration_ = std::make_shared<PositiveRealParameter>(
             settings.get_concentration_settings(),
             rng);
@@ -1113,7 +1115,7 @@ void ComparisonPopulationTreeCollection::init_trees(
             tree_idx < comparison_settings.size();
             ++tree_idx) {
         fresh_height = this->node_height_prior_->draw(rng);
-        std::shared_ptr<PositiveRealParameter> new_height_parameter = std::make_shared<PositiveRealParameter>(this->node_height_prior_, fresh_height);
+        std::shared_ptr<PositiveRealParameter> new_height_parameter = std::make_shared<PositiveRealParameter>(this->node_height_prior_->get_distribution(), fresh_height);
         std::shared_ptr<PopulationTree> new_tree = std::make_shared<ComparisonPopulationTree>(
                 comparison_settings.at(tree_idx),
                 rng,
@@ -1135,7 +1137,7 @@ void ComparisonPopulationTreeCollection::init_trees(
                 throw EcoevolityCollectionSettingError(message.str());
             }
         }
-        new_tree->set_node_height_prior(this->node_height_prior_);
+        new_tree->set_node_height_prior(this->node_height_prior_->get_distribution());
         new_tree->set_root_height_parameter(new_height_parameter);
         this->node_heights_.push_back(new_height_parameter);
         this->trees_.push_back(new_tree);
@@ -1162,7 +1164,8 @@ ComparisonRelativeRootPopulationTreeCollection::ComparisonRelativeRootPopulation
         ) : BaseComparisonPopulationTreeCollection() {
     this->state_log_path_ = settings.get_state_log_path();
     this->operator_log_path_ = settings.get_operator_log_path();
-    this->node_height_prior_ = settings.get_time_prior_settings().get_instance();
+    // this->node_height_prior_ = settings.get_time_prior_settings().get_instance();
+    this->node_height_prior_ = HyperDistribution(settings.get_time_prior_settings(), rng);
     this->concentration_ = std::make_shared<PositiveRealParameter>(
             settings.get_concentration_settings(),
             rng);
@@ -1202,7 +1205,7 @@ void ComparisonRelativeRootPopulationTreeCollection::init_trees(
             tree_idx < comparison_settings.size();
             ++tree_idx) {
         fresh_height = this->node_height_prior_->draw(rng);
-        std::shared_ptr<PositiveRealParameter> new_height_parameter = std::make_shared<PositiveRealParameter>(this->node_height_prior_, fresh_height);
+        std::shared_ptr<PositiveRealParameter> new_height_parameter = std::make_shared<PositiveRealParameter>(this->node_height_prior_->get_distribution(), fresh_height);
         std::shared_ptr<PopulationTree> new_tree = std::make_shared<ComparisonRelativeRootPopulationTree>(
                 comparison_settings.at(tree_idx),
                 rng,
@@ -1224,7 +1227,7 @@ void ComparisonRelativeRootPopulationTreeCollection::init_trees(
                 throw EcoevolityCollectionSettingError(message.str());
             }
         }
-        new_tree->set_node_height_prior(this->node_height_prior_);
+        new_tree->set_node_height_prior(this->node_height_prior_->get_distribution());
         new_tree->set_root_height_parameter(new_height_parameter);
         this->node_heights_.push_back(new_height_parameter);
         this->trees_.push_back(new_tree);
@@ -1251,7 +1254,8 @@ ComparisonDirichletPopulationTreeCollection::ComparisonDirichletPopulationTreeCo
         ) : BaseComparisonPopulationTreeCollection() {
     this->state_log_path_ = settings.get_state_log_path();
     this->operator_log_path_ = settings.get_operator_log_path();
-    this->node_height_prior_ = settings.get_time_prior_settings().get_instance();
+    // this->node_height_prior_ = settings.get_time_prior_settings().get_instance();
+    this->node_height_prior_ = HyperDistribution(settings.get_time_prior_settings(), rng);
     this->concentration_ = std::make_shared<PositiveRealParameter>(
             settings.get_concentration_settings(),
             rng);
@@ -1291,7 +1295,7 @@ void ComparisonDirichletPopulationTreeCollection::init_trees(
             tree_idx < comparison_settings.size();
             ++tree_idx) {
         fresh_height = this->node_height_prior_->draw(rng);
-        std::shared_ptr<PositiveRealParameter> new_height_parameter = std::make_shared<PositiveRealParameter>(this->node_height_prior_, fresh_height);
+        std::shared_ptr<PositiveRealParameter> new_height_parameter = std::make_shared<PositiveRealParameter>(this->node_height_prior_->get_distribution(), fresh_height);
         std::shared_ptr<PopulationTree> new_tree = std::make_shared<ComparisonDirichletPopulationTree>(
                 comparison_settings.at(tree_idx),
                 rng,
@@ -1313,7 +1317,7 @@ void ComparisonDirichletPopulationTreeCollection::init_trees(
                 throw EcoevolityCollectionSettingError(message.str());
             }
         }
-        new_tree->set_node_height_prior(this->node_height_prior_);
+        new_tree->set_node_height_prior(this->node_height_prior_->get_distribution());
         new_tree->set_root_height_parameter(new_height_parameter);
         this->node_heights_.push_back(new_height_parameter);
         this->trees_.push_back(new_tree);

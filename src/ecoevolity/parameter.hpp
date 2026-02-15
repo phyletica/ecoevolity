@@ -237,7 +237,6 @@ class RealParameter: public RealVariable {
                        << " is outside the support of prior "
                        << this->prior->to_string();
                     throw EcoevolityParameterValueError(ss.str());
-                    throw EcoevolityParameterValueError("crap");
                 }
             }
         }
@@ -651,15 +650,13 @@ class HyperDistribution {
     protected:
         // Using pointers to enable polymorphism for the base distribution and
         // parameters controlling the base distribution_
-        std::unique_ptr<ContinuousProbabilityDistribution> distribution_;
+        std::shared_ptr<ContinuousProbabilityDistribution> distribution_;
         std::vector< std::shared_ptr<RealParameter> > parameters_;
         bool using_transformed_parameters_;
 
         void update_distribution() {
             std::vector<double> params = this->get_parameter_values();
-            this->distribution_ = this->distribution_->get_new_distribution(
-                    params,
-                    this->using_transformed_parameters_);
+            this->distribution_->update_parameters(params, this->using_transformed_parameters_);
         }
 
         void initialize_parameters(RandomNumberGenerator & rng) {
@@ -668,20 +665,14 @@ class HyperDistribution {
             }
         }
 
-    public:
-
-        HyperDistribution() {
-            this->clear();
-        }
-
-        HyperDistribution(
-                const std::unique_ptr<ContinuousProbabilityDistribution> dummy_distribution,
+        void init(
+                const std::shared_ptr<ContinuousProbabilityDistribution> distribution,
                 const std::vector< std::shared_ptr<RealParameter> > & parameters,
                 RandomNumberGenerator & rng,
                 const bool using_transformed_parameters = false
                 ) {
             this->clear();
-            this->distribution_ = dummy_distribution->clone();
+            this->distribution_ = distribution;
             if (parameters.size() != this->distribution_->get_number_of_parameters()) {
                 std::ostringstream msg;
                 msg << "Tried to construct a "
@@ -700,20 +691,35 @@ class HyperDistribution {
             this->update_distribution();
         }
 
+    public:
+
+        HyperDistribution() {
+            this->clear();
+        }
+
+        HyperDistribution(
+                const std::shared_ptr<ContinuousProbabilityDistribution> distribution,
+                const std::vector< std::shared_ptr<RealParameter> > & parameters,
+                RandomNumberGenerator & rng,
+                const bool using_transformed_parameters = false
+                ) {
+            this->init(distribution, parameters, rng, using_transformed_parameters);
+        }
+
         ~HyperDistribution() { }
 
-        HyperDistribution& operator=(const HyperDistribution& d) {
-            this->parameters_.clear();
-            this->parameters_.reserve(d.get_number_of_parameters());
-            for (unsigned int i = 0; i < d.get_number_of_parameters(); ++i) {
-                this->parameters_.push_back(d.get_parameter(i).clone());
-            }
+        // HyperDistribution& operator=(const HyperDistribution& d) {
+        //     this->parameters_.clear();
+        //     this->parameters_.reserve(d.get_number_of_parameters());
+        //     for (unsigned int i = 0; i < d.get_number_of_parameters(); ++i) {
+        //         this->parameters_.push_back(d.get_parameter(i).clone());
+        //     }
 
-            this->using_transformed_parameters_ = d.using_transformed_parameters();
-            this->distribution_ = d.get_distribution()->clone();
-            this->update_distribution();
-            return * this;
-        }
+        //     this->using_transformed_parameters_ = d.using_transformed_parameters();
+        //     this->distribution_ = d.get_distribution()->clone();
+        //     this->update_distribution();
+        //     return * this;
+        // }
 
         void clear() {
             this->distribution_ = nullptr;
@@ -721,7 +727,7 @@ class HyperDistribution {
             this->using_transformed_parameters_ = false;
         }
 
-        const std::unique_ptr<ContinuousProbabilityDistribution> & get_distribution() const {
+        const std::shared_ptr<ContinuousProbabilityDistribution> & get_distribution() const {
             return this->distribution_;
         }
 
@@ -876,6 +882,10 @@ class HyperDistribution {
             return this->distribution_->draw(rng);
         }
 
+        bool is_within_support(double x) const {
+            return this->distribution_->is_within_support(x);
+        }
+
         double base_ln_pdf(double value) const {
             return this->distribution_->ln_pdf(value);
         }
@@ -916,6 +926,67 @@ class HyperDistribution {
             ln_pdf += this->base_relative_ln_pdf(value);
             ln_pdf += this->parameter_relative_prior_ln_pdf();
             return ln_pdf;
+        }
+
+        std::string get_name() const {
+            return "hd-" + this->distribution_->get_name();
+        }
+        std::string to_string() const {
+            return "hd-" + this->distribution_->get_string();
+        }
+
+        HyperDistribution(
+                const HyperDistributionSettings& settings,
+                RandomNumberGenerator& rng) {
+            std::shared_ptr<ContinuousProbabilityDistribution> distribution;
+            if (settings.name_ == "gamma_distribution") {
+                if (settings.parameters_.size() == 2) {
+                    distribution = std::make_shared<GammaDistribution>();
+                }
+                else if (settings.parameters_.size() == 3) {
+                    distribution = std::make_shared<OffsetGammaDistribution>();
+                }
+                else {
+                    throw EcoevolityHyperDistributionSettingError(
+                            "2-level gamma_distribution with unexpected number of parameters"
+                            );
+                }
+            }
+            else if (settings.name_ == "exponential_distribution") {
+                if (settings.parameters_.size() == 1) {
+                    distribution = std::make_shared<ExponentialDistribution>();
+                }
+                else if (settings.parameters_.size() == 2) {
+                    distribution = std::make_shared<OffsetExponentialDistribution>();
+                }
+                else {
+                    throw EcoevolityHyperDistributionSettingError(
+                            "2-level exponential_distribution with unexpected number of parameters"
+                            );
+                }
+            }
+            else if (settings.name_ == "uniform_distribution") {
+                distribution = std::make_shared<UniformDistribution>();
+            }
+            else if (settings.name_ == "beta_distribution") {
+                distribution = std::make_shared<BetaDistribution>();
+            }
+            else {
+                throw EcoevolityHyperDistributionSettingError(
+                        "Unexpected 2-level distribution: " + settings.name_
+                        );
+            }
+            std::vector< std::shared_ptr<RealParameter> > params;
+            for (const auto & param_settings : settings.parameters_) {
+                params.push_back(
+                        std::make_shared<PositiveRealParameter>(param_settings, rng)
+                        );
+            }
+            this->init(
+                    distribution,
+                    params,
+                    rng,
+                    settings.using_transformed_parameters_);
         }
 };
 

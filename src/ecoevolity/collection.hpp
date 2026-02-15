@@ -46,7 +46,7 @@ class BaseComparisonPopulationTreeCollection {
         std::shared_ptr<PositiveRealParameter> concentration_;
         // discount parameter of Pitman-Yor process
         std::shared_ptr<DiscountParameter> discount_;
-        std::shared_ptr<ContinuousProbabilityDistribution> node_height_prior_;
+        std::shared_ptr<HyperDistribution> node_height_prior_;
         OperatorSchedule operator_schedule_;
         std::string state_log_path_ = "ecoevolity-state-run-1.log";
         std::string operator_log_path_ = "ecoevolity-operator-run-1.log";
@@ -124,12 +124,8 @@ class BaseComparisonPopulationTreeCollection {
             return this->operator_schedule_.sampling_models();
         }
 
-        double get_draw_from_node_height_prior(RandomNumberGenerator& rng) {
+        double get_draw_from_node_height_base_prior(RandomNumberGenerator& rng) {
             return this->node_height_prior_->draw(rng);
-        }
-
-        double get_node_height_prior_mean() const {
-            return this->node_height_prior_->get_mean();
         }
 
         unsigned int get_logging_precision() const {
@@ -169,8 +165,8 @@ class BaseComparisonPopulationTreeCollection {
             return this->node_height_indices_.at(tree_index);
         }
 
-        double get_log_prior_density_of_height(double height) const {
-            return this->node_height_prior_->relative_ln_pdf(height);
+        double get_log_base_prior_density_of_height(double height) const {
+            return this->node_height_prior_->base_relative_ln_pdf(height);
         }
 
         std::vector<unsigned int> get_standardized_height_indices() const;
