@@ -116,7 +116,7 @@ class ContinuousProbabilityDistribution {
     protected:
         virtual void update_parameters(
                 const std::vector<double> & parameters,
-                const bool using_transformed_parameters = false) const = 0;
+                const bool using_transformed_parameters = false) = 0;
 };
 
 class ImproperUniformDistribution : public ContinuousProbabilityDistribution {
@@ -131,7 +131,7 @@ class ImproperUniformDistribution : public ContinuousProbabilityDistribution {
         }
 
         std::shared_ptr<ContinuousProbabilityDistribution> clone() const override {
-            return std::make_shared<ContinuousProbabilityDistribution>(*this);
+            return std::shared_ptr<ContinuousProbabilityDistribution>(new ImproperUniformDistribution(*this));
         }
 
         std::string get_name() const {
@@ -199,7 +199,7 @@ class ImproperUniformDistribution : public ContinuousProbabilityDistribution {
 
         void update_parameters(
                 const std::vector<double> & parameters,
-                const bool using_transformed_parameters = false) const {
+                const bool using_transformed_parameters = false) {
             // Nothing to do for this distribution
             return;
         }
@@ -217,7 +217,7 @@ class ImproperPositiveUniformDistribution: public ImproperUniformDistribution {
         }
 
         std::shared_ptr<ContinuousProbabilityDistribution> clone() const override {
-            return std::make_shared<ContinuousProbabilityDistribution>(*this);
+            return std::shared_ptr<ContinuousProbabilityDistribution>(new ImproperPositiveUniformDistribution(*this));
         }
 
         std::string get_name() const {
@@ -271,7 +271,7 @@ class ImproperPositiveUniformDistribution: public ImproperUniformDistribution {
 
         void update_parameters(
                 const std::vector<double> & parameters,
-                const bool using_transformed_parameters = false) const {
+                const bool using_transformed_parameters = false) {
             // Nothing to do for this distribution
             return;
         }
@@ -314,7 +314,7 @@ class UniformDistribution : public ContinuousProbabilityDistribution {
         }
 
         std::shared_ptr<ContinuousProbabilityDistribution> clone() const override {
-            return std::make_shared<ContinuousProbabilityDistribution>(*this);
+            return std::shared_ptr<ContinuousProbabilityDistribution>(new UniformDistribution(*this));
         }
 
         double relative_ln_pdf(double x) const {
@@ -408,7 +408,7 @@ class UniformDistribution : public ContinuousProbabilityDistribution {
 
         void update_parameters(
                 const std::vector<double> & parameters,
-                const bool using_transformed_parameters = false) const {
+                const bool using_transformed_parameters = false) {
             ECOEVOLITY_ASSERT(parameters.size() == 2);
             std::vector<double> params = parameters;
             if (using_transformed_parameters) {
@@ -452,7 +452,7 @@ class BetaDistribution: public ContinuousProbabilityDistribution {
         }
 
         std::shared_ptr<ContinuousProbabilityDistribution> clone() const override {
-            return std::make_shared<ContinuousProbabilityDistribution>(*this);
+            return std::shared_ptr<ContinuousProbabilityDistribution>(new BetaDistribution(*this));
         }
 
         bool is_within_support(double x) const {
@@ -591,7 +591,7 @@ class BetaDistribution: public ContinuousProbabilityDistribution {
 
         void update_parameters(
                 const std::vector<double> & parameters,
-                const bool using_transformed_parameters = false) const {
+                const bool using_transformed_parameters = false) {
             ECOEVOLITY_ASSERT(parameters.size() == 2);
             std::vector<double> params = parameters;
             if (using_transformed_parameters) {
@@ -642,7 +642,7 @@ class OffsetGammaDistribution : public ContinuousProbabilityDistribution {
         }
 
         std::shared_ptr<ContinuousProbabilityDistribution> clone() const override {
-            return std::make_shared<ContinuousProbabilityDistribution>(*this);
+            return std::shared_ptr<ContinuousProbabilityDistribution>(new OffsetGammaDistribution(*this));
         }
 
         bool is_within_support(double x) const {
@@ -752,7 +752,7 @@ class OffsetGammaDistribution : public ContinuousProbabilityDistribution {
 
         void update_parameters(
                 const std::vector<double> & parameters,
-                const bool using_transformed_parameters = false) const {
+                const bool using_transformed_parameters = false) {
             ECOEVOLITY_ASSERT(parameters.size() == 3);
             std::vector<double> params = parameters;
             if (using_transformed_parameters) {
@@ -779,7 +779,7 @@ class GammaDistribution : public OffsetGammaDistribution {
         }
 
         std::shared_ptr<ContinuousProbabilityDistribution> clone() const override {
-            return std::make_shared<ContinuousProbabilityDistribution>(*this);
+            return std::shared_ptr<ContinuousProbabilityDistribution>(new GammaDistribution(*this));
         }
 
         std::string to_string() const {
@@ -824,7 +824,7 @@ class GammaDistribution : public OffsetGammaDistribution {
 
         void update_parameters(
                 const std::vector<double> & parameters,
-                const bool using_transformed_parameters = false) const {
+                const bool using_transformed_parameters = false) {
             ECOEVOLITY_ASSERT(parameters.size() == 2);
             std::vector<double> params = parameters;
             if (using_transformed_parameters) {
@@ -866,7 +866,7 @@ class OffsetExponentialDistribution : public OffsetGammaDistribution {
         }
 
         std::shared_ptr<ContinuousProbabilityDistribution> clone() const override {
-            return std::make_shared<ContinuousProbabilityDistribution>(*this);
+            return std::shared_ptr<ContinuousProbabilityDistribution>(new OffsetExponentialDistribution(*this));
         }
 
         double get_lambda() const {
@@ -917,7 +917,7 @@ class OffsetExponentialDistribution : public OffsetGammaDistribution {
 
         void update_parameters(
                 const std::vector<double> & parameters,
-                const bool using_transformed_parameters = false) const {
+                const bool using_transformed_parameters = false) {
             ECOEVOLITY_ASSERT(parameters.size() == 2);
             // Since get_parameters returns scale (rather than lambda), we
             // assume first element of parameters is the scale parameter, so we
@@ -946,7 +946,7 @@ class ExponentialDistribution: public OffsetExponentialDistribution {
         }
 
         std::shared_ptr<ContinuousProbabilityDistribution> clone() const override {
-            return std::make_shared<ContinuousProbabilityDistribution>(*this);
+            return std::shared_ptr<ContinuousProbabilityDistribution>(new ExponentialDistribution(*this));
         }
 
         std::string to_string() const {
@@ -989,7 +989,7 @@ class ExponentialDistribution: public OffsetExponentialDistribution {
 
         void update_parameters(
                 const std::vector<double> & parameters,
-                const bool using_transformed_parameters = false) const {
+                const bool using_transformed_parameters = false) {
             ECOEVOLITY_ASSERT(parameters.size() == 1);
             // Since get_parameters returns scale (rather than lambda), we
             // assume first element of parameters is the scale parameter, so we

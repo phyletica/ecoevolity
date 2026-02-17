@@ -774,6 +774,333 @@ class PositiveRealParameterSettings {
 };
 
 
+class HyperDistributionSettings {
+
+    friend class HyperDistribution;
+    template<typename T> friend class BaseCollectionSettings;
+
+    private:
+        std::string name_ = "none";
+        std::vector<PositiveRealParameterSettings> parameters_;
+        std::vector<std::string> parameter_names_;
+        bool using_transformed_parameters_ = true;
+
+    public:
+        HyperDistributionSettings() { };
+        HyperDistributionSettings(const YAML::Node& node) {
+            if (! node.IsMap()) {
+                throw EcoevolityYamlConfigError(
+                        "2-level distribution node should be a map, but found: " +
+                        YamlCppUtils::get_node_type(node));
+            }
+            if (node.size() != 1) {
+                throw EcoevolityYamlConfigError(
+                        "2-level distribution node should only have a single key");
+            }
+            this->parameters_.clear();
+            this->parameter_names_.clear();
+            // Gamma
+            if (node["gamma_distribution"]) {
+                this->name_ = "gamma_distribution";
+                this->using_transformed_parameters_ = true;
+                bool must_be_fully_fixed = false;
+                YAML::Node parameters = node["gamma_distribution"];
+                if (parameters.size() < 2) {
+                    throw EcoevolityHyperDistributionSettingError(
+                            "At least 2 parameters required for 2-level gamma_distribution"
+                            );
+
+                }
+                else if (parameters.size() > 3) {
+                    throw EcoevolityHyperDistributionSettingError(
+                            "At most 3 parameters allowed for 2-level gamma_distribution"
+                            );
+                }
+                if (parameters["shape"] && parameters["scale"]) {
+                    this->using_transformed_parameters_ = false;
+                    this->parameters_.push_back(PositiveRealParameterSettings(parameters["shape"]));
+                    this->parameter_names_.push_back("shape");
+                    this->parameters_.push_back(PositiveRealParameterSettings(parameters["scale"]));
+                    this->parameter_names_.push_back("scale");
+                }
+                else if (parameters["shape"] && parameters["mean"]) {
+                    must_be_fully_fixed = true;
+                    PositiveRealParameterSettings shape(parameters["shape"]);
+                    PositiveRealParameterSettings mean(parameters["mean"]);
+                    if ( shape.is_fixed() && mean.is_fixed() ) {
+                        this->using_transformed_parameters_ = false;
+                        double scale_val = mean.get_value() / shape.get_value();
+                        std::unordered_map<std::string, double> dummy_prior_params;
+                        PositiveRealParameterSettings scale(
+                                scale_val,
+                                true,  // fixed
+                                "none",
+                                dummy_prior_params);
+                        this->parameters_.push_back(shape);
+                        this->parameter_names_.push_back("shape");
+                        this->parameters_.push_back(scale);
+                        this->parameter_names_.push_back("scale");
+                    }
+                    else {
+                        std::ostringstream msg;
+                        msg << "2-level gamma_distribution does not support specifying shape and mean when estimating the distribution's parameters."
+                            << std::endl
+                            << "When estimating parameters, you must specify mean and standard_deviation OR shape and scale.";
+                        throw EcoevolityPositiveRealParameterSettingError(msg.str());
+                    }
+                }
+                else if (parameters["mean"] && parameters["standard_deviation"]) {
+                    this->using_transformed_parameters_ = true;
+                    this->parameters_.push_back(PositiveRealParameterSettings(parameters["mean"]));
+                    this->parameter_names_.push_back("mean");
+                    this->parameters_.push_back(PositiveRealParameterSettings(parameters["standard_deviation"]));
+                    this->parameter_names_.push_back("standard_deviation");
+                }
+                else {
+                    std::ostringstream msg;
+                    msg << "Invalid parameters specified for 2-level gamma_distribution." << std::endl
+                        << "Valid parameter combinations include (with or without offset):" << std::endl
+                        << "  shape and scale (either or both can be estimated)" << std::endl
+                        << "  shape and mean (neither can be estimated)" << std::endl
+                        << "  mean and standard_deviation (either or both can be estimated)" << std::endl;
+                    throw EcoevolityPositiveRealParameterSettingError(msg.str());
+                }
+                if (parameters.size() > 2) {
+                    if (! parameters["offset"]) {
+                        throw EcoevolityHyperDistributionSettingError(
+                                "Unrecognized 3rd parameter for gamma_distribution (recognized: offset)"
+                                );
+                    }
+                    PositiveRealParameterSettings offset(parameters["offset"]);
+                    if ( must_be_fully_fixed && (! offset.is_fixed()) ) {
+                        std::ostringstream msg;
+                        msg << "2-level gamma_distribution does not support specifying shape and mean when estimating the distribution's parameters."
+                            << std::endl
+                            << "When estimating parameters, you must specify mean and standard_deviation OR shape and scale.";
+                        throw EcoevolityPositiveRealParameterSettingError(msg.str());
+                    }
+                    this->parameters_.push_back(offset);
+                    this->parameter_names_.push_back("offset");
+                }
+            }
+            // Exponential
+            else if (node["exponential_distribution"]) {
+                this->name_ = "exponential_distribution";
+                this->using_transformed_parameters_ = true;
+                YAML::Node parameters = node["exponential_distribution"];
+                if (parameters.size() < 1) {
+                    throw EcoevolityHyperDistributionSettingError(
+                            "At least 1 parameters required for 2-level exponential_distribution"
+                            );
+
+                }
+                else if (parameters.size() > 2) {
+                    throw EcoevolityHyperDistributionSettingError(
+                            "At most 2 parameters allowed for 2-level exponential_distribution"
+                            );
+                }
+                if ( (! parameters["mean"]) && (! parameters["rate"]) ) {
+                    throw EcoevolityHyperDistributionSettingError(
+                            "2-level exponential_distribution requires mean or rate parameter"
+                            );
+                }
+                if (parameters["mean"]) {
+                    if (parameters["rate"]) {
+                        throw EcoevolityHyperDistributionSettingError(
+                                "Cannot specify both mean and rate for exponential_distribution"
+                                );
+                    }
+                    this->parameters_.push_back(PositiveRealParameterSettings(parameters["mean"]));
+                    this->parameter_names_.push_back("mean");
+                }
+                if (parameters["rate"]) {
+                    if (parameters["mean"]) {
+                        throw EcoevolityHyperDistributionSettingError(
+                                "Cannot specify both mean and rate for exponential_distribution"
+                                );
+                    }
+                    this->parameters_.push_back(PositiveRealParameterSettings(parameters["rate"]));
+                    this->parameter_names_.push_back("rate");
+                }
+                if (parameters.size() > 1) {
+                    if (! parameters["offset"]) {
+                        throw EcoevolityHyperDistributionSettingError(
+                                "Unrecognized parameter for exponential_distribution (recognized: mean, offset)"
+                                );
+                    }
+                    this->parameters_.push_back(PositiveRealParameterSettings(parameters["offset"]));
+                    this->parameter_names_.push_back("offset");
+                }
+                bool fully_fixed = true;
+                for (const auto & param : this->parameters_) {
+                    if (! param.is_fixed()) {
+                        fully_fixed = false;
+                        break;
+                    }
+                }
+                if ((! fully_fixed) && (parameter_names_.at(0) == "rate")) {
+                    throw EcoevolityHyperDistributionSettingError(
+                            "2-level exponential_distribution does not support estimating rate (only mean)"
+                            );
+                }
+            }
+            // Uniform
+            else if (node["uniform_distribution"]) {
+                this->name_ = "uniform_distribution";
+                this->using_transformed_parameters_ = true;
+                YAML::Node parameters = node["uniform_distribution"];
+                if (parameters.size() != 2) {
+                    throw EcoevolityHyperDistributionSettingError(
+                            "2 parameters required for 2-level uniform_distribution; min and max OR mean and standard_deviation"
+                            );
+
+                }
+                if (! parameters["mean"]) {
+                    this->using_transformed_parameters_ = false;
+                    if ((! parameters["min"]) || (! parameters["max"])) {
+                        throw EcoevolityHyperDistributionSettingError(
+                                "2-level uniform_distribution requires min and max OR mean and standard_deviation"
+                                );
+                    }
+                    this->parameters_.push_back(PositiveRealParameterSettings(parameters["min"]));
+                    this->parameter_names_.push_back("min");
+                    this->parameters_.push_back(PositiveRealParameterSettings(parameters["max"]));
+                    this->parameter_names_.push_back("max");
+
+                    if (this->parameters_.at(1).get_value() <= this->parameters_.at(0).get_value()) {
+                        throw EcoevolityHyperDistributionSettingError(
+                                "The upper limit must be greater than lower limit for UniformDistribution");
+                    }
+                }
+                if (! parameters["min"]) {
+                    if ((! parameters["mean"]) || (! parameters["standard_deviation"])) {
+                        throw EcoevolityHyperDistributionSettingError(
+                                "2-level uniform_distribution requires min and max OR mean and standard_deviation"
+                                );
+                    }
+                    this->parameters_.push_back(PositiveRealParameterSettings(parameters["mean"]));
+                    this->parameter_names_.push_back("mean");
+                    this->parameters_.push_back(PositiveRealParameterSettings(parameters["standard_deviation"]));
+                    this->parameter_names_.push_back("standard_deviation");
+                    double mean = this->parameters_.at(0).get_value();
+                    double std_dev = this->parameters_.at(1).get_value();
+                    double mn = mean - (std_dev * std::sqrt(3));
+                    double mx = mean + (std_dev * std::sqrt(3));
+                    if (mn < 0.0) {
+                        throw EcoevolityHyperDistributionSettingError(
+                                "standard_deviation for uniform_distribution makes the min negative");
+                    }
+                    if (mx <= mn) {
+                        throw EcoevolityHyperDistributionSettingError(
+                                "standard_deviation for uniform_distribution makes the max equal min");
+                    }
+                }
+            }
+            // Beta 
+            else if (node["beta_distribution"]) {
+                this->name_ = "beta_distribution";
+                this->using_transformed_parameters_ = true;
+                YAML::Node parameters = node["beta_distribution"];
+                if (parameters.size() != 2) {
+                    throw EcoevolityHyperDistributionSettingError(
+                            "2 parameters required for 2-level beta_distribution; alpha and beta OR mean and one_over_concentration"
+                            );
+
+                }
+                if (! parameters["mean"]) {
+                    this->using_transformed_parameters_ = false;
+                    if ((! parameters["alpha"]) || (! parameters["beta"])) {
+                        throw EcoevolityHyperDistributionSettingError(
+                                "2-level beta_distribution requires alpha and beta OR mean and one_over_concentration"
+                                );
+                    }
+                    this->parameters_.push_back(PositiveRealParameterSettings(parameters["alpha"]));
+                    this->parameter_names_.push_back("alpha");
+                    this->parameters_.push_back(PositiveRealParameterSettings(parameters["beta"]));
+                    this->parameter_names_.push_back("beta");
+                }
+                if (! parameters["alpha"]) {
+                    if ((! parameters["mean"]) || (! parameters["one_over_concentration"])) {
+                        throw EcoevolityHyperDistributionSettingError(
+                                "2-level beta_distribution requires alpha and beta OR mean and one_over_concentration"
+                                );
+                    }
+                    this->parameters_.push_back(PositiveRealParameterSettings(parameters["mean"]));
+                    this->parameter_names_.push_back("mean");
+                    this->parameters_.push_back(PositiveRealParameterSettings(parameters["one_over_concentration"]));
+                    this->parameter_names_.push_back("one_over_concentration");
+                }
+            }
+            else {
+                std::string message = "unrecognized distribution: " + node.begin()->first.as<std::string>();
+                throw EcoevolityHyperDistributionSettingError(message);
+            }
+
+            for (unsigned int i = 0; i < this->parameters_.size(); ++i) {
+                if (this->parameters_.at(i).use_empirical_value()) {
+                    std::ostringstream msg;
+                    msg << "empirical value not supported 2-level distribution parameters; "
+                        << "found for "
+                        << this->parameter_names_.at(i)
+                        << " parameter";
+                    throw EcoevolityPositiveRealParameterSettingError(msg.str());
+                }
+                if (this->parameters_.at(i).is_vector()) {
+                    std::ostringstream msg;
+                    msg << "Multidimensional values not supported 2-level distribution parameters; "
+                        << "found for "
+                        << this->parameter_names_.at(i)
+                        << " parameter";
+                    throw EcoevolityPositiveRealParameterSettingError(msg.str());
+                }
+            }
+        }
+        virtual ~HyperDistributionSettings() { }
+        HyperDistributionSettings& operator=(const HyperDistributionSettings& other) {
+            this->name_ = other.name_;
+            this->parameters_ = other.parameters_;
+            this->parameter_names_ = other.parameter_names_;
+            this->using_transformed_parameters_ = other.using_transformed_parameters_;
+            return * this;
+        }
+
+        const std::string& get_name() const {
+            return this->name_;
+        }
+
+        void nullify() {
+            this->name_ = "none";
+            this->parameters_.clear();
+            this->parameter_names_.clear();
+            this->using_transformed_parameters_ = false;
+        }
+
+        std::string to_string(unsigned int indent_level = 0) const {
+            if (this->name_ == "none") {
+                return "";
+            }
+            std::ostringstream ss;
+            std::string margin = string_util::get_indent(indent_level);
+            std::string indent = string_util::get_indent(1);
+            ss << margin << this->name_ << ":\n";
+            for (unsigned int i = 0; i < this->parameters_.size(); ++i) {
+                if (this->parameters_.at(i).is_fixed()) {
+                    ss << margin << indent
+                       << this->parameter_names_.at(i)
+                       << ": "
+                       << this->parameters_.at(i).get_value()
+                       << std::endl;
+                }
+                else {
+                    ss << margin << indent << this->parameter_names_.at(i) << ":" << std::endl;
+                    ss << this->parameters_.at(i).to_string(indent_level + 2);
+                }
+            }
+            return ss.str();
+        }
+};
+
+
 class OperatorSettings {
     protected:
         double weight_;
@@ -3874,323 +4201,5 @@ class DirichletCollectionSettings: public BaseCollectionSettings<DirichletCompar
             return true;
         }
 };
-
-
-class HyperDistributionSettings {
-
-    friend class HyperDistribution;
-    friend class BaseCollectionSettings;
-
-    private:
-        std::string name_ = "none";
-        std::vector<PositiveRealParameterSettings> parameters_;
-        std::vector<std::string> parameter_names_;
-        bool using_transformed_parameters_ = true;
-
-    public:
-        HyperDistributionSettings() { };
-        HyperDistributionSettings(const YAML::Node& node) {
-            if (! node.IsMap()) {
-                throw EcoevolityYamlConfigError(
-                        "2-level distribution node should be a map, but found: " +
-                        YamlCppUtils::get_node_type(node));
-            }
-            if (node.size() != 1) {
-                throw EcoevolityYamlConfigError(
-                        "2-level distribution node should only have a single key");
-            }
-            this->parameters_.clear();
-            this->parameter_names_.clear();
-            // Gamma
-            if (node["gamma_distribution"]) {
-                this->name_ = "gamma_distribution";
-                this->using_transformed_parameters_ = true;
-                bool must_be_fully_fixed = false;
-                YAML::Node parameters = node["gamma_distribution"];
-                if (parameters.size() < 2) {
-                    throw EcoevolityHyperDistributionSettingError(
-                            "At least 2 parameters required for 2-level gamma_distribution"
-                            );
-
-                }
-                else if (parameters.size() > 3) {
-                    throw EcoevolityHyperDistributionSettingError(
-                            "At most 3 parameters allowed for 2-level gamma_distribution"
-                            );
-                }
-                if (parameters["shape"] && parameters["scale"]) {
-                    this->using_transformed_parameters_ = false;
-                    this->parameters_.push_back(PositiveRealParameterSettings(parameters["shape"]));
-                    this->parameter_names_.push_back("shape");
-                    this->parameters_.push_back(PositiveRealParameterSettings(parameters["scale"]));
-                    this->parameter_names_.push_back("scale");
-                }
-                else if (parameters["shape"] && parameters["mean"]) {
-                    must_be_fully_fixed = true;
-                    PositiveRealParameterSettings shape(parameters["shape"]);
-                    PositiveRealParameterSettings mean(parameters["mean"]);
-                    if ( shape.is_fixed() && mean.is_fixed() ) {
-                        this->using_transformed_parameters_ = false;
-                        double scale_val = mean.get_value() / shape.get_value();
-                        std::unordered_map<std::string, double> dummy_prior_params;
-                        PositiveRealParameterSettings scale(
-                                scale_val,
-                                true,  // fixed
-                                "none",
-                                dummy_prior_params);
-                        this->parameters_.push_back(shape);
-                        this->parameter_names_.push_back("shape");
-                        this->parameters_.push_back(scale);
-                        this->parameter_names_.push_back("scale");
-                    }
-                    else {
-                        std::ostringstream msg;
-                        msg << "2-level gamma_distribution does not support specifying shape and mean when estimating the distribution's parameters."
-                            << std::endl
-                            << "When estimating parameters, you must specify mean and standard_deviation OR shape and scale.";
-                        throw EcoevolityPositiveRealParameterSettingError(msg.str());
-                    }
-                }
-                else if (parameters["mean"] && parameters["standard_deviation"]) {
-                    this->using_transformed_parameters_ = true;
-                    this->parameters_.push_back(PositiveRealParameterSettings(parameters["mean"]));
-                    this->parameter_names_.push_back("mean");
-                    this->parameters_.push_back(PositiveRealParameterSettings(parameters["standard_deviation"]));
-                    this->parameter_names_.push_back("standard_deviation");
-                }
-                else {
-                    std::ostringstream msg;
-                    msg << "Invalid parameters specified for 2-level gamma_distribution." << std::endl
-                        << "Valid parameter combinations include (with or without offset):" << std::endl
-                        << "  shape and scale (either or both can be estimated)" << std::endl
-                        << "  shape and mean (neither can be estimated)" << std::endl
-                        << "  mean and standard_deviation (either or both can be estimated)" << std::endl;
-                    throw EcoevolityPositiveRealParameterSettingError(msg.str());
-                }
-                if (parameters.size() > 2) {
-                    if (! parameters["offset"]) {
-                        throw EcoevolityHyperDistributionSettingError(
-                                "Unrecognized 3rd parameter for gamma_distribution (recognized: offset)"
-                                );
-                    }
-                    PositiveRealParameterSettings offset(parameters["offset"]);
-                    if ( must_be_fully_fixed && (! offset.is_fixed()) ) {
-                        std::ostringstream msg;
-                        msg << "2-level gamma_distribution does not support specifying shape and mean when estimating the distribution's parameters."
-                            << std::endl
-                            << "When estimating parameters, you must specify mean and standard_deviation OR shape and scale.";
-                        throw EcoevolityPositiveRealParameterSettingError(msg.str());
-                    }
-                    this->parameters_.push_back(offset);
-                    this->parameter_names_.push_back("offset");
-                }
-            }
-            // Exponential
-            else if (node["exponential_distribution"]) {
-                this->name_ = "exponential_distribution";
-                this->using_transformed_parameters_ = true;
-                YAML::Node parameters = node["exponential_distribution"];
-                if (parameters.size() < 1) {
-                    throw EcoevolityHyperDistributionSettingError(
-                            "At least 1 parameters required for 2-level exponential_distribution"
-                            );
-
-                }
-                else if (parameters.size() > 2) {
-                    throw EcoevolityHyperDistributionSettingError(
-                            "At most 2 parameters allowed for 2-level exponential_distribution"
-                            );
-                }
-                if ( (! parameters["mean"]) && (! parameters["rate"]) ) {
-                    throw EcoevolityHyperDistributionSettingError(
-                            "2-level exponential_distribution requires mean or rate parameter"
-                            );
-                }
-                if (parameters["mean"]) {
-                    if (parameters["rate"]) {
-                        throw EcoevolityHyperDistributionSettingError(
-                                "Cannot specify both mean and rate for exponential_distribution"
-                                );
-                    }
-                    this->parameters_.push_back(PositiveRealParameterSettings(parameters["mean"]));
-                    this->parameter_names_.push_back("mean");
-                }
-                if (parameters["rate"]) {
-                    if (parameters["mean"]) {
-                        throw EcoevolityHyperDistributionSettingError(
-                                "Cannot specify both mean and rate for exponential_distribution"
-                                );
-                    }
-                    this->parameters_.push_back(PositiveRealParameterSettings(parameters["rate"]));
-                    this->parameter_names_.push_back("rate");
-                }
-                if (parameters.size() > 1) {
-                    if (! parameters["offset"]) {
-                        throw EcoevolityHyperDistributionSettingError(
-                                "Unrecognized parameter for exponential_distribution (recognized: mean, offset)"
-                                );
-                    }
-                    this->parameters_.push_back(PositiveRealParameterSettings(parameters["offset"]));
-                    this->parameter_names_.push_back("offset");
-                }
-                bool fully_fixed = true;
-                for (const auto & param : this->parameters_) {
-                    if (! param.is_fixed()) {
-                        fully_fixed = false;
-                        break;
-                    }
-                }
-                if ((! fully_fixed) && (parameter_names_.at(0) == "rate")) {
-                    throw EcoevolityHyperDistributionSettingError(
-                            "2-level exponential_distribution does not support estimating rate (only mean)"
-                            );
-                }
-            }
-            // Uniform
-            else if (node["uniform_distribution"]) {
-                this->name_ = "uniform_distribution";
-                this->using_transformed_parameters_ = true;
-                YAML::Node parameters = node["uniform_distribution"];
-                if (parameters.size() != 2) {
-                    throw EcoevolityHyperDistributionSettingError(
-                            "2 parameters required for 2-level uniform_distribution; min and max OR mean and standard_deviation"
-                            );
-
-                }
-                if (! parameters["mean"]) {
-                    this->using_transformed_parameters_ = false;
-                    if ((! parameters["min"]) || (! parameters["max"])) {
-                        throw EcoevolityHyperDistributionSettingError(
-                                "2-level uniform_distribution requires min and max OR mean and standard_deviation"
-                                );
-                    }
-                    this->parameters_.push_back(PositiveRealParameterSettings(parameters["min"]));
-                    this->parameter_names_.push_back("min");
-                    this->parameters_.push_back(PositiveRealParameterSettings(parameters["max"]));
-                    this->parameter_names_.push_back("max");
-
-                    if (this->parameters_.at(1).get_value() <= this->parameters_.at(0).get_value()) {
-                        throw EcoevolityHyperDistributionSettingError(
-                                "The upper limit must be greater than lower limit for UniformDistribution");
-                    }
-                }
-                if (! parameters["min"]) {
-                    if ((! parameters["mean"]) || (! parameters["standard_deviation"])) {
-                        throw EcoevolityHyperDistributionSettingError(
-                                "2-level uniform_distribution requires min and max OR mean and standard_deviation"
-                                );
-                    }
-                    this->parameters_.push_back(PositiveRealParameterSettings(parameters["mean"]));
-                    this->parameter_names_.push_back("mean");
-                    this->parameters_.push_back(PositiveRealParameterSettings(parameters["standard_deviation"]));
-                    this->parameter_names_.push_back("standard_deviation");
-                    double mean = this->parameters_.at(0);
-                    double std_dev = this->parameters_.at(1);
-                    double mn = mean - (std_dev * std::sqrt(3));
-                    double mx = mean + (std_dev * std::sqrt(3));
-                    if (mn < 0.0) {
-                        throw EcoevolityHyperDistributionSettingError(
-                                "standard_deviation for uniform_distribution makes the min negative");
-                    }
-                    if (mx <= mn) {
-                        throw EcoevolityHyperDistributionSettingError(
-                                "standard_deviation for uniform_distribution makes the max equal min");
-                    }
-                }
-            }
-            // Beta 
-            else if (node["beta_distribution"]) {
-                this->name_ = "beta_distribution";
-                this->using_transformed_parameters_ = true;
-                YAML::Node parameters = node["beta_distribution"];
-                if (parameters.size() != 2) {
-                    throw EcoevolityHyperDistributionSettingError(
-                            "2 parameters required for 2-level beta_distribution; alpha and beta OR mean and one_over_concentration"
-                            );
-
-                }
-                if (! parameters["mean"]) {
-                    this->using_transformed_parameters_ = false;
-                    if ((! parameters["alpha"]) || (! parameters["beta"])) {
-                        throw EcoevolityHyperDistributionSettingError(
-                                "2-level beta_distribution requires alpha and beta OR mean and one_over_concentration"
-                                );
-                    }
-                    this->parameters_.push_back(PositiveRealParameterSettings(parameters["alpha"]));
-                    this->parameter_names_.push_back("alpha");
-                    this->parameters_.push_back(PositiveRealParameterSettings(parameters["beta"]));
-                    this->parameter_names_.push_back("beta");
-                }
-                if (! parameters["alpha"]) {
-                    if ((! parameters["mean"]) || (! parameters["one_over_concentration"])) {
-                        throw EcoevolityHyperDistributionSettingError(
-                                "2-level beta_distribution requires alpha and beta OR mean and one_over_concentration"
-                                );
-                    }
-                    this->parameters_.push_back(PositiveRealParameterSettings(parameters["mean"]));
-                    this->parameter_names_.push_back("mean");
-                    this->parameters_.push_back(PositiveRealParameterSettings(parameters["one_over_concentration"]));
-                    this->parameter_names_.push_back("one_over_concentration");
-                }
-            }
-            else {
-                std::string message = "unrecognized distribution: " + node.begin()->first.as<std::string>();
-                throw EcoevolityHyperDistributionSettingError(message);
-            }
-
-            for (unsigned int i = 0; i < this->parameters_.size(); ++i) {
-                if (this->parameters_.at(i).use_empirical_value()) {
-                    std::ostringstream msg;
-                    msg << "empirical value not supported 2-level distribution parameters; "
-                        << "found for "
-                        << this->parameter_names_.at(i)
-                        << " parameter";
-                    throw EcoevolityPositiveRealParameterSettingError(msg.str());
-                }
-                if (this->parameters_.at(i).is_vector()) {
-                    std::ostringstream msg;
-                    msg << "Multidimensional values not supported 2-level distribution parameters; "
-                        << "found for "
-                        << this->parameter_names_.at(i)
-                        << " parameter";
-                    throw EcoevolityPositiveRealParameterSettingError(msg.str());
-                }
-            }
-        }
-        virtual ~HyperDistributionSettings() { }
-        HyperDistributionSettings& operator=(const HyperDistributionSettings& other) {
-            this->name_ = other.name_;
-            this->parameters_ = other.parameters_;
-            this->parameter_names_ = other.parameter_names_;
-            this->using_transformed_parameters_ = other.using_transformed_parameters_;
-            return * this;
-        }
-
-        const std::string& get_name() const {
-            return this->name_;
-        }
-
-        void nullify() {
-            this->name_ = "none";
-            this->parameters_.clear();
-            this->parameter_names_.clear();
-            this->using_transformed_parameters_ = false;
-        }
-
-        std::string to_string(unsigned int indent_level = 0) const {
-            if (this->name_ == "none") {
-                return "";
-            }
-            std::ostringstream ss;
-            std::string margin = string_util::get_indent(indent_level);
-            std::string indent = string_util::get_indent(1);
-            ss << margin << this->name_ << ":\n";
-            for (unsigned int i = 0; i < this->parameters_.size(); ++i) {
-                ss << margin << indent << this->parameter_names_.at(i) << ":" << std::endl;
-                ss << this->parameters_.at(i).to_string(indent_level + 2);
-            }
-        }
-};
-
 
 #endif

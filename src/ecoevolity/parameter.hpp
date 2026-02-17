@@ -932,7 +932,7 @@ class HyperDistribution {
             return "hd-" + this->distribution_->get_name();
         }
         std::string to_string() const {
-            return "hd-" + this->distribution_->get_string();
+            return "hd-" + this->distribution_->to_string();
         }
 
         HyperDistribution(

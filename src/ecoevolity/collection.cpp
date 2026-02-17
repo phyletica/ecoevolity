@@ -1075,7 +1075,7 @@ ComparisonPopulationTreeCollection::ComparisonPopulationTreeCollection(
     this->state_log_path_ = settings.get_state_log_path();
     this->operator_log_path_ = settings.get_operator_log_path();
     // this->node_height_prior_ = settings.get_time_prior_settings().get_instance();
-    this->node_height_prior_ = HyperDistribution(settings.get_time_prior_settings(), rng);
+    this->node_height_prior_ = std::make_shared<HyperDistribution>(settings.get_time_prior_settings(), rng);
     this->concentration_ = std::make_shared<PositiveRealParameter>(
             settings.get_concentration_settings(),
             rng);
@@ -1165,7 +1165,7 @@ ComparisonRelativeRootPopulationTreeCollection::ComparisonRelativeRootPopulation
     this->state_log_path_ = settings.get_state_log_path();
     this->operator_log_path_ = settings.get_operator_log_path();
     // this->node_height_prior_ = settings.get_time_prior_settings().get_instance();
-    this->node_height_prior_ = HyperDistribution(settings.get_time_prior_settings(), rng);
+    this->node_height_prior_ = std::make_shared<HyperDistribution>(settings.get_time_prior_settings(), rng);
     this->concentration_ = std::make_shared<PositiveRealParameter>(
             settings.get_concentration_settings(),
             rng);
@@ -1255,7 +1255,7 @@ ComparisonDirichletPopulationTreeCollection::ComparisonDirichletPopulationTreeCo
     this->state_log_path_ = settings.get_state_log_path();
     this->operator_log_path_ = settings.get_operator_log_path();
     // this->node_height_prior_ = settings.get_time_prior_settings().get_instance();
-    this->node_height_prior_ = HyperDistribution(settings.get_time_prior_settings(), rng);
+    this->node_height_prior_ = std::make_shared<HyperDistribution>(settings.get_time_prior_settings(), rng);
     this->concentration_ = std::make_shared<PositiveRealParameter>(
             settings.get_concentration_settings(),
             rng);
