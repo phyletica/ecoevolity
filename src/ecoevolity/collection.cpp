@@ -21,6 +21,7 @@
 #include "operator.hpp"
 
 void BaseComparisonPopulationTreeCollection::store_state() {
+    this->node_height_prior_->store();
     this->log_likelihood_.store();
     this->log_prior_density_.store();
     this->store_state_of_trees();
@@ -35,6 +36,7 @@ void BaseComparisonPopulationTreeCollection::store_state() {
     }
 }
 void BaseComparisonPopulationTreeCollection::restore_state() {
+    this->node_height_prior_->restore();
     this->log_likelihood_.restore();
     this->log_prior_density_.restore();
     this->restore_state_of_trees();

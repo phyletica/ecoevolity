@@ -1174,6 +1174,126 @@ std::string UnivariateCompositeTimeMeanSizeRateScaler::to_string(const OperatorS
 
 
 //////////////////////////////////////////////////////////////////////////////
+// TimePriorParameterScaler methods
+//////////////////////////////////////////////////////////////////////////////
+
+TimePriorParameterScaler::TimePriorParameterScaler(unsigned int parameter_index) : CollectionOperatorInterface<ScaleOperator>() {
+    this->op_ = ScaleOperator();
+    this->parameter_index_ = parameter_index;
+}
+
+TimePriorParameterScaler::TimePriorParameterScaler(
+        unsigned int parameter_index,
+        double weight) : CollectionOperatorInterface<ScaleOperator>(weight) {
+    this->op_ = ScaleOperator();
+    this->parameter_index_ = parameter_index;
+}
+
+TimePriorParameterScaler::TimePriorParameterScaler(
+        unsigned int parameter_index,
+        double weight,
+        double scale) : CollectionOperatorInterface<ScaleOperator>(weight) {
+    this->op_ = ScaleOperator(scale);
+    this->parameter_index_ = parameter_index;
+}
+
+void TimePriorParameterScaler::operate(RandomNumberGenerator& rng,
+        BaseComparisonPopulationTreeCollection * comparisons,
+        unsigned int nthreads) {
+    this->perform_collection_move(rng, comparisons, nthreads);
+}
+
+double TimePriorParameterScaler::propose(RandomNumberGenerator& rng,
+        BaseComparisonPopulationTreeCollection * comparisons,
+        unsigned int nthreads) {
+    const RealParameter & param = comparisons->get_node_height_prior()->get_parameter(this->parameter_index_);
+    if (param.is_fixed()) {
+        return -std::numeric_limits<double>::infinity();
+    }
+    double v = param.get_value();
+    double hastings;
+    this->update(rng, v, hastings);
+    if ( (v < param.get_min()) || (v > param.get_max()) ) {
+        return -std::numeric_limits<double>::infinity();
+    }
+    comparisons->get_node_height_prior()->set_parameter_value(this->parameter_index_, v);
+    return hastings;
+}
+
+std::string TimePriorParameterScaler::target_parameter() const {
+    std::ostringstream ss;
+    ss << "time-prior-parameter-" << this->parameter_index_;
+    return ss.str();
+}
+
+std::string TimePriorParameterScaler::get_name() const {
+    std::ostringstream ss;
+    ss << "TimePriorParameterScaler" << this->parameter_index_;
+    return ss.str();
+}
+
+
+//////////////////////////////////////////////////////////////////////////////
+// TimePriorParameterMover methods
+//////////////////////////////////////////////////////////////////////////////
+
+TimePriorParameterMover::TimePriorParameterMover(unsigned int parameter_index) : CollectionOperatorInterface<WindowOperator>() {
+    this->op_ = WindowOperator();
+    this->parameter_index_ = parameter_index;
+}
+
+TimePriorParameterMover::TimePriorParameterMover(
+        unsigned int parameter_index,
+        double weight) : CollectionOperatorInterface<WindowOperator>(weight) {
+    this->op_ = WindowOperator();
+    this->parameter_index_ = parameter_index;
+}
+
+TimePriorParameterMover::TimePriorParameterMover(
+        unsigned int parameter_index,
+        double weight,
+        double window_size) : CollectionOperatorInterface<WindowOperator>(weight) {
+    this->op_ = WindowOperator(window_size);
+    this->parameter_index_ = parameter_index;
+}
+
+void TimePriorParameterMover::operate(RandomNumberGenerator& rng,
+        BaseComparisonPopulationTreeCollection * comparisons,
+        unsigned int nthreads) {
+    this->perform_collection_move(rng, comparisons, nthreads);
+}
+
+double TimePriorParameterMover::propose(RandomNumberGenerator& rng,
+        BaseComparisonPopulationTreeCollection * comparisons,
+        unsigned int nthreads) {
+    const RealParameter & param = comparisons->get_node_height_prior()->get_parameter(this->parameter_index_);
+    if (param.is_fixed()) {
+        return -std::numeric_limits<double>::infinity();
+    }
+    double v = param.get_value();
+    double hastings;
+    this->update(rng, v, hastings);
+    if ( (v < param.get_min()) || (v > param.get_max()) ) {
+        return -std::numeric_limits<double>::infinity();
+    }
+    comparisons->get_node_height_prior()->set_parameter_value(this->parameter_index_, v);
+    return hastings;
+}
+
+std::string TimePriorParameterMover::target_parameter() const {
+    std::ostringstream ss;
+    ss << "time-prior-parameter-" << this->parameter_index_;
+    return ss.str();
+}
+
+std::string TimePriorParameterMover::get_name() const {
+    std::ostringstream ss;
+    ss << "TimePriorParameterMover" << this->parameter_index_;
+    return ss.str();
+}
+
+
+//////////////////////////////////////////////////////////////////////////////
 // ConcentrationScaler methods
 //////////////////////////////////////////////////////////////////////////////
 

@@ -233,6 +233,9 @@ class BaseComparisonPopulationTreeCollection {
                 unsigned int starting_height_index,
                 double delta_height) const;
 
+        const std::shared_ptr<HyperDistribution> & get_node_height_prior() const {
+            return this->node_height_prior_;
+        }
         double get_concentration() const {
             return this->concentration_->get_value();
         }

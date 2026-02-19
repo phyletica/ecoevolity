@@ -430,6 +430,54 @@ class WindowOperator : public Operator {
 // Derived Operator classes
 //////////////////////////////////////////////////////////////////////////////
 
+class TimePriorParameterScaler : public CollectionOperatorInterface<ScaleOperator> {
+
+    protected:
+        unsigned int parameter_index_ = 0;
+
+    public:
+        TimePriorParameterScaler(unsigned int parameter_index);
+        TimePriorParameterScaler(unsigned int parameter_index, double weight);
+        TimePriorParameterScaler(unsigned int parameter_index, double weight, double scale);
+
+        void operate(RandomNumberGenerator& rng,
+                BaseComparisonPopulationTreeCollection * comparisons,
+                unsigned int nthreads = 1);
+
+        double propose(RandomNumberGenerator& rng,
+                BaseComparisonPopulationTreeCollection * comparisons,
+                unsigned int nthreads);
+
+        std::string target_parameter() const;
+
+        std::string get_name() const;
+};
+
+
+class TimePriorParameterMover : public CollectionOperatorInterface<WindowOperator> {
+
+    protected:
+        unsigned int parameter_index_ = 0;
+
+    public:
+        TimePriorParameterMover(unsigned int parameter_index);
+        TimePriorParameterMover(unsigned int parameter_index, double weight);
+        TimePriorParameterMover(unsigned int parameter_index, double weight, double window_size);
+
+        void operate(RandomNumberGenerator& rng,
+                BaseComparisonPopulationTreeCollection * comparisons,
+                unsigned int nthreads = 1);
+
+        double propose(RandomNumberGenerator& rng,
+                BaseComparisonPopulationTreeCollection * comparisons,
+                unsigned int nthreads);
+
+        std::string target_parameter() const;
+
+        std::string get_name() const;
+};
+
+
 class ConcentrationScaler : public CollectionOperatorInterface<ScaleOperator> {
 
     public:

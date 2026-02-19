@@ -106,6 +106,32 @@ OperatorSchedule::OperatorSchedule(const CollectionSettings& collection_settings
                 ));
     }
 
+    std::vector< std::shared_ptr<OperatorSettings> > time_prior_op_settings = settings.get_time_prior_operator_settings_vector();
+    for (unsigned int i = 0; i < time_prior_op_settings.size(); ++i) {
+        std::shared_ptr<OperatorSettings> op = time_prior_op_settings.at(i);
+        if (op->get_operator_name() == "TimePriorParameterScaler") {
+            this->add_operator(std::make_shared<TimePriorParameterScaler>(
+                    op->get_parameter_index(),
+                    op->get_weight(),
+                    op->get_scale()
+                    ));
+        }
+        else if (op->get_operator_name() == "TimePriorParameterMover") {
+            this->add_operator(std::make_shared<TimePriorParameterMover>(
+                    op->get_parameter_index(),
+                    op->get_weight(),
+                    op->get_window()
+                    ));
+        }
+        else {
+            std::ostringstream msg;
+            msg << "ERROR: Unexpected time prior parameter operator \'"
+                << op->get_operator_name()
+                << "\'\n";
+            throw EcoevolityError(msg.str());
+        }
+    }
+
     for (unsigned int i = 0; i < collection_settings.get_number_of_comparisons(); ++i) {
         auto comp_settings = collection_settings.get_comparison_setting(i);
 
@@ -261,6 +287,32 @@ OperatorSchedule::OperatorSchedule(
                 ));
     }
 
+    std::vector< std::shared_ptr<OperatorSettings> > time_prior_op_settings = settings.get_time_prior_operator_settings_vector();
+    for (unsigned int i = 0; i < time_prior_op_settings.size(); ++i) {
+        std::shared_ptr<OperatorSettings> op = time_prior_op_settings.at(i);
+        if (op->get_operator_name() == "TimePriorParameterScaler") {
+            this->add_operator(std::make_shared<TimePriorParameterScaler>(
+                    op->get_parameter_index(),
+                    op->get_weight(),
+                    op->get_scale()
+                    ));
+        }
+        else if (op->get_operator_name() == "TimePriorParameterMover") {
+            this->add_operator(std::make_shared<TimePriorParameterMover>(
+                    op->get_parameter_index(),
+                    op->get_weight(),
+                    op->get_window()
+                    ));
+        }
+        else {
+            std::ostringstream msg;
+            msg << "ERROR: Unexpected time prior parameter operator \'"
+                << op->get_operator_name()
+                << "\'\n";
+            throw EcoevolityError(msg.str());
+        }
+    }
+
     for (unsigned int i = 0; i < collection_settings.get_number_of_comparisons(); ++i) {
         auto comp_settings = collection_settings.get_comparison_setting(i);
         if (comp_settings.get_operator_settings().get_time_size_rate_mixer_settings().get_weight() > 0.0) {
@@ -406,6 +458,32 @@ OperatorSchedule::OperatorSchedule(
                 settings.get_event_time_scaler_settings().get_weight(),
                 settings.get_event_time_scaler_settings().get_scale()
                 ));
+    }
+
+    std::vector< std::shared_ptr<OperatorSettings> > time_prior_op_settings = settings.get_time_prior_operator_settings_vector();
+    for (unsigned int i = 0; i < time_prior_op_settings.size(); ++i) {
+        std::shared_ptr<OperatorSettings> op = time_prior_op_settings.at(i);
+        if (op->get_operator_name() == "TimePriorParameterScaler") {
+            this->add_operator(std::make_shared<TimePriorParameterScaler>(
+                    op->get_parameter_index(),
+                    op->get_weight(),
+                    op->get_scale()
+                    ));
+        }
+        else if (op->get_operator_name() == "TimePriorParameterMover") {
+            this->add_operator(std::make_shared<TimePriorParameterMover>(
+                    op->get_parameter_index(),
+                    op->get_weight(),
+                    op->get_window()
+                    ));
+        }
+        else {
+            std::ostringstream msg;
+            msg << "ERROR: Unexpected time prior parameter operator \'"
+                << op->get_operator_name()
+                << "\'\n";
+            throw EcoevolityError(msg.str());
+        }
     }
 
     for (unsigned int i = 0; i < collection_settings.get_number_of_comparisons(); ++i) {
