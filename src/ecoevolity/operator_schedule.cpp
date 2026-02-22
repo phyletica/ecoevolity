@@ -106,9 +106,7 @@ OperatorSchedule::OperatorSchedule(const CollectionSettings& collection_settings
                 ));
     }
 
-    std::vector< std::shared_ptr<OperatorSettings> > time_prior_op_settings = settings.get_time_prior_operator_settings_vector();
-    for (unsigned int i = 0; i < time_prior_op_settings.size(); ++i) {
-        std::shared_ptr<OperatorSettings> op = time_prior_op_settings.at(i);
+    for (auto op : settings.get_time_prior_operator_settings_vector()) {
         if (op->get_operator_name() == "TimePriorParameterScaler") {
             this->add_operator(std::make_shared<TimePriorParameterScaler>(
                     op->get_parameter_index(),
@@ -287,9 +285,7 @@ OperatorSchedule::OperatorSchedule(
                 ));
     }
 
-    std::vector< std::shared_ptr<OperatorSettings> > time_prior_op_settings = settings.get_time_prior_operator_settings_vector();
-    for (unsigned int i = 0; i < time_prior_op_settings.size(); ++i) {
-        std::shared_ptr<OperatorSettings> op = time_prior_op_settings.at(i);
+    for (auto op : settings.get_time_prior_operator_settings_vector()) {
         if (op->get_operator_name() == "TimePriorParameterScaler") {
             this->add_operator(std::make_shared<TimePriorParameterScaler>(
                     op->get_parameter_index(),
@@ -460,9 +456,7 @@ OperatorSchedule::OperatorSchedule(
                 ));
     }
 
-    std::vector< std::shared_ptr<OperatorSettings> > time_prior_op_settings = settings.get_time_prior_operator_settings_vector();
-    for (unsigned int i = 0; i < time_prior_op_settings.size(); ++i) {
-        std::shared_ptr<OperatorSettings> op = time_prior_op_settings.at(i);
+    for (auto op : settings.get_time_prior_operator_settings_vector()) {
         if (op->get_operator_name() == "TimePriorParameterScaler") {
             this->add_operator(std::make_shared<TimePriorParameterScaler>(
                     op->get_parameter_index(),

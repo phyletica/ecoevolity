@@ -978,6 +978,10 @@ class HyperDistribution {
             }
             std::vector< std::shared_ptr<RealParameter> > params;
             for (const auto & param_settings : settings.parameters_) {
+                // Currently, all prior parameters are positive. If we
+                // implement distributions that can have negative parameters
+                // (e.g., the mean of a lognormal distribution), we need to
+                // update logic below store RealParameter pointers
                 params.push_back(
                         std::make_shared<PositiveRealParameter>(param_settings, rng)
                         );

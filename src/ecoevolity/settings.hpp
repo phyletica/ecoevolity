@@ -886,7 +886,7 @@ class HyperDistributionSettings {
             // Exponential
             else if (node["exponential_distribution"]) {
                 this->name_ = "exponential_distribution";
-                this->using_transformed_parameters_ = true;
+                this->using_transformed_parameters_ = false;
                 YAML::Node parameters = node["exponential_distribution"];
                 if (parameters.size() < 1) {
                     throw EcoevolityHyperDistributionSettingError(
@@ -910,6 +910,7 @@ class HyperDistributionSettings {
                                 "Cannot specify both mean and rate for exponential_distribution"
                                 );
                     }
+                    this->using_transformed_parameters_ = true;
                     this->parameters_.push_back(PositiveRealParameterSettings(parameters["mean"]));
                     this->parameter_names_.push_back("mean");
                 }
@@ -930,18 +931,6 @@ class HyperDistributionSettings {
                     }
                     this->parameters_.push_back(PositiveRealParameterSettings(parameters["offset"]));
                     this->parameter_names_.push_back("offset");
-                }
-                bool fully_fixed = true;
-                for (const auto & param : this->parameters_) {
-                    if (! param.is_fixed()) {
-                        fully_fixed = false;
-                        break;
-                    }
-                }
-                if ((! fully_fixed) && (parameter_names_.at(0) == "rate")) {
-                    throw EcoevolityHyperDistributionSettingError(
-                            "2-level exponential_distribution does not support estimating rate (only mean)"
-                            );
                 }
             }
             // Uniform
@@ -1068,7 +1057,17 @@ class HyperDistributionSettings {
             return this->name_;
         }
 
+        bool using_transformed_parameters() const {
+            return this->using_transformed_parameters_;
+        }
+
+        unsigned int get_number_of_parameters() const {
+            ECOEVOLITY_ASSERT(this->parameters_.size() == this->parameter_names_.size());
+            return this->parameters_.size();
+        }
+
         unsigned int get_parameter_index(const std::string & parameter_name) const {
+            ECOEVOLITY_ASSERT(this->parameters_.size() == this->parameter_names_.size());
             unsigned int found_index;
             bool found = false;
             for (unsigned int i = 0; i < this->parameter_names_.size(); ++i) {
@@ -1151,23 +1150,23 @@ class OperatorSettings {
         std::string get_operator_name() const {
             return this->operator_name_;
         }
-        std::string get_parameter_name() const {
+        virtual std::string get_parameter_name() const {
             throw EcoevolityError(
                     "Calling get_parameter_name from OperatorSettings class that doesn't implement it");
         }
-        int get_parameter_index() const {
+        virtual int get_parameter_index() const {
             throw EcoevolityError(
                     "Calling get_parameter_index from OperatorSettings class that doesn't implement it");
         }
-        void set_parameter_index(int index) {
+        virtual void set_parameter_index(int index) {
             throw EcoevolityError(
                     "Calling set_parameter_index from OperatorSettings class that doesn't implement it");
         }
-        double get_scale() const {
+        virtual double get_scale() const {
             throw EcoevolityError(
                     "Calling get_scale from OperatorSettings class that doesn't implement it");
         }
-        double get_window() const {
+        virtual double get_window() const {
             throw EcoevolityError(
                     "Calling get_window from OperatorSettings class that doesn't implement it");
         }
@@ -1206,6 +1205,104 @@ class OperatorSettings {
         virtual std::string to_string(unsigned int indent_level = 0) const {
             std::ostringstream ss;
             std::string margin = string_util::get_indent(indent_level);
+            ss << margin << "weight: " << this->weight_ << "\n";
+            return ss.str();
+        }
+};
+
+class IndexedOperatorSettings : public OperatorSettings {
+    protected:
+        int parameter_index_ = -1;
+        std::string parameter_name_;
+
+    public:
+        IndexedOperatorSettings() : OperatorSettings() { }
+        IndexedOperatorSettings(const std::string & parameter_name) : OperatorSettings() {
+            this->parameter_name_ = parameter_name;
+        }
+        IndexedOperatorSettings(const std::string & parameter_name, double weight) : OperatorSettings(weight) {
+            this->parameter_name_ = parameter_name;
+        }
+        virtual ~IndexedOperatorSettings() { }
+        IndexedOperatorSettings& operator=(const IndexedOperatorSettings& other) {
+            this->operator_name_ = other.operator_name_;
+            this->parameter_index_ = other.parameter_index_;
+            this->parameter_name_ = other.parameter_name_;
+            this->weight_ = other.weight_;
+            return * this;
+        }
+
+        int get_parameter_index() const {
+            if (! this->parameter_index_was_set()) {
+                throw EcoevolityError(
+                        "Tried to access unset index of IndexedOperatorSettings"
+                        );
+            }
+            return this->parameter_index_;
+        }
+
+        bool parameter_index_was_set() const {
+            if (this->parameter_index_ < 0) {
+                return false;
+            }
+            return true;
+        }
+
+        void set_parameter_index(int index) {
+            ECOEVOLITY_ASSERT(index >= 0);
+            this->parameter_index_ = index;
+        }
+
+        std::string get_parameter_name() const {
+            return this->parameter_name_;
+        }
+
+        virtual void update_from_config(const YAML::Node& parameters) {
+            if (! parameters.IsMap()) {
+                std::string message = (
+                        "Expecting operator parameters to be a map, but found: " +
+                        YamlCppUtils::get_node_type(parameters));
+                throw EcoevolityYamlConfigError(message);
+            }
+            std::unordered_set<std::string> keys;
+
+            if (! parameters["parameter_name"]) {
+                throw EcoevolityYamlConfigError(
+                    "paramenter_name must be specified for a prior parameter operator"
+                    );
+
+            }
+
+            for (YAML::const_iterator p = parameters.begin();
+                    p != parameters.end();
+                    ++p) {
+                if (keys.count(p->first.as<std::string>()) > 0) {
+                    std::string message = (
+                            "Duplicate key in operator parameters: " +
+                            p->first.as<std::string>());
+                    throw EcoevolityYamlConfigError(message);
+                }
+                keys.insert(p->first.as<std::string>());
+
+                if (p->first.as<std::string>() == "weight") {
+                    this->set_weight(p->second.as<double>());
+                }
+                else if (p->first.as<std::string>() == "parameter_name") {
+                    this->parameter_name_ = p->second.as<std::string>();
+                }
+                else {
+                    std::string message = (
+                            "Unrecognized key in operator parameters: " +
+                            p->first.as<std::string>());
+                    throw EcoevolityYamlConfigError(message);
+                }
+            }
+        }
+
+        virtual std::string to_string(unsigned int indent_level = 0) const {
+            std::ostringstream ss;
+            std::string margin = string_util::get_indent(indent_level);
+            ss << margin << "parameter_name: " << this->parameter_name_ << "\n";
             ss << margin << "weight: " << this->weight_ << "\n";
             return ss.str();
         }
@@ -1356,20 +1453,19 @@ class ScaleOperatorSettings : public OperatorSettings {
 };
 
 
-class IndexedScaleOperatorSettings : public ScaleOperatorSettings {
+class IndexedScaleOperatorSettings : public IndexedOperatorSettings {
     protected:
-        int parameter_index_ = -1;
-        std::string parameter_name_;
+        double scale_;
 
     public:
-        IndexedScaleOperatorSettings() : ScaleOperatorSettings() { }
-        IndexedScaleOperatorSettings(const std::string & parameter_name) : ScaleOperatorSettings() {
-            this->parameter_name_ = parameter_name;
-        }
-        IndexedScaleOperatorSettings(const std::string & parameter_name, double weight, double scale) : ScaleOperatorSettings(weight, scale) {
-            this->parameter_name_ = parameter_name;
+        IndexedScaleOperatorSettings() : IndexedOperatorSettings() { }
+        IndexedScaleOperatorSettings(const std::string & parameter_name) : IndexedOperatorSettings(parameter_name) { }
+        IndexedScaleOperatorSettings(const std::string & parameter_name, double weight) : IndexedOperatorSettings(parameter_name, weight) { }
+        IndexedScaleOperatorSettings(const std::string & parameter_name, double weight, double scale) : IndexedOperatorSettings(parameter_name, weight) {
+            this->scale_ = scale;
         }
         virtual ~IndexedScaleOperatorSettings() { }
+
         IndexedScaleOperatorSettings& operator=(const IndexedScaleOperatorSettings& other) {
             this->operator_name_ = other.operator_name_;
             this->parameter_index_ = other.parameter_index_;
@@ -1379,29 +1475,11 @@ class IndexedScaleOperatorSettings : public ScaleOperatorSettings {
             return * this;
         }
 
-        unsigned int get_parameter_index() const {
-            if (! this->parameter_index_was_set()) {
-                throw EcoevolityError(
-                        "Tried to access unset index of IndexedScaleOperatorSettings"
-                        );
-            }
-            return this->parameter_index_;
+        double get_scale() const {
+            return this->scale_;
         }
-
-        bool parameter_index_was_set() const {
-            if (this->parameter_index_ < 0) {
-                return false;
-            }
-            return true;
-        }
-
-        void set_parameter_index(int index) {
-            ECOEVOLITY_ASSERT(index >= 0);
-            this->parameter_index_ = index;
-        }
-
-        std::string get_parameter_name() const {
-            return this->parameter_name_;
+        void set_scale(double scale) {
+            this->scale_ = scale;
         }
 
         virtual void update_from_config(const YAML::Node& parameters) {
@@ -1526,20 +1604,19 @@ class WindowOperatorSettings : public OperatorSettings {
 };
 
 
-class IndexedWindowOperatorSettings : public WindowOperatorSettings {
+class IndexedWindowOperatorSettings : public IndexedOperatorSettings {
     protected:
-        int parameter_index_ = -1;
-        std::string parameter_name_;
+        double window_;
 
     public:
-        IndexedWindowOperatorSettings() : WindowOperatorSettings() { }
-        IndexedWindowOperatorSettings(const std::string & parameter_name) : WindowOperatorSettings() {
-            this->parameter_name_ = parameter_name;
-        }
-        IndexedWindowOperatorSettings(const std::string & parameter_name, double weight, double window) : WindowOperatorSettings(weight, window) {
-            this->parameter_name_ = parameter_name;
+        IndexedWindowOperatorSettings() : IndexedOperatorSettings() { }
+        IndexedWindowOperatorSettings(const std::string & parameter_name) : IndexedOperatorSettings(parameter_name) { }
+        IndexedWindowOperatorSettings(const std::string & parameter_name, double weight) : IndexedOperatorSettings(parameter_name, weight) { }
+        IndexedWindowOperatorSettings(const std::string & parameter_name, double weight, double window) : IndexedOperatorSettings(parameter_name, weight) {
+            this->window_ = window;
         }
         virtual ~IndexedWindowOperatorSettings() { }
+
         IndexedWindowOperatorSettings& operator=(const IndexedWindowOperatorSettings& other) {
             this->operator_name_ = other.operator_name_;
             this->parameter_index_ = other.parameter_index_;
@@ -1549,29 +1626,11 @@ class IndexedWindowOperatorSettings : public WindowOperatorSettings {
             return * this;
         }
 
-        unsigned int get_parameter_index() const {
-            if (! this->parameter_index_was_set()) {
-                throw EcoevolityError(
-                        "Tried to access unset index of IndexedWindowOperatorSettings"
-                        );
-            }
-            return this->parameter_index_;
+        double get_window() const {
+            return this->window_;
         }
-
-        bool parameter_index_was_set() const {
-            if (this->parameter_index_ < 0) {
-                return false;
-            }
-            return true;
-        }
-
-        void set_parameter_index(int index) {
-            ECOEVOLITY_ASSERT(index >= 0);
-            this->parameter_index_ = index;
-        }
-
-        std::string get_parameter_name() const {
-            return this->parameter_name_;
+        void set_window(double window) {
+            this->window_ = window;
         }
 
         virtual void update_from_config(const YAML::Node& parameters) {
@@ -1654,7 +1713,7 @@ class OperatorScheduleSettings {
                 0.0, 0.1);
         ScaleOperatorSettings event_time_scaler_settings_ = ScaleOperatorSettings(
                 1.0, 0.1);
-        std::map< std::string, std::shared_ptr<OperatorSettings> > time_prior_operator_settings_;
+        std::map< std::string, std::shared_ptr<IndexedOperatorSettings> > time_prior_operator_settings_;
 
     public:
         OperatorScheduleSettings() { }
@@ -1713,12 +1772,12 @@ class OperatorScheduleSettings {
         const ScaleOperatorSettings& get_event_time_scaler_settings() const {
             return this->event_time_scaler_settings_;
         }
-        const std::map< std::string, std::shared_ptr<OperatorSettings> > & get_time_prior_operator_settings() const {
+        const std::map< std::string, std::shared_ptr<IndexedOperatorSettings> > & get_time_prior_operator_settings() const {
             return this->time_prior_operator_settings_;
         }
 
-        std::vector< std::shared_ptr<OperatorSettings> > get_time_prior_operator_settings_vector() const {
-            std::vector< std::shared_ptr<OperatorSettings> > ops;
+        std::vector< std::shared_ptr<IndexedOperatorSettings> > get_time_prior_operator_settings_vector() const {
+            std::vector< std::shared_ptr<IndexedOperatorSettings> > ops;
             for (auto it = this->time_prior_operator_settings_.begin();
                     it != this->time_prior_operator_settings_.end();
                     ++it) {
@@ -1776,10 +1835,12 @@ class OperatorScheduleSettings {
                     op != operators.end();
                     ++op) {
                 if (keys.count(op->first.as<std::string>()) > 0) {
-                    std::string message = (
-                            "Duplicate operator: " +
-                            op->first.as<std::string>());
-                    throw EcoevolityYamlConfigError(message);
+                    if (! string_util::startswith(op->first.as<std::string>(), "TimePriorParameter")) {
+                        std::string message = (
+                                "Duplicate operator: " +
+                                op->first.as<std::string>());
+                        throw EcoevolityYamlConfigError(message);
+                    }
                 }
                 keys.insert(op->first.as<std::string>());
 
@@ -1866,7 +1927,7 @@ class OperatorScheduleSettings {
                 }
                 else if (op->first.as<std::string>() == "TimePriorParameterScaler") {
                     try {
-                        std::shared_ptr<OperatorSettings> op_settings(new IndexedScaleOperatorSettings());
+                        std::shared_ptr<IndexedScaleOperatorSettings> op_settings(new IndexedScaleOperatorSettings());
                         op_settings->update_from_config(op->second);
                         op_settings->set_operator_name("TimePriorParameterScaler");
                         this->time_prior_operator_settings_[op_settings->get_parameter_name()] = op_settings;
@@ -1879,7 +1940,7 @@ class OperatorScheduleSettings {
                 }
                 else if (op->first.as<std::string>() == "TimePriorParameterMover") {
                     try {
-                        std::shared_ptr<OperatorSettings> op_settings(new IndexedWindowOperatorSettings());
+                        std::shared_ptr<IndexedWindowOperatorSettings> op_settings(new IndexedWindowOperatorSettings());
                         op_settings->update_from_config(op->second);
                         op_settings->set_operator_name("TimePriorParameterMover");
                         this->time_prior_operator_settings_[op_settings->get_parameter_name()] = op_settings;
@@ -1930,7 +1991,7 @@ class OperatorScheduleSettings {
             for (auto it = this->time_prior_operator_settings_.begin();
                     it != this->time_prior_operator_settings_.end();
                     ++it) {
-                ss << margin << indent << indent << it->second->get_operator_name() << std::endl;
+                ss << margin << indent << indent << it->second->get_operator_name() << ":" << std::endl;
                 ss << it->second->to_string(indent_level + 3);
             }
             return ss.str();
@@ -4003,8 +4064,9 @@ class BaseCollectionSettings {
                     // param_name
                     // to see if we need to create a window operator or other
                     // operator that allows neg values.
-                    std::shared_ptr<OperatorSettings> op_settings(new IndexedScaleOperatorSettings(param_name, 3.0, 0.5));
+                    std::shared_ptr<IndexedScaleOperatorSettings> op_settings(new IndexedScaleOperatorSettings(param_name, 3.0, 0.5));
                     op_settings->set_parameter_index(param_index);
+                    op_settings->set_operator_name("TimePriorParameterScaler");
                     this->operator_schedule_settings_.time_prior_operator_settings_[param_name] = op_settings;
                 }
             }

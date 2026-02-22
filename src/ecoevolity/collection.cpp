@@ -152,6 +152,13 @@ void BaseComparisonPopulationTreeCollection::compute_log_likelihood_and_prior(
         lnp += this->discount_->relative_prior_ln_pdf();
 
     }
+
+    // Get prior density from node height hyper priors (i.e., prior density of
+    // parameters of the prior on node heigts). If there are no hyper priors
+    // (the parameters of the node height prior are fixed, this will add zero
+    // to lnp
+    lnp += this->node_height_prior_->parameter_relative_prior_ln_pdf();
+
     // Compute the prior prob of model even when the concentration is fixed.
     // Previously, below was skipped if the concentration was fixed, which
     // worked because none of the moves that update the model (e.g.,
@@ -630,6 +637,9 @@ void BaseComparisonPopulationTreeCollection::write_state_log_header(
     else if (this->model_prior_ == EcoevolityOptions::ModelPrior::fixed) {
         // Nothing to report
     }
+    for (unsigned int i = 0; i < this->node_height_prior_->get_number_of_parameters(); ++i) {
+        out << this->logging_delimiter_ << "time_prior_parameter_" << i;
+    }
     if (short_summary) {
         out << std::endl;
         return;
@@ -664,6 +674,9 @@ void BaseComparisonPopulationTreeCollection::log_state(std::ostream& out,
     }
     else if (this->model_prior_ == EcoevolityOptions::ModelPrior::fixed) {
         // Nothing to report
+    }
+    for (unsigned int i = 0; i < this->node_height_prior_->get_number_of_parameters(); ++i) {
+        out << this->logging_delimiter_ << this->node_height_prior_->get_parameter_value(i);
     }
     if (short_summary) {
         out << std::endl;
