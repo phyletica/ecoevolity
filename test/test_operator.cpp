@@ -78058,3 +78058,461 @@ TEST_CASE("Testing DiscountMixer with 4 pairs",
         REQUIRE(d_summary.variance() == Approx(expected_variance).epsilon(0.001));
     }
 }
+
+TEST_CASE("Testing TimePriorParameterScaler with gamma mean and std dev and 4 pairs",
+        "[TimePriorParameterScaler]") {
+
+    SECTION("Testing 4 pairs with gamma mean and std dev and optimizing") {
+        double conc_shape = 2.0;
+        double conc_scale = 0.5;
+        double mean_shape = 1.0;
+        double mean_scale = 0.5;
+        double sd_shape = 1.5;
+        double sd_scale = 0.5;
+        double offset = 1.0;
+        std::string tag = _TEST_OPERATOR_RNG.random_string(10);
+        std::string test_path = "data/tmp-config-timepriorparameterscaler-test1-" + tag + "-t5456464.cfg";
+        std::string log_path = "data/tmp-config-timepriorparameterscaler-test1-" + tag + "-t5456464-state-run-1.log";
+        std::ofstream os;
+        os.open(test_path);
+        os << "event_model_prior:\n";
+        os << "    dirichlet_process:\n";
+        os << "        parameters:\n";
+        os << "             concentration:\n";
+        os << "                 value: 1.0\n";
+        os << "                 estimate: true\n";
+        os << "                 prior:\n";
+        os << "                     gamma_distribution:\n";
+        os << "                         shape: " << conc_shape << "\n";
+        os << "                         scale: " << conc_scale << "\n";
+        os << "event_time_prior:\n";
+        os << "    gamma_distribution:\n";
+        os << "        mean:\n";
+        os << "            value: 0.5\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << mean_shape << "\n";
+        os << "                    scale: " << mean_scale << "\n";
+        os << "        standard_deviation:\n";
+        os << "            value: 0.75\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << sd_shape << "\n";
+        os << "                    scale: " << sd_scale << "\n";
+        os << "        offset: " << offset << "\n";
+        os << "global_comparison_settings:\n";
+        os << "    genotypes_are_diploid: true\n";
+        os << "    markers_are_dominant: false\n";
+        os << "    population_name_delimiter: \" \"\n";
+        os << "    population_name_is_prefix: true\n";
+        os << "    constant_sites_removed: true\n";
+        os << "    equal_population_sizes: false\n";
+        os << "    parameters:\n";
+        os << "        freq_1:\n";
+        os << "            value: 0.5\n";
+        os << "            estimate: false\n";
+        os << "        mutation_rate:\n";
+        os << "            value: 1.0\n";
+        os << "            estimate: false\n";
+        os << "comparisons:\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size:\n";
+        os << "            value: 0.001\n";
+        os << "            estimate: false\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname1.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size:\n";
+        os << "            value: 0.001\n";
+        os << "            estimate: false\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname2.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size:\n";
+        os << "            value: 0.001\n";
+        os << "            estimate: false\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname3.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size:\n";
+        os << "            value: 0.001\n";
+        os << "            estimate: false\n";
+        os.close();
+        REQUIRE(path::exists(test_path));
+
+        CollectionSettings settings = CollectionSettings(test_path);
+
+        RandomNumberGenerator rng = RandomNumberGenerator(123456);
+        ComparisonPopulationTreeCollection comparisons = ComparisonPopulationTreeCollection(settings, rng);
+        comparisons.ignore_data();
+
+        OperatorSchedule op_schedule = OperatorSchedule();
+        op_schedule.turn_on_auto_optimize();
+        op_schedule.set_auto_optimize_delay(100);
+
+        std::shared_ptr<OperatorInterface> op = std::make_shared<ConcentrationScaler>(1.0, 0.5);
+        op_schedule.add_operator(op);
+        op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
+        std::shared_ptr<OperatorInterface> op2 = std::make_shared<DirichletProcessGibbsSampler>(1.0);
+        op_schedule.add_operator(op2);
+
+        std::shared_ptr<OperatorInterface> op3 = std::make_shared<TimePriorParameterScaler>(0, 1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op4 = std::make_shared<TimePriorParameterScaler>(1, 1.0, 0.5);
+        op_schedule.add_operator(op3);
+        op_schedule.add_operator(op4);
+
+        // Initialize prior probs
+        comparisons.compute_log_likelihood_and_prior(true);
+
+        unsigned int ntrees = comparisons.get_number_of_trees();
+        REQUIRE(ntrees == 4);
+        REQUIRE(comparisons.get_number_of_events() == ntrees);
+        SampleSummarizer<double> conc_summary;
+        SampleSummarizer<double> mean_summary;
+        SampleSummarizer<double> sd_summary;
+        SampleSummarizer<double> height_summary;
+
+        comparisons.set_operator_schedule(op_schedule);
+        unsigned int niterations = 750000;
+        unsigned int sample_freq = 10;
+        unsigned int nsamples = niterations / sample_freq;
+        for (unsigned int i = 0; i < niterations; ++i) {
+            op->operate(rng, &comparisons, 1);
+            op2->operate(rng, &comparisons, 1);
+            op3->operate(rng, &comparisons, 1);
+            op4->operate(rng, &comparisons, 1);
+            if ((i + 1) % sample_freq == 0) {
+                conc_summary.add_sample(comparisons.get_concentration());
+                mean_summary.add_sample(comparisons.get_node_height_prior()->get_parameter_value(0));
+                sd_summary.add_sample(comparisons.get_node_height_prior()->get_parameter_value(1));
+                height_summary.add_sample(comparisons.get_height_of_tree(0));
+            }
+        }
+        op_schedule.write_operator_rates(std::cout);
+
+        REQUIRE(conc_summary.sample_size() == nsamples);
+
+        std::cout << "Conc:\n";
+        std::cout << "  Expected mean: " << conc_shape * conc_scale << std::endl;
+        std::cout << "  Sampled mean: " << conc_summary.mean() << std::endl;
+        std::cout << "  Expected var: " << conc_shape * conc_scale * conc_scale<< std::endl;
+        std::cout << "  Sampled var: " << conc_summary.variance() << std::endl;
+        std::cout << "Node height prior mean:\n";
+        std::cout << "  Expected mean: " << mean_shape * mean_scale << std::endl;
+        std::cout << "  Sampled mean: " << mean_summary.mean() << std::endl;
+        std::cout << "  Expected var: " << mean_shape * mean_scale * mean_scale<< std::endl;
+        std::cout << "  Sampled var: " << mean_summary.variance() << std::endl;
+        std::cout << "Node height prior std dev:\n";
+        std::cout << "  Expected mean: " << sd_shape * sd_scale << std::endl;
+        std::cout << "  Sampled mean: " << sd_summary.mean() << std::endl;
+        std::cout << "  Expected var: " << sd_shape * sd_scale * sd_scale<< std::endl;
+        std::cout << "  Sampled var: " << sd_summary.variance() << std::endl;
+        std::cout << "Tree 0 node height:\n";
+        std::cout << "  Expected mean: " << (mean_shape * mean_scale) + offset << std::endl;
+        std::cout << "  Tree 0 mean: " << height_summary.mean() << std::endl;
+        REQUIRE(conc_summary.mean() == Approx(conc_shape * conc_scale).epsilon(0.02)); // 1.0
+        REQUIRE(conc_summary.variance() == Approx(conc_shape * conc_scale * conc_scale).epsilon(0.02)); // 0.5
+        REQUIRE(mean_summary.mean() == Approx(mean_shape * mean_scale).epsilon(0.02)); // 0.5
+        REQUIRE(mean_summary.variance() == Approx(mean_shape * mean_scale * mean_scale).epsilon(0.02)); // 0.25
+        REQUIRE(sd_summary.mean() == Approx(sd_shape * sd_scale).epsilon(0.02)); // 0.75
+        REQUIRE(sd_summary.variance() == Approx(sd_shape * sd_scale * sd_scale).epsilon(0.02)); // 0.375
+        REQUIRE(height_summary.mean() == Approx((mean_shape * mean_scale) + offset).epsilon(0.02)); // 0.5
+    }
+}
+
+TEST_CASE("Testing TimePriorParameterScaler with exponential mean and 4 pairs",
+        "[TimePriorParameterScaler]") {
+
+    SECTION("Testing 4 pairs with exponential mean and optimizing") {
+        double conc_shape = 2.0;
+        double conc_scale = 0.5;
+        double mean_shape = 1.0;
+        double mean_scale = 0.5;
+        double offset = 1.0;
+        std::string tag = _TEST_OPERATOR_RNG.random_string(10);
+        std::string test_path = "data/tmp-config-timepriorparameterscaler-test2-" + tag + "-t2.cfg";
+        std::string log_path = "data/tmp-config-timepriorparameterscaler-test2-" + tag + "-t2-state-run-1.log";
+        std::ofstream os;
+        os.open(test_path);
+        os << "event_model_prior:\n";
+        os << "    dirichlet_process:\n";
+        os << "        parameters:\n";
+        os << "             concentration:\n";
+        os << "                 value: 1.0\n";
+        os << "                 estimate: true\n";
+        os << "                 prior:\n";
+        os << "                     gamma_distribution:\n";
+        os << "                         shape: " << conc_shape << "\n";
+        os << "                         scale: " << conc_scale << "\n";
+        os << "event_time_prior:\n";
+        os << "    exponential_distribution:\n";
+        os << "        mean:\n";
+        os << "            value: 0.5\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << mean_shape << "\n";
+        os << "                    scale: " << mean_scale << "\n";
+        os << "        offset: " << offset << "\n";
+        os << "global_comparison_settings:\n";
+        os << "    genotypes_are_diploid: true\n";
+        os << "    markers_are_dominant: false\n";
+        os << "    population_name_delimiter: \" \"\n";
+        os << "    population_name_is_prefix: true\n";
+        os << "    constant_sites_removed: true\n";
+        os << "    equal_population_sizes: false\n";
+        os << "    parameters:\n";
+        os << "        freq_1:\n";
+        os << "            value: 0.5\n";
+        os << "            estimate: false\n";
+        os << "        mutation_rate:\n";
+        os << "            value: 1.0\n";
+        os << "            estimate: false\n";
+        os << "comparisons:\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size:\n";
+        os << "            value: 0.001\n";
+        os << "            estimate: false\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname1.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size:\n";
+        os << "            value: 0.001\n";
+        os << "            estimate: false\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname2.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size:\n";
+        os << "            value: 0.001\n";
+        os << "            estimate: false\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname3.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size:\n";
+        os << "            value: 0.001\n";
+        os << "            estimate: false\n";
+        os.close();
+        REQUIRE(path::exists(test_path));
+
+        CollectionSettings settings = CollectionSettings(test_path);
+
+        RandomNumberGenerator rng = RandomNumberGenerator(123456);
+        ComparisonPopulationTreeCollection comparisons = ComparisonPopulationTreeCollection(settings, rng);
+        comparisons.ignore_data();
+
+        OperatorSchedule op_schedule = OperatorSchedule();
+        op_schedule.turn_on_auto_optimize();
+        op_schedule.set_auto_optimize_delay(100);
+
+        std::shared_ptr<OperatorInterface> op = std::make_shared<ConcentrationScaler>(1.0, 0.5);
+        op_schedule.add_operator(op);
+        op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
+        std::shared_ptr<OperatorInterface> op2 = std::make_shared<DirichletProcessGibbsSampler>(1.0);
+        op_schedule.add_operator(op2);
+
+        std::shared_ptr<OperatorInterface> op3 = std::make_shared<TimePriorParameterScaler>(0, 1.0, 0.5);
+        op_schedule.add_operator(op3);
+
+        // Initialize prior probs
+        comparisons.compute_log_likelihood_and_prior(true);
+
+        unsigned int ntrees = comparisons.get_number_of_trees();
+        REQUIRE(ntrees == 4);
+        REQUIRE(comparisons.get_number_of_events() == ntrees);
+        SampleSummarizer<double> conc_summary;
+        SampleSummarizer<double> mean_summary;
+        SampleSummarizer<double> height_summary;
+
+        comparisons.set_operator_schedule(op_schedule);
+        unsigned int niterations = 750000;
+        unsigned int sample_freq = 10;
+        unsigned int nsamples = niterations / sample_freq;
+        for (unsigned int i = 0; i < niterations; ++i) {
+            op->operate(rng, &comparisons, 1);
+            op2->operate(rng, &comparisons, 1);
+            op3->operate(rng, &comparisons, 1);
+            if ((i + 1) % sample_freq == 0) {
+                conc_summary.add_sample(comparisons.get_concentration());
+                mean_summary.add_sample(comparisons.get_node_height_prior()->get_parameter_value(0));
+                height_summary.add_sample(comparisons.get_height_of_tree(0));
+            }
+        }
+        op_schedule.write_operator_rates(std::cout);
+
+        REQUIRE(conc_summary.sample_size() == nsamples);
+
+        std::cout << "Conc:\n";
+        std::cout << "  Expected mean: " << conc_shape * conc_scale << std::endl;
+        std::cout << "  Sampled mean: " << conc_summary.mean() << std::endl;
+        std::cout << "  Expected var: " << conc_shape * conc_scale * conc_scale<< std::endl;
+        std::cout << "  Sampled var: " << conc_summary.variance() << std::endl;
+        std::cout << "Node height prior mean:\n";
+        std::cout << "  Expected mean: " << mean_shape * mean_scale << std::endl;
+        std::cout << "  Sampled mean: " << mean_summary.mean() << std::endl;
+        std::cout << "  Expected var: " << mean_shape * mean_scale * mean_scale<< std::endl;
+        std::cout << "  Sampled var: " << mean_summary.variance() << std::endl;
+        std::cout << "Tree 0 node height:\n";
+        std::cout << "  Expected mean: " << (mean_shape * mean_scale) + offset << std::endl;
+        std::cout << "  Tree 0 mean: " << height_summary.mean() << std::endl;
+        REQUIRE(conc_summary.mean() == Approx(conc_shape * conc_scale).epsilon(0.02)); // 1.0
+        REQUIRE(conc_summary.variance() == Approx(conc_shape * conc_scale * conc_scale).epsilon(0.02)); // 0.5
+        REQUIRE(mean_summary.mean() == Approx(mean_shape * mean_scale).epsilon(0.02)); // 0.5
+        REQUIRE(mean_summary.variance() == Approx(mean_shape * mean_scale * mean_scale).epsilon(0.02)); // 0.25
+        REQUIRE(height_summary.mean() == Approx((mean_shape * mean_scale) + offset).epsilon(0.02)); // 0.5
+    }
+}
+
+TEST_CASE("Testing TimePriorParameterScaler with exponential rate and 4 pairs",
+        "[TimePriorParameterScaler]") {
+
+    SECTION("Testing 4 pairs with exponential rate and optimizing") {
+        double conc_shape = 2.0;
+        double conc_scale = 0.5;
+        double rate_min = 1.0;
+        double rate_max = 2.0;
+        std::string tag = _TEST_OPERATOR_RNG.random_string(10);
+        std::string test_path = "data/tmp-config-timepriorparameterscaler-test3-" + tag + "-t3.cfg";
+        std::string log_path = "data/tmp-config-timepriorparameterscaler-test3-" + tag + "-t3-state-run-1.log";
+        std::ofstream os;
+        os.open(test_path);
+        os << "event_model_prior:\n";
+        os << "    dirichlet_process:\n";
+        os << "        parameters:\n";
+        os << "             concentration:\n";
+        os << "                 value: 1.0\n";
+        os << "                 estimate: true\n";
+        os << "                 prior:\n";
+        os << "                     gamma_distribution:\n";
+        os << "                         shape: " << conc_shape << "\n";
+        os << "                         scale: " << conc_scale << "\n";
+        os << "event_time_prior:\n";
+        os << "    exponential_distribution:\n";
+        os << "        rate:\n";
+        os << "            value: 1.0\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                uniform_distribution:\n";
+        os << "                    min: " << rate_min << "\n";
+        os << "                    max: " << rate_max << "\n";
+        os << "global_comparison_settings:\n";
+        os << "    genotypes_are_diploid: true\n";
+        os << "    markers_are_dominant: false\n";
+        os << "    population_name_delimiter: \" \"\n";
+        os << "    population_name_is_prefix: true\n";
+        os << "    constant_sites_removed: true\n";
+        os << "    equal_population_sizes: false\n";
+        os << "    parameters:\n";
+        os << "        freq_1:\n";
+        os << "            value: 0.5\n";
+        os << "            estimate: false\n";
+        os << "        mutation_rate:\n";
+        os << "            value: 1.0\n";
+        os << "            estimate: false\n";
+        os << "comparisons:\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size:\n";
+        os << "            value: 0.001\n";
+        os << "            estimate: false\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname1.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size:\n";
+        os << "            value: 0.001\n";
+        os << "            estimate: false\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname2.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size:\n";
+        os << "            value: 0.001\n";
+        os << "            estimate: false\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname3.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size:\n";
+        os << "            value: 0.001\n";
+        os << "            estimate: false\n";
+        os.close();
+        REQUIRE(path::exists(test_path));
+
+        CollectionSettings settings = CollectionSettings(test_path);
+
+        RandomNumberGenerator rng = RandomNumberGenerator(123456);
+        ComparisonPopulationTreeCollection comparisons = ComparisonPopulationTreeCollection(settings, rng);
+        comparisons.ignore_data();
+
+        OperatorSchedule op_schedule = OperatorSchedule();
+        op_schedule.turn_on_auto_optimize();
+        op_schedule.set_auto_optimize_delay(100);
+
+        std::shared_ptr<OperatorInterface> op = std::make_shared<ConcentrationScaler>(1.0, 0.5);
+        op_schedule.add_operator(op);
+        op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
+        std::shared_ptr<OperatorInterface> op2 = std::make_shared<DirichletProcessGibbsSampler>(1.0);
+        op_schedule.add_operator(op2);
+
+        std::shared_ptr<OperatorInterface> op3 = std::make_shared<TimePriorParameterScaler>(0, 1.0, 0.5);
+        op_schedule.add_operator(op3);
+
+        // Initialize prior probs
+        comparisons.compute_log_likelihood_and_prior(true);
+
+        unsigned int ntrees = comparisons.get_number_of_trees();
+        REQUIRE(ntrees == 4);
+        REQUIRE(comparisons.get_number_of_events() == ntrees);
+        SampleSummarizer<double> conc_summary;
+        SampleSummarizer<double> rate_summary;
+        SampleSummarizer<double> mean_summary;
+        SampleSummarizer<double> height_summary;
+
+        comparisons.set_operator_schedule(op_schedule);
+        unsigned int niterations = 750000;
+        unsigned int sample_freq = 10;
+        unsigned int nsamples = niterations / sample_freq;
+        for (unsigned int i = 0; i < niterations; ++i) {
+            op->operate(rng, &comparisons, 1);
+            op2->operate(rng, &comparisons, 1);
+            op3->operate(rng, &comparisons, 1);
+            if ((i + 1) % sample_freq == 0) {
+                conc_summary.add_sample(comparisons.get_concentration());
+                rate_summary.add_sample(comparisons.get_node_height_prior()->get_parameter_value(0));
+                mean_summary.add_sample(1.0 / comparisons.get_node_height_prior()->get_parameter_value(0));
+                height_summary.add_sample(comparisons.get_height_of_tree(0));
+            }
+        }
+        op_schedule.write_operator_rates(std::cout);
+
+        REQUIRE(conc_summary.sample_size() == nsamples);
+
+        double exp_rate_mean = (rate_min + rate_max) / 2.0;
+        double exp_rate_var = ((rate_max - rate_min) * (rate_max - rate_min)) / 12.0;
+        std::cout << "Conc:\n";
+        std::cout << "  Expected mean: " << conc_shape * conc_scale << std::endl;
+        std::cout << "  Sampled mean: " << conc_summary.mean() << std::endl;
+        std::cout << "  Expected var: " << conc_shape * conc_scale * conc_scale << std::endl;
+        std::cout << "  Sampled var: " << conc_summary.variance() << std::endl;
+        std::cout << "Node height prior rate:\n";
+        std::cout << "  Expected mean: " << exp_rate_mean << std::endl;
+        std::cout << "  Sampled mean: " << rate_summary.mean() << std::endl;
+        std::cout << "  Expected var: " << exp_rate_var << std::endl;
+        std::cout << "  Sampled var: " << rate_summary.variance() << std::endl;
+        std::cout << "Node height prior mean:\n";
+        std::cout << "  Sampled mean: " << mean_summary.mean() << std::endl;
+        std::cout << "Tree 0 node height:\n";
+        std::cout << "  Tree 0 mean: " << height_summary.mean() << std::endl;
+        REQUIRE(conc_summary.mean() == Approx(conc_shape * conc_scale).epsilon(0.02)); // 1.0
+        REQUIRE(conc_summary.variance() == Approx(conc_shape * conc_scale * conc_scale).epsilon(0.02)); // 0.5
+        REQUIRE(rate_summary.mean() == Approx(exp_rate_mean).epsilon(0.02)); // 0.5
+        REQUIRE(rate_summary.variance() == Approx(exp_rate_var).epsilon(0.02)); // 0.25
+        REQUIRE(rate_summary.min() > rate_min);
+        REQUIRE(rate_summary.max() < rate_max);
+        REQUIRE(height_summary.mean() == Approx(mean_summary.mean()).epsilon(0.02));
+    }
+}
