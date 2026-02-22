@@ -884,33 +884,32 @@ class OffsetExponentialDistribution : public OffsetGammaDistribution {
         }
 
         std::vector<double> get_parameters() const {
-            std::vector<double> params {this->scale_, this->min_};
+            std::vector<double> params {1.0/this->scale_, this->min_};
             return params;
         }
 
         std::vector<double> get_transformed_parameters() const {
-            // Because get_parameters returns the mean of the exponential
-            // distribution (the scale from the base gamma distributions), we
-            // don't need to do any transformation.
-            return this->get_parameters();
+            std::vector<double> params {this->scale_, this->min_};
+            return params;
         }
 
         std::vector<double> get_raw_parameters(const std::vector<double> & transformed_parameters) const {
             ECOEVOLITY_ASSERT(transformed_parameters.size() == 2);
-            // No transformation occurs for the exponential distribution,
-            // because the scale_ member is the mean already
-            return transformed_parameters;
+            double mean = transformed_parameters.at(0);
+            double offset = transformed_parameters.at(1);
+            std::vector<double> params {1.0/mean, offset};
+            return params;
         }
 
         std::shared_ptr<ContinuousProbabilityDistribution> get_new_distribution(
                 const std::vector<double> & parameters,
                 const bool using_transformed_parameters = false) const {
             ECOEVOLITY_ASSERT(parameters.size() == 2);
-            // Since get_parameters returns scale (rather than lambda), we
-            // assume first element of parameters is the scale parameter, so we
-            // pass the reciprocal to the OffsetExponentialDistribution
-            // constructor, which expects lambda
-            return std::shared_ptr<ContinuousProbabilityDistribution>(new OffsetExponentialDistribution(1.0/parameters.at(0), parameters.at(1)));
+            std::vector<double> params = parameters;
+            if (using_transformed_parameters) {
+                params = this->get_raw_parameters(parameters);
+            }
+            return std::shared_ptr<ContinuousProbabilityDistribution>(new OffsetExponentialDistribution(params.at(0), params.at(1)));
         }
 
     protected:
@@ -919,11 +918,11 @@ class OffsetExponentialDistribution : public OffsetGammaDistribution {
                 const std::vector<double> & parameters,
                 const bool using_transformed_parameters = false) {
             ECOEVOLITY_ASSERT(parameters.size() == 2);
-            // Since get_parameters returns scale (rather than lambda), we
-            // assume first element of parameters is the scale parameter, so we
-            // pass the reciprocal to the OffsetExponentialDistribution
-            // constructor, which expects lambda
-            this->_update_parameters(1.0/parameters.at(0), parameters.at(1));
+            std::vector<double> params = parameters;
+            if (using_transformed_parameters) {
+                params = this->get_raw_parameters(parameters);
+            }
+            this->_update_parameters(params.at(0), params.at(1));
         }
 };
 
@@ -956,33 +955,31 @@ class ExponentialDistribution: public OffsetExponentialDistribution {
         }
 
         std::vector<double> get_parameters() const {
-            std::vector<double> params {this->scale_};
+            std::vector<double> params {1.0/this->scale_};
             return params;
         }
 
         std::vector<double> get_transformed_parameters() const {
-            // Because get_parameters returns the mean of the exponential
-            // distribution (the scale from the base gamma distributions), we
-            // don't need to do any transformation.
-            return this->get_parameters();
+            std::vector<double> params {this->scale_};
+            return params;
         }
 
         std::vector<double> get_raw_parameters(const std::vector<double> & transformed_parameters) const {
             ECOEVOLITY_ASSERT(transformed_parameters.size() == 1);
-            // No transformation occurs for the exponential distribution,
-            // because the scale_ member is the mean already
-            return transformed_parameters;
+            double mean = transformed_parameters.at(0);
+            std::vector<double> params {1.0/mean};
+            return params;
         }
 
         std::shared_ptr<ContinuousProbabilityDistribution> get_new_distribution(
                 const std::vector<double> & parameters,
                 const bool using_transformed_parameters = false) const {
             ECOEVOLITY_ASSERT(parameters.size() == 1);
-            // Since get_parameters returns scale (rather than lambda), we
-            // assume first element of parameters is the scale parameter, so we
-            // pass the reciprocal to the ExponentialDistribution
-            // constructor, which expects lambda
-            return std::shared_ptr<ContinuousProbabilityDistribution>(new ExponentialDistribution(1.0/parameters.at(0)));
+            std::vector<double> params = parameters;
+            if (using_transformed_parameters) {
+                params = this->get_raw_parameters(parameters);
+            }
+            return std::shared_ptr<ContinuousProbabilityDistribution>(new ExponentialDistribution(params.at(0)));
         }
 
     protected:
@@ -991,11 +988,11 @@ class ExponentialDistribution: public OffsetExponentialDistribution {
                 const std::vector<double> & parameters,
                 const bool using_transformed_parameters = false) {
             ECOEVOLITY_ASSERT(parameters.size() == 1);
-            // Since get_parameters returns scale (rather than lambda), we
-            // assume first element of parameters is the scale parameter, so we
-            // pass the reciprocal to the OffsetExponentialDistribution
-            // constructor, which expects lambda
-            this->_update_parameters(1.0/parameters.at(0), 0.0);
+            std::vector<double> params = parameters;
+            if (using_transformed_parameters) {
+                params = this->get_raw_parameters(parameters);
+            }
+            this->_update_parameters(params.at(0), 0.0);
         }
 };
 
