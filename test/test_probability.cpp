@@ -1279,7 +1279,7 @@ TEST_CASE("Testing OffsetExponentialDistribution", "[OffsetExponentialDistributi
         REQUIRE(mn >= -5.0);
         REQUIRE(mn == Approx(-5.0).epsilon(0.001));
 
-        std::vector<double> expected_params {1.0/5.0, -5.0};
+        std::vector<double> expected_params {5.0, -5.0};
         std::vector<double> params = f.get_parameters();
         REQUIRE(params == expected_params);
         REQUIRE(f.get_number_of_parameters() == 2);
@@ -1420,7 +1420,7 @@ TEST_CASE("Testing ExponentialDistribution", "[ExponentialDistribution]") {
         REQUIRE(mn >= 0.0);
         REQUIRE(mn == Approx(0.0).epsilon(0.001));
 
-        std::vector<double> expected_params {1.0/5.0};
+        std::vector<double> expected_params {5.0};
         std::vector<double> params = f.get_parameters();
         REQUIRE(params == expected_params);
         REQUIRE(f.get_number_of_parameters() == 1);
