@@ -36,6 +36,13 @@ build_ecoevolity () {
     else
         mkdir -p "$build_dir"
     fi
+
+    # If base_dir is a git repo, make sure git submodules are initialized
+    if git -C "$base_dir" rev-parse --git-dir 1>/dev/null 2>&1
+    then
+        echo "Ensuring git submodules are initialized..."
+        git -C "$base_dir" submodule update --init --recursive
+    fi
     
     # configure make files and build
     cd "$build_dir"
@@ -62,10 +69,6 @@ else
     export ECOEVOLITY_BASE_DIR="$(pwd)"
 fi
 export ECOEVOLITY_BUILD_DIR="${ECOEVOLITY_BASE_DIR}/build"
-
-# make sure submodules are here and up to date
-# git submodule init
-# git submodule update
 
 # process args
 extra_args=""
