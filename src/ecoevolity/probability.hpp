@@ -23,6 +23,7 @@
 #include <iostream>
 #include <sstream>
 #include <cmath>
+#include <memory>
 #include <limits>
 
 #include "error.hpp"
