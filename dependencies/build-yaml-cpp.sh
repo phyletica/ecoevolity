@@ -31,7 +31,7 @@ else
 fi
 
 ecoevolity_base_dir="$(dirname "$dep_dir")"
-yaml_cpp_dir="${ecoevolity_base_dir}/src/external/yaml-cpp-master-ce056ac"
+yaml_cpp_dir="${ecoevolity_base_dir}/src/external/yaml-cpp"
 
 # number of cpus to use during compile
 num_threads=4

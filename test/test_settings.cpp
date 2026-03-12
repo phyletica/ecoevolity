@@ -9914,15 +9914,15 @@ TEST_CASE("Testing time prior parameter errors", "[HyperDistributionSettings]") 
         cfg_stream << "    path: \"diploid-dna.nex\"\n";
         cfg_stream << "operator_settings:\n";
         cfg_stream << "    operators:\n";
-        cfg_stream << "        TimePriorParameterScaler:\n";
+        cfg_stream << "        TimePriorParameterScaler-0:\n";
         cfg_stream << "            parameter_name: shape\n";
         cfg_stream << "            weight: 5.0\n";
         cfg_stream << "            scale: 1.0\n";
-        cfg_stream << "        TimePriorParameterScaler:\n";
+        cfg_stream << "        TimePriorParameterScaler-1:\n";
         cfg_stream << "            parameter_name: scale\n";
         cfg_stream << "            weight: 5.0\n";
         cfg_stream << "            scale: 1.0\n";
-        cfg_stream << "        TimePriorParameterScaler:\n";
+        cfg_stream << "        TimePriorParameterScaler-2:\n";
         cfg_stream << "            parameter_name: offset\n";
         cfg_stream << "            weight: 5.0\n";
         cfg_stream << "            scale: 1.0\n";

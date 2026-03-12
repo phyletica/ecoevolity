@@ -1835,12 +1835,10 @@ class OperatorScheduleSettings {
                     op != operators.end();
                     ++op) {
                 if (keys.count(op->first.as<std::string>()) > 0) {
-                    if (! string_util::startswith(op->first.as<std::string>(), "TimePriorParameter")) {
-                        std::string message = (
-                                "Duplicate operator: " +
-                                op->first.as<std::string>());
-                        throw EcoevolityYamlConfigError(message);
-                    }
+                    std::string message = (
+                            "Duplicate operator: " +
+                            op->first.as<std::string>());
+                    throw EcoevolityYamlConfigError(message);
                 }
                 keys.insert(op->first.as<std::string>());
 
@@ -1925,29 +1923,33 @@ class OperatorScheduleSettings {
                         throw;
                     }
                 }
-                else if (op->first.as<std::string>() == "TimePriorParameterScaler") {
+                else if (string_util::startswith(op->first.as<std::string>(), "TimePriorParameterScaler")) {
                     try {
                         std::shared_ptr<IndexedScaleOperatorSettings> op_settings(new IndexedScaleOperatorSettings());
                         op_settings->update_from_config(op->second);
-                        op_settings->set_operator_name("TimePriorParameterScaler");
+                        op_settings->set_operator_name(op->first.as<std::string>());
                         this->time_prior_operator_settings_[op_settings->get_parameter_name()] = op_settings;
                     }
                     catch (...) {
                         std::cerr << "ERROR: "
-                                  << "Problem parsing TimePriorParameterScaler settings\n";
+                                  << "Problem parsing "
+                                  << op->first.as<std::string>()
+                                  << " settings\n";
                         throw;
                     }
                 }
-                else if (op->first.as<std::string>() == "TimePriorParameterMover") {
+                else if (string_util::startswith(op->first.as<std::string>(), "TimePriorParameterMover")) {
                     try {
                         std::shared_ptr<IndexedWindowOperatorSettings> op_settings(new IndexedWindowOperatorSettings());
                         op_settings->update_from_config(op->second);
-                        op_settings->set_operator_name("TimePriorParameterMover");
+                        op_settings->set_operator_name(op->first.as<std::string>());
                         this->time_prior_operator_settings_[op_settings->get_parameter_name()] = op_settings;
                     }
                     catch (...) {
                         std::cerr << "ERROR: "
-                                  << "Problem parsing TimePriorParameterMover settings\n";
+                                  << "Problem parsing "
+                                  << op->first.as<std::string>()
+                                  << " settings\n";
                         throw;
                     }
                 }
@@ -4066,7 +4068,14 @@ class BaseCollectionSettings {
                     // operator that allows neg values.
                     std::shared_ptr<IndexedScaleOperatorSettings> op_settings(new IndexedScaleOperatorSettings(param_name, 3.0, 0.5));
                     op_settings->set_parameter_index(param_index);
-                    op_settings->set_operator_name("TimePriorParameterScaler");
+                    std::string op_name = "TimePriorParameterScaler";
+                    std::string full_op_name = "TimePriorParameterScaler";
+                    unsigned int op_name_index = 0;
+                    while (this->operator_schedule_settings_.time_prior_operator_settings_.count(full_op_name) > 0) {
+                        full_op_name = op_name + "-" + std::to_string(op_name_index);
+                        ++op_name_index;
+                    }
+                    op_settings->set_operator_name(full_op_name);
                     this->operator_schedule_settings_.time_prior_operator_settings_[param_name] = op_settings;
                 }
             }
