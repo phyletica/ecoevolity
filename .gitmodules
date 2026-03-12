@@ -1,0 +1,3 @@
+[submodule "src/external/ncl"]
+	path = src/external/ncl
+	url = https://github.com/mtholder/ncl.git
