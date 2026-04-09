@@ -171,7 +171,7 @@ void compute_internal_partials(
 
     std::vector<double> merged_pattern_probs = node.get_child(indices_of_children_with_alleles.at(0))->get_top_pattern_probs().get_pattern_prob_matrix();
 
-    for (unsigned int i = 1; i < node.get_number_of_children(); ++i) {
+    for (unsigned int i = 1; i < number_of_children_with_alleles; ++i) {
         std::vector<double> pattern_probs_child1 = merged_pattern_probs;
         unsigned int allele_count_child1 = merged_allele_count;
         unsigned int allele_count_child2 = node.get_child(indices_of_children_with_alleles.at(i))->get_allele_count();

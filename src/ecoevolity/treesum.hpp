@@ -2373,6 +2373,19 @@ class TreeSample {
                 ECOEVOLITY_ASSERT(this->target_tree_.get_number_of_node_heights() == nheights);
             }
         }
+
+        std::pair< std::vector<unsigned int>, std::vector<unsigned int> > get_target_tree_sample_history() const {
+            if (! this->target_tree_provided_) {
+                throw EcoevolityError("Target tree was not provided; cannot return target sample history");
+            }
+            std::vector<unsigned int> source_indices;
+            std::vector<unsigned int> tree_indices;
+            if (this->topologies_map_.count(this->target_topology_) > 0) {
+                source_indices = this->topologies_map_.at(this->target_topology_)->get_source_indices();
+                tree_indices = this->topologies_map_.at(this->target_topology_)->get_tree_indices();
+            }
+            return std::make_pair(source_indices, tree_indices);
+        }
 };
 
 } // treesum

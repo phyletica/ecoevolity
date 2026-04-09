@@ -172,6 +172,13 @@ class EcoevolityContinuousDistributionSettingError: public EcoevolityBaseError {
             EcoevolityBaseError("EcoevolityContinuousDistributionSettingError", message) { }
 };
 
+class EcoevolityHyperDistributionSettingError: public EcoevolityBaseError {
+    public:
+        EcoevolityHyperDistributionSettingError(
+                const std::string & message) :
+            EcoevolityBaseError("EcoevolityHyperDistributionSettingError", message) { }
+};
+
 class EcoevolityPositiveRealParameterSettingError: public EcoevolityBaseError {
     public:
         EcoevolityPositiveRealParameterSettingError(

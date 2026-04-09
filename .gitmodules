@@ -1,0 +1,6 @@
+[submodule "src/external/ncl"]
+	path = src/external/ncl
+	url = https://github.com/mtholder/ncl.git
+[submodule "src/external/yaml-cpp"]
+	path = src/external/yaml-cpp
+	url = https://github.com/jbeder/yaml-cpp.git

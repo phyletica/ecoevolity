@@ -3,7 +3,40 @@ set(CMAKE_BUILD_TYPE Debug)
 
 include_directories("${SOURCE_DIR}" "${YAML_CPP_INCLUDE_DIR}" "${EXTERNAL_PROJECT_DIR}")
 
-file(GLOB ECOEVOLITY_TEST_SOURCES "test_*.cpp")
+if (EXHAUSTIVE_TESTING)
+    MESSAGE(STATUS "EXHAUSTIVE_TESTING: ${EXHAUSTIVE_TESTING}")
+    MESSAGE(STATUS "  Compiling all test_*.cpp unit tests")
+    file(GLOB ECOEVOLITY_TEST_SOURCES "test_*.cpp")
+else()
+    MESSAGE(STATUS "EXHAUSTIVE_TESTING: ${EXHAUSTIVE_TESTING}")
+    MESSAGE(STATUS "  Compiling subset of fast unit tests")
+    set(ECOEVOLITY_TEST_SOURCES
+        "${TEST_DIR}/test_error.cpp"
+        "${TEST_DIR}/test_data.cpp"
+        "${TEST_DIR}/test_general_tree_settings.cpp"
+        "${TEST_DIR}/test_math_util.cpp"
+        "${TEST_DIR}/test_matrix.cpp"
+        # "${TEST_DIR}/test_parameter.cpp"
+        "${TEST_DIR}/test_path.cpp"
+        # "${TEST_DIR}/test_probability.cpp"
+        # "${TEST_DIR}/test_rng.cpp"
+        "${TEST_DIR}/test_settings.cpp"
+        "${TEST_DIR}/test_split.cpp"
+        "${TEST_DIR}/test_spreadsheet.cpp"
+        # "${TEST_DIR}/test_stats_util.cpp"
+        "${TEST_DIR}/test_string_util.cpp"
+        "${TEST_DIR}/test_treecomp.cpp"
+        "${TEST_DIR}/test_tree_io.cpp"
+        "${TEST_DIR}/test_vector2d.cpp"
+        # "${TEST_DIR}/test_wattersons_theta.cpp"
+        "${TEST_DIR}/test_phycoeval_cli.cpp"
+        "${TEST_DIR}/test_sumphycoeval_cli.cpp"
+        "${TEST_DIR}/test_simphycoeval_cli.cpp"
+        "${TEST_DIR}/test_ecoevolity_cli.cpp"
+        "${TEST_DIR}/test_simcoevolity_cli.cpp"
+        "${TEST_DIR}/test_wtheta_cli.cpp"
+        )
+endif()
 
 set(ECOEVOLITY_SOURCES
     "${ECOEVOLITY_SOURCE_DIR}/error.cpp"
@@ -19,6 +52,7 @@ set(ECOEVOLITY_SOURCES
     "${ECOEVOLITY_SOURCE_DIR}/phycoeval.cpp"
     "${ECOEVOLITY_SOURCE_DIR}/simphycoeval.cpp"
     "${ECOEVOLITY_SOURCE_DIR}/sumphycoeval.cpp"
+    "${ECOEVOLITY_SOURCE_DIR}/wtheta.cpp"
     "${ECOEVOLITY_SOURCE_DIR}/data.cpp")
 
 set(TEST_LIBRARIES_TO_LINK ${NCL_LIBRARIES} ${YAML_CPP_LIBRARY})

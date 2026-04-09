@@ -513,6 +513,7 @@ class ContinuousDistributionSettings {
         }
 };
 
+
 class PositiveRealParameterSettings {
 
     template<typename T> friend class BaseComparisonSettings;
@@ -534,6 +535,20 @@ class PositiveRealParameterSettings {
                 const bool allow_singleton_vector = false) {
             bool prior_specified = false;
             bool value_specified = false;
+            if (node.IsScalar()) {
+                try {
+                    this->value_ = node.as<double>();
+                } 
+                catch (...) {
+                    std::cerr << "ERROR: "
+                              << "Problem parsing parameter scalar value\n";
+                    throw;
+                }
+                this->is_fixed_ = true;
+                this->is_vector_ = false;
+                this->use_empirical_value_ = false;
+                return;
+            }
             if (! node.IsMap()) {
                 throw EcoevolityYamlConfigError(
                         "parameter node should be a map, but found: " +
@@ -752,6 +767,9 @@ class PositiveRealParameterSettings {
         bool use_empirical_value() const {
             return this->use_empirical_value_;
         }
+        bool is_vector() const {
+            return this->is_vector_;
+        }
 
         virtual std::string to_string(unsigned int indent_level = 0) const {
             std::ostringstream ss;
@@ -782,9 +800,358 @@ class PositiveRealParameterSettings {
 };
 
 
+class HyperDistributionSettings {
+
+    friend class HyperDistribution;
+    template<typename T> friend class BaseCollectionSettings;
+
+    private:
+        std::string name_ = "none";
+        std::vector<PositiveRealParameterSettings> parameters_;
+        std::vector<std::string> parameter_names_;
+        bool using_transformed_parameters_ = true;
+
+    public:
+        HyperDistributionSettings() { };
+        HyperDistributionSettings(const YAML::Node& node) {
+            if (! node.IsMap()) {
+                throw EcoevolityYamlConfigError(
+                        "2-level distribution node should be a map, but found: " +
+                        YamlCppUtils::get_node_type(node));
+            }
+            if (node.size() != 1) {
+                throw EcoevolityYamlConfigError(
+                        "2-level distribution node should only have a single key");
+            }
+            this->parameters_.clear();
+            this->parameter_names_.clear();
+            // Gamma
+            if (node["gamma_distribution"]) {
+                this->name_ = "gamma_distribution";
+                this->using_transformed_parameters_ = true;
+                bool must_be_fully_fixed = false;
+                YAML::Node parameters = node["gamma_distribution"];
+                if (parameters.size() < 2) {
+                    throw EcoevolityHyperDistributionSettingError(
+                            "At least 2 parameters required for 2-level gamma_distribution"
+                            );
+
+                }
+                else if (parameters.size() > 3) {
+                    throw EcoevolityHyperDistributionSettingError(
+                            "At most 3 parameters allowed for 2-level gamma_distribution"
+                            );
+                }
+                if (parameters["shape"] && parameters["scale"]) {
+                    this->using_transformed_parameters_ = false;
+                    this->parameters_.push_back(PositiveRealParameterSettings(parameters["shape"]));
+                    this->parameter_names_.push_back("shape");
+                    this->parameters_.push_back(PositiveRealParameterSettings(parameters["scale"]));
+                    this->parameter_names_.push_back("scale");
+                }
+                else if (parameters["shape"] && parameters["mean"]) {
+                    must_be_fully_fixed = true;
+                    PositiveRealParameterSettings shape(parameters["shape"]);
+                    PositiveRealParameterSettings mean(parameters["mean"]);
+                    if ( shape.is_fixed() && mean.is_fixed() ) {
+                        this->using_transformed_parameters_ = false;
+                        double scale_val = mean.get_value() / shape.get_value();
+                        std::unordered_map<std::string, double> dummy_prior_params;
+                        PositiveRealParameterSettings scale(
+                                scale_val,
+                                true,  // fixed
+                                "none",
+                                dummy_prior_params);
+                        this->parameters_.push_back(shape);
+                        this->parameter_names_.push_back("shape");
+                        this->parameters_.push_back(scale);
+                        this->parameter_names_.push_back("scale");
+                    }
+                    else {
+                        std::ostringstream msg;
+                        msg << "2-level gamma_distribution does not support specifying shape and mean when estimating the distribution's parameters."
+                            << std::endl
+                            << "When estimating parameters, you must specify mean and standard_deviation OR shape and scale.";
+                        throw EcoevolityPositiveRealParameterSettingError(msg.str());
+                    }
+                }
+                else if (parameters["mean"] && parameters["standard_deviation"]) {
+                    this->using_transformed_parameters_ = true;
+                    this->parameters_.push_back(PositiveRealParameterSettings(parameters["mean"]));
+                    this->parameter_names_.push_back("mean");
+                    this->parameters_.push_back(PositiveRealParameterSettings(parameters["standard_deviation"]));
+                    this->parameter_names_.push_back("standard_deviation");
+                }
+                else {
+                    std::ostringstream msg;
+                    msg << "Invalid parameters specified for 2-level gamma_distribution." << std::endl
+                        << "Valid parameter combinations include (with or without offset):" << std::endl
+                        << "  shape and scale (either or both can be estimated)" << std::endl
+                        << "  shape and mean (neither can be estimated)" << std::endl
+                        << "  mean and standard_deviation (either or both can be estimated)" << std::endl;
+                    throw EcoevolityPositiveRealParameterSettingError(msg.str());
+                }
+                if (parameters.size() > 2) {
+                    if (! parameters["offset"]) {
+                        throw EcoevolityHyperDistributionSettingError(
+                                "Unrecognized 3rd parameter for gamma_distribution (recognized: offset)"
+                                );
+                    }
+                    PositiveRealParameterSettings offset(parameters["offset"]);
+                    if ( must_be_fully_fixed && (! offset.is_fixed()) ) {
+                        std::ostringstream msg;
+                        msg << "2-level gamma_distribution does not support specifying shape and mean when estimating the distribution's parameters."
+                            << std::endl
+                            << "When estimating parameters, you must specify mean and standard_deviation OR shape and scale.";
+                        throw EcoevolityPositiveRealParameterSettingError(msg.str());
+                    }
+                    this->parameters_.push_back(offset);
+                    this->parameter_names_.push_back("offset");
+                }
+            }
+            // Exponential
+            else if (node["exponential_distribution"]) {
+                this->name_ = "exponential_distribution";
+                this->using_transformed_parameters_ = false;
+                YAML::Node parameters = node["exponential_distribution"];
+                if (parameters.size() < 1) {
+                    throw EcoevolityHyperDistributionSettingError(
+                            "At least 1 parameters required for 2-level exponential_distribution"
+                            );
+
+                }
+                else if (parameters.size() > 2) {
+                    throw EcoevolityHyperDistributionSettingError(
+                            "At most 2 parameters allowed for 2-level exponential_distribution"
+                            );
+                }
+                if ( (! parameters["mean"]) && (! parameters["rate"]) ) {
+                    throw EcoevolityHyperDistributionSettingError(
+                            "2-level exponential_distribution requires mean or rate parameter"
+                            );
+                }
+                if (parameters["mean"]) {
+                    if (parameters["rate"]) {
+                        throw EcoevolityHyperDistributionSettingError(
+                                "Cannot specify both mean and rate for exponential_distribution"
+                                );
+                    }
+                    this->using_transformed_parameters_ = true;
+                    this->parameters_.push_back(PositiveRealParameterSettings(parameters["mean"]));
+                    this->parameter_names_.push_back("mean");
+                }
+                if (parameters["rate"]) {
+                    if (parameters["mean"]) {
+                        throw EcoevolityHyperDistributionSettingError(
+                                "Cannot specify both mean and rate for exponential_distribution"
+                                );
+                    }
+                    this->parameters_.push_back(PositiveRealParameterSettings(parameters["rate"]));
+                    this->parameter_names_.push_back("rate");
+                }
+                if (parameters.size() > 1) {
+                    if (! parameters["offset"]) {
+                        throw EcoevolityHyperDistributionSettingError(
+                                "Unrecognized parameter for exponential_distribution (recognized: mean, offset)"
+                                );
+                    }
+                    this->parameters_.push_back(PositiveRealParameterSettings(parameters["offset"]));
+                    this->parameter_names_.push_back("offset");
+                }
+            }
+            // Uniform
+            else if (node["uniform_distribution"]) {
+                this->name_ = "uniform_distribution";
+                this->using_transformed_parameters_ = true;
+                YAML::Node parameters = node["uniform_distribution"];
+                if (parameters.size() != 2) {
+                    throw EcoevolityHyperDistributionSettingError(
+                            "2 parameters required for 2-level uniform_distribution; min and max OR mean and standard_deviation"
+                            );
+
+                }
+                if (! parameters["mean"]) {
+                    this->using_transformed_parameters_ = false;
+                    if ((! parameters["min"]) || (! parameters["max"])) {
+                        throw EcoevolityHyperDistributionSettingError(
+                                "2-level uniform_distribution requires min and max OR mean and standard_deviation"
+                                );
+                    }
+                    this->parameters_.push_back(PositiveRealParameterSettings(parameters["min"]));
+                    this->parameter_names_.push_back("min");
+                    this->parameters_.push_back(PositiveRealParameterSettings(parameters["max"]));
+                    this->parameter_names_.push_back("max");
+
+                    if (this->parameters_.at(1).get_value() <= this->parameters_.at(0).get_value()) {
+                        throw EcoevolityHyperDistributionSettingError(
+                                "The upper limit must be greater than lower limit for UniformDistribution");
+                    }
+                }
+                if (! parameters["min"]) {
+                    if ((! parameters["mean"]) || (! parameters["standard_deviation"])) {
+                        throw EcoevolityHyperDistributionSettingError(
+                                "2-level uniform_distribution requires min and max OR mean and standard_deviation"
+                                );
+                    }
+                    this->parameters_.push_back(PositiveRealParameterSettings(parameters["mean"]));
+                    this->parameter_names_.push_back("mean");
+                    this->parameters_.push_back(PositiveRealParameterSettings(parameters["standard_deviation"]));
+                    this->parameter_names_.push_back("standard_deviation");
+                    double mean = this->parameters_.at(0).get_value();
+                    double std_dev = this->parameters_.at(1).get_value();
+                    double mn = mean - (std_dev * std::sqrt(3));
+                    double mx = mean + (std_dev * std::sqrt(3));
+                    if (mn < 0.0) {
+                        throw EcoevolityHyperDistributionSettingError(
+                                "standard_deviation for uniform_distribution makes the min negative");
+                    }
+                    if (mx <= mn) {
+                        throw EcoevolityHyperDistributionSettingError(
+                                "standard_deviation for uniform_distribution makes the max equal min");
+                    }
+                }
+            }
+            // Beta 
+            else if (node["beta_distribution"]) {
+                this->name_ = "beta_distribution";
+                this->using_transformed_parameters_ = true;
+                YAML::Node parameters = node["beta_distribution"];
+                if (parameters.size() != 2) {
+                    throw EcoevolityHyperDistributionSettingError(
+                            "2 parameters required for 2-level beta_distribution; alpha and beta OR mean and one_over_concentration"
+                            );
+
+                }
+                if (! parameters["mean"]) {
+                    this->using_transformed_parameters_ = false;
+                    if ((! parameters["alpha"]) || (! parameters["beta"])) {
+                        throw EcoevolityHyperDistributionSettingError(
+                                "2-level beta_distribution requires alpha and beta OR mean and one_over_concentration"
+                                );
+                    }
+                    this->parameters_.push_back(PositiveRealParameterSettings(parameters["alpha"]));
+                    this->parameter_names_.push_back("alpha");
+                    this->parameters_.push_back(PositiveRealParameterSettings(parameters["beta"]));
+                    this->parameter_names_.push_back("beta");
+                }
+                if (! parameters["alpha"]) {
+                    if ((! parameters["mean"]) || (! parameters["one_over_concentration"])) {
+                        throw EcoevolityHyperDistributionSettingError(
+                                "2-level beta_distribution requires alpha and beta OR mean and one_over_concentration"
+                                );
+                    }
+                    this->parameters_.push_back(PositiveRealParameterSettings(parameters["mean"]));
+                    this->parameter_names_.push_back("mean");
+                    this->parameters_.push_back(PositiveRealParameterSettings(parameters["one_over_concentration"]));
+                    this->parameter_names_.push_back("one_over_concentration");
+                }
+            }
+            else {
+                std::string message = "unrecognized distribution: " + node.begin()->first.as<std::string>();
+                throw EcoevolityHyperDistributionSettingError(message);
+            }
+
+            for (unsigned int i = 0; i < this->parameters_.size(); ++i) {
+                if (this->parameters_.at(i).use_empirical_value()) {
+                    std::ostringstream msg;
+                    msg << "empirical value not supported 2-level distribution parameters; "
+                        << "found for "
+                        << this->parameter_names_.at(i)
+                        << " parameter";
+                    throw EcoevolityPositiveRealParameterSettingError(msg.str());
+                }
+                if (this->parameters_.at(i).is_vector()) {
+                    std::ostringstream msg;
+                    msg << "Multidimensional values not supported 2-level distribution parameters; "
+                        << "found for "
+                        << this->parameter_names_.at(i)
+                        << " parameter";
+                    throw EcoevolityPositiveRealParameterSettingError(msg.str());
+                }
+            }
+        }
+        virtual ~HyperDistributionSettings() { }
+        HyperDistributionSettings& operator=(const HyperDistributionSettings& other) {
+            this->name_ = other.name_;
+            this->parameters_ = other.parameters_;
+            this->parameter_names_ = other.parameter_names_;
+            this->using_transformed_parameters_ = other.using_transformed_parameters_;
+            return * this;
+        }
+
+        const std::string& get_name() const {
+            return this->name_;
+        }
+
+        bool using_transformed_parameters() const {
+            return this->using_transformed_parameters_;
+        }
+
+        unsigned int get_number_of_parameters() const {
+            ECOEVOLITY_ASSERT(this->parameters_.size() == this->parameter_names_.size());
+            return this->parameters_.size();
+        }
+
+        unsigned int get_parameter_index(const std::string & parameter_name) const {
+            ECOEVOLITY_ASSERT(this->parameters_.size() == this->parameter_names_.size());
+            unsigned int found_index;
+            bool found = false;
+            for (unsigned int i = 0; i < this->parameter_names_.size(); ++i) {
+                if (this->parameter_names_.at(i) == parameter_name) {
+                    found = true;
+                    found_index = i;
+                    break;
+                }
+            }
+            if (! found) {
+                std::ostringstream msg;
+                msg << "Parameter \'"
+                    << parameter_name
+                    << "\' not specified for 2-level distribution \'"
+                    << this->name_
+                    << "\'";
+                throw EcoevolityYamlConfigError(msg.str());
+            }
+            return found_index;
+        }
+
+        void nullify() {
+            this->name_ = "none";
+            this->parameters_.clear();
+            this->parameter_names_.clear();
+            this->using_transformed_parameters_ = false;
+        }
+
+        std::string to_string(unsigned int indent_level = 0) const {
+            if (this->name_ == "none") {
+                return "";
+            }
+            std::ostringstream ss;
+            std::string margin = string_util::get_indent(indent_level);
+            std::string indent = string_util::get_indent(1);
+            ss << margin << this->name_ << ":\n";
+            for (unsigned int i = 0; i < this->parameters_.size(); ++i) {
+                if (this->parameters_.at(i).is_fixed()) {
+                    ss << margin << indent
+                       << this->parameter_names_.at(i)
+                       << ": "
+                       << this->parameters_.at(i).get_value()
+                       << std::endl;
+                }
+                else {
+                    ss << margin << indent << this->parameter_names_.at(i) << ":" << std::endl;
+                    ss << this->parameters_.at(i).to_string(indent_level + 2);
+                }
+            }
+            return ss.str();
+        }
+};
+
+
 class OperatorSettings {
     protected:
         double weight_;
+        std::string operator_name_;
 
     public:
         OperatorSettings() { }
@@ -794,6 +1161,7 @@ class OperatorSettings {
         virtual ~OperatorSettings() { }
         OperatorSettings& operator=(const OperatorSettings& other) {
             this->weight_ = other.weight_;
+            this->operator_name_ = other.operator_name_;
             return * this;
         }
         double get_weight() const {
@@ -801,6 +1169,32 @@ class OperatorSettings {
         }
         void set_weight(double weight) {
             this->weight_ = weight;
+        }
+        void set_operator_name(const std::string & name) {
+            this->operator_name_ = name;
+        }
+        std::string get_operator_name() const {
+            return this->operator_name_;
+        }
+        virtual std::string get_parameter_name() const {
+            throw EcoevolityError(
+                    "Calling get_parameter_name from OperatorSettings class that doesn't implement it");
+        }
+        virtual int get_parameter_index() const {
+            throw EcoevolityError(
+                    "Calling get_parameter_index from OperatorSettings class that doesn't implement it");
+        }
+        virtual void set_parameter_index(int index) {
+            throw EcoevolityError(
+                    "Calling set_parameter_index from OperatorSettings class that doesn't implement it");
+        }
+        virtual double get_scale() const {
+            throw EcoevolityError(
+                    "Calling get_scale from OperatorSettings class that doesn't implement it");
+        }
+        virtual double get_window() const {
+            throw EcoevolityError(
+                    "Calling get_window from OperatorSettings class that doesn't implement it");
         }
         virtual void update_from_config(const YAML::Node& parameters) {
             if (! parameters.IsMap()) {
@@ -842,6 +1236,104 @@ class OperatorSettings {
         }
 };
 
+class IndexedOperatorSettings : public OperatorSettings {
+    protected:
+        int parameter_index_ = -1;
+        std::string parameter_name_;
+
+    public:
+        IndexedOperatorSettings() : OperatorSettings() { }
+        IndexedOperatorSettings(const std::string & parameter_name) : OperatorSettings() {
+            this->parameter_name_ = parameter_name;
+        }
+        IndexedOperatorSettings(const std::string & parameter_name, double weight) : OperatorSettings(weight) {
+            this->parameter_name_ = parameter_name;
+        }
+        virtual ~IndexedOperatorSettings() { }
+        IndexedOperatorSettings& operator=(const IndexedOperatorSettings& other) {
+            this->operator_name_ = other.operator_name_;
+            this->parameter_index_ = other.parameter_index_;
+            this->parameter_name_ = other.parameter_name_;
+            this->weight_ = other.weight_;
+            return * this;
+        }
+
+        int get_parameter_index() const {
+            if (! this->parameter_index_was_set()) {
+                throw EcoevolityError(
+                        "Tried to access unset index of IndexedOperatorSettings"
+                        );
+            }
+            return this->parameter_index_;
+        }
+
+        bool parameter_index_was_set() const {
+            if (this->parameter_index_ < 0) {
+                return false;
+            }
+            return true;
+        }
+
+        void set_parameter_index(int index) {
+            ECOEVOLITY_ASSERT(index >= 0);
+            this->parameter_index_ = index;
+        }
+
+        std::string get_parameter_name() const {
+            return this->parameter_name_;
+        }
+
+        virtual void update_from_config(const YAML::Node& parameters) {
+            if (! parameters.IsMap()) {
+                std::string message = (
+                        "Expecting operator parameters to be a map, but found: " +
+                        YamlCppUtils::get_node_type(parameters));
+                throw EcoevolityYamlConfigError(message);
+            }
+            std::unordered_set<std::string> keys;
+
+            if (! parameters["parameter_name"]) {
+                throw EcoevolityYamlConfigError(
+                    "paramenter_name must be specified for a prior parameter operator"
+                    );
+
+            }
+
+            for (YAML::const_iterator p = parameters.begin();
+                    p != parameters.end();
+                    ++p) {
+                if (keys.count(p->first.as<std::string>()) > 0) {
+                    std::string message = (
+                            "Duplicate key in operator parameters: " +
+                            p->first.as<std::string>());
+                    throw EcoevolityYamlConfigError(message);
+                }
+                keys.insert(p->first.as<std::string>());
+
+                if (p->first.as<std::string>() == "weight") {
+                    this->set_weight(p->second.as<double>());
+                }
+                else if (p->first.as<std::string>() == "parameter_name") {
+                    this->parameter_name_ = p->second.as<std::string>();
+                }
+                else {
+                    std::string message = (
+                            "Unrecognized key in operator parameters: " +
+                            p->first.as<std::string>());
+                    throw EcoevolityYamlConfigError(message);
+                }
+            }
+        }
+
+        virtual std::string to_string(unsigned int indent_level = 0) const {
+            std::ostringstream ss;
+            std::string margin = string_util::get_indent(indent_level);
+            ss << margin << "parameter_name: " << this->parameter_name_ << "\n";
+            ss << margin << "weight: " << this->weight_ << "\n";
+            return ss.str();
+        }
+};
+
 
 class ModelOperatorSettings : public OperatorSettings {
     protected:
@@ -858,6 +1350,7 @@ class ModelOperatorSettings : public OperatorSettings {
         virtual ~ModelOperatorSettings() { }
         ModelOperatorSettings& operator=(const ModelOperatorSettings& other) {
             this->weight_ = other.weight_;
+            this->operator_name_ = other.operator_name_;
             this->number_of_auxiliary_categories_ = other.number_of_auxiliary_categories_;
             return * this;
         }
@@ -924,6 +1417,7 @@ class ScaleOperatorSettings : public OperatorSettings {
         }
         virtual ~ScaleOperatorSettings() { }
         ScaleOperatorSettings& operator=(const ScaleOperatorSettings& other) {
+            this->operator_name_ = other.operator_name_;
             this->weight_ = other.weight_;
             this->scale_ = other.scale_;
             return * this;
@@ -985,6 +1479,91 @@ class ScaleOperatorSettings : public OperatorSettings {
 };
 
 
+class IndexedScaleOperatorSettings : public IndexedOperatorSettings {
+    protected:
+        double scale_;
+
+    public:
+        IndexedScaleOperatorSettings() : IndexedOperatorSettings() { }
+        IndexedScaleOperatorSettings(const std::string & parameter_name) : IndexedOperatorSettings(parameter_name) { }
+        IndexedScaleOperatorSettings(const std::string & parameter_name, double weight) : IndexedOperatorSettings(parameter_name, weight) { }
+        IndexedScaleOperatorSettings(const std::string & parameter_name, double weight, double scale) : IndexedOperatorSettings(parameter_name, weight) {
+            this->scale_ = scale;
+        }
+        virtual ~IndexedScaleOperatorSettings() { }
+
+        IndexedScaleOperatorSettings& operator=(const IndexedScaleOperatorSettings& other) {
+            this->operator_name_ = other.operator_name_;
+            this->parameter_index_ = other.parameter_index_;
+            this->parameter_name_ = other.parameter_name_;
+            this->weight_ = other.weight_;
+            this->scale_ = other.scale_;
+            return * this;
+        }
+
+        double get_scale() const {
+            return this->scale_;
+        }
+        void set_scale(double scale) {
+            this->scale_ = scale;
+        }
+
+        virtual void update_from_config(const YAML::Node& parameters) {
+            if (! parameters.IsMap()) {
+                std::string message = (
+                        "Expecting operator parameters to be a map, but found: " +
+                        YamlCppUtils::get_node_type(parameters));
+                throw EcoevolityYamlConfigError(message);
+            }
+            std::unordered_set<std::string> keys;
+
+            if (! parameters["parameter_name"]) {
+                throw EcoevolityYamlConfigError(
+                    "paramenter_name must be specified for a prior parameter operator"
+                    );
+
+            }
+
+            for (YAML::const_iterator p = parameters.begin();
+                    p != parameters.end();
+                    ++p) {
+                if (keys.count(p->first.as<std::string>()) > 0) {
+                    std::string message = (
+                            "Duplicate key in operator parameters: " +
+                            p->first.as<std::string>());
+                    throw EcoevolityYamlConfigError(message);
+                }
+                keys.insert(p->first.as<std::string>());
+
+                if (p->first.as<std::string>() == "weight") {
+                    this->set_weight(p->second.as<double>());
+                }
+                else if (p->first.as<std::string>() == "scale") {
+                    this->set_scale(p->second.as<double>());
+                }
+                else if (p->first.as<std::string>() == "parameter_name") {
+                    this->parameter_name_ = p->second.as<std::string>();
+                }
+                else {
+                    std::string message = (
+                            "Unrecognized key in operator parameters: " +
+                            p->first.as<std::string>());
+                    throw EcoevolityYamlConfigError(message);
+                }
+            }
+        }
+
+        virtual std::string to_string(unsigned int indent_level = 0) const {
+            std::ostringstream ss;
+            std::string margin = string_util::get_indent(indent_level);
+            ss << margin << "parameter_name: " << this->parameter_name_ << "\n";
+            ss << margin << "weight: " << this->weight_ << "\n";
+            ss << margin << "scale: " << this->scale_ << "\n";
+            return ss.str();
+        }
+};
+
+
 class WindowOperatorSettings : public OperatorSettings {
     protected:
         double window_;
@@ -996,6 +1575,7 @@ class WindowOperatorSettings : public OperatorSettings {
         }
         virtual ~WindowOperatorSettings() { }
         WindowOperatorSettings& operator=(const WindowOperatorSettings& other) {
+            this->operator_name_ = other.operator_name_;
             this->weight_ = other.weight_;
             this->window_ = other.window_;
             return * this;
@@ -1050,6 +1630,91 @@ class WindowOperatorSettings : public OperatorSettings {
 };
 
 
+class IndexedWindowOperatorSettings : public IndexedOperatorSettings {
+    protected:
+        double window_;
+
+    public:
+        IndexedWindowOperatorSettings() : IndexedOperatorSettings() { }
+        IndexedWindowOperatorSettings(const std::string & parameter_name) : IndexedOperatorSettings(parameter_name) { }
+        IndexedWindowOperatorSettings(const std::string & parameter_name, double weight) : IndexedOperatorSettings(parameter_name, weight) { }
+        IndexedWindowOperatorSettings(const std::string & parameter_name, double weight, double window) : IndexedOperatorSettings(parameter_name, weight) {
+            this->window_ = window;
+        }
+        virtual ~IndexedWindowOperatorSettings() { }
+
+        IndexedWindowOperatorSettings& operator=(const IndexedWindowOperatorSettings& other) {
+            this->operator_name_ = other.operator_name_;
+            this->parameter_index_ = other.parameter_index_;
+            this->parameter_name_ = other.parameter_name_;
+            this->weight_ = other.weight_;
+            this->window_ = other.window_;
+            return * this;
+        }
+
+        double get_window() const {
+            return this->window_;
+        }
+        void set_window(double window) {
+            this->window_ = window;
+        }
+
+        virtual void update_from_config(const YAML::Node& parameters) {
+            if (! parameters.IsMap()) {
+                std::string message = (
+                        "Expecting operator parameters to be a map, but found: " +
+                        YamlCppUtils::get_node_type(parameters));
+                throw EcoevolityYamlConfigError(message);
+            }
+            std::unordered_set<std::string> keys;
+
+            if (! parameters["parameter_name"]) {
+                throw EcoevolityYamlConfigError(
+                    "paramenter_name must be specified for a prior parameter operator"
+                    );
+
+            }
+
+            for (YAML::const_iterator p = parameters.begin();
+                    p != parameters.end();
+                    ++p) {
+                if (keys.count(p->first.as<std::string>()) > 0) {
+                    std::string message = (
+                            "Duplicate key in operator parameters: " +
+                            p->first.as<std::string>());
+                    throw EcoevolityYamlConfigError(message);
+                }
+                keys.insert(p->first.as<std::string>());
+
+                if (p->first.as<std::string>() == "weight") {
+                    this->set_weight(p->second.as<double>());
+                }
+                else if (p->first.as<std::string>() == "window") {
+                    this->set_window(p->second.as<double>());
+                }
+                else if (p->first.as<std::string>() == "parameter_name") {
+                    this->parameter_name_ = p->second.as<std::string>();
+                }
+                else {
+                    std::string message = (
+                            "Unrecognized key in operator parameters: " +
+                            p->first.as<std::string>());
+                    throw EcoevolityYamlConfigError(message);
+                }
+            }
+        }
+
+        virtual std::string to_string(unsigned int indent_level = 0) const {
+            std::ostringstream ss;
+            std::string margin = string_util::get_indent(indent_level);
+            ss << margin << "parameter_name: " << this->parameter_name_ << "\n";
+            ss << margin << "weight: " << this->weight_ << "\n";
+            ss << margin << "window: " << this->window_ << "\n";
+            return ss.str();
+        }
+};
+
+
 class OperatorScheduleSettings {
 
     template<typename T1> friend class BaseCollectionSettings;
@@ -1074,6 +1739,7 @@ class OperatorScheduleSettings {
                 0.0, 0.1);
         ScaleOperatorSettings event_time_scaler_settings_ = ScaleOperatorSettings(
                 1.0, 0.1);
+        std::map< std::string, std::shared_ptr<IndexedOperatorSettings> > time_prior_operator_settings_;
 
     public:
         OperatorScheduleSettings() { }
@@ -1089,6 +1755,7 @@ class OperatorScheduleSettings {
             this->time_root_size_mixer_settings_ = other.time_root_size_mixer_settings_;
             this->time_size_rate_scaler_settings_ = other.time_size_rate_scaler_settings_;
             this->event_time_scaler_settings_ = other.event_time_scaler_settings_;
+            this->time_prior_operator_settings_ = other.time_prior_operator_settings_;
             return * this;
         }
 
@@ -1130,6 +1797,19 @@ class OperatorScheduleSettings {
         }
         const ScaleOperatorSettings& get_event_time_scaler_settings() const {
             return this->event_time_scaler_settings_;
+        }
+        const std::map< std::string, std::shared_ptr<IndexedOperatorSettings> > & get_time_prior_operator_settings() const {
+            return this->time_prior_operator_settings_;
+        }
+
+        std::vector< std::shared_ptr<IndexedOperatorSettings> > get_time_prior_operator_settings_vector() const {
+            std::vector< std::shared_ptr<IndexedOperatorSettings> > ops;
+            for (auto it = this->time_prior_operator_settings_.begin();
+                    it != this->time_prior_operator_settings_.end();
+                    ++it) {
+                ops.push_back(it->second);
+            }
+            return ops;
         }
 
         void update_from_config(const YAML::Node& operator_node) {
@@ -1269,6 +1949,36 @@ class OperatorScheduleSettings {
                         throw;
                     }
                 }
+                else if (string_util::startswith(op->first.as<std::string>(), "TimePriorParameterScaler")) {
+                    try {
+                        std::shared_ptr<IndexedScaleOperatorSettings> op_settings(new IndexedScaleOperatorSettings());
+                        op_settings->update_from_config(op->second);
+                        op_settings->set_operator_name(op->first.as<std::string>());
+                        this->time_prior_operator_settings_[op_settings->get_parameter_name()] = op_settings;
+                    }
+                    catch (...) {
+                        std::cerr << "ERROR: "
+                                  << "Problem parsing "
+                                  << op->first.as<std::string>()
+                                  << " settings\n";
+                        throw;
+                    }
+                }
+                else if (string_util::startswith(op->first.as<std::string>(), "TimePriorParameterMover")) {
+                    try {
+                        std::shared_ptr<IndexedWindowOperatorSettings> op_settings(new IndexedWindowOperatorSettings());
+                        op_settings->update_from_config(op->second);
+                        op_settings->set_operator_name(op->first.as<std::string>());
+                        this->time_prior_operator_settings_[op_settings->get_parameter_name()] = op_settings;
+                    }
+                    catch (...) {
+                        std::cerr << "ERROR: "
+                                  << "Problem parsing "
+                                  << op->first.as<std::string>()
+                                  << " settings\n";
+                        throw;
+                    }
+                }
                 else {
                     std::string message = (
                             "Unrecognized operator: " +
@@ -1306,6 +2016,12 @@ class OperatorScheduleSettings {
             ss << this->event_time_scaler_settings_.to_string(indent_level + 3);
             ss << margin << indent << indent << "TimeRootSizeMixer:\n";
             ss << this->time_root_size_mixer_settings_.to_string(indent_level + 3);
+            for (auto it = this->time_prior_operator_settings_.begin();
+                    it != this->time_prior_operator_settings_.end();
+                    ++it) {
+                ss << margin << indent << indent << it->second->get_operator_name() << ":" << std::endl;
+                ss << it->second->to_string(indent_level + 3);
+            }
             return ss.str();
         }
 };
@@ -2723,7 +3439,7 @@ class BaseCollectionSettings {
             this->init_default_priors();
         }
         BaseCollectionSettings(
-                const ContinuousDistributionSettings& time_prior,
+                const HyperDistributionSettings& time_prior,
                 unsigned int chain_length,
                 unsigned int sample_frequency,
                 const PositiveRealParameterSettings& concentration_settings,
@@ -2904,7 +3620,7 @@ class BaseCollectionSettings {
             return true;
         }
 
-        const ContinuousDistributionSettings& get_time_prior_settings() const {
+        const HyperDistributionSettings& get_time_prior_settings() const {
             return this->time_prior_settings_;
         }
 
@@ -3084,7 +3800,7 @@ class BaseCollectionSettings {
 
         OperatorScheduleSettings operator_schedule_settings_;
 
-        ContinuousDistributionSettings time_prior_settings_;
+        HyperDistributionSettings time_prior_settings_;
 
         PositiveRealParameterSettings concentration_settings_;
 
@@ -3094,17 +3810,23 @@ class BaseCollectionSettings {
 
         std::vector<ComparisonSettingsType> comparisons_;
 
-        ContinuousDistributionSettings default_time_prior_;
+        HyperDistributionSettings default_time_prior_;
         ContinuousDistributionSettings default_population_size_prior_;
         ContinuousDistributionSettings default_freq_1_prior_;
         ContinuousDistributionSettings default_mutation_rate_prior_;
 
         void init_default_priors() {
+            this->default_time_prior_ = HyperDistributionSettings();
+            this->default_time_prior_.name_ = "exponential_distribution";
+            this->default_time_prior_.using_transformed_parameters_ = false;
+            this->default_time_prior_.parameter_names_.clear();
+            this->default_time_prior_.parameters_.clear();
+            this->default_time_prior_.parameter_names_.push_back("rate");
+            std::unordered_map<std::string, double> dummy_prior_params;
+            PositiveRealParameterSettings rate(100.0, true, "none", dummy_prior_params);
+            this->default_time_prior_.parameters_.push_back(rate);
+
             std::unordered_map<std::string, double> default_parameters;
-            default_parameters["rate"] = 100.0;
-            this->default_time_prior_ = ContinuousDistributionSettings(
-                    "exponential_distribution",
-                    default_parameters);
             default_parameters.clear();
             default_parameters["rate"] = 1000.0;
             this->default_population_size_prior_ = ContinuousDistributionSettings(
@@ -3282,7 +4004,32 @@ class BaseCollectionSettings {
                 }
             }
 
+            // Make sure time prior parameter operator names match time prior parameters
+            // and set their parameter index
+            for (auto it = this->operator_schedule_settings_.time_prior_operator_settings_.begin();
+                    it != this->operator_schedule_settings_.time_prior_operator_settings_.end();
+                    ++it) {
+                std::string param_name = it->first;
+                bool found = false;
+                for (const auto & name : this->time_prior_settings_.parameter_names_) {
+                    if (param_name == name) {
+                        found = true;
+                        break;
+                    }
+                }
+                if (! found) {
+                    std::ostringstream msg;
+                    msg << "Event time prior parameter operator specified for parameter "
+                        << param_name
+                        << "; no such time prior parameter exists";
+                    throw EcoevolityYamlConfigError(msg.str());
+                }
+                unsigned int param_index = this->time_prior_settings_.get_parameter_index(param_name);
+                it->second->set_parameter_index(param_index);
+            }
+
             // "Turn off" operators that are not needed
+            // and update hyper priors
             this->update_operator_schedule_settings();
             
         }
@@ -3327,6 +4074,46 @@ class BaseCollectionSettings {
                 }
                 if (this->get_number_of_comparisons_with_free_root_population_size() < 1) {
                     this->operator_schedule_settings_.time_root_size_mixer_settings_.set_weight(0.0);
+                }
+            }
+            ECOEVOLITY_ASSERT(this->time_prior_settings_.parameters_.size() == this->time_prior_settings_.parameter_names_.size());
+            for (unsigned int i = 0; i < this->time_prior_settings_.parameters_.size(); ++i) {
+                PositiveRealParameterSettings param = this->time_prior_settings_.parameters_.at(i);
+                std::string param_name = this->time_prior_settings_.parameter_names_.at(i);
+                unsigned int param_index = this->time_prior_settings_.get_parameter_index(param_name);
+                bool param_is_fixed = param.is_fixed();
+                if (param_is_fixed
+                        && (this->operator_schedule_settings_.time_prior_operator_settings_.count(param_name) > 0)
+                        ) {
+                    this->operator_schedule_settings_.time_prior_operator_settings_.at(param_name)->set_weight(0.0);
+                }
+                if ((! param_is_fixed)
+                        && (this->operator_schedule_settings_.time_prior_operator_settings_.count(param_name) < 1)
+                        ) {
+                    // We need an operator for this unfixed time-prior parameter
+                    //
+                    // NOTE: currently all parameters of time priors are
+                    // positive (transformed or not), so we are creating a
+                    // scale operator by default.
+                    // If we ever introduce a distribution that could have a
+                    // negative parameter value (e.g., the mean of a log-normal
+                    // dist), we need to add a check here for
+                    // this->time_prior_settings_.name_ (HyperDistributionSettings.name_)
+                    // this->time_prior_settings_.using_transformed_parameters_ (HyperDistributionSettings.using_transformed_parameters_)
+                    // param_name
+                    // to see if we need to create a window operator or other
+                    // operator that allows neg values.
+                    std::shared_ptr<IndexedScaleOperatorSettings> op_settings(new IndexedScaleOperatorSettings(param_name, 3.0, 0.5));
+                    op_settings->set_parameter_index(param_index);
+                    std::string op_name = "TimePriorParameterScaler";
+                    std::string full_op_name = "TimePriorParameterScaler";
+                    unsigned int op_name_index = 0;
+                    while (this->operator_schedule_settings_.time_prior_operator_settings_.count(full_op_name) > 0) {
+                        full_op_name = op_name + "-" + std::to_string(op_name_index);
+                        ++op_name_index;
+                    }
+                    op_settings->set_operator_name(full_op_name);
+                    this->operator_schedule_settings_.time_prior_operator_settings_[param_name] = op_settings;
                 }
             }
         }
@@ -3456,7 +4243,7 @@ class BaseCollectionSettings {
         }
 
         void parse_time_prior(const YAML::Node& time_prior_node) {
-            this->time_prior_settings_ = ContinuousDistributionSettings(time_prior_node);
+            this->time_prior_settings_ = HyperDistributionSettings(time_prior_node);
         }
 
         void parse_global_comparison_settings(const YAML::Node& global_node) {
@@ -3787,7 +4574,7 @@ class CollectionSettings: public BaseCollectionSettings<ComparisonSettings>{
     public:
         CollectionSettings() : BaseClass() { }
         CollectionSettings(
-                const ContinuousDistributionSettings& time_prior,
+                const HyperDistributionSettings& time_prior,
                 unsigned int chain_length,
                 unsigned int sample_frequency,
                 const PositiveRealParameterSettings& concentration_settings,
@@ -3820,7 +4607,7 @@ class RelativeRootCollectionSettings: public BaseCollectionSettings<RelativeRoot
     public:
         RelativeRootCollectionSettings() : BaseClass() { }
         RelativeRootCollectionSettings(
-                const ContinuousDistributionSettings& time_prior,
+                const HyperDistributionSettings& time_prior,
                 unsigned int chain_length,
                 unsigned int sample_frequency,
                 const PositiveRealParameterSettings& concentration_settings,
@@ -3853,7 +4640,7 @@ class DirichletCollectionSettings: public BaseCollectionSettings<DirichletCompar
     public:
         DirichletCollectionSettings() : BaseClass(true) { }
         DirichletCollectionSettings(
-                const ContinuousDistributionSettings& time_prior,
+                const HyperDistributionSettings& time_prior,
                 unsigned int chain_length,
                 unsigned int sample_frequency,
                 const PositiveRealParameterSettings& concentration_settings,

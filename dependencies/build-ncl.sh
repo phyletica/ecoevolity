@@ -9,6 +9,9 @@ function return_on_exit () {
 }
 trap return_on_exit EXIT
 
+# number of cpus to use during compile
+num_threads=4
+
 # get location of script
 dep_dir="$( cd -P "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 
@@ -17,53 +20,63 @@ base_dir="$(dirname "$dep_dir")"
 echo "Loading modules specified in '../modules-to-load.sh'..."
 source "${base_dir}/modules-to-load.sh" >/dev/null 2>&1 || echo "  No modules loaded"
 
-ncl_build_dir="${dep_dir}/ncl-build"
-install_dir="${ncl_build_dir}/installed"
+ncl_dir="${dep_dir}/ncl-build"
+ncl_repo_dir="${ncl_dir}/ncl"
+ncl_build_dir="${ncl_dir}/build"
+ncl_install_dir="${ncl_dir}/installed"
 
-if [ -d "$ncl_build_dir" ]
+if [ -d "$ncl_dir" ]
 then 
-    echo "ERROR: build directory '$ncl_build_dir' already exists."
+    echo "ERROR: build directory '$ncl_dir' already exists."
     echo "To recompile, please remove this directory and re-run this script."
     exit 1
 else
-    mkdir -p "${ncl_build_dir}/build"
-    mkdir -p "$install_dir"
+    mkdir "$ncl_dir"
+    mkdir "$ncl_build_dir"
+    mkdir "$ncl_install_dir"
 fi
 
-ncl_tar_ball="ncl-2.1.18.tar.gz"
-ncl_tar_ball_path="${ncl_build_dir}/${ncl_tar_ball}"
+ncl_commit="64db8d97"
 
-curl -L -o "$ncl_tar_ball_path" "https://sourceforge.net/projects/ncl/files/NCL/ncl-2.1.18/${ncl_tar_ball}"
-ncl_dir="${ncl_tar_ball_path%.tar.gz}"
-tar -xzf "$ncl_tar_ball_path" -C "$ncl_build_dir"
+(
+    cd "$ncl_dir"
+    git clone git@github.com:mtholder/ncl.git "$ncl_repo_dir"
+    cd "$ncl_repo_dir"
+    git checkout -b project-env "$ncl_commit"
 
-# number of cpus to use during compile
-num_threads=4
- 
-cd "${ncl_build_dir}/build"
-$ncl_dir/configure --prefix="$install_dir"
-make clean
-make -j $num_threads
-make install
+    sh bootstrap.sh
+    cd "$ncl_build_dir"
+    "${ncl_repo_dir}/configure" --prefix="$ncl_install_dir"
+    make clean
+    make -j $num_threads
+    make install
+)
 
 # separate the static libraries
-# mkdir "${install_dir}/lib/static"
-# cp "${install_dir}/lib/ncl/libncl.a" "${install_dir}/lib/static"
+# mkdir "${ncl_install_dir}/lib/static"
+# cp "${ncl_install_dir}/lib/ncl/libncl.a" "${ncl_install_dir}/lib/static"
 
 echo
 echo
 echo NCL headers and binaries are in:
-echo "    $install_dir"
+echo "    $ncl_install_dir"
 # echo
 # echo Static NCL library is located at:
 # echo "    ${install_dir}/lib/static/libncl.a"
 
 env_path="${dep_dir}/env-ncl.sh"
-echo export PATH="${install_dir}/bin:\${PATH}" > "$env_path"
-echo export LD_LIBRARY_PATH="${install_dir}/lib/ncl:\${LD_LIBRARY_PATH}" >> "$env_path"
-echo export PKG_CONFIG_PATH="${install_dir}/lib/pkgconfig:\${PKG_CONFIG_PATH}" >> "$env_path"
-echo export NCL_PREFIX="${install_dir}" >> "$env_path"
+echo export PATH="${ncl_install_dir}/bin:\${PATH}" > "$env_path"
+echo export LD_LIBRARY_PATH="${ncl_install_dir}/lib/ncl:\${LD_LIBRARY_PATH}" >> "$env_path"
+echo export PKG_CONFIG_PATH="${ncl_install_dir}/lib/pkgconfig:\${PKG_CONFIG_PATH}" >> "$env_path"
+echo export NCL_PREFIX="${ncl_install_dir}" >> "$env_path"
 
-rm "$ncl_tar_ball_path"
-rm -r "${ncl_build_dir}/build"
-rm -r "$ncl_dir"
+if [ -n "$ncl_build_dir" ] && [ -d "$ncl_build_dir" ]
+then
+    echo "Cleaning up by removing build directory '$ncl_build_dir'"
+    rm -r "$ncl_build_dir"
+fi
+if [ -n "$ncl_repo_dir" ] && [ -d "$ncl_repo_dir" ]
+then
+    echo "Cleaning up by removing ncl repo '$ncl_repo_dir'"
+    rm -rf "$ncl_repo_dir"
+fi

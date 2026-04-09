@@ -1,8 +1,8 @@
-
 ![logo](https://raw.githubusercontent.com/phyletica/ecoevolity/master/docs/_static/ecoevolity-logo.png)
 
-For documentation, please go to <https://phyletica.github.io/ecoevolity>.
+[![Build release badge](https://github.com/phyletica/ecoevolity/actions/workflows/build-release.yml/badge.svg)](https://github.com/phyletica/ecoevolity/actions/workflows/build-release.yml)
 
+For documentation, please go to <https://phyletica.github.io/ecoevolity>.
 
 Table of Contents
 =================

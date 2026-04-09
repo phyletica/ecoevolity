@@ -1,0 +1,8 @@
+population	wattersons_theta	max_number_of_alleles
+philippinicusSibuyan	0.00175824175824	2
+philippinicusPanay	0.00197802197802	2
+philippinicusNegros	0.0010989010989	2
+philippinicusMindoroELR	0.00197802197802	2
+philippinicusMindoroRMB	0.00131926121372	2
+philippinicusTablas	0.00197802197802	2
+philippinicusLuzonCamarinesNorte	0.00330105633803	2

@@ -80,9 +80,9 @@ class Variable {
             return v1->get_value() < v2->get_value();
         }
 
-        DerivedClass* clone() const {
-            return new DerivedClass(static_cast<DerivedClass const &>(* this));
-        }
+        // DerivedClass* clone() const {
+        //     return new DerivedClass(static_cast<DerivedClass const &>(* this));
+        // }
         
         //Methods
         VariableType get_value() const { return this->value_; }
@@ -198,6 +198,10 @@ class RealParameter: public RealVariable {
             this->is_fixed_ = p.is_fixed_;
             this->prior = p.prior;
             return * this;
+        }
+
+        virtual std::shared_ptr<RealParameter> clone() const {
+            return std::make_shared<RealParameter>(*this);
         }
 
         virtual std::shared_ptr<ContinuousProbabilityDistribution> get_prior() const {
@@ -364,6 +368,10 @@ class PositiveRealParameter: public RealParameter {
             this->prior = p.prior;
             return * this;
         }
+
+        std::shared_ptr<RealParameter> clone() const override{
+            return std::make_shared<RealParameter>(*this);
+        }
 };
 
 class ProportionParameter: public RealParameter {
@@ -471,6 +479,10 @@ class DiscountParameter: public RealParameter {
             return * this;
         }
 
+        std::shared_ptr<RealParameter> clone() const override{
+            return std::make_shared<RealParameter>(*this);
+        }
+
         // override set_value method, because the discount parameter cannot be
         // equal to 1.0
         void set_value(const double& value) {
@@ -505,6 +517,10 @@ class CoalescenceRateParameter: public PositiveRealParameter {
             this->is_fixed_ = p.is_fixed_;
             this->prior = p.prior;
             return * this;
+        }
+
+        std::shared_ptr<RealParameter> clone() const override{
+            return std::make_shared<RealParameter>(*this);
         }
 
         static double get_population_size_from_rate(double coalescence_rate) {
@@ -1185,6 +1201,355 @@ class ProportionParameterVector: public BaseProportionParameterVector<DirichletD
             this->sum_epsilon_ = p.sum_epsilon_;
             this->prior = p.prior;
             return * this;
+        }
+};
+
+
+class HyperDistribution {
+    protected:
+        // Using pointers to enable polymorphism for the base distribution and
+        // parameters controlling the base distribution_
+        std::shared_ptr<ContinuousProbabilityDistribution> distribution_;
+        std::vector< std::shared_ptr<RealParameter> > parameters_;
+        bool using_transformed_parameters_;
+
+        void update_distribution() {
+            std::vector<double> params = this->get_parameter_values();
+            this->distribution_->update_parameters(params, this->using_transformed_parameters_);
+        }
+
+        void initialize_parameters(RandomNumberGenerator & rng) {
+            for (unsigned int i = 0; i < this->parameters_.size(); ++i) {
+                this->parameters_.at(i)->initialize_value(rng);
+            }
+        }
+
+        void init(
+                const std::shared_ptr<ContinuousProbabilityDistribution> distribution,
+                const std::vector< std::shared_ptr<RealParameter> > & parameters,
+                RandomNumberGenerator & rng,
+                const bool using_transformed_parameters = false
+                ) {
+            this->clear();
+            this->distribution_ = distribution;
+            if (parameters.size() != this->distribution_->get_number_of_parameters()) {
+                std::ostringstream msg;
+                msg << "Tried to construct a "
+                    << this->distribution_->get_name()
+                    << " HyperDistribution with "
+                    << parameters.size()
+                    << " parameters; expecting "
+                    << this->distribution_->get_number_of_parameters()
+                    << " parameters." << std::endl;
+                throw EcoevolityProbabilityDistributionError(msg.str());
+            }
+            this->parameters_ = parameters;
+            this->initialize_parameters(rng);
+            this->using_transformed_parameters_ = using_transformed_parameters;
+
+            this->update_distribution();
+        }
+
+    public:
+
+        HyperDistribution() {
+            this->clear();
+        }
+
+        HyperDistribution(
+                const std::shared_ptr<ContinuousProbabilityDistribution> distribution,
+                const std::vector< std::shared_ptr<RealParameter> > & parameters,
+                RandomNumberGenerator & rng,
+                const bool using_transformed_parameters = false
+                ) {
+            this->init(distribution, parameters, rng, using_transformed_parameters);
+        }
+
+        ~HyperDistribution() { }
+
+        // HyperDistribution& operator=(const HyperDistribution& d) {
+        //     this->parameters_.clear();
+        //     this->parameters_.reserve(d.get_number_of_parameters());
+        //     for (unsigned int i = 0; i < d.get_number_of_parameters(); ++i) {
+        //         this->parameters_.push_back(d.get_parameter(i).clone());
+        //     }
+
+        //     this->using_transformed_parameters_ = d.using_transformed_parameters();
+        //     this->distribution_ = d.get_distribution()->clone();
+        //     this->update_distribution();
+        //     return * this;
+        // }
+
+        void clear() {
+            this->distribution_ = nullptr;
+            this->parameters_.clear();
+            this->using_transformed_parameters_ = false;
+        }
+
+        const std::shared_ptr<ContinuousProbabilityDistribution> & get_distribution() const {
+            return this->distribution_;
+        }
+
+        unsigned int get_number_of_parameters() const {
+            return this->parameters_.size();
+        }
+
+        bool using_transformed_parameters() const {
+            return this->using_transformed_parameters_;
+        }
+
+        std::shared_ptr<ContinuousProbabilityDistribution> get_parameter_prior(unsigned int parameter_index) const {
+            ECOEVOLITY_ASSERT(parameter_index < this->parameters_.size());
+            return this->parameters_.at(parameter_index)->get_prior();
+        }
+        void set_parameter_prior(unsigned int parameter_index, std::shared_ptr<ContinuousProbabilityDistribution> prior_ptr) {
+            ECOEVOLITY_ASSERT(parameter_index < this->parameters_.size());
+            this->parameters_.at(parameter_index)->set_prior(prior_ptr);
+        }
+        void check_parameter_prior(unsigned int parameter_index) const {
+            ECOEVOLITY_ASSERT(parameter_index < this->parameters_.size());
+            this->parameters_.at(parameter_index)->check_prior();
+        }
+
+        double get_parameter_value(unsigned int parameter_index) const {
+            ECOEVOLITY_ASSERT(parameter_index < this->parameters_.size());
+            return this->parameters_.at(parameter_index)->get_value();
+        }
+
+        double get_stored_parameter_value(unsigned int parameter_index) const {
+            ECOEVOLITY_ASSERT(parameter_index < this->parameters_.size());
+            return this->parameters_.at(parameter_index)->get_stored_value();
+        }
+
+        const RealParameter & get_parameter(unsigned int parameter_index) const {
+            ECOEVOLITY_ASSERT(parameter_index < this->parameters_.size());
+            return *this->parameters_.at(parameter_index);
+        }
+
+        double get_parameter_max(unsigned int parameter_index) const {
+            ECOEVOLITY_ASSERT(parameter_index < this->parameters_.size());
+            return this->parameters_.at(parameter_index)->get_max();
+        }
+        void set_parameter_max(unsigned int parameter_index, double max) const {
+            ECOEVOLITY_ASSERT(parameter_index < this->parameters_.size());
+            this->parameters_.at(parameter_index)->set_max(max);
+        }
+        double get_parameter_min(unsigned int parameter_index) const {
+            ECOEVOLITY_ASSERT(parameter_index < this->parameters_.size());
+            return this->parameters_.at(parameter_index)->get_min();
+        }
+        void set_parameter_min(unsigned int parameter_index, double min) const {
+            ECOEVOLITY_ASSERT(parameter_index < this->parameters_.size());
+            this->parameters_.at(parameter_index)->set_min(min);
+        }
+
+        void set_parameter_bounds(unsigned int parameter_index, double min, double max) {
+            ECOEVOLITY_ASSERT(parameter_index < this->parameters_.size());
+            this->parameters_.at(parameter_index)->set_bounds(min, max);
+        }
+
+        bool parameter_is_fixed(unsigned int parameter_index) const {
+            ECOEVOLITY_ASSERT(parameter_index < this->parameters_.size());
+            return this->parameters_.at(parameter_index)->is_fixed();
+        }
+
+        void fix_parameter(unsigned int parameter_index) const {
+            ECOEVOLITY_ASSERT(parameter_index < this->parameters_.size());
+            this->parameters_.at(parameter_index)->fix();
+        }
+        void estimate_parameter(unsigned int parameter_index) const {
+            ECOEVOLITY_ASSERT(parameter_index < this->parameters_.size());
+            this->parameters_.at(parameter_index)->estimate();
+        }
+
+        void update_parameter_value(unsigned int parameter_index, double value) {
+            ECOEVOLITY_ASSERT(parameter_index < this->parameters_.size());
+            this->parameters_.at(parameter_index)->update_value(value);
+            this->update_distribution();
+        }
+        void set_parameter_value(unsigned int parameter_index, double value) {
+            ECOEVOLITY_ASSERT(parameter_index < this->parameters_.size());
+            this->parameters_.at(parameter_index)->set_value(value);
+            this->update_distribution();
+        }
+
+        void update_parameter_values(const std::vector<double> & values) {
+            ECOEVOLITY_ASSERT(values.size() == this->parameters_.size());
+            for (unsigned int i = 0; i < values.size(); ++i) {
+                this->parameters_.at(i)->update_value(values.at(i));
+            }
+            this->update_distribution();
+        }
+        void set_parameter_values(const std::vector<double> & values) {
+            ECOEVOLITY_ASSERT(values.size() == this->parameters_.size());
+            for (unsigned int i = 0; i < values.size(); ++i) {
+                this->parameters_.at(i)->set_value(values.at(i));
+            }
+            this->update_distribution();
+        }
+        std::vector<double> get_parameter_values() {
+            std::vector<double> params;
+            params.reserve(this->parameters_.size());
+            for (const auto & p : this->parameters_) {
+                params.push_back(p->get_value());
+            }
+            return params;
+        }
+
+        void store() {
+            for (unsigned int i = 0; i < this->parameters_.size(); ++i) {
+                this->parameters_.at(i)->store();
+            }
+        }
+        void restore() {
+            for (unsigned int i = 0; i < this->parameters_.size(); ++i) {
+                this->parameters_.at(i)->restore();
+            }
+            this->update_distribution();
+        }
+
+        double draw_parameter_from_prior(unsigned int parameter_index, RandomNumberGenerator & rng) {
+            ECOEVOLITY_ASSERT(parameter_index < this->parameters_.size());
+            return this->parameters_.at(parameter_index)->draw_from_prior(rng);
+        }
+
+        void set_parameter_value_from_prior(unsigned int parameter_index, RandomNumberGenerator & rng) {
+            ECOEVOLITY_ASSERT(parameter_index < this->parameters_.size());
+            this->parameters_.at(parameter_index)->set_value_from_prior(rng);
+            this->update_distribution();
+        }
+        void set_parameters_from_priors(RandomNumberGenerator & rng) {
+            for (unsigned int i = 0; i < this->parameters_.size(); ++i) {
+                this->parameters_.at(i)->set_value_from_prior(rng);
+            }
+            this->update_distribution();
+        }
+
+        void update_parameter_value_from_prior(unsigned int parameter_index, RandomNumberGenerator & rng) {
+            ECOEVOLITY_ASSERT(parameter_index < this->parameters_.size());
+            this->parameters_.at(parameter_index)->update_value_from_prior(rng);
+            this->update_distribution();
+        }
+        void update_parameters_from_priors(RandomNumberGenerator & rng) {
+            for (unsigned int i = 0; i < this->parameters_.size(); ++i) {
+                this->parameters_.at(i)->update_value_from_prior(rng);
+            }
+            this->update_distribution();
+        }
+
+        double draw(RandomNumberGenerator & rng) const {
+            return this->distribution_->draw(rng);
+        }
+
+        bool is_within_support(double x) const {
+            return this->distribution_->is_within_support(x);
+        }
+
+        double base_ln_pdf(double value) const {
+            return this->distribution_->ln_pdf(value);
+        }
+        double base_relative_ln_pdf(double value) const {
+            return this->distribution_->relative_ln_pdf(value);
+        }
+        double parameter_prior_ln_pdf(unsigned int parameter_index) const {
+            ECOEVOLITY_ASSERT(parameter_index < this->parameters_.size());
+            return this->parameters_.at(parameter_index)->prior_ln_pdf();
+        }
+        double parameter_prior_ln_pdf() const {
+            double ln_pdf = 0.0;
+            for (const auto & p : this->parameters_) {
+                ln_pdf += p->prior_ln_pdf();
+            }
+            return ln_pdf;
+        }
+        double parameter_relative_prior_ln_pdf(unsigned int parameter_index) const {
+            ECOEVOLITY_ASSERT(parameter_index < this->parameters_.size());
+            return this->parameters_.at(parameter_index)->relative_prior_ln_pdf();
+        }
+        double parameter_relative_prior_ln_pdf() const {
+            double ln_pdf = 0.0;
+            for (const auto & p : this->parameters_) {
+                ln_pdf += p->relative_prior_ln_pdf();
+            }
+            return ln_pdf;
+        }
+
+        double ln_pdf(double value) const {
+            double ln_pdf = 0.0;
+            ln_pdf += this->base_ln_pdf(value);
+            ln_pdf += this->parameter_prior_ln_pdf();
+            return ln_pdf;
+        }
+        double relative_ln_pdf(double value) const {
+            double ln_pdf = 0.0;
+            ln_pdf += this->base_relative_ln_pdf(value);
+            ln_pdf += this->parameter_relative_prior_ln_pdf();
+            return ln_pdf;
+        }
+
+        std::string get_name() const {
+            return "hd-" + this->distribution_->get_name();
+        }
+        std::string to_string() const {
+            return "hd-" + this->distribution_->to_string();
+        }
+
+        HyperDistribution(
+                const HyperDistributionSettings& settings,
+                RandomNumberGenerator& rng) {
+            std::shared_ptr<ContinuousProbabilityDistribution> distribution;
+            if (settings.name_ == "gamma_distribution") {
+                if (settings.parameters_.size() == 2) {
+                    distribution = std::make_shared<GammaDistribution>();
+                }
+                else if (settings.parameters_.size() == 3) {
+                    distribution = std::make_shared<OffsetGammaDistribution>();
+                }
+                else {
+                    throw EcoevolityHyperDistributionSettingError(
+                            "2-level gamma_distribution with unexpected number of parameters"
+                            );
+                }
+            }
+            else if (settings.name_ == "exponential_distribution") {
+                if (settings.parameters_.size() == 1) {
+                    distribution = std::make_shared<ExponentialDistribution>();
+                }
+                else if (settings.parameters_.size() == 2) {
+                    distribution = std::make_shared<OffsetExponentialDistribution>();
+                }
+                else {
+                    throw EcoevolityHyperDistributionSettingError(
+                            "2-level exponential_distribution with unexpected number of parameters"
+                            );
+                }
+            }
+            else if (settings.name_ == "uniform_distribution") {
+                distribution = std::make_shared<UniformDistribution>();
+            }
+            else if (settings.name_ == "beta_distribution") {
+                distribution = std::make_shared<BetaDistribution>();
+            }
+            else {
+                throw EcoevolityHyperDistributionSettingError(
+                        "Unexpected 2-level distribution: " + settings.name_
+                        );
+            }
+            std::vector< std::shared_ptr<RealParameter> > params;
+            for (const auto & param_settings : settings.parameters_) {
+                // Currently, all prior parameters are positive. If we
+                // implement distributions that can have negative parameters
+                // (e.g., the mean of a lognormal distribution), we need to
+                // update logic below store RealParameter pointers
+                params.push_back(
+                        std::make_shared<PositiveRealParameter>(param_settings, rng)
+                        );
+            }
+            this->init(
+                    distribution,
+                    params,
+                    rng,
+                    settings.using_transformed_parameters_);
         }
 };
 

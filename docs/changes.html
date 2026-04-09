@@ -1,17 +1,17 @@
-
 <!DOCTYPE html>
 
-<html>
+<html lang="en" data-content_root="./">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
     <title>Change History &#8212; Ecoevolity 0.1.0 documentation</title>
-    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
-    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
-    <script src="_static/jquery.js"></script>
-    <script src="_static/underscore.js"></script>
-    <script src="_static/doctools.js"></script>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="_static/basic.css?v=b08954a9" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css?v=f237fd5d" />
+    <script src="_static/documentation_options.js?v=01f34227"></script>
+    <script src="_static/doctools.js?v=9bcbadda"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="License" href="license.html" />
@@ -19,17 +19,18 @@
    
   <link rel="stylesheet" href="_static/custom.css" type="text/css" />
   
+
   
-  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+  
 
   </head><body>
   <div class="document">
     
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
         <div class="sphinxsidebarwrapper">
 <p class="logo">
   <a href="index.html">
-    <img class="logo" src="_static/site-logo.svg" alt="Logo"/>
+    <img class="logo" src="_static/site-logo.svg" alt="Logo" />
     
   </a>
 </p>
@@ -55,12 +56,39 @@
 <li class="toctree-l1"><a class="reference internal" href="phycoeval/index.html">Phycoeval</a></li>
 <li class="toctree-l1"><a class="reference internal" href="workshops/index.html">Workshops</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Change History</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#version-1-0-0">Version 1.0.0</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#version-0-3-2">Version 0.3.2</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#version-0-3-1">Version 0.3.1</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#version-0-3-0">Version 0.3.0</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#version-0-2-1">Version 0.2.1</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#version-0-2-0">Version 0.2.0</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#version-1-1-1">Version 1.1.1</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id1">Changes</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#version-1-1-0">Version 1.1.0</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#breaking-changes">Breaking changes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id2">Changes</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#version-1-0-0">Version 1.0.0</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id3">Changes</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#version-0-3-2">Version 0.3.2</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id4">Changes</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#version-0-3-1">Version 0.3.1</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id5">Changes</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#version-0-3-0">Version 0.3.0</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id6">Changes</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#version-0-2-1">Version 0.2.1</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id7">Changes</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#version-0-2-0">Version 0.2.0</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id8">Changes</a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="#version-0-1-0">Version 0.1.0</a></li>
 </ul>
 </li>
@@ -80,16 +108,16 @@
   </ul></li>
 </ul>
 </div>
-<div id="searchbox" style="display: none" role="search">
+<search id="searchbox" style="display: none" role="search">
   <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
       <input type="submit" value="Go" />
     </form>
     </div>
-</div>
-<script>$('#searchbox').show(0);</script>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
 
 
 
@@ -106,12 +134,89 @@
 
           <div class="body" role="main">
             
-  <div class="section" id="change-history">
-<span id="changes"></span><h1>Change History<a class="headerlink" href="#change-history" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="version-1-0-0">
-<h2>Version 1.0.0<a class="headerlink" href="#version-1-0-0" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="id1">
-<h3>Changes<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
+  <section id="change-history">
+<span id="changes"></span><h1>Change History<a class="headerlink" href="#change-history" title="Link to this heading">¶</a></h1>
+<section id="version-1-1-1">
+<h2>Version 1.1.1<a class="headerlink" href="#version-1-1-1" title="Link to this heading">¶</a></h2>
+<section id="id1">
+<h3>Changes<a class="headerlink" href="#id1" title="Link to this heading">¶</a></h3>
+<ul class="simple">
+<li><p>Updating documentation configuration, phycoeval tutorial, and installation
+instructions.</p></li>
+<li><p>Fixing bug introduced in v1.1.0 when allowing sites with no data for some
+leaf populations. When merging site pattern probabilities from the top of
+child branche to the bottom parent branches, we were looping over the
+number of children, rather than the number of children with data, which was
+causing an indexing error. This release fixes this bug.</p></li>
+</ul>
+</section>
+</section>
+<section id="version-1-1-0">
+<h2>Version 1.1.0<a class="headerlink" href="#version-1-1-0" title="Link to this heading">¶</a></h2>
+<section id="breaking-changes">
+<h3>Breaking changes<a class="headerlink" href="#breaking-changes" title="Link to this heading">¶</a></h3>
+<ul>
+<li><p>Implementing smarter handling of missing data.</p>
+<p>Previously, even if only one leaf population was missing data for a
+character, we threw out the whole character (mirroring the behavior of
+beast/SNAPP).  However such a character can be informative about the pop
+sizes and relationships of other populations.</p>
+<p>Now, such a missing character is essentially ignored only for the clade(s)
+from which it is missing.</p>
+<p>This will be needed for introducing migration (phylo networks), where
+parent nodes of reticulating nodes can recceive no allele copies (going
+back in time) from the daughter. So, we need to account for the probability
+of a node having no allele copies.</p>
+<p>Results of analyses using previous versions that relied on the
+<code class="docutils literal notranslate"><span class="pre">--relax-missing-sites</span></code> flag will differ from Version 1.1.0 onward.
+In previous versions, this option enabled sites with missing data from one
+or more tip populations to be completely ignored.
+Now, such sites (unless data are missing from ALL tip populations), will be
+used and influence the results.</p>
+</li>
+</ul>
+</section>
+<section id="id2">
+<h3>Changes<a class="headerlink" href="#id2" title="Link to this heading">¶</a></h3>
+<ul>
+<li><p>Updating test suite behavior to avoid running slow tests by default.</p></li>
+<li><p>Updating dev tools. Updating build scripts for dependencies and adding test
+scripts that are more HPC friendly.</p></li>
+<li><p>Adding cladogram ouptut option to <code class="docutils literal notranslate"><span class="pre">sumphycoeval</span></code>. This makes it easier to
+see shared/multifurcating divergences.</p></li>
+<li><p>Adding tests to confirm that loci (even individual sites) can be disjoint
+in an alignment.
+This should be true, because each site is independent and only ends up
+being a count of total and “red” alleles (i.e., the sequence labels are
+ignored).
+For example, the following two alignments are represented identically as
+biallelic data by ecoevolity (where “pop-1” and “pop-2” are the population
+labels):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>individual-1-locus-1_pop-1  ATT???
+individual-2-locus-1_pop-1  ATT???
+individual-1-locus-1_pop-2  TTT???
+individual-2-locus-1_pop-2  ATA???
+individual-1-locus-2_pop-1  ???GGC
+individual-2-locus-2_pop-1  ???GGC
+individual-1-locus-2_pop-2  ???GGA
+individual-2-locus-2_pop-2  ???TGC
+</pre></div>
+</div>
+<p>and:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">individual</span><span class="o">-</span><span class="mi">1</span><span class="n">_pop</span><span class="o">-</span><span class="mi">1</span>  <span class="n">ATTGGC</span>
+<span class="n">individual</span><span class="o">-</span><span class="mi">2</span><span class="n">_pop</span><span class="o">-</span><span class="mi">1</span>  <span class="n">ATTGGC</span>
+<span class="n">individual</span><span class="o">-</span><span class="mi">1</span><span class="n">_pop</span><span class="o">-</span><span class="mi">2</span>  <span class="n">TTTGGA</span>
+<span class="n">individual</span><span class="o">-</span><span class="mi">2</span><span class="n">_pop</span><span class="o">-</span><span class="mi">2</span>  <span class="n">ATATGC</span>
+</pre></div>
+</div>
+</li>
+</ul>
+</section>
+</section>
+<section id="version-1-0-0">
+<h2>Version 1.0.0<a class="headerlink" href="#version-1-0-0" title="Link to this heading">¶</a></h2>
+<section id="id3">
+<h3>Changes<a class="headerlink" href="#id3" title="Link to this heading">¶</a></h3>
 <ul class="simple">
 <li><p>Adding <code class="docutils literal notranslate"><span class="pre">phycoeval</span></code>, <code class="docutils literal notranslate"><span class="pre">sumphycoeval</span></code>, and <code class="docutils literal notranslate"><span class="pre">simphycoeval</span></code> tools and
 associated code and tests. These tools implement fully phylogenetic models
@@ -123,36 +228,36 @@ for <code class="docutils literal notranslate"><span class="pre">ecoevolity</spa
 <li><p>Updating <code class="docutils literal notranslate"><span class="pre">nex2yml</span></code> tool to take both <code class="docutils literal notranslate"><span class="pre">ecoevolity</span></code> and <code class="docutils literal notranslate"><span class="pre">phycoeval</span></code>
 config files.</p></li>
 </ul>
-</div>
-</div>
-<div class="section" id="version-0-3-2">
-<h2>Version 0.3.2<a class="headerlink" href="#version-0-3-2" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="id2">
-<h3>Changes<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h3>
+</section>
+</section>
+<section id="version-0-3-2">
+<h2>Version 0.3.2<a class="headerlink" href="#version-0-3-2" title="Link to this heading">¶</a></h2>
+<section id="id4">
+<h3>Changes<a class="headerlink" href="#id4" title="Link to this heading">¶</a></h3>
 <ul class="simple">
 <li><p>Fixing bug related to NAN likelihoods. Under extreme combinations of
 parameters, NAN likelihoods were being logged, and no error or warning
 occurred. This release fixes that issue. Any analyses prior to this release
 that did not report NAN likelihoods were not affected by this bug.</p></li>
 </ul>
-</div>
-</div>
-<div class="section" id="version-0-3-1">
-<h2>Version 0.3.1<a class="headerlink" href="#version-0-3-1" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="id3">
-<h3>Changes<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h3>
+</section>
+</section>
+<section id="version-0-3-1">
+<h2>Version 0.3.1<a class="headerlink" href="#version-0-3-1" title="Link to this heading">¶</a></h2>
+<section id="id5">
+<h3>Changes<a class="headerlink" href="#id5" title="Link to this heading">¶</a></h3>
 <ul class="simple">
 <li><p>Fixing bug in simcoevolity that prevented the ‘–charsets’ and
 ‘–max-one-variable-site-per-locus’ options from being used together.
 There was a sanity check from before the ‘–charsets’ option existed that
 needed to be skipped when the ‘–charsets’ option was used.</p></li>
 </ul>
-</div>
-</div>
-<div class="section" id="version-0-3-0">
-<h2>Version 0.3.0<a class="headerlink" href="#version-0-3-0" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="id4">
-<h3>Changes<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h3>
+</section>
+</section>
+<section id="version-0-3-0">
+<h2>Version 0.3.0<a class="headerlink" href="#version-0-3-0" title="Link to this heading">¶</a></h2>
+<section id="id6">
+<h3>Changes<a class="headerlink" href="#id6" title="Link to this heading">¶</a></h3>
 <ul class="simple">
 <li><p>Adding new simulation option to simcoevolity. This new option allows
 simulating multi-locus datasets (each locus comprised of multiple linked
@@ -160,24 +265,24 @@ sites) that matches the locus lengths and missing data patterns of the
 empirical dataset. The information to simulate such datasets is provided in
 a nexus ‘sets’ block that delineates the locus boundaries with ‘charsets’.</p></li>
 </ul>
-</div>
-</div>
-<div class="section" id="version-0-2-1">
-<h2>Version 0.2.1<a class="headerlink" href="#version-0-2-1" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="id5">
-<h3>Changes<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h3>
+</section>
+</section>
+<section id="version-0-2-1">
+<h2>Version 0.2.1<a class="headerlink" href="#version-0-2-1" title="Link to this heading">¶</a></h2>
+<section id="id7">
+<h3>Changes<a class="headerlink" href="#id7" title="Link to this heading">¶</a></h3>
 <ul class="simple">
 <li><p>Adding default constructor for MatrixExponentiator to appease Clang.  This
 change does not affect behavior; it simply allows older versions of Clang
 to compile the code.</p></li>
 <li><p>Adding more documentation.</p></li>
 </ul>
-</div>
-</div>
-<div class="section" id="version-0-2-0">
-<h2>Version 0.2.0<a class="headerlink" href="#version-0-2-0" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="id6">
-<h3>Changes<a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h3>
+</section>
+</section>
+<section id="version-0-2-0">
+<h2>Version 0.2.0<a class="headerlink" href="#version-0-2-0" title="Link to this heading">¶</a></h2>
+<section id="id8">
+<h3>Changes<a class="headerlink" href="#id8" title="Link to this heading">¶</a></h3>
 <ul class="simple">
 <li><p>Allowing the MCMC operator ‘TimeRootSizeMixer’ to be specified as a
 ‘global’ operator (rather than only tree-specific), and making this the
@@ -186,15 +291,15 @@ tree (population pair) to have it’s own ‘TimeRootSizeMixer’ operator.
 Having ‘TimeRootSizeMixer’ as a global operator should improve mixing when
 pairs share divergence times.</p></li>
 </ul>
-</div>
-</div>
-<div class="section" id="version-0-1-0">
-<h2>Version 0.1.0<a class="headerlink" href="#version-0-1-0" title="Permalink to this headline">¶</a></h2>
+</section>
+</section>
+<section id="version-0-1-0">
+<h2>Version 0.1.0<a class="headerlink" href="#version-0-1-0" title="Link to this heading">¶</a></h2>
 <ul class="simple">
 <li><p>Initial release.</p></li>
 </ul>
-</div>
-</div>
+</section>
+</section>
 
 
           </div>

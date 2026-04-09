@@ -1,3 +1,104 @@
+Next Release
+============
+
+Changes
+-------
+
+-   Adding ``wtheta`` command line tool for getting Watterson's theta estimates
+    for all populations specified in a config file for ``phycoeval`` or
+    ``ecoevolity``.
+
+
+Version 1.1.2
+=============
+
+Changes
+-------
+-   Adding ``--target-tree-sample-history-out`` option to ``sumphycoeval`` to
+    write out the MCMC sampling history of the specified target tree..
+
+
+Version 1.1.1
+=============
+
+Changes
+-------
+
+-   Updating documentation configuration, phycoeval tutorial, and installation
+    instructions.
+
+-   Fixing bug introduced in v1.1.0 when allowing sites with no data for some
+    leaf populations. When merging site pattern probabilities from the top of
+    child branche to the bottom parent branches, we were looping over the
+    number of children, rather than the number of children with data, which was
+    causing an indexing error. This release fixes this bug.
+
+
+Version 1.1.0
+=============
+
+Breaking changes
+----------------
+
+-   Implementing smarter handling of missing data.
+
+    Previously, even if only one leaf population was missing data for a
+    character, we threw out the whole character (mirroring the behavior of
+    beast/SNAPP).  However such a character can be informative about the pop
+    sizes and relationships of other populations.
+
+    Now, such a missing character is essentially ignored only for the clade(s)
+    from which it is missing.
+
+    This will be needed for introducing migration (phylo networks), where
+    parent nodes of reticulating nodes can recceive no allele copies (going
+    back in time) from the daughter. So, we need to account for the probability
+    of a node having no allele copies.
+
+    Results of analyses using previous versions that relied on the
+    ``--relax-missing-sites`` flag will differ from Version 1.1.0 onward.
+    In previous versions, this option enabled sites with missing data from one
+    or more tip populations to be completely ignored.
+    Now, such sites (unless data are missing from ALL tip populations), will be
+    used and influence the results.
+
+Changes
+-------
+
+-   Updating test suite behavior to avoid running slow tests by default.
+
+-   Updating dev tools. Updating build scripts for dependencies and adding test
+    scripts that are more HPC friendly.
+
+-   Adding cladogram ouptut option to ``sumphycoeval``. This makes it easier to
+    see shared/multifurcating divergences.
+
+-   Adding tests to confirm that loci (even individual sites) can be disjoint
+    in an alignment.
+    This should be true, because each site is independent and only ends up
+    being a count of total and "red" alleles (i.e., the sequence labels are
+    ignored).
+    For example, the following two alignments are represented identically as
+    biallelic data by ecoevolity (where "pop-1" and "pop-2" are the population
+    labels)::
+
+        individual-1-locus-1_pop-1  ATT???
+        individual-2-locus-1_pop-1  ATT???
+        individual-1-locus-1_pop-2  TTT???
+        individual-2-locus-1_pop-2  ATA???
+        individual-1-locus-2_pop-1  ???GGC
+        individual-2-locus-2_pop-1  ???GGC
+        individual-1-locus-2_pop-2  ???GGA
+        individual-2-locus-2_pop-2  ???TGC
+
+    and::
+
+        individual-1_pop-1  ATTGGC
+        individual-2_pop-1  ATTGGC
+        individual-1_pop-2  TTTGGA
+        individual-2_pop-2  ATATGC
+
+
 Version 1.0.0
 =============
 

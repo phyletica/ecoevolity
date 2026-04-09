@@ -1,17 +1,17 @@
-
 <!DOCTYPE html>
 
-<html>
+<html lang="en" data-content_root="../../">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
     <title>Gecko Divergences &#8212; Ecoevolity 0.1.0 documentation</title>
-    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
-    <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
-    <script src="../../_static/jquery.js"></script>
-    <script src="../../_static/underscore.js"></script>
-    <script src="../../_static/doctools.js"></script>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../../_static/basic.css?v=b08954a9" />
+    <link rel="stylesheet" type="text/css" href="../../_static/alabaster.css?v=f237fd5d" />
+    <script src="../../_static/documentation_options.js?v=01f34227"></script>
+    <script src="../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
     <link rel="next" title="" href="../../phycoeval/index.html" />
@@ -19,17 +19,18 @@
    
   <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
   
+
   
-  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+  
 
   </head><body>
   <div class="document">
     
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
         <div class="sphinxsidebarwrapper">
 <p class="logo">
   <a href="../../index.html">
-    <img class="logo" src="../../_static/site-logo.svg" alt="Logo"/>
+    <img class="logo" src="../../_static/site-logo.svg" alt="Logo" />
     
   </a>
 </p>
@@ -55,7 +56,10 @@
 <li class="toctree-l2"><a class="reference internal" href="../background.html">Background</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../biallelic-character-data.html">The Data</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../yaml-config.html">The Configuration File</a></li>
-<li class="toctree-l2 current"><a class="reference internal" href="index.html">Tutorials</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="index.html">Tutorials</a><ul class="current">
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Gecko Divergences</a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../phycoeval/index.html">Phycoeval</a></li>
@@ -81,16 +85,16 @@
   </ul></li>
 </ul>
 </div>
-<div id="searchbox" style="display: none" role="search">
+<search id="searchbox" style="display: none" role="search">
   <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="../../search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
       <input type="submit" value="Go" />
     </form>
     </div>
-</div>
-<script>$('#searchbox').show(0);</script>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
 
 
 
@@ -107,28 +111,28 @@
 
           <div class="body" role="main">
             
-  <p><a class="reference external" href="index.html"><img alt="Ecoevolity" src="../../_images/ecoevolity-logo.svg" width="95%" /></a></p>
-<div class="section" id="gecko-divergences">
-<span id="gecko-div-tutorial"></span><h1>Gecko Divergences<a class="headerlink" href="#gecko-divergences" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="objective">
-<h2>Objective<a class="headerlink" href="#objective" title="Permalink to this headline">¶</a></h2>
+  <p><a class="reference external" href="index.html"><img alt="Ecoevolity" src="../../_images/ecoevolity-logo.svg" style="width: 95%;" /></a></p>
+<section id="gecko-divergences">
+<span id="gecko-div-tutorial"></span><h1>Gecko Divergences<a class="headerlink" href="#gecko-divergences" title="Link to this heading">¶</a></h1>
+<section id="objective">
+<h2>Objective<a class="headerlink" href="#objective" title="Link to this heading">¶</a></h2>
 <p>Our goal is to learn how to set up, run, and interpret an ecoevolity analysis in
 order to test models of shared divergence times among taxa.</p>
-</div>
-<div class="section" id="background-information">
-<h2>Background Information<a class="headerlink" href="#background-information" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="background-information">
+<h2>Background Information<a class="headerlink" href="#background-information" title="Link to this heading">¶</a></h2>
 <p>Biogeographers are often interested in understanding how environmental changes
 affect the evolution of whole communities of species.
 Processes that operate on the scale of communities often predict population
 divergences and/or demographic changes that are temporally clustered across
 taxa.
 Ecoevolity provides a tool for testing such predictions using Bayesian model choice
-<a class="bibtex reference internal" href="../../zbib/references.html#oaks2018ecoevolity" id="id1">[14]</a>.</p>
+<span id="id1">[<a class="reference internal" href="../../zbib/references.html#id49" title="Jamie R. Oaks. Full Bayesian comparative phylogeography from genomic data. Systematic Biology, 68(3):371–395, 05 2019. URL: https://doi.org/10.1093/sysbio/syy063, doi:10.1093/sysbio/syy063.">14</a>]</span>.</p>
 <p>For more detailed background information about the method implemented in ecoevolity,
 please <a class="reference internal" href="../background.html#background"><span class="std std-ref">see here</span></a>.</p>
-</div>
-<div class="section" id="software-used-in-this-activity">
-<h2>Software Used in this Activity<a class="headerlink" href="#software-used-in-this-activity" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="software-used-in-this-activity">
+<h2>Software Used in this Activity<a class="headerlink" href="#software-used-in-this-activity" title="Link to this heading">¶</a></h2>
 <p>For this activity, we will be using ecoevolity and pycoevolity.
 If you haven’t already done so, please follow the
 <a class="reference internal" href="../../installation.html#installation"><span class="std std-ref">instructions for installing these packages</span></a>.
@@ -138,9 +142,9 @@ for this tutorial.</p>
 <a class="reference external" href="https://github.com/beast-dev/tracer/releases">Tracer</a> (<a class="reference external" href="https://github.com/beast-dev/tracer/releases">https://github.com/beast-dev/tracer/releases</a>);
 it’s a nice tool for visualizing the mixing and convergence behavior of Markov
 chain Monte Carlo (MCMC) analyses.</p>
-</div>
-<div class="section" id="the-data">
-<h2>The Data<a class="headerlink" href="#the-data" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="the-data">
+<h2>The Data<a class="headerlink" href="#the-data" title="Link to this heading">¶</a></h2>
 <p>We will be analyzing “RADseq” data from three pairs of gecko populations from
 the Philippine Islands.
 Each pair of populations inhabit two oceanic islands in the Philippines:</p>
@@ -149,7 +153,7 @@ Each pair of populations inhabit two oceanic islands in the Philippines:</p>
 <li><p>Maestre De Campo and Masbate</p></li>
 <li><p>Dalupiri and Camiguin Norte</p></li>
 </ol>
-<p>Based on previous data <a class="bibtex reference internal" href="../../zbib/references.html#siler2012" id="id2">[24]</a><a class="bibtex reference internal" href="../../zbib/references.html#siler2014kikuchii" id="id3">[23]</a>,
+<p>Based on previous data <span id="id2">[<a class="reference internal" href="../../zbib/references.html#id60" title="Cameron D. Siler, Jamie R. Oaks, Kerry Cobb, Ota Hidetoshi, and Rafe M. Brown. Critically endangered island endemic or peripheral population of a widespread species? conservation genetics of Kikuchi's gecko and the global challenge of protecting peripheral oceanic island endemic vertebrates. Diversity and Distributions, 20:756–772, 07 2014. doi:10.1111/ddi.12169.">23</a>, <a class="reference internal" href="../../zbib/references.html#id65" title="Cameron D. Siler, Jamie R. Oaks, Luke J. Welton, Charles W. Linkem, John Swab, Arvin C. Diesmos, and Rafe M. Brown. Did geckos ride the Palawan raft to the Philippines? Journal of Biogeography, 39:1217–1234, 07 2012. doi:10.1111/j.1365-2699.2011.02680.x.">24</a>]</span>,
 each of these pairs diverged very recently.
 However, because these islands were never connected, each pair’s distribution
 across both islands must have been due to over-water dispersal.
@@ -157,7 +161,7 @@ Such rare dispersal events were likely idiosyncratic to each pair of island
 populations, and thus we do <em>not</em> expect any of these pairs co-diverged.
 For each pair of populations, the data comprise 200 RADseq loci randomly
 sub-sampled from the loci analyzed by
-Oaks <a class="bibtex reference internal" href="../../zbib/references.html#oaks2018ecoevolity" id="id4">[14]</a>.</p>
+Oaks <span id="id3">[<a class="reference internal" href="../../zbib/references.html#id49" title="Jamie R. Oaks. Full Bayesian comparative phylogeography from genomic data. Systematic Biology, 68(3):371–395, 05 2019. URL: https://doi.org/10.1093/sysbio/syy063, doi:10.1093/sysbio/syy063.">14</a>]</span>.</p>
 <p>If you have not already done so, please download the data.
 If you have <a class="reference external" href="http://git-scm.com/">Git</a> installed, and you are in your command-line console,
 you can get the data via:</p>
@@ -207,8 +211,8 @@ However, you can view and edit the input and output files on your computer
 nexus-formatted RADseq data for each of our three pairs of gecko populations.
 For detailed information about how to format nexus files for ecoevolity,
 <a class="reference internal" href="../biallelic-character-data.html#data"><span class="std std-ref">click here</span></a>.</p>
-<div class="section" id="biallelic-characters">
-<h3>Biallelic characters<a class="headerlink" href="#biallelic-characters" title="Permalink to this headline">¶</a></h3>
+<section id="biallelic-characters">
+<h3>Biallelic characters<a class="headerlink" href="#biallelic-characters" title="Link to this heading">¶</a></h3>
 <p>Ecoevolity assumes all of your characters have at most two states (biallelic).
 If we provide ecoevolity with nucleotide data, it will automatically recode the data
 as biallelic by considering the first character it finds in each column as
@@ -221,12 +225,12 @@ For characters (columns) with more than two states, you have two options:</p>
 <li><p>recode them as biallelic.</p></li>
 </ol>
 <p>Ecoevolity will do the latter for you (more on this in a bit).</p>
-</div>
-<div class="section" id="linked-characters">
-<h3>Linked characters<a class="headerlink" href="#linked-characters" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="linked-characters">
+<h3>Linked characters<a class="headerlink" href="#linked-characters" title="Link to this heading">¶</a></h3>
 <p>Ecoevolity also assumes all your characters are unlinked.
 Based on simulations of data sets comprising loci with 100, 500, and 1000
-linked characters <a class="bibtex reference internal" href="../../zbib/references.html#oaks2018ecoevolity" id="id5">[14]</a>, we strongly recommend that you
+linked characters <span id="id4">[<a class="reference internal" href="../../zbib/references.html#id49" title="Jamie R. Oaks. Full Bayesian comparative phylogeography from genomic data. Systematic Biology, 68(3):371–395, 05 2019. URL: https://doi.org/10.1093/sysbio/syy063, doi:10.1093/sysbio/syy063.">14</a>]</span>, we strongly recommend that you
 analyze all of your characters (including the constant ones) and violate the
 assumption of unlinked characters.
 In short, Ecoevolity performs better when you use all of the sites (especially the
@@ -234,9 +238,9 @@ constant ones) compared to reducing the data to only one variable character per
 locus.
 The example data sets we’ll be analyzing consist of 200 loci each comprising
 about 90 linked sites.</p>
-</div>
-<div class="section" id="orthology">
-<h3>Orthology<a class="headerlink" href="#orthology" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="orthology">
+<h3>Orthology<a class="headerlink" href="#orthology" title="Link to this heading">¶</a></h3>
 <p>Within each pair, ecoevolity assumes each column represents an orthologous character
 across your samples from both populations.
 However, the characters do not need to be orthologous among your different
@@ -246,12 +250,12 @@ populations.
 Thus, if you are assembling your loci from raw sequence reads, it might be
 worth assembling each population pair separately to maximize the number of loci
 you get for each pair.</p>
-</div>
-</div>
-<div class="section" id="running-eco">
-<h2>Running ecoevolity<a class="headerlink" href="#running-eco" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="setting-up-the-configuration-file">
-<h3>Setting up the configuration file<a class="headerlink" href="#setting-up-the-configuration-file" title="Permalink to this headline">¶</a></h3>
+</section>
+</section>
+<section id="running-eco">
+<h2>Running ecoevolity<a class="headerlink" href="#running-eco" title="Link to this heading">¶</a></h2>
+<section id="setting-up-the-configuration-file">
+<h3>Setting up the configuration file<a class="headerlink" href="#setting-up-the-configuration-file" title="Link to this heading">¶</a></h3>
 <p>Once we have our nexus files ready, the next step in an ecoevolity analysis is
 setting up the configuration file.
 Ecoevolity requires a <a class="reference external" href="http://yaml.org/">YAML</a>-formatted configuration file.
@@ -268,8 +272,8 @@ ecoevolity config file,
 <a class="reference internal" href="../yaml-config.html#configfile"><span class="std std-ref">click here</span></a>.
 For the purposes of this tutorial, we’ll edit a few elements of the example
 configuration file we downloaded.</p>
-<div class="section" id="choosing-a-prior-on-the-divergence-models">
-<h4>Choosing a prior on the divergence models<a class="headerlink" href="#choosing-a-prior-on-the-divergence-models" title="Permalink to this headline">¶</a></h4>
+<section id="choosing-a-prior-on-the-divergence-models">
+<h4>Choosing a prior on the divergence models<a class="headerlink" href="#choosing-a-prior-on-the-divergence-models" title="Link to this heading">¶</a></h4>
 <p>Open the <code class="docutils literal notranslate"><span class="pre">ecoevolity-config.yml</span></code> file in the example data directory
 using a plain text editor.
 Near the top, you will see a section that looks like:</p>
@@ -447,9 +451,9 @@ Use <code class="docutils literal notranslate"><span class="pre">dpprobs</span><
 concentration parameter, so you can assess how sensitive the results
 are to your prior assumptions.</p>
 </div>
-</div>
-<div class="section" id="choosing-a-prior-on-divergence-times">
-<h4>Choosing a prior on divergence times<a class="headerlink" href="#choosing-a-prior-on-divergence-times" title="Permalink to this headline">¶</a></h4>
+</section>
+<section id="choosing-a-prior-on-divergence-times">
+<h4>Choosing a prior on divergence times<a class="headerlink" href="#choosing-a-prior-on-divergence-times" title="Link to this heading">¶</a></h4>
 <p>Next, let’s change the prior on the divergence times.
 Currently, the config file specifies an exponential distribution with a rate of
 10:</p>
@@ -520,14 +524,14 @@ results are to your prior assumptions.
 The prior on the divergence times can have a large affect on the marginal
 likelihoods of the divergence models, and thus the model posterior
 probabilities
-<a class="bibtex reference internal" href="../../zbib/references.html#oaks2012" id="id6">[19]</a><a class="bibtex reference internal" href="../../zbib/references.html#oaks2014reply" id="id7">[17]</a><a class="bibtex reference internal" href="../../zbib/references.html#oaks2018marginal" id="id8">[15]</a>.
+<span id="id5">[<a class="reference internal" href="../../zbib/references.html#id42" title="Jamie R. Oaks, Kerry A. Cobb, Vladimir N. Minin, and Adam D. Leaché. Marginal likelihoods in phylogenetics: a review of methods and applications. Systematic Biology, 68(5):681–697, 09 2019. URL: https://dx.doi.org/10.1093/sysbio/syz003, doi:10.1093/sysbio/syz003.">15</a>, <a class="reference internal" href="../../zbib/references.html#id55" title="Jamie R. Oaks, Charles W. Linkem, and Jeet Sukumaran. Implications of uniformly distributed, empirically informed priors for phylogeographical model selection: a reply to hickerson et al. Evolution, 68():3607–3617, 12 2014. URL: http://onlinelibrary.wiley.com/doi/10.1111/evo.12523/abstract, doi:10.1111/evo.12523.">17</a>, <a class="reference internal" href="../../zbib/references.html#id62" title="Jamie R. Oaks, Jeet Sukumaran, Jacob A. Esselstyn, Charles W. Linkem, Cameron D. Siler, Mark T. Holder, and Rafe M. Brown. Evidence for climate-driven diversification? a caution for interpreting ABC inferences of simultaneous historical events. Evolution, 67(4):991–1010, 04 2013. doi:10.1111/j.1558-5646.2012.01840.x.">19</a>]</span>.
 While ecoevolity tends to be much less sensitive to this than the ABC methods,
 it is still good to examine the affect of the divergence time prior.</p>
 </div>
-</div>
-</div>
-<div class="section" id="running-the-analysis">
-<h3>Running the analysis<a class="headerlink" href="#running-the-analysis" title="Permalink to this headline">¶</a></h3>
+</section>
+</section>
+<section id="running-the-analysis">
+<h3>Running the analysis<a class="headerlink" href="#running-the-analysis" title="Link to this heading">¶</a></h3>
 <p>Now that we have our data files and config file ready, let’s go ahead
 and try running an analysis with ecoevolity:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">ecoevolity</span> <span class="n">ecoevolity</span><span class="o">-</span><span class="n">config</span><span class="o">.</span><span class="n">yml</span>
@@ -536,7 +540,7 @@ and try running an analysis with ecoevolity:</p>
 <p>Oops, we got an error:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1">#######################################################################</span>
 <span class="c1">###############################  ERROR  ###############################</span>
-<span class="mi">1</span> <span class="n">sites</span> <span class="kn">from</span> <span class="nn">the</span> <span class="n">alignment</span> <span class="ow">in</span><span class="p">:</span>
+<span class="mi">1</span> <span class="n">sites</span> <span class="kn">from</span><span class="w"> </span><span class="nn">the</span> <span class="n">alignment</span> <span class="ow">in</span><span class="p">:</span>
     <span class="s1">&#39;nexus-files/BabuyanClaro-Calayan.nex&#39;</span>
 <span class="n">have</span> <span class="n">more</span> <span class="n">than</span> <span class="n">two</span> <span class="n">character</span> <span class="n">states</span><span class="o">.</span>
 <span class="c1">#######################################################################</span>
@@ -564,7 +568,7 @@ states as binary:</p>
 <p>Shoot, another error!:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1">#######################################################################</span>
 <span class="c1">###############################  ERROR  ###############################</span>
-<span class="mi">25</span> <span class="n">sites</span> <span class="kn">from</span> <span class="nn">the</span> <span class="n">alignment</span> <span class="ow">in</span><span class="p">:</span>
+<span class="mi">25</span> <span class="n">sites</span> <span class="kn">from</span><span class="w"> </span><span class="nn">the</span> <span class="n">alignment</span> <span class="ow">in</span><span class="p">:</span>
     <span class="s1">&#39;nexus-files/BabuyanClaro-Calayan.nex&#39;</span>
 <span class="n">have</span> <span class="n">no</span> <span class="n">data</span> <span class="k">for</span> <span class="n">at</span> <span class="n">least</span> <span class="n">one</span> <span class="n">population</span><span class="o">.</span>
 <span class="c1">#######################################################################</span>
@@ -579,9 +583,9 @@ Rather than removing these sites ourselves, we can tell ecoevolity to ignore the
 </pre></div>
 </div>
 <p>Now, you should be running!</p>
-</div>
-<div class="section" id="checking-the-pre-mcmc-screen-output">
-<h3>Checking the pre-MCMC screen output<a class="headerlink" href="#checking-the-pre-mcmc-screen-output" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="checking-the-pre-mcmc-screen-output">
+<h3>Checking the pre-MCMC screen output<a class="headerlink" href="#checking-the-pre-mcmc-screen-output" title="Link to this heading">¶</a></h3>
 <p>While the analysis is running, let’s scroll up in our console and look at the
 information ecoevolity reported before the MCMC chain started sampling.
 This output goes by very quickly, but it’s <strong>very</strong> important to read it
@@ -594,7 +598,7 @@ At the very top, you will see something like:</p>
 <span class="o">======================================================================</span>
 
 <span class="n">Seed</span><span class="p">:</span> <span class="mi">713687808</span>
-<span class="n">Using</span> <span class="n">data</span> <span class="ow">in</span> <span class="n">order</span> <span class="n">to</span> <span class="n">sample</span> <span class="kn">from</span> <span class="nn">the</span> <span class="n">posterior</span> <span class="n">distribution</span><span class="o">...</span>
+<span class="n">Using</span> <span class="n">data</span> <span class="ow">in</span> <span class="n">order</span> <span class="n">to</span> <span class="n">sample</span> <span class="kn">from</span><span class="w"> </span><span class="nn">the</span> <span class="n">posterior</span> <span class="n">distribution</span><span class="o">...</span>
 <span class="n">Config</span> <span class="n">path</span><span class="p">:</span> <span class="n">ecoevolity</span><span class="o">-</span><span class="n">config</span><span class="o">.</span><span class="n">yml</span>
 </pre></div>
 </div>
@@ -661,10 +665,10 @@ alleles per population match your expectations!</p>
 every 10th sample it’s logging to an output file.
 After the chain finishes, ecoevolity also reports stats associated with all of the
 MCMC operators; this information is also logged to a file.</p>
-</div>
-</div>
-<div class="section" id="the-output-files">
-<h2>The Output Files<a class="headerlink" href="#the-output-files" title="Permalink to this headline">¶</a></h2>
+</section>
+</section>
+<section id="the-output-files">
+<h2>The Output Files<a class="headerlink" href="#the-output-files" title="Link to this heading">¶</a></h2>
 <p>After the analysis finishes, type <code class="docutils literal notranslate"><span class="pre">ls</span></code> at the command line:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">ls</span>
 </pre></div>
@@ -679,9 +683,9 @@ contains information about the MCMC operators.
 If you have convergence or mixing issues, this information can be useful for
 troubleshooting.</p>
 <p>If you open the <code class="docutils literal notranslate"><span class="pre">state</span></code> file, you’ll see it contains the MCMC samples.</p>
-</div>
-<div class="section" id="summarizing-and-plotting-the-results">
-<h2>Summarizing and Plotting the Results<a class="headerlink" href="#summarizing-and-plotting-the-results" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="summarizing-and-plotting-the-results">
+<h2>Summarizing and Plotting the Results<a class="headerlink" href="#summarizing-and-plotting-the-results" title="Link to this heading">¶</a></h2>
 <p>Before we start summarizing the results, let’s run a second chain so we can
 assess convergence and boost our posterior sample size:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">ecoevolity</span> <span class="o">--</span><span class="n">relax</span><span class="o">-</span><span class="n">triallelic</span><span class="o">-</span><span class="n">sites</span> <span class="o">--</span><span class="n">relax</span><span class="o">-</span><span class="n">missing</span><span class="o">-</span><span class="n">sites</span> <span class="n">ecoevolity</span><span class="o">-</span><span class="n">config</span><span class="o">.</span><span class="n">yml</span>
@@ -695,8 +699,8 @@ and <code class="docutils literal notranslate"><span class="pre">state</span></c
 <li><p><code class="docutils literal notranslate"><span class="pre">ecoevolity-config-operator-run-2.log</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">ecoevolity-config-state-run-2.log</span></code></p></li>
 </ol>
-<div class="section" id="assessing-mixing-and-convergence">
-<h3>Assessing mixing and convergence<a class="headerlink" href="#assessing-mixing-and-convergence" title="Permalink to this headline">¶</a></h3>
+<section id="assessing-mixing-and-convergence">
+<h3>Assessing mixing and convergence<a class="headerlink" href="#assessing-mixing-and-convergence" title="Link to this heading">¶</a></h3>
 <p>Now, let’s use the <code class="docutils literal notranslate"><span class="pre">pyco-sumchains</span></code> tool of the pycoevolity packages to help assess
 the convergence of our chains and choose what number of samples we want to remove
 as “burn in”:</p>
@@ -732,9 +736,9 @@ mixing behavior of the chains.</p>
 ignoring the fist 101 samples as burn-in seems conservative.
 That’s the burn-in value I will use below when summarizing and plotting the
 results.</p>
-</div>
-<div class="section" id="summarizing-divergence-model-posterior-probabilities">
-<h3>Summarizing divergence-model posterior probabilities<a class="headerlink" href="#summarizing-divergence-model-posterior-probabilities" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="summarizing-divergence-model-posterior-probabilities">
+<h3>Summarizing divergence-model posterior probabilities<a class="headerlink" href="#summarizing-divergence-model-posterior-probabilities" title="Link to this heading">¶</a></h3>
 <p>Next, let’s use the <code class="docutils literal notranslate"><span class="pre">sumcoevolity</span></code> tool to calculate the posterior probabilities and
 Bayes factors for divergence models:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sumcoevolity</span> <span class="o">-</span><span class="n">b</span> <span class="mi">101</span> <span class="o">-</span><span class="n">c</span> <span class="n">ecoevolity</span><span class="o">-</span><span class="n">config</span><span class="o">.</span><span class="n">yml</span> <span class="o">-</span><span class="n">n</span> <span class="mi">1000000</span> <span class="n">ecoevolity</span><span class="o">-</span><span class="n">config</span><span class="o">-</span><span class="n">state</span><span class="o">-</span><span class="n">run</span><span class="o">-</span><span class="mf">1.</span><span class="n">log</span> <span class="n">ecoevolity</span><span class="o">-</span><span class="n">config</span><span class="o">-</span><span class="n">state</span><span class="o">-</span><span class="n">run</span><span class="o">-</span><span class="mf">2.</span><span class="n">log</span>
@@ -788,9 +792,9 @@ Each row is one of the possible numbers of events, ranked by their posterior
 probability.
 Just like the last file, the cumulative posterior probability, prior
 probability, and Bayes factor is given for each number of divergence events.</p>
-</div>
-<div class="section" id="plotting-posterior-probabilities-of-the-number-of-events">
-<h3>Plotting posterior probabilities of the number of events<a class="headerlink" href="#plotting-posterior-probabilities-of-the-number-of-events" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="plotting-posterior-probabilities-of-the-number-of-events">
+<h3>Plotting posterior probabilities of the number of events<a class="headerlink" href="#plotting-posterior-probabilities-of-the-number-of-events" title="Link to this heading">¶</a></h3>
 <p>Now, we can use the <code class="docutils literal notranslate"><span class="pre">pyco-sumtimes</span></code> tool of the pycoevolity package to plot the
 information in the <code class="docutils literal notranslate"><span class="pre">sumcoevolity-results-nevents.txt</span></code> file:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pyco</span><span class="o">-</span><span class="n">sumevents</span> <span class="n">sumcoevolity</span><span class="o">-</span><span class="n">results</span><span class="o">-</span><span class="n">nevents</span><span class="o">.</span><span class="n">txt</span>
@@ -798,18 +802,19 @@ information in the <code class="docutils literal notranslate"><span class="pre">
 </div>
 <p>This should create a plot (in a variety of file formats) that looks something
 like the following.</p>
-<div class="figure align-center" style="width: 90%">
-<a class="reference internal image-reference" href="../../_images/pycoevolity-nevents.svg"><img alt="Pycoevolity nevent plot" src="../../_images/pycoevolity-nevents.svg" width="600px" /></a>
-</div>
+<figure class="align-center" style="width: 90%">
+<a class="reference internal image-reference" href="../../_images/pycoevolity-nevents.svg"><img alt="Pycoevolity nevent plot" src="../../_images/pycoevolity-nevents.svg" style="width: 600px;" />
+</a>
+</figure>
 <p>This is just a bar plot representation of the information in the
 <code class="docutils literal notranslate"><span class="pre">sumcoevolity-results-nevents.txt</span></code>.
 If you checkout the help menu using <code class="docutils literal notranslate"><span class="pre">pyco-sumevents</span> <span class="pre">-h</span></code>,
 you’ll see there are several options to customize your plot.
 Also, <code class="docutils literal notranslate"><span class="pre">pyco-sumtimes</span></code> spits out the R script it used to create the
 plot, if you want to customize it further.</p>
-</div>
-<div class="section" id="plotting-marginal-divergence-times">
-<h3>Plotting marginal divergence times<a class="headerlink" href="#plotting-marginal-divergence-times" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="plotting-marginal-divergence-times">
+<h3>Plotting marginal divergence times<a class="headerlink" href="#plotting-marginal-divergence-times" title="Link to this heading">¶</a></h3>
 <p>Now let’s plot the marginal posterior distributions for the divergences
 times of our three pairs of gecko populations:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pyco</span><span class="o">-</span><span class="n">sumtimes</span> <span class="o">-</span><span class="n">b</span> <span class="mi">101</span> <span class="o">-</span><span class="n">z</span> <span class="n">ecoevolity</span><span class="o">-</span><span class="n">config</span><span class="o">-</span><span class="n">state</span><span class="o">-</span><span class="n">run</span><span class="o">-</span><span class="mf">1.</span><span class="n">log</span> <span class="n">ecoevolity</span><span class="o">-</span><span class="n">config</span><span class="o">-</span><span class="n">state</span><span class="o">-</span><span class="n">run</span><span class="o">-</span><span class="mf">2.</span><span class="n">log</span>
@@ -817,14 +822,15 @@ times of our three pairs of gecko populations:</p>
 </div>
 <p>This should create a plot (in a variety of file formats) that looks something
 like the following.</p>
-<div class="figure align-center" style="width: 90%">
-<a class="reference internal image-reference" href="../../_images/pycoevolity-times.svg"><img alt="Pycoevolity time plot" src="../../_images/pycoevolity-times.svg" width="600px" /></a>
-</div>
+<figure class="align-center" style="width: 90%">
+<a class="reference internal image-reference" href="../../_images/pycoevolity-times.svg"><img alt="Pycoevolity time plot" src="../../_images/pycoevolity-times.svg" style="width: 600px;" />
+</a>
+</figure>
 <p>Again, <code class="docutils literal notranslate"><span class="pre">pyco-sumtimes</span> <span class="pre">-h</span></code> will show you options for customizing your plot,
 and <code class="docutils literal notranslate"><span class="pre">pyco-sumtimes</span></code> also outputs the R script that generated the plot.</p>
-</div>
-<div class="section" id="sampling-the-prior-distribution">
-<h3>Sampling the prior distribution<a class="headerlink" href="#sampling-the-prior-distribution" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="sampling-the-prior-distribution">
+<h3>Sampling the prior distribution<a class="headerlink" href="#sampling-the-prior-distribution" title="Link to this heading">¶</a></h3>
 <p>With ecoevolity, it is very easy to run analyses that ignore the data, and
 thus sample from the joint prior distribution.
 All we need to do is add the <code class="docutils literal notranslate"><span class="pre">--ignore-data</span></code> option to our command from
@@ -869,17 +875,19 @@ Now, to summarize the prior samples run:</p>
 the prior probabilities.
 I put “posterior” in quotes, because the numbers in these columns are actually
 the prior probabilities approximated by the MCMC chains that ignored the data.</p>
-</div>
-</div>
-<div class="section" id="comparison-with-abc">
-<h2>Comparison with ABC<a class="headerlink" href="#comparison-with-abc" title="Permalink to this headline">¶</a></h2>
+</section>
+</section>
+<section id="comparison-with-abc">
+<h2>Comparison with ABC<a class="headerlink" href="#comparison-with-abc" title="Link to this heading">¶</a></h2>
 <p>Here are my results from ecoevolity after running 5 independent MCMC chains:</p>
-<div class="figure align-center" style="width: 90%">
-<a class="reference internal image-reference" href="../../_images/pycoevolity-nevents-pretty.svg"><img alt="Pycoevolity nevent plot from 5 chains" src="../../_images/pycoevolity-nevents-pretty.svg" width="600px" /></a>
-</div>
-<div class="figure align-center" style="width: 90%">
-<a class="reference internal image-reference" href="../../_images/pycoevolity-times-pretty.svg"><img alt="Pycoevolity time plot from 5 chains" src="../../_images/pycoevolity-times-pretty.svg" width="600px" /></a>
-</div>
+<figure class="align-center" style="width: 90%">
+<a class="reference internal image-reference" href="../../_images/pycoevolity-nevents-pretty.svg"><img alt="Pycoevolity nevent plot from 5 chains" src="../../_images/pycoevolity-nevents-pretty.svg" style="width: 600px;" />
+</a>
+</figure>
+<figure class="align-center" style="width: 90%">
+<a class="reference internal image-reference" href="../../_images/pycoevolity-times-pretty.svg"><img alt="Pycoevolity time plot from 5 chains" src="../../_images/pycoevolity-times-pretty.svg" style="width: 600px;" />
+</a>
+</figure>
 <p>The average runtime for the chains was 7.6 minutes, so about <img class="math" src="../../_images/math/9a251ac4fca1d0d877e834ed741fe8024098da26.svg" alt="7.6 \times
 5 = 38"/> minutes of total computing time.
 For comparison, below are results I obtained from analyzing the same data with
@@ -887,14 +895,16 @@ the ABC method <code class="docutils literal notranslate"><span class="pre">dpp-
 500,000 samples from the prior.
 This analysis took 6 days to run with simulations spread across 8 processors,
 so about <img class="math" src="../../_images/math/dd6de346b756b0ab62e3be3a0cdf33b70a6c243a.svg" alt="6 \times 8 = 48"/> days of computing time.</p>
-<div class="figure align-center" style="width: 90%">
-<a class="reference internal image-reference" href="../../_images/dppmsbayes-nevents.svg"><img alt="dpp-msbayes nevent plot" src="../../_images/dppmsbayes-nevents.svg" width="600px" /></a>
-</div>
-<div class="figure align-center" style="width: 90%">
-<a class="reference internal image-reference" href="../../_images/dppmsbayes-times.svg"><img alt="dpp-msbayes time plot" src="../../_images/dppmsbayes-times.svg" width="600px" /></a>
-</div>
-</div>
-</div>
+<figure class="align-center" style="width: 90%">
+<a class="reference internal image-reference" href="../../_images/dppmsbayes-nevents.svg"><img alt="dpp-msbayes nevent plot" src="../../_images/dppmsbayes-nevents.svg" style="width: 600px;" />
+</a>
+</figure>
+<figure class="align-center" style="width: 90%">
+<a class="reference internal image-reference" href="../../_images/dppmsbayes-times.svg"><img alt="dpp-msbayes time plot" src="../../_images/dppmsbayes-times.svg" style="width: 600px;" />
+</a>
+</figure>
+</section>
+</section>
 
 
           </div>

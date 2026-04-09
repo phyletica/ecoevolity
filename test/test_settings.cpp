@@ -9689,3 +9689,1023 @@ TEST_CASE("Testing RelativeRootCollectionSettings uniform model with split_weigh
         REQUIRE(settings.get_number_of_comparisons_with_free_population_size() == 2);
     }
 }
+
+TEST_CASE("Testing time prior parameter errors", "[HyperDistributionSettings]") {
+    SECTION("Testing gamma with fixed shape and estimated mean") {
+        std::string cfg_path = "data/dummy.yml";
+
+        std::stringstream cfg_stream;
+        cfg_stream << "event_time_prior:\n";
+        cfg_stream << "    gamma_distribution:\n";
+        cfg_stream << "        shape:\n";
+        cfg_stream << "            value: 2.0\n";
+        cfg_stream << "            estimate: false\n";
+        cfg_stream << "        mean:\n";
+        cfg_stream << "            value: 0.1\n";
+        cfg_stream << "            estimate: true\n";
+        cfg_stream << "            prior:\n";
+        cfg_stream << "                exponential_distribution:\n";
+        cfg_stream << "                    mean: 0.1\n";
+        cfg_stream << "comparisons:\n";
+        cfg_stream << "- comparison:\n";
+        cfg_stream << "    path: \"hemi129.nex\"\n";
+        cfg_stream << "- comparison:\n";
+        cfg_stream << "    path: \"diploid-dna.nex\"\n";
+
+        REQUIRE_THROWS_AS(RelativeRootCollectionSettings(cfg_stream, cfg_path), EcoevolityPositiveRealParameterSettingError &);
+    }
+
+    SECTION("Testing gamma with fixed shape and fixed mean") {
+        std::string cfg_path = "data/dummy.yml";
+
+        std::stringstream cfg_stream;
+        cfg_stream << "event_time_prior:\n";
+        cfg_stream << "    gamma_distribution:\n";
+        cfg_stream << "        shape:\n";
+        cfg_stream << "            value: 2.0\n";
+        cfg_stream << "            estimate: false\n";
+        cfg_stream << "        mean:\n";
+        cfg_stream << "            value: 0.1\n";
+        cfg_stream << "            estimate: false\n";
+        cfg_stream << "            prior:\n";
+        cfg_stream << "                exponential_distribution:\n";
+        cfg_stream << "                    mean: 0.1\n";
+        cfg_stream << "comparisons:\n";
+        cfg_stream << "- comparison:\n";
+        cfg_stream << "    path: \"hemi129.nex\"\n";
+        cfg_stream << "- comparison:\n";
+        cfg_stream << "    path: \"diploid-dna.nex\"\n";
+
+        // Shoud NOT get an error
+        RelativeRootCollectionSettings settings = RelativeRootCollectionSettings(cfg_stream, cfg_path);
+        REQUIRE(settings.get_time_prior_settings().using_transformed_parameters() == false);
+        REQUIRE(settings.get_time_prior_settings().get_number_of_parameters() == 2);
+        REQUIRE(settings.get_time_prior_settings().get_parameter_index("shape") == 0);
+        REQUIRE(settings.get_time_prior_settings().get_parameter_index("scale") == 1);
+    }
+
+    SECTION("Testing gamma with fixed shape and fixed mean and fixed offset") {
+        std::string cfg_path = "data/dummy.yml";
+
+        std::stringstream cfg_stream;
+        cfg_stream << "event_time_prior:\n";
+        cfg_stream << "    gamma_distribution:\n";
+        cfg_stream << "        shape:\n";
+        cfg_stream << "            value: 2.0\n";
+        cfg_stream << "            estimate: false\n";
+        cfg_stream << "        mean:\n";
+        cfg_stream << "            value: 0.1\n";
+        cfg_stream << "            estimate: false\n";
+        cfg_stream << "            prior:\n";
+        cfg_stream << "                exponential_distribution:\n";
+        cfg_stream << "                    mean: 0.1\n";
+        cfg_stream << "        offset:\n";
+        cfg_stream << "            value: 2.0\n";
+        cfg_stream << "            estimate: false\n";
+        cfg_stream << "comparisons:\n";
+        cfg_stream << "- comparison:\n";
+        cfg_stream << "    path: \"hemi129.nex\"\n";
+        cfg_stream << "- comparison:\n";
+        cfg_stream << "    path: \"diploid-dna.nex\"\n";
+
+        // Shoud NOT get an error
+        RelativeRootCollectionSettings settings = RelativeRootCollectionSettings(cfg_stream, cfg_path);
+        REQUIRE(settings.get_time_prior_settings().using_transformed_parameters() == false);
+        REQUIRE(settings.get_time_prior_settings().get_number_of_parameters() == 3);
+        REQUIRE(settings.get_time_prior_settings().get_parameter_index("shape") == 0);
+        REQUIRE(settings.get_time_prior_settings().get_parameter_index("scale") == 1);
+        REQUIRE(settings.get_time_prior_settings().get_parameter_index("offset") == 2);
+    }
+
+    SECTION("Testing gamma with fixed mean and estimated shape") {
+        std::string cfg_path = "data/dummy.yml";
+
+        std::stringstream cfg_stream;
+        cfg_stream << "event_time_prior:\n";
+        cfg_stream << "    gamma_distribution:\n";
+        cfg_stream << "        shape:\n";
+        cfg_stream << "            value: 2.0\n";
+        cfg_stream << "            estimate: true\n";
+        cfg_stream << "            prior:\n";
+        cfg_stream << "                exponential_distribution:\n";
+        cfg_stream << "                    mean: 0.1\n";
+        cfg_stream << "        mean:\n";
+        cfg_stream << "            value: 0.1\n";
+        cfg_stream << "            estimate: false\n";
+        cfg_stream << "comparisons:\n";
+        cfg_stream << "- comparison:\n";
+        cfg_stream << "    path: \"hemi129.nex\"\n";
+        cfg_stream << "- comparison:\n";
+        cfg_stream << "    path: \"diploid-dna.nex\"\n";
+
+        REQUIRE_THROWS_AS(RelativeRootCollectionSettings(cfg_stream, cfg_path), EcoevolityPositiveRealParameterSettingError &);
+    }
+
+    SECTION("Testing gamma with estimated mean and standard deviation") {
+        std::string cfg_path = "data/dummy.yml";
+
+        std::stringstream cfg_stream;
+        cfg_stream << "event_time_prior:\n";
+        cfg_stream << "    gamma_distribution:\n";
+        cfg_stream << "        mean:\n";
+        cfg_stream << "            value: 0.1\n";
+        cfg_stream << "            estimate: true\n";
+        cfg_stream << "        standard_deviation:\n";
+        cfg_stream << "            value: 2.0\n";
+        cfg_stream << "            estimate: true\n";
+        cfg_stream << "            prior:\n";
+        cfg_stream << "                exponential_distribution:\n";
+        cfg_stream << "                    mean: 0.1\n";
+        cfg_stream << "comparisons:\n";
+        cfg_stream << "- comparison:\n";
+        cfg_stream << "    path: \"hemi129.nex\"\n";
+        cfg_stream << "- comparison:\n";
+        cfg_stream << "    path: \"diploid-dna.nex\"\n";
+
+        // Shoud NOT get an error
+        RelativeRootCollectionSettings settings = RelativeRootCollectionSettings(cfg_stream, cfg_path);
+        REQUIRE(settings.get_time_prior_settings().using_transformed_parameters() == true);
+        REQUIRE(settings.get_time_prior_settings().get_number_of_parameters() == 2);
+        REQUIRE(settings.get_time_prior_settings().get_parameter_index("mean") == 0);
+        REQUIRE(settings.get_time_prior_settings().get_parameter_index("standard_deviation") == 1);
+    }
+
+    SECTION("Testing gamma with estimated mean and standard deviation and offset") {
+        std::string cfg_path = "data/dummy.yml";
+
+        std::stringstream cfg_stream;
+        cfg_stream << "event_time_prior:\n";
+        cfg_stream << "    gamma_distribution:\n";
+        cfg_stream << "        mean:\n";
+        cfg_stream << "            value: 0.1\n";
+        cfg_stream << "            estimate: true\n";
+        cfg_stream << "        standard_deviation:\n";
+        cfg_stream << "            value: 2.0\n";
+        cfg_stream << "            estimate: true\n";
+        cfg_stream << "            prior:\n";
+        cfg_stream << "                exponential_distribution:\n";
+        cfg_stream << "                    mean: 0.1\n";
+        cfg_stream << "        offset:\n";
+        cfg_stream << "            value: 0.1\n";
+        cfg_stream << "            estimate: true\n";
+        cfg_stream << "comparisons:\n";
+        cfg_stream << "- comparison:\n";
+        cfg_stream << "    path: \"hemi129.nex\"\n";
+        cfg_stream << "- comparison:\n";
+        cfg_stream << "    path: \"diploid-dna.nex\"\n";
+
+        // Shoud NOT get an error
+        RelativeRootCollectionSettings settings = RelativeRootCollectionSettings(cfg_stream, cfg_path);
+        REQUIRE(settings.get_time_prior_settings().using_transformed_parameters() == true);
+        REQUIRE(settings.get_time_prior_settings().get_number_of_parameters() == 3);
+        REQUIRE(settings.get_time_prior_settings().get_parameter_index("mean") == 0);
+        REQUIRE(settings.get_time_prior_settings().get_parameter_index("standard_deviation") == 1);
+        REQUIRE(settings.get_time_prior_settings().get_parameter_index("offset") == 2);
+    }
+
+    SECTION("Testing gamma with estimated shape and scale") {
+        std::string cfg_path = "data/dummy.yml";
+
+        std::stringstream cfg_stream;
+        cfg_stream << "event_time_prior:\n";
+        cfg_stream << "    gamma_distribution:\n";
+        cfg_stream << "        shape:\n";
+        cfg_stream << "            value: 0.1\n";
+        cfg_stream << "            estimate: true\n";
+        cfg_stream << "        scale:\n";
+        cfg_stream << "            value: 2.0\n";
+        cfg_stream << "            estimate: true\n";
+        cfg_stream << "            prior:\n";
+        cfg_stream << "                exponential_distribution:\n";
+        cfg_stream << "                    mean: 0.1\n";
+        cfg_stream << "comparisons:\n";
+        cfg_stream << "- comparison:\n";
+        cfg_stream << "    path: \"hemi129.nex\"\n";
+        cfg_stream << "- comparison:\n";
+        cfg_stream << "    path: \"diploid-dna.nex\"\n";
+
+        // Shoud NOT get an error
+        RelativeRootCollectionSettings settings = RelativeRootCollectionSettings(cfg_stream, cfg_path);
+        REQUIRE(settings.get_time_prior_settings().using_transformed_parameters() == false);
+        REQUIRE(settings.get_time_prior_settings().get_number_of_parameters() == 2);
+        REQUIRE(settings.get_time_prior_settings().get_parameter_index("shape") == 0);
+        REQUIRE(settings.get_time_prior_settings().get_parameter_index("scale") == 1);
+    }
+
+    SECTION("Testing gamma with estimated shape and scale and offset") {
+        std::string cfg_path = "data/dummy.yml";
+
+        std::stringstream cfg_stream;
+        cfg_stream << "event_time_prior:\n";
+        cfg_stream << "    gamma_distribution:\n";
+        cfg_stream << "        shape:\n";
+        cfg_stream << "            value: 0.1\n";
+        cfg_stream << "            estimate: true\n";
+        cfg_stream << "        scale:\n";
+        cfg_stream << "            value: 2.0\n";
+        cfg_stream << "            estimate: true\n";
+        cfg_stream << "            prior:\n";
+        cfg_stream << "                exponential_distribution:\n";
+        cfg_stream << "                    mean: 0.1\n";
+        cfg_stream << "        offset:\n";
+        cfg_stream << "            value: 0.1\n";
+        cfg_stream << "            estimate: true\n";
+        cfg_stream << "comparisons:\n";
+        cfg_stream << "- comparison:\n";
+        cfg_stream << "    path: \"hemi129.nex\"\n";
+        cfg_stream << "- comparison:\n";
+        cfg_stream << "    path: \"diploid-dna.nex\"\n";
+        cfg_stream << "operator_settings:\n";
+        cfg_stream << "    operators:\n";
+        cfg_stream << "        TimePriorParameterScaler-0:\n";
+        cfg_stream << "            parameter_name: shape\n";
+        cfg_stream << "            weight: 5.0\n";
+        cfg_stream << "            scale: 1.0\n";
+        cfg_stream << "        TimePriorParameterScaler-1:\n";
+        cfg_stream << "            parameter_name: scale\n";
+        cfg_stream << "            weight: 5.0\n";
+        cfg_stream << "            scale: 1.0\n";
+        cfg_stream << "        TimePriorParameterScaler-2:\n";
+        cfg_stream << "            parameter_name: offset\n";
+        cfg_stream << "            weight: 5.0\n";
+        cfg_stream << "            scale: 1.0\n";
+
+        // Shoud NOT get an error
+        RelativeRootCollectionSettings settings = RelativeRootCollectionSettings(cfg_stream, cfg_path);
+        REQUIRE(settings.get_time_prior_settings().using_transformed_parameters() == false);
+        REQUIRE(settings.get_time_prior_settings().get_number_of_parameters() == 3);
+        REQUIRE(settings.get_time_prior_settings().get_parameter_index("shape") == 0);
+        REQUIRE(settings.get_time_prior_settings().get_parameter_index("scale") == 1);
+        REQUIRE(settings.get_time_prior_settings().get_parameter_index("offset") == 2);
+    }
+
+    SECTION("Testing exponential with estimated rate") {
+        std::string cfg_path = "data/dummy.yml";
+
+        std::stringstream cfg_stream;
+        cfg_stream << "event_time_prior:\n";
+        cfg_stream << "    exponential_distribution:\n";
+        cfg_stream << "        rate:\n";
+        cfg_stream << "            value: 0.1\n";
+        cfg_stream << "            estimate: true\n";
+        cfg_stream << "comparisons:\n";
+        cfg_stream << "- comparison:\n";
+        cfg_stream << "    path: \"hemi129.nex\"\n";
+        cfg_stream << "- comparison:\n";
+        cfg_stream << "    path: \"diploid-dna.nex\"\n";
+
+        // Shoud NOT get an error
+        RelativeRootCollectionSettings settings = RelativeRootCollectionSettings(cfg_stream, cfg_path);
+        REQUIRE(settings.get_time_prior_settings().using_transformed_parameters() == false);
+        REQUIRE(settings.get_time_prior_settings().get_number_of_parameters() == 1);
+        REQUIRE(settings.get_time_prior_settings().get_parameter_index("rate") == 0);
+    }
+
+    SECTION("Testing exponential with estimated rate and offset") {
+        std::string cfg_path = "data/dummy.yml";
+
+        std::stringstream cfg_stream;
+        cfg_stream << "event_time_prior:\n";
+        cfg_stream << "    exponential_distribution:\n";
+        cfg_stream << "        rate:\n";
+        cfg_stream << "            value: 0.1\n";
+        cfg_stream << "            estimate: true\n";
+        cfg_stream << "        offset:\n";
+        cfg_stream << "            value: 0.1\n";
+        cfg_stream << "            estimate: true\n";
+        cfg_stream << "comparisons:\n";
+        cfg_stream << "- comparison:\n";
+        cfg_stream << "    path: \"hemi129.nex\"\n";
+        cfg_stream << "- comparison:\n";
+        cfg_stream << "    path: \"diploid-dna.nex\"\n";
+
+        // Shoud NOT get an error
+        RelativeRootCollectionSettings settings = RelativeRootCollectionSettings(cfg_stream, cfg_path);
+        REQUIRE(settings.get_time_prior_settings().using_transformed_parameters() == false);
+        REQUIRE(settings.get_time_prior_settings().get_number_of_parameters() == 2);
+        REQUIRE(settings.get_time_prior_settings().get_parameter_index("rate") == 0);
+        REQUIRE(settings.get_time_prior_settings().get_parameter_index("offset") == 1);
+    }
+
+    SECTION("Testing exponential with fixed rate") {
+        std::string cfg_path = "data/dummy.yml";
+
+        std::stringstream cfg_stream;
+        cfg_stream << "event_time_prior:\n";
+        cfg_stream << "    exponential_distribution:\n";
+        cfg_stream << "        rate:\n";
+        cfg_stream << "            value: 0.1\n";
+        cfg_stream << "            estimate: false\n";
+        cfg_stream << "comparisons:\n";
+        cfg_stream << "- comparison:\n";
+        cfg_stream << "    path: \"hemi129.nex\"\n";
+        cfg_stream << "- comparison:\n";
+        cfg_stream << "    path: \"diploid-dna.nex\"\n";
+
+        // Shoud NOT get an error
+        RelativeRootCollectionSettings settings = RelativeRootCollectionSettings(cfg_stream, cfg_path);
+        REQUIRE(settings.get_time_prior_settings().using_transformed_parameters() == false);
+        REQUIRE(settings.get_time_prior_settings().get_number_of_parameters() == 1);
+        REQUIRE(settings.get_time_prior_settings().get_parameter_index("rate") == 0);
+    }
+
+    SECTION("Testing exponential with fixed mean") {
+        std::string cfg_path = "data/dummy.yml";
+
+        std::stringstream cfg_stream;
+        cfg_stream << "event_time_prior:\n";
+        cfg_stream << "    exponential_distribution:\n";
+        cfg_stream << "        mean:\n";
+        cfg_stream << "            value: 0.1\n";
+        cfg_stream << "            estimate: false\n";
+        cfg_stream << "comparisons:\n";
+        cfg_stream << "- comparison:\n";
+        cfg_stream << "    path: \"hemi129.nex\"\n";
+        cfg_stream << "- comparison:\n";
+        cfg_stream << "    path: \"diploid-dna.nex\"\n";
+
+        // Shoud NOT get an error
+        RelativeRootCollectionSettings settings = RelativeRootCollectionSettings(cfg_stream, cfg_path);
+        REQUIRE(settings.get_time_prior_settings().using_transformed_parameters() == true);
+        REQUIRE(settings.get_time_prior_settings().get_number_of_parameters() == 1);
+        REQUIRE(settings.get_time_prior_settings().get_parameter_index("mean") == 0);
+    }
+
+    SECTION("Testing exponential with estimated mean") {
+        std::string cfg_path = "data/dummy.yml";
+
+        std::stringstream cfg_stream;
+        cfg_stream << "event_time_prior:\n";
+        cfg_stream << "    exponential_distribution:\n";
+        cfg_stream << "        mean:\n";
+        cfg_stream << "            value: 0.1\n";
+        cfg_stream << "            estimate: true\n";
+        cfg_stream << "comparisons:\n";
+        cfg_stream << "- comparison:\n";
+        cfg_stream << "    path: \"hemi129.nex\"\n";
+        cfg_stream << "- comparison:\n";
+        cfg_stream << "    path: \"diploid-dna.nex\"\n";
+
+        // Shoud NOT get an error
+        RelativeRootCollectionSettings settings = RelativeRootCollectionSettings(cfg_stream, cfg_path);
+        REQUIRE(settings.get_time_prior_settings().using_transformed_parameters() == true);
+        REQUIRE(settings.get_time_prior_settings().get_number_of_parameters() == 1);
+        REQUIRE(settings.get_time_prior_settings().get_parameter_index("mean") == 0);
+    }
+
+    SECTION("Testing exponential with estimated mean and offset") {
+        std::string cfg_path = "data/dummy.yml";
+
+        std::stringstream cfg_stream;
+        cfg_stream << "event_time_prior:\n";
+        cfg_stream << "    exponential_distribution:\n";
+        cfg_stream << "        mean:\n";
+        cfg_stream << "            value: 0.1\n";
+        cfg_stream << "            estimate: true\n";
+        cfg_stream << "        offset:\n";
+        cfg_stream << "            value: 0.1\n";
+        cfg_stream << "            estimate: true\n";
+        cfg_stream << "comparisons:\n";
+        cfg_stream << "- comparison:\n";
+        cfg_stream << "    path: \"hemi129.nex\"\n";
+        cfg_stream << "- comparison:\n";
+        cfg_stream << "    path: \"diploid-dna.nex\"\n";
+
+        // Shoud NOT get an error
+        RelativeRootCollectionSettings settings = RelativeRootCollectionSettings(cfg_stream, cfg_path);
+        REQUIRE(settings.get_time_prior_settings().using_transformed_parameters() == true);
+        REQUIRE(settings.get_time_prior_settings().get_number_of_parameters() == 2);
+        REQUIRE(settings.get_time_prior_settings().get_parameter_index("mean") == 0);
+        REQUIRE(settings.get_time_prior_settings().get_parameter_index("offset") == 1);
+    }
+
+    SECTION("Testing beta with estimated alpha and beta") {
+        std::string cfg_path = "data/dummy.yml";
+
+        std::stringstream cfg_stream;
+        cfg_stream << "event_time_prior:\n";
+        cfg_stream << "    beta_distribution:\n";
+        cfg_stream << "        alpha:\n";
+        cfg_stream << "            value: 0.1\n";
+        cfg_stream << "            estimate: true\n";
+        cfg_stream << "        beta:\n";
+        cfg_stream << "            value: 0.1\n";
+        cfg_stream << "            estimate: true\n";
+        cfg_stream << "comparisons:\n";
+        cfg_stream << "- comparison:\n";
+        cfg_stream << "    path: \"hemi129.nex\"\n";
+        cfg_stream << "- comparison:\n";
+        cfg_stream << "    path: \"diploid-dna.nex\"\n";
+
+        // Shoud NOT get an error
+        RelativeRootCollectionSettings settings = RelativeRootCollectionSettings(cfg_stream, cfg_path);
+        REQUIRE(settings.get_time_prior_settings().using_transformed_parameters() == false);
+        REQUIRE(settings.get_time_prior_settings().get_number_of_parameters() == 2);
+        REQUIRE(settings.get_time_prior_settings().get_parameter_index("alpha") == 0);
+        REQUIRE(settings.get_time_prior_settings().get_parameter_index("beta") == 1);
+    }
+
+    SECTION("Testing beta with estimated mean and one_over_concentration") {
+        std::string cfg_path = "data/dummy.yml";
+
+        std::stringstream cfg_stream;
+        cfg_stream << "event_time_prior:\n";
+        cfg_stream << "    beta_distribution:\n";
+        cfg_stream << "        mean:\n";
+        cfg_stream << "            value: 0.1\n";
+        cfg_stream << "            estimate: true\n";
+        cfg_stream << "        one_over_concentration:\n";
+        cfg_stream << "            value: 0.1\n";
+        cfg_stream << "            estimate: true\n";
+        cfg_stream << "comparisons:\n";
+        cfg_stream << "- comparison:\n";
+        cfg_stream << "    path: \"hemi129.nex\"\n";
+        cfg_stream << "- comparison:\n";
+        cfg_stream << "    path: \"diploid-dna.nex\"\n";
+
+        // Shoud NOT get an error
+        RelativeRootCollectionSettings settings = RelativeRootCollectionSettings(cfg_stream, cfg_path);
+        REQUIRE(settings.get_time_prior_settings().using_transformed_parameters() == true);
+        REQUIRE(settings.get_time_prior_settings().get_number_of_parameters() == 2);
+        REQUIRE(settings.get_time_prior_settings().get_parameter_index("mean") == 0);
+        REQUIRE(settings.get_time_prior_settings().get_parameter_index("one_over_concentration") == 1);
+    }
+}
+
+TEST_CASE("Testing RelativeRootCollectionSettings with default time prior parameter operator settings", "[RelativeRootCollectionSettings]") {
+    SECTION("Testing time prior parameter operator defaults") {
+        std::string cfg_path = "data/dummy.yml";
+
+        std::stringstream cfg_stream;
+        cfg_stream << "event_time_prior:\n";
+        cfg_stream << "    gamma_distribution:\n";
+        cfg_stream << "        mean:\n";
+        cfg_stream << "            value: 0.1\n";
+        cfg_stream << "            estimate: true\n";
+        cfg_stream << "            prior:\n";
+        cfg_stream << "                exponential_distribution:\n";
+        cfg_stream << "                    mean: 0.1\n";
+        cfg_stream << "        standard_deviation:\n";
+        cfg_stream << "            value: 2.0\n";
+        cfg_stream << "            estimate: true\n";
+        cfg_stream << "            prior:\n";
+        cfg_stream << "                exponential_distribution:\n";
+        cfg_stream << "                    mean: 0.1\n";
+        cfg_stream << "        offset:\n";
+        cfg_stream << "            value: 0.1\n";
+        cfg_stream << "            estimate: true\n";
+        cfg_stream << "            prior:\n";
+        cfg_stream << "                exponential_distribution:\n";
+        cfg_stream << "                    mean: 0.1\n";
+        cfg_stream << "global_comparison_settings:\n";
+        cfg_stream << "    genotypes_are_diploid: false\n";
+        cfg_stream << "    markers_are_dominant: true\n";
+        cfg_stream << "    population_name_delimiter: '-'\n";
+        cfg_stream << "    population_name_is_prefix: false\n";
+        cfg_stream << "    constant_sites_removed: false\n";
+        cfg_stream << "    equal_population_sizes: true\n";
+        cfg_stream << "    parameters:\n";
+        cfg_stream << "        freq_1:\n";
+        cfg_stream << "            value: empirical\n";
+        cfg_stream << "            estimate: true\n";
+        cfg_stream << "            prior:\n";
+        cfg_stream << "                beta_distribution:\n";
+        cfg_stream << "                    alpha: 1.0\n";
+        cfg_stream << "                    beta: 1.0\n";
+        cfg_stream << "    operators:\n";
+        cfg_stream << "        RootPopulationSizeScaler:\n";
+        cfg_stream << "            weight: 2\n";
+        cfg_stream << "            scale: 0.1\n";
+        cfg_stream << "        LeafPopulationSizeScaler:\n";
+        cfg_stream << "            weight: 2\n";
+        cfg_stream << "            scale: 0.1\n";
+        cfg_stream << "        MutationRateScaler:\n";
+        cfg_stream << "            weight: 1\n";
+        cfg_stream << "            scale: 0.7\n";
+        cfg_stream << "        FreqMover:\n";
+        cfg_stream << "            weight: 2\n";
+        cfg_stream << "            window: 0.2\n";
+        cfg_stream << "comparisons:\n";
+        cfg_stream << "- comparison:\n";
+        cfg_stream << "    path: haploid-standard.nex\n";
+        cfg_stream << "    parameters:\n";
+        cfg_stream << "        population_size:\n";
+        cfg_stream << "            estimate: true\n";
+        cfg_stream << "            prior:\n";
+        cfg_stream << "                gamma_distribution:\n";
+        cfg_stream << "                    shape: 10.0\n";
+        cfg_stream << "                    scale: 0.0002\n";
+        cfg_stream << "        root_relative_population_size:\n";
+        cfg_stream << "            estimate: true\n";
+        cfg_stream << "            prior:\n";
+        cfg_stream << "                gamma_distribution:\n";
+        cfg_stream << "                    shape: 10.0\n";
+        cfg_stream << "                    scale: 0.1\n";
+        cfg_stream << "- comparison:\n";
+        cfg_stream << "    path: haploid-standard-missing.nex\n";
+        cfg_stream << "    parameters:\n";
+        cfg_stream << "        population_size:\n";
+        cfg_stream << "            value: 0.001\n";
+        cfg_stream << "            estimate: false\n";
+        cfg_stream << "            prior:\n";
+        cfg_stream << "                gamma_distribution:\n";
+        cfg_stream << "                    shape: 10.0\n";
+        cfg_stream << "                    scale: 0.0002\n";
+        cfg_stream << "        root_relative_population_size:\n";
+        cfg_stream << "            estimate: true\n";
+        cfg_stream << "            prior:\n";
+        cfg_stream << "                gamma_distribution:\n";
+        cfg_stream << "                    shape: 10.0\n";
+        cfg_stream << "                    scale: 0.1\n";
+
+        RelativeRootCollectionSettings settings = RelativeRootCollectionSettings(cfg_stream, cfg_path);
+
+        std::string e =  "";
+        e += "---\n";
+        e += "event_model_prior:\n";
+        e += "    dirichlet_process:\n";
+        e += "        parameters:\n";
+        e += "            concentration:\n";
+        e += "                estimate: true\n";
+        e += "                prior:\n";
+        e += "                    gamma_distribution:\n";
+        e += "                        shape: 2\n";
+        e += "                        scale: 0.5\n";
+        e +=  "event_time_prior:\n";
+        e +=  "    gamma_distribution:\n";
+        e +=  "        mean:\n";
+        e +=  "            value: 0.1\n";
+        e +=  "            estimate: true\n";
+        e +=  "            prior:\n";
+        e +=  "                exponential_distribution:\n";
+        e +=  "                    rate: 10\n";
+        e +=  "        standard_deviation:\n";
+        e +=  "            value: 2\n";
+        e +=  "            estimate: true\n";
+        e +=  "            prior:\n";
+        e +=  "                exponential_distribution:\n";
+        e +=  "                    rate: 10\n";
+        e +=  "        offset:\n";
+        e +=  "            value: 0.1\n";
+        e +=  "            estimate: true\n";
+        e +=  "            prior:\n";
+        e +=  "                exponential_distribution:\n";
+        e +=  "                    rate: 10\n";
+        e += "mcmc_settings:\n";
+        e += "    chain_length: 100000\n";
+        e += "    sample_frequency: 100\n";
+        e += "comparisons:\n";
+        e += "- comparison:\n";
+        e += "    path: data/haploid-standard.nex\n";
+        e += "    ploidy: 2\n";
+        e += "    genotypes_are_diploid: false\n";
+        e += "    markers_are_dominant: true\n";
+        e += "    population_name_delimiter: '-'\n";
+        e += "    population_name_is_prefix: false\n";
+        e += "    constant_sites_removed: false\n";
+        e += "    equal_population_sizes: true\n";
+        e += "    parameters:\n";
+        e += "        population_size:\n";
+        e += "            estimate: true\n";
+        e += "            prior:\n";
+        e += "                gamma_distribution:\n";
+        e += "                    shape: 10\n";
+        e += "                    scale: 0.0002\n";
+        e += "        root_relative_population_size:\n";
+        e += "            value: 1\n";
+        e += "            estimate: false\n";
+        e += "        mutation_rate:\n";
+        e += "            value: 1\n";
+        e += "            estimate: false\n";
+        e += "        freq_1:\n";
+        e += "            value: 0.521739\n";
+        e += "            estimate: true\n";
+        e += "            prior:\n";
+        e += "                beta_distribution:\n";
+        e += "                    alpha: 1\n";
+        e += "                    beta: 1\n";
+        e += "    operators:\n";
+        e += "        TimeSizeRateMixer:\n";
+        e += "            weight: 0\n";
+        e += "            scale: 0.1\n";
+        e += "        TimeSizeRateScaler:\n";
+        e += "            weight: 0\n";
+        e += "            scale: 0.1\n";
+        e += "        EventTimeScaler:\n";
+        e += "            weight: 0\n";
+        e += "            scale: 0.1\n";
+        e += "        RootPopulationSizeScaler:\n";
+        e += "            weight: 2\n";
+        e += "            scale: 0.1\n";
+        e += "        LeafPopulationSizeScaler:\n";
+        e += "            weight: 0\n";
+        e += "            scale: 0.1\n";
+        e += "        MutationRateScaler:\n";
+        e += "            weight: 0\n";
+        e += "            scale: 0.7\n";
+        e += "        FreqMover:\n";
+        e += "            weight: 2\n";
+        e += "            window: 0.2\n";
+        e += "        TimeRootSizeMixer:\n";
+        e += "            weight: 0\n";
+        e += "            scale: 0.05\n";
+        e += "- comparison:\n";
+        e += "    path: data/haploid-standard-missing.nex\n";
+        e += "    ploidy: 2\n";
+        e += "    genotypes_are_diploid: false\n";
+        e += "    markers_are_dominant: true\n";
+        e += "    population_name_delimiter: '-'\n";
+        e += "    population_name_is_prefix: false\n";
+        e += "    constant_sites_removed: false\n";
+        e += "    equal_population_sizes: true\n";
+        e += "    parameters:\n";
+        e += "        population_size:\n";
+        e += "            value: 0.001\n";
+        e += "            estimate: false\n";
+        e += "        root_relative_population_size:\n";
+        e += "            value: 1\n";
+        e += "            estimate: false\n";
+        e += "        mutation_rate:\n";
+        e += "            value: 1\n";
+        e += "            estimate: false\n";
+        e += "        freq_1:\n";
+        e += "            value: 0.611111\n";
+        e += "            estimate: true\n";
+        e += "            prior:\n";
+        e += "                beta_distribution:\n";
+        e += "                    alpha: 1\n";
+        e += "                    beta: 1\n";
+        e += "    operators:\n";
+        e += "        TimeSizeRateMixer:\n";
+        e += "            weight: 0\n";
+        e += "            scale: 0.1\n";
+        e += "        TimeSizeRateScaler:\n";
+        e += "            weight: 0\n";
+        e += "            scale: 0.1\n";
+        e += "        EventTimeScaler:\n";
+        e += "            weight: 0\n";
+        e += "            scale: 0.1\n";
+        e += "        RootPopulationSizeScaler:\n";
+        e += "            weight: 0\n";
+        e += "            scale: 0.1\n";
+        e += "        LeafPopulationSizeScaler:\n";
+        e += "            weight: 0\n";
+        e += "            scale: 0.1\n";
+        e += "        MutationRateScaler:\n";
+        e += "            weight: 0\n";
+        e += "            scale: 0.7\n";
+        e += "        FreqMover:\n";
+        e += "            weight: 2\n";
+        e += "            window: 0.2\n";
+        e += "        TimeRootSizeMixer:\n";
+        e += "            weight: 0\n";
+        e += "            scale: 0.05\n";
+        e += "operator_settings:\n";
+        e += "    auto_optimize: true\n";
+        e += "    auto_optimize_delay: 1000\n";
+        e += "    operators:\n";
+        e += "        ModelOperator:\n";
+        e += "            weight: 10\n";
+        e += "            number_of_auxiliary_categories: 4\n";
+        e += "        ConcentrationScaler:\n";
+        e += "            weight: 3\n";
+        e += "            scale: 1\n";
+        e += "        TimeSizeRateMixer:\n";
+        e += "            weight: 6\n";
+        e += "            scale: 0.1\n";
+        e += "        TimeSizeRateScaler:\n";
+        e += "            weight: 0\n";
+        e += "            scale: 0.1\n";
+        e += "        EventTimeScaler:\n";
+        e += "            weight: 1\n";
+        e += "            scale: 0.1\n";
+        e += "        TimeRootSizeMixer:\n";
+        e += "            weight: 6\n";
+        e += "            scale: 0.05\n";
+        e += "        TimePriorParameterScaler:\n";
+        e += "            parameter_name: mean\n";
+        e += "            weight: 3\n";
+        e += "            scale: 0.5\n";
+        e += "        TimePriorParameterScaler:\n";
+        e += "            parameter_name: offset\n";
+        e += "            weight: 3\n";
+        e += "            scale: 0.5\n";
+        e += "        TimePriorParameterScaler:\n";
+        e += "            parameter_name: standard_deviation\n";
+        e += "            weight: 3\n";
+        e += "            scale: 0.5\n";
+
+        REQUIRE(settings.to_string() == e);
+        REQUIRE(settings.get_path() == "data/dummy.yml");
+
+        REQUIRE(settings.event_model_is_fixed() == false);
+        REQUIRE(settings.sampling_event_models() == true);
+        REQUIRE(settings.get_model_operator() == EcoevolityOptions::ModelOperator::gibbs_dpp);
+        REQUIRE(settings.get_model_prior() == EcoevolityOptions::ModelPrior::dpp);
+
+        REQUIRE(settings.get_chain_length() == 100000);
+        REQUIRE(settings.get_sample_frequency() == 100);
+        REQUIRE(settings.get_number_of_comparisons() == 2);
+        REQUIRE(settings.get_number_of_comparisons_with_free_mutation_rate() == 0);
+        REQUIRE(settings.get_number_of_comparisons_with_free_state_frequencies() == 2);
+        REQUIRE(settings.get_number_of_comparisons_with_free_population_size() == 1);
+
+        REQUIRE(settings.get_time_prior_settings().using_transformed_parameters() == true);
+        REQUIRE(settings.get_time_prior_settings().get_number_of_parameters() == 3);
+        REQUIRE(settings.get_time_prior_settings().get_parameter_index("mean") == 0);
+        REQUIRE(settings.get_time_prior_settings().get_parameter_index("standard_deviation") == 1);
+        REQUIRE(settings.get_time_prior_settings().get_parameter_index("offset") == 2);
+    }
+}
+
+TEST_CASE("Testing RelativeRootCollectionSettings with overriding default time prior parameter operator settings", "[RelativeRootCollectionSettings]") {
+    SECTION("Testing time prior parameter operator default override") {
+        std::string cfg_path = "data/dummy.yml";
+
+        std::stringstream cfg_stream;
+        cfg_stream << "event_time_prior:\n";
+        cfg_stream << "    gamma_distribution:\n";
+        cfg_stream << "        mean:\n";
+        cfg_stream << "            value: 0.1\n";
+        cfg_stream << "            estimate: true\n";
+        cfg_stream << "            prior:\n";
+        cfg_stream << "                exponential_distribution:\n";
+        cfg_stream << "                    mean: 0.1\n";
+        cfg_stream << "        standard_deviation:\n";
+        cfg_stream << "            value: 2.0\n";
+        cfg_stream << "            estimate: true\n";
+        cfg_stream << "            prior:\n";
+        cfg_stream << "                exponential_distribution:\n";
+        cfg_stream << "                    mean: 0.1\n";
+        cfg_stream << "        offset:\n";
+        cfg_stream << "            value: 0.1\n";
+        cfg_stream << "            estimate: true\n";
+        cfg_stream << "            prior:\n";
+        cfg_stream << "                exponential_distribution:\n";
+        cfg_stream << "                    mean: 0.1\n";
+        cfg_stream << "operator_settings:\n";
+        cfg_stream << "    operators:\n";
+        cfg_stream << "        TimePriorParameterScaler:\n";
+        cfg_stream << "            parameter_name: standard_deviation\n";
+        cfg_stream << "            weight: 5.0\n";
+        cfg_stream << "            scale: 0.01\n";
+        cfg_stream << "global_comparison_settings:\n";
+        cfg_stream << "    genotypes_are_diploid: false\n";
+        cfg_stream << "    markers_are_dominant: true\n";
+        cfg_stream << "    population_name_delimiter: '-'\n";
+        cfg_stream << "    population_name_is_prefix: false\n";
+        cfg_stream << "    constant_sites_removed: false\n";
+        cfg_stream << "    equal_population_sizes: true\n";
+        cfg_stream << "    parameters:\n";
+        cfg_stream << "        freq_1:\n";
+        cfg_stream << "            value: empirical\n";
+        cfg_stream << "            estimate: true\n";
+        cfg_stream << "            prior:\n";
+        cfg_stream << "                beta_distribution:\n";
+        cfg_stream << "                    alpha: 1.0\n";
+        cfg_stream << "                    beta: 1.0\n";
+        cfg_stream << "    operators:\n";
+        cfg_stream << "        RootPopulationSizeScaler:\n";
+        cfg_stream << "            weight: 2\n";
+        cfg_stream << "            scale: 0.1\n";
+        cfg_stream << "        LeafPopulationSizeScaler:\n";
+        cfg_stream << "            weight: 2\n";
+        cfg_stream << "            scale: 0.1\n";
+        cfg_stream << "        MutationRateScaler:\n";
+        cfg_stream << "            weight: 1\n";
+        cfg_stream << "            scale: 0.7\n";
+        cfg_stream << "        FreqMover:\n";
+        cfg_stream << "            weight: 2\n";
+        cfg_stream << "            window: 0.2\n";
+        cfg_stream << "comparisons:\n";
+        cfg_stream << "- comparison:\n";
+        cfg_stream << "    path: haploid-standard.nex\n";
+        cfg_stream << "    parameters:\n";
+        cfg_stream << "        population_size:\n";
+        cfg_stream << "            estimate: true\n";
+        cfg_stream << "            prior:\n";
+        cfg_stream << "                gamma_distribution:\n";
+        cfg_stream << "                    shape: 10.0\n";
+        cfg_stream << "                    scale: 0.0002\n";
+        cfg_stream << "        root_relative_population_size:\n";
+        cfg_stream << "            estimate: true\n";
+        cfg_stream << "            prior:\n";
+        cfg_stream << "                gamma_distribution:\n";
+        cfg_stream << "                    shape: 10.0\n";
+        cfg_stream << "                    scale: 0.1\n";
+        cfg_stream << "- comparison:\n";
+        cfg_stream << "    path: haploid-standard-missing.nex\n";
+        cfg_stream << "    parameters:\n";
+        cfg_stream << "        population_size:\n";
+        cfg_stream << "            value: 0.001\n";
+        cfg_stream << "            estimate: false\n";
+        cfg_stream << "            prior:\n";
+        cfg_stream << "                gamma_distribution:\n";
+        cfg_stream << "                    shape: 10.0\n";
+        cfg_stream << "                    scale: 0.0002\n";
+        cfg_stream << "        root_relative_population_size:\n";
+        cfg_stream << "            estimate: true\n";
+        cfg_stream << "            prior:\n";
+        cfg_stream << "                gamma_distribution:\n";
+        cfg_stream << "                    shape: 10.0\n";
+        cfg_stream << "                    scale: 0.1\n";
+
+        RelativeRootCollectionSettings settings = RelativeRootCollectionSettings(cfg_stream, cfg_path);
+
+        std::string e =  "";
+        e += "---\n";
+        e += "event_model_prior:\n";
+        e += "    dirichlet_process:\n";
+        e += "        parameters:\n";
+        e += "            concentration:\n";
+        e += "                estimate: true\n";
+        e += "                prior:\n";
+        e += "                    gamma_distribution:\n";
+        e += "                        shape: 2\n";
+        e += "                        scale: 0.5\n";
+        e +=  "event_time_prior:\n";
+        e +=  "    gamma_distribution:\n";
+        e +=  "        mean:\n";
+        e +=  "            value: 0.1\n";
+        e +=  "            estimate: true\n";
+        e +=  "            prior:\n";
+        e +=  "                exponential_distribution:\n";
+        e +=  "                    rate: 10\n";
+        e +=  "        standard_deviation:\n";
+        e +=  "            value: 2\n";
+        e +=  "            estimate: true\n";
+        e +=  "            prior:\n";
+        e +=  "                exponential_distribution:\n";
+        e +=  "                    rate: 10\n";
+        e +=  "        offset:\n";
+        e +=  "            value: 0.1\n";
+        e +=  "            estimate: true\n";
+        e +=  "            prior:\n";
+        e +=  "                exponential_distribution:\n";
+        e +=  "                    rate: 10\n";
+        e += "mcmc_settings:\n";
+        e += "    chain_length: 100000\n";
+        e += "    sample_frequency: 100\n";
+        e += "comparisons:\n";
+        e += "- comparison:\n";
+        e += "    path: data/haploid-standard.nex\n";
+        e += "    ploidy: 2\n";
+        e += "    genotypes_are_diploid: false\n";
+        e += "    markers_are_dominant: true\n";
+        e += "    population_name_delimiter: '-'\n";
+        e += "    population_name_is_prefix: false\n";
+        e += "    constant_sites_removed: false\n";
+        e += "    equal_population_sizes: true\n";
+        e += "    parameters:\n";
+        e += "        population_size:\n";
+        e += "            estimate: true\n";
+        e += "            prior:\n";
+        e += "                gamma_distribution:\n";
+        e += "                    shape: 10\n";
+        e += "                    scale: 0.0002\n";
+        e += "        root_relative_population_size:\n";
+        e += "            value: 1\n";
+        e += "            estimate: false\n";
+        e += "        mutation_rate:\n";
+        e += "            value: 1\n";
+        e += "            estimate: false\n";
+        e += "        freq_1:\n";
+        e += "            value: 0.521739\n";
+        e += "            estimate: true\n";
+        e += "            prior:\n";
+        e += "                beta_distribution:\n";
+        e += "                    alpha: 1\n";
+        e += "                    beta: 1\n";
+        e += "    operators:\n";
+        e += "        TimeSizeRateMixer:\n";
+        e += "            weight: 0\n";
+        e += "            scale: 0.1\n";
+        e += "        TimeSizeRateScaler:\n";
+        e += "            weight: 0\n";
+        e += "            scale: 0.1\n";
+        e += "        EventTimeScaler:\n";
+        e += "            weight: 0\n";
+        e += "            scale: 0.1\n";
+        e += "        RootPopulationSizeScaler:\n";
+        e += "            weight: 2\n";
+        e += "            scale: 0.1\n";
+        e += "        LeafPopulationSizeScaler:\n";
+        e += "            weight: 0\n";
+        e += "            scale: 0.1\n";
+        e += "        MutationRateScaler:\n";
+        e += "            weight: 0\n";
+        e += "            scale: 0.7\n";
+        e += "        FreqMover:\n";
+        e += "            weight: 2\n";
+        e += "            window: 0.2\n";
+        e += "        TimeRootSizeMixer:\n";
+        e += "            weight: 0\n";
+        e += "            scale: 0.05\n";
+        e += "- comparison:\n";
+        e += "    path: data/haploid-standard-missing.nex\n";
+        e += "    ploidy: 2\n";
+        e += "    genotypes_are_diploid: false\n";
+        e += "    markers_are_dominant: true\n";
+        e += "    population_name_delimiter: '-'\n";
+        e += "    population_name_is_prefix: false\n";
+        e += "    constant_sites_removed: false\n";
+        e += "    equal_population_sizes: true\n";
+        e += "    parameters:\n";
+        e += "        population_size:\n";
+        e += "            value: 0.001\n";
+        e += "            estimate: false\n";
+        e += "        root_relative_population_size:\n";
+        e += "            value: 1\n";
+        e += "            estimate: false\n";
+        e += "        mutation_rate:\n";
+        e += "            value: 1\n";
+        e += "            estimate: false\n";
+        e += "        freq_1:\n";
+        e += "            value: 0.611111\n";
+        e += "            estimate: true\n";
+        e += "            prior:\n";
+        e += "                beta_distribution:\n";
+        e += "                    alpha: 1\n";
+        e += "                    beta: 1\n";
+        e += "    operators:\n";
+        e += "        TimeSizeRateMixer:\n";
+        e += "            weight: 0\n";
+        e += "            scale: 0.1\n";
+        e += "        TimeSizeRateScaler:\n";
+        e += "            weight: 0\n";
+        e += "            scale: 0.1\n";
+        e += "        EventTimeScaler:\n";
+        e += "            weight: 0\n";
+        e += "            scale: 0.1\n";
+        e += "        RootPopulationSizeScaler:\n";
+        e += "            weight: 0\n";
+        e += "            scale: 0.1\n";
+        e += "        LeafPopulationSizeScaler:\n";
+        e += "            weight: 0\n";
+        e += "            scale: 0.1\n";
+        e += "        MutationRateScaler:\n";
+        e += "            weight: 0\n";
+        e += "            scale: 0.7\n";
+        e += "        FreqMover:\n";
+        e += "            weight: 2\n";
+        e += "            window: 0.2\n";
+        e += "        TimeRootSizeMixer:\n";
+        e += "            weight: 0\n";
+        e += "            scale: 0.05\n";
+        e += "operator_settings:\n";
+        e += "    auto_optimize: true\n";
+        e += "    auto_optimize_delay: 1000\n";
+        e += "    operators:\n";
+        e += "        ModelOperator:\n";
+        e += "            weight: 10\n";
+        e += "            number_of_auxiliary_categories: 4\n";
+        e += "        ConcentrationScaler:\n";
+        e += "            weight: 3\n";
+        e += "            scale: 1\n";
+        e += "        TimeSizeRateMixer:\n";
+        e += "            weight: 6\n";
+        e += "            scale: 0.1\n";
+        e += "        TimeSizeRateScaler:\n";
+        e += "            weight: 0\n";
+        e += "            scale: 0.1\n";
+        e += "        EventTimeScaler:\n";
+        e += "            weight: 1\n";
+        e += "            scale: 0.1\n";
+        e += "        TimeRootSizeMixer:\n";
+        e += "            weight: 6\n";
+        e += "            scale: 0.05\n";
+        e += "        TimePriorParameterScaler:\n";
+        e += "            parameter_name: mean\n";
+        e += "            weight: 3\n";
+        e += "            scale: 0.5\n";
+        e += "        TimePriorParameterScaler:\n";
+        e += "            parameter_name: offset\n";
+        e += "            weight: 3\n";
+        e += "            scale: 0.5\n";
+        e += "        TimePriorParameterScaler:\n";
+        e += "            parameter_name: standard_deviation\n";
+        e += "            weight: 5\n";
+        e += "            scale: 0.01\n";
+
+        REQUIRE(settings.to_string() == e);
+        REQUIRE(settings.get_path() == "data/dummy.yml");
+
+        REQUIRE(settings.event_model_is_fixed() == false);
+        REQUIRE(settings.sampling_event_models() == true);
+        REQUIRE(settings.get_model_operator() == EcoevolityOptions::ModelOperator::gibbs_dpp);
+        REQUIRE(settings.get_model_prior() == EcoevolityOptions::ModelPrior::dpp);
+
+        REQUIRE(settings.get_chain_length() == 100000);
+        REQUIRE(settings.get_sample_frequency() == 100);
+        REQUIRE(settings.get_number_of_comparisons() == 2);
+        REQUIRE(settings.get_number_of_comparisons_with_free_mutation_rate() == 0);
+        REQUIRE(settings.get_number_of_comparisons_with_free_state_frequencies() == 2);
+        REQUIRE(settings.get_number_of_comparisons_with_free_population_size() == 1);
+
+        REQUIRE(settings.get_time_prior_settings().using_transformed_parameters() == true);
+        REQUIRE(settings.get_time_prior_settings().get_number_of_parameters() == 3);
+        REQUIRE(settings.get_time_prior_settings().get_parameter_index("mean") == 0);
+        REQUIRE(settings.get_time_prior_settings().get_parameter_index("standard_deviation") == 1);
+        REQUIRE(settings.get_time_prior_settings().get_parameter_index("offset") == 2);
+    }
+}

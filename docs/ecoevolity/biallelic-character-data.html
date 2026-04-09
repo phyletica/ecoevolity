@@ -1,17 +1,17 @@
-
 <!DOCTYPE html>
 
-<html>
+<html lang="en" data-content_root="../">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
     <title>The Data &#8212; Ecoevolity 0.1.0 documentation</title>
-    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
-    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
-    <script src="../_static/jquery.js"></script>
-    <script src="../_static/underscore.js"></script>
-    <script src="../_static/doctools.js"></script>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../_static/basic.css?v=b08954a9" />
+    <link rel="stylesheet" type="text/css" href="../_static/alabaster.css?v=f237fd5d" />
+    <script src="../_static/documentation_options.js?v=01f34227"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="The Configuration File" href="yaml-config.html" />
@@ -19,17 +19,18 @@
    
   <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
   
+
   
-  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+  
 
   </head><body>
   <div class="document">
     
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
         <div class="sphinxsidebarwrapper">
 <p class="logo">
   <a href="../index.html">
-    <img class="logo" src="../_static/site-logo.svg" alt="Logo"/>
+    <img class="logo" src="../_static/site-logo.svg" alt="Logo" />
     
   </a>
 </p>
@@ -53,7 +54,13 @@
 <li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="index.html">Ecoevolity</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="background.html">Background</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">The Data</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">The Data</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#orthology">Orthology</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#biallelic">Biallelic</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#unlinked">Unlinked</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#formatting-your-data">Formatting your data</a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="yaml-config.html">The Configuration File</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tutorials/index.html">Tutorials</a></li>
 </ul>
@@ -79,16 +86,16 @@
   </ul></li>
 </ul>
 </div>
-<div id="searchbox" style="display: none" role="search">
+<search id="searchbox" style="display: none" role="search">
   <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="../search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
       <input type="submit" value="Go" />
     </form>
     </div>
-</div>
-<script>$('#searchbox').show(0);</script>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
 
 
 
@@ -105,9 +112,9 @@
 
           <div class="body" role="main">
             
-  <p><a class="reference external" href="index.html"><img alt="Ecoevolity" src="../_images/ecoevolity-logo.svg" width="95%" /></a></p>
-<div class="section" id="the-data">
-<span id="data"></span><h1>The Data<a class="headerlink" href="#the-data" title="Permalink to this headline">¶</a></h1>
+  <p><a class="reference external" href="index.html"><img alt="Ecoevolity" src="../_images/ecoevolity-logo.svg" style="width: 95%;" /></a></p>
+<section id="the-data">
+<span id="data"></span><h1>The Data<a class="headerlink" href="#the-data" title="Link to this heading">¶</a></h1>
 <p>To use <a class="reference external" href="http://phyletica.org/ecoevolity">ecoevolity</a>, we need to have sampled genetic data from populations we are
 interested in comparing.
 Ecoevolity assumes your genetic characters are:</p>
@@ -116,8 +123,8 @@ Ecoevolity assumes your genetic characters are:</p>
 <li><p><a class="reference internal" href="#biallelic"><span class="std std-ref">biallelic</span></a></p></li>
 <li><p><a class="reference internal" href="#unlinked"><span class="std std-ref">effectively unlinked</span></a></p></li>
 </ul>
-<div class="section" id="orthology">
-<span id="orthologous"></span><h2>Orthology<a class="headerlink" href="#orthology" title="Permalink to this headline">¶</a></h2>
+<section id="orthology">
+<span id="orthologous"></span><h2>Orthology<a class="headerlink" href="#orthology" title="Link to this heading">¶</a></h2>
 <p><strong>Orthologous</strong> means that you are looking at the “same” character across your
 sampled genomes; the character was inherited from a common ancestor without any
 duplications of the locus.
@@ -128,15 +135,15 @@ species.
 You can take advantage of this if you are assembling your data from raw reads.
 For example, if you have “RADseq” data, you can assemble your loci for each
 comparison separately to increase the amount of data you end up with.</p>
-</div>
-<div class="section" id="biallelic">
-<span id="id1"></span><h2>Biallelic<a class="headerlink" href="#biallelic" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="biallelic">
+<span id="id1"></span><h2>Biallelic<a class="headerlink" href="#biallelic" title="Link to this heading">¶</a></h2>
 <p><strong>Biallelic</strong> means that each character has two possible states.
 But, most genomic data are composed of nucleotides, which have four states.
 This can be accommodated by
 <a class="reference internal" href="#codingnucs"><span class="std std-ref">coding the nucleotides as biallelic</span></a>.</p>
-<div class="section" id="coding-nucleotide-characters">
-<span id="codingnucs"></span><h3>Coding nucleotide characters<a class="headerlink" href="#coding-nucleotide-characters" title="Permalink to this headline">¶</a></h3>
+<section id="coding-nucleotide-characters">
+<span id="codingnucs"></span><h3>Coding nucleotide characters<a class="headerlink" href="#coding-nucleotide-characters" title="Link to this heading">¶</a></h3>
 <p>Ecoevolity will read your nucleotide characters, and recode them as biallelic.
 If ecoevolity finds a polyallelic character with more than two states across your
 samples, it will report an error and stop running.
@@ -157,10 +164,10 @@ states.
 Thus, if you try to estimate frequencies of the two states, your results can be
 sensitive to how you decided to code your nucleotides as binary.</p>
 </div>
-</div>
-</div>
-<div class="section" id="unlinked">
-<span id="id2"></span><h2>Unlinked<a class="headerlink" href="#unlinked" title="Permalink to this headline">¶</a></h2>
+</section>
+</section>
+<section id="unlinked">
+<span id="id2"></span><h2>Unlinked<a class="headerlink" href="#unlinked" title="Link to this heading">¶</a></h2>
 <p><strong>Unlinked</strong> means that each character is assumed to have evolved along a gene
 tree that is independent from the others (conditional on the population
 history).
@@ -170,11 +177,11 @@ another in the genome that they segregate independently during meiosis.</p>
 linked nucleotides.
 Examples include “RADseq” or sequence-capture data.
 <a class="reference internal" href="#linkage"><span class="std std-ref">What should we do with such data</span></a>?</p>
-<div class="section" id="what-to-do-with-linked-characters">
-<span id="linkage"></span><h3>What to do with linked characters?<a class="headerlink" href="#what-to-do-with-linked-characters" title="Permalink to this headline">¶</a></h3>
+<section id="what-to-do-with-linked-characters">
+<span id="linkage"></span><h3>What to do with linked characters?<a class="headerlink" href="#what-to-do-with-linked-characters" title="Link to this heading">¶</a></h3>
 <p>What if you have loci comprising sequences of linked nucleotides?
 Based on simulations of loci of 100, 500, and 1000 linked characters
-<a class="bibtex reference internal" href="../zbib/references.html#oaks2018ecoevolity" id="id3">[14]</a>, we strongly recommend that you analyze all of your
+<span id="id3">[<a class="reference internal" href="../zbib/references.html#id49" title="Jamie R. Oaks. Full Bayesian comparative phylogeography from genomic data. Systematic Biology, 68(3):371–395, 05 2019. URL: https://doi.org/10.1093/sysbio/syy063, doi:10.1093/sysbio/syy063.">14</a>]</span>, we strongly recommend that you analyze all of your
 characters (including the constant ones) and violate the assumption of unlinked
 characters.
 Ecoevolity performs much better when you use all of the sites (especially the
@@ -182,18 +189,18 @@ constant ones) compared to reducing the data to only one variable character per
 locus.
 So, your best bet is to put all of your loci for a comparison together into a
 nexus-formatted character matrix.</p>
-</div>
-</div>
-<div class="section" id="formatting-your-data">
-<span id="nexusfile"></span><h2>Formatting your data<a class="headerlink" href="#formatting-your-data" title="Permalink to this headline">¶</a></h2>
+</section>
+</section>
+<section id="formatting-your-data">
+<span id="nexusfile"></span><h2>Formatting your data<a class="headerlink" href="#formatting-your-data" title="Link to this heading">¶</a></h2>
 <p>Currently, ecoevolity accepts two input formats for genetic characters:
 Nexus and <a class="reference external" href="http://yaml.org/">YAML</a>.
 The character data for each of your comparisons will go into a separate
 file in one of these formats, which are described below.</p>
-<div class="section" id="nexus-format">
-<h3>Nexus format<a class="headerlink" href="#nexus-format" title="Permalink to this headline">¶</a></h3>
-<div class="section" id="standard-haploid-data">
-<h4>Standard haploid data<a class="headerlink" href="#standard-haploid-data" title="Permalink to this headline">¶</a></h4>
+<section id="nexus-format">
+<h3>Nexus format<a class="headerlink" href="#nexus-format" title="Link to this heading">¶</a></h3>
+<section id="standard-haploid-data">
+<h4>Standard haploid data<a class="headerlink" href="#standard-haploid-data" title="Link to this heading">¶</a></h4>
 <p>You can represent your data in a “standard” 0/1 format.
 Here’s example of a pair of populations from which we’ve sampled 4 genomes (2
 diploid individuals) from two different populations (indicated by the last part
@@ -261,9 +268,9 @@ by declaring:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">genotypes_are_diploid</span><span class="p">:</span> <span class="n">false</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="standard-diploid-data">
-<h4>Standard diploid data<a class="headerlink" href="#standard-diploid-data" title="Permalink to this headline">¶</a></h4>
+</section>
+<section id="standard-diploid-data">
+<h4>Standard diploid data<a class="headerlink" href="#standard-diploid-data" title="Link to this heading">¶</a></h4>
 <p>Above, each cell in our matrix represented which state was present
 for the character in a particular haploid genome.
 We can also represent the same data where each cell represents
@@ -291,9 +298,9 @@ by declaring:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">genotypes_are_diploid</span><span class="p">:</span> <span class="n">true</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="nucleotide-data">
-<h4>Nucleotide data<a class="headerlink" href="#nucleotide-data" title="Permalink to this headline">¶</a></h4>
+</section>
+<section id="nucleotide-data">
+<h4>Nucleotide data<a class="headerlink" href="#nucleotide-data" title="Link to this heading">¶</a></h4>
 <p>If you have nucleotide data, the easiest thing is provide the nucleotide
 characters to ecoevolity as is, and let it recode them as biallelic.
 Here’s an example where we are providing nucleotides as haploid (each cell is a
@@ -345,9 +352,9 @@ accordingly:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">genotypes_are_diploid</span><span class="p">:</span> <span class="n">true</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="population-labels">
-<h4>Population labels<a class="headerlink" href="#population-labels" title="Permalink to this headline">¶</a></h4>
+</section>
+<section id="population-labels">
+<h4>Population labels<a class="headerlink" href="#population-labels" title="Link to this heading">¶</a></h4>
 <p>In our nexus character matrix, we need to indicate which population each
 row corresponds to.
 We can do this with either using a prefix or suffix in the row (or taxon)
@@ -383,22 +390,24 @@ separated by a “-” to figure out the population label.</p>
 If ecoevolity finds two population labels, it will model
 the comparison as two diverged populations and try to
 estimate the time that they diverged:</p>
-<a class="reference internal image-reference" href="../_images/div-model-singleton.svg"><img alt="divergence comparison cartoon" class="align-center" src="../_images/div-model-singleton.svg" width="50%" /></a>
+<a class="reference internal image-reference" href="../_images/div-model-singleton.svg"><img alt="divergence comparison cartoon" class="align-center" src="../_images/div-model-singleton.svg" style="width: 50%;" />
+</a>
 <p>If ecoevolity finds one population label, it will
 model the comparison as a population that underwent
 a population-size change and try to estimate the time
 that the change occurred:</p>
-<a class="reference internal image-reference" href="../_images/demog-model-singleton.svg"><img alt="demog comparison cartoon" class="align-center" src="../_images/demog-model-singleton.svg" width="50%" /></a>
+<a class="reference internal image-reference" href="../_images/demog-model-singleton.svg"><img alt="demog comparison cartoon" class="align-center" src="../_images/demog-model-singleton.svg" style="width: 50%;" />
+</a>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>If you like to use underscores as a population label
 delimiter, just watch out for a
 <a class="reference internal" href="yaml-config.html#underscoregotcha"><span class="std std-ref">gotcha related to how the nexus format treats underscores</span></a></p>
 </div>
-</div>
-</div>
-<div class="section" id="yaml-format">
-<h3>YAML format<a class="headerlink" href="#yaml-format" title="Permalink to this headline">¶</a></h3>
+</section>
+</section>
+<section id="yaml-format">
+<h3>YAML format<a class="headerlink" href="#yaml-format" title="Link to this heading">¶</a></h3>
 <p>The YAML-formatted data format is a lot more efficient (much smaller file
 sizes).
 Instead of a full alignment,
@@ -446,9 +455,9 @@ Doing so gives us the following allele-count patterns in <a class="reference ext
     <span class="o">-</span> <span class="mi">1</span>
 </pre></div>
 </div>
-</div>
-</div>
-</div>
+</section>
+</section>
+</section>
 
 
           </div>
