@@ -2223,9 +2223,9 @@ class NucTreeAnalysisSettings {
         std::string config_path_ = "";
         unsigned int chain_length_ = 100000;
         unsigned int sample_frequency_ = 100;
-        std::string tree_log_path_ = "phycoeval-trees-run-1.nex";
-        std::string state_log_path_ = "phycoeval-state-run-1.log";
-        std::string operator_log_path_ = "phycoeval-operator-run-1.log";
+        std::string tree_log_path_ = "nephila-trees-run-1.nex";
+        std::string state_log_path_ = "nephila-state-run-1.log";
+        std::string operator_log_path_ = "nephila-operator-run-1.log";
 
         void set_output_paths_to_config_directory() {
             std::pair<std::string, std::string> prefix_ext = path::splitext(this->config_path_);
