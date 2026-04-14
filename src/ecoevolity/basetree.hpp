@@ -371,6 +371,7 @@ class BaseTree {
                     abs_tolerance,
                     using_height_comments);
 
+            root->collapse_zero_length_internal_branches();
             this->set_root(root);
         }
 
@@ -699,6 +700,10 @@ class BaseTree {
         void make_clean() {
             this->is_dirty_ = false;
             this->root_->make_all_clean();
+        }
+
+        unsigned int collapse_zero_length_internal_branches() {
+            return this->root_->collapse_zero_length_internal_branches();
         }
 
         void refresh_pre_ordered_nodes() {
@@ -2160,8 +2165,11 @@ class BaseTree {
                 const unsigned int precision = 12) const {
             std::ostringstream s;
             s.precision(precision);
+            std::string label;
             if (node->is_leaf()) {
-                s << node->get_label();
+                label = node->get_label();
+                std::replace(label.begin(), label.end(), ' ', '_');
+                s << label;
             }
             else {
                 unsigned int child_idx = 0;
@@ -2223,8 +2231,11 @@ class BaseTree {
             out << "BEGIN TAXA;\n"
                 << "    DIMENSIONS NTAX=" << leaf_labels.size() << ";\n"
                 << "    TAXLABELS\n";
+            std::string lab;
             for (auto label : leaf_labels) {
-                out << "        " << label << "\n";
+                lab = label;
+                std::replace(lab.begin(), lab.end(), ' ', '_');
+                out << "        " << lab << "\n";
             }
             out << "    ;\n"
                 << "END;" << std::endl;
