@@ -154,7 +154,8 @@ int nephila_main(int argc, char * argv[]) {
     write_settings(std::cout, settings, operator_schedule);
     std::cout << string_util::banner('-') << "\n\n";
 
-    unsigned int n_moves_per_generation = tree.get_leaf_node_count();
+    // unsigned int n_moves_per_generation = tree.get_leaf_node_count();
+    unsigned int n_moves_per_generation = 20;
 
     if (ignore_data) {
         tree.ignore_data();
