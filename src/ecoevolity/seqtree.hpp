@@ -94,13 +94,13 @@ namespace ecoevolity {
     
             // void draw_from_prior(RandomNumberGenerator& rng);
     
-            // void write_state_log_header(std::ostream& out,
-            //         const std::string& delimiter = "\t",
-            //         const bool short_summary = false) const;
-            // void log_state(std::ostream& out,
-            //         const unsigned int generation_index,
-            //         const std::string& delimiter = "\t",
-            //         const bool short_summary = false) const;
+            void write_state_log_header(std::ostream& out,
+                    const std::string& delimiter = "\t",
+                    const bool short_summary = false) const;
+            void log_state(std::ostream& out,
+                    const unsigned int generation_index,
+                    const std::string& delimiter = "\t",
+                    const bool short_summary = false) const;
     };
     
     
@@ -202,4 +202,42 @@ namespace ecoevolity {
         return log_like;
     }
 
+    template<class NodeType>
+    void SeqTree<NodeType>::write_state_log_header(std::ostream& out,
+            const std::string& delimiter,
+            const bool short_summary) const {
+        out << "generation" << delimiter
+            << "ln_likelihood" << delimiter
+            << "ln_prior" << delimiter
+            << "alpha_of_height_beta_prior" << delimiter
+            << "beta_of_height_beta_prior" << delimiter
+            << "number_of_heights" << delimiter
+            << "root_height";
+        if (short_summary) {
+            out << std::endl;
+            return;
+        }
+        // Extra output
+        out << std::endl;
+    }
+
+    template<class NodeType>
+    void SeqTree<NodeType>::log_state(std::ostream& out,
+            const unsigned int generation_index,
+            const std::string& delimiter,
+            const bool short_summary) const {
+        out << generation_index << delimiter
+            << this->log_likelihood_.get_value() << delimiter
+            << this->log_prior_density_.get_value() << delimiter
+            << this->get_alpha_of_node_height_beta_prior() << delimiter
+            << this->get_beta_of_node_height_beta_prior() << delimiter
+            << this->get_number_of_node_heights() << delimiter
+            << this->get_root_height();
+        if (short_summary) {
+            out << std::endl;
+            return;
+        }
+        // Extra output
+        out << std::endl;
+    }
 }
