@@ -67,4 +67,52 @@ inline void write_settings(
     }
 }
 
+template<class TreeType>
+inline void write_settings(
+        std::ostream & out,
+        const NucTreeAnalysisSettings & settings,
+        const GeneralTreeOperatorSchedule<TreeType> & operator_schedule
+        ) {
+    std::string indent = string_util::get_indent(1);
+    out << std::boolalpha;
+
+    out << "---\n"
+        << "data:\n"
+        << settings.data_settings.to_string(1)
+        << "tree_model:\n"
+        << settings.tree_model_settings.to_string(1)
+        << "mutation_parameters:\n"
+        << indent << "state_frequencies:\n"
+        << settings.state_freq_settings.to_string(2)
+        << indent << "rate_matrix:\n"
+        << settings.rate_matrix_settings.to_string(2)
+        << indent << "among_site_rate_variation:\n"
+        << indent << indent << "discrete_gamma:\n"
+        << indent << indent << indent << "number_of_categories: " << settings.asrv_num_cats << "\n"
+        << indent << indent << indent << "parameters:\n"
+        << indent << indent << indent << indent << "one_over_shape:\n"
+        << settings.asrv_one_over_shape_settings.to_string(5)
+        << indent << indent << "proportion_invariable_sites:\n"
+        << settings.asrv_prop_invar_settings.to_string(3)
+        << "mcmc_settings:\n"
+        << indent << "chain_length: " << settings.get_chain_length() << "\n"
+        << indent << "sample_frequency: " << settings.get_sample_frequency() << "\n"
+        << indent << "operators:\n";
+    std::set<std::string> op_names;
+    op_names = operator_schedule.write_op_settings(out, 2);
+    std::string margin = string_util::get_indent(2);
+    for (auto op : settings.operator_settings->untunable_operators) {
+        if (op_names.count(op.first) < 1) {
+            out << margin << op.first << ":\n";
+            out << margin << indent << "weight: 0\n";
+        }
+    }
+    for (auto op : settings.operator_settings->tunable_operators) {
+        if (op_names.count(op.first) < 1) {
+            out << margin << op.first << ":\n";
+            out << margin << indent << "weight: 0\n";
+        }
+    }
+}
+
 #endif

@@ -197,7 +197,7 @@ namespace ecoevolity {
             this->log_likelihood_.set_value(0.0);
             return 0.0;
         }
-        double log_like = this->likelihood_->calc_log_likelihood();
+        double log_like = this->likelihood_->calc_log_likelihood(this->root_);
         this->log_likelihood_.set_value(log_like);
         return log_like;
     }

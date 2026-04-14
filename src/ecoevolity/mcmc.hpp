@@ -46,8 +46,8 @@ inline void mcmc(
     state_log_stream.precision(logging_precision);
     operator_log_stream.precision(logging_precision);
 
-    tree.write_state_log_header(state_log_stream, logging_delimiter);
-    tree.write_state_log_header(std_output_stream, logging_delimiter, true);
+    // tree.write_state_log_header(state_log_stream, logging_delimiter);
+    // tree.write_state_log_header(std_output_stream, logging_delimiter, true);
 
     tree_log_stream << "#NEXUS" << std::endl;
     tree.write_nexus_taxa_block(tree_log_stream);
@@ -73,8 +73,8 @@ inline void mcmc(
                 << "#######################################################################\n";
         throw EcoevolityError(message.str());
     }
-    tree.log_state(state_log_stream, 0, logging_delimiter);
-    tree.log_state(std_output_stream, 0, logging_delimiter, true);
+    // tree.log_state(state_log_stream, 0, logging_delimiter);
+    // tree.log_state(std_output_stream, 0, logging_delimiter, true);
     tree.log_nexus_tree(tree_log_stream, 0, true, logging_precision);
 
     std::shared_ptr< GeneralTreeOperatorTemplate< TreeType > > op;
@@ -92,12 +92,12 @@ inline void mcmc(
         }
 
         if ((gen + 1) % sample_frequency == 0) {
-            tree.log_state(state_log_stream, gen + 1, logging_delimiter);
+            // tree.log_state(state_log_stream, gen + 1, logging_delimiter);
             tree.log_nexus_tree(tree_log_stream, gen + 1, true, logging_precision);
             gen_of_last_state_log = gen;
             // Log every 10th sample to std out
             if ((gen + 1) % (sample_frequency * 10) == 0) {
-                tree.log_state(std_output_stream, gen + 1, logging_delimiter, true);
+                // tree.log_state(std_output_stream, gen + 1, logging_delimiter, true);
                 // Log operator performance every 100 samples
                 if ((gen + 1) % (sample_frequency * 100) == 0) {
                     operator_log_stream << "generation " << gen + 1 << ":\n";
@@ -109,8 +109,8 @@ inline void mcmc(
     }
     // Make sure last generation is reported
     if (gen > (gen_of_last_state_log + 1)) {
-        tree.log_state(state_log_stream, gen + 1, logging_delimiter);
-        tree.log_state(std_output_stream, gen + 1, logging_delimiter, true);
+        // tree.log_state(state_log_stream, gen + 1, logging_delimiter);
+        // tree.log_state(std_output_stream, gen + 1, logging_delimiter, true);
         tree.log_nexus_tree(tree_log_stream, gen + 1, true, logging_precision);
     }
     if (gen > (gen_of_last_operator_log + 1)) {

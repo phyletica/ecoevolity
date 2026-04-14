@@ -26,7 +26,8 @@ namespace ecoevolity {
             unsigned                                calc_num_nodes_in_fully_resolved_tree() const;
             unsigned                                get_num_seqs() const;
 
-            double                                  calc_log_likelihood();
+            // double                                  calc_log_likelihood();
+            double                                  calc_log_likelihood(std::shared_ptr<NodeType> root);
 
         private:
 
@@ -35,26 +36,32 @@ namespace ecoevolity {
             void                                    update_asrv_rates();
             void                                    update_proportion_invariable_sites();
             void                                    set_tip_states();
-            void                                    update_prob_matrices();
-            void                                    update_operations();
+            // void                                    update_prob_matrices();
+            void                                    update_prob_matrices(std::shared_ptr<NodeType> root);
+            // void                                    update_operations();
+            void                                    update_operations(std::shared_ptr<NodeType> root);
             void                                    update_partials();
 
+            // void                                    update_resolved_root();
+            // void                                    update_resolved_internal_node_indices();
+
             std::vector<pll_operation_t>            _operations;
-            pll_partition_t *                       _pll_partition;
+            pll_partition_t *                       _pll_partition = nullptr;
             NucData::SharedPtr                      _data;
             Model::SharedPtr                        _model;
             std::shared_ptr<NodeType>               _root;
+            // std::shared_ptr<NodeType>               _resolved_root;
     }; 
 
     template<class NodeType>
     inline Likelihood<NodeType>::Likelihood() {
-        //std::cout << "Constructing a Likelihood" << std::endl;
+        // std::cout << "Constructing a Likelihood" << std::endl;
         this->clear();
     }
 
     template<class NodeType>
     inline Likelihood<NodeType>::~Likelihood() {
-        //std::cout << "Destroying a Likelihood" << std::endl;
+        // std::cout << "Destroying a Likelihood" << std::endl;
         if (_pll_partition) {
             pll_partition_destroy(_pll_partition);
         }
@@ -179,12 +186,14 @@ namespace ecoevolity {
     }
 
     template<class NodeType>
-    inline void Likelihood<NodeType>::update_prob_matrices() {
+    inline void Likelihood<NodeType>::update_prob_matrices(std::shared_ptr<NodeType> root) {
         unsigned max_n_edges = this->calc_num_edges_in_fully_resolved_tree();
 
         std::vector< std::shared_ptr<NodeType> > nodes;
         // nodes.reserve(max_n_edges + 1);
-        this->_root->level_order(nodes);
+        // this->_root->level_order(nodes);
+        // this->_resolved_root->level_order(nodes);
+        root->level_order(nodes);
         ECOEVOLITY_ASSERT(nodes.size() <= (max_n_edges + 1));
 
         std::vector<double> branch_lengths;
@@ -236,13 +245,15 @@ namespace ecoevolity {
     }
 
     template<class NodeType>
-    inline void Likelihood<NodeType>::update_operations() {
+    inline void Likelihood<NodeType>::update_operations(std::shared_ptr<NodeType> root) {
         unsigned max_n_edges = this->calc_num_edges_in_fully_resolved_tree();
         unsigned max_n_internals = this->calc_num_internals_in_fully_resolved_tree();
 
         std::vector< std::shared_ptr<NodeType> > nodes;
         nodes.reserve(max_n_edges + 1);
-        this->_root->level_order(nodes);
+        // this->_root->level_order(nodes);
+        // this->_resolved_root->level_order(nodes);
+        root->level_order(nodes);
         ECOEVOLITY_ASSERT(nodes.size() <= (max_n_edges + 1));
 
         // Minus 1 for root node, which lacks a trans prob matrix
@@ -334,15 +345,29 @@ namespace ecoevolity {
     }
 
     template<class NodeType>
-    inline double Likelihood<NodeType>::calc_log_likelihood() {
+    inline double Likelihood<NodeType>::calc_log_likelihood(std::shared_ptr<NodeType> root) {
+        std::shared_ptr<NodeType> resolved_root = root->get_deep_copy();
+        resolved_root->resolve_clade();
+        int next_idx = resolved_root->get_leaf_node_count();
+        std::vector< std::shared_ptr<NodeType> > nodes;
+        resolved_root->level_order(nodes);
+        for (auto node = nodes.rbegin();
+                node != nodes.rend();
+                ++node) {
+            if (! (*node)->is_leaf()) {
+                (*node)->set_index(next_idx);
+                ++next_idx;
+            }
+        }
+
         this->update_state_freqs();
         this->update_exchangeabilities();
         this->update_asrv_rates();
         if (this->_model->get_asrv()->is_invariable_sites_model()) {
             this->update_proportion_invariable_sites();
         }
-        this->update_prob_matrices();
-        this->update_operations();
+        this->update_prob_matrices(resolved_root);
+        this->update_operations(resolved_root);
         this->update_partials();
 
         std::vector<unsigned> q_matrix_indices_of_asrv_cats(this->_model->get_asrv()->get_num_categ(), 0);

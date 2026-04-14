@@ -548,69 +548,70 @@ class GeneralTreeOperatorSchedule {
                                  NodeHeightPriorAlphaMover<TreeType>
                                       >();
             }
-            else if (op_name == "MuRateScaler") {
-                op = std::make_shared<
-                                 MuRateScaler
-                                      >();
-            }
-            else if (op_name == "GlobalPopSizeScaler") {
-                op = std::make_shared<
-                                 GlobalPopSizeScaler
-                                      >();
-            }
-            else if (op_name == "PopSizeScaler") {
-                op = std::make_shared<
-                                 PopSizeScaler
-                                      >();
-            }
-            else if (op_name == "GlobalHeightSizeMixer") {
-                op = std::make_shared<
-                                 GlobalHeightSizeMixer
-                                      >();
-            }
-            else if (op_name == "HeightSizeMixer") {
-                op = std::make_shared<
-                                 HeightSizeMixer
-                                      >();
-            }
-            else if (op_name == "HeightSizeSlideBumpMixer") {
-                op = std::make_shared<
-                                 HeightSizeSlideBumpMixer
-                                      >();
-            }
-            else if (op_name == "RootHeightSizeMixer") {
-                op = std::make_shared<
-                                 RootHeightSizeMixer
-                                      >();
-            }
-            else if (op_name == "GlobalHeightSizeRateScaler") {
-                op = std::make_shared<
-                                 GlobalHeightSizeRateScaler
-                                      >();
-            }
-            else if (op_name == "GlobalHeightSizeScaler") {
-                op = std::make_shared<
-                                 GlobalHeightSizeScaler
-                                      >();
-            }
-            else if (op_name == "GlobalHeightRateScaler") {
-                op = std::make_shared<
-                                 GlobalHeightRateScaler
-                                      >();
-            }
-            else if (op_name == "StateFreqMover") {
-                op = std::make_shared<
-                                 StateFreqMover
-                                      >();
-            }
-            else if (op_name == "StateFreqDirichletOperator") {
-                op = std::make_shared<
-                                 StateFreqDirichletOperator
-                                      >();
-            }
+            // else if (op_name == "MuRateScaler") {
+            //     op = std::make_shared<
+            //                      MuRateScaler
+            //                           >();
+            // }
+            // else if (op_name == "GlobalPopSizeScaler") {
+            //     op = std::make_shared<
+            //                      GlobalPopSizeScaler
+            //                           >();
+            // }
+            // else if (op_name == "PopSizeScaler") {
+            //     op = std::make_shared<
+            //                      PopSizeScaler
+            //                           >();
+            // }
+            // else if (op_name == "GlobalHeightSizeMixer") {
+            //     op = std::make_shared<
+            //                      GlobalHeightSizeMixer
+            //                           >();
+            // }
+            // else if (op_name == "HeightSizeMixer") {
+            //     op = std::make_shared<
+            //                      HeightSizeMixer
+            //                           >();
+            // }
+            // else if (op_name == "HeightSizeSlideBumpMixer") {
+            //     op = std::make_shared<
+            //                      HeightSizeSlideBumpMixer
+            //                           >();
+            // }
+            // else if (op_name == "RootHeightSizeMixer") {
+            //     op = std::make_shared<
+            //                      RootHeightSizeMixer
+            //                           >();
+            // }
+            // else if (op_name == "GlobalHeightSizeRateScaler") {
+            //     op = std::make_shared<
+            //                      GlobalHeightSizeRateScaler
+            //                           >();
+            // }
+            // else if (op_name == "GlobalHeightSizeScaler") {
+            //     op = std::make_shared<
+            //                      GlobalHeightSizeScaler
+            //                           >();
+            // }
+            // else if (op_name == "GlobalHeightRateScaler") {
+            //     op = std::make_shared<
+            //                      GlobalHeightRateScaler
+            //                           >();
+            // }
+            // else if (op_name == "StateFreqMover") {
+            //     op = std::make_shared<
+            //                      StateFreqMover
+            //                           >();
+            // }
+            // else if (op_name == "StateFreqDirichletOperator") {
+            //     op = std::make_shared<
+            //                      StateFreqDirichletOperator
+            //                           >();
+            // }
             else {
-                throw EcoevolityError(
-                        "GeneralTreeOperatorSchedule: Unrecognized tunable operator: " + op_name);
+                return;
+                // throw EcoevolityError(
+                //         "GeneralTreeOperatorSchedule: Unrecognized tunable operator: " + op_name);
             }
 
             if (weight < 0.0) {
