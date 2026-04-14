@@ -282,6 +282,57 @@ class BaseNode : public std::enable_shared_from_this<DerivedNodeT> {
             return grand_parent->get_number_of_children();
         }
 
+        unsigned int resolve(unsigned int number_of_leaves_in_tree = 0) {
+            if (! this->is_polytomy()) {
+                return 0;
+            }
+            unsigned int num_nodes_added = 0;
+            std::vector<unsigned int> child_indices = {1, 2};
+            double height = this->get_height();
+            while (this->is_polytomy()) {
+                std::vector< std::shared_ptr<DerivedNodeT> > children_to_split = this->get_children(child_indices);
+                std::shared_ptr<PositiveRealParameter> new_height_parameter = std::make_shared<PositiveRealParameter>(height);
+                std::shared_ptr<DerivedNodeT> new_node = std::make_shared<DerivedNodeT>(new_height_parameter);
+                new_node->make_dirty();
+                this->make_dirty();
+                if (number_of_leaves_in_tree > 0) {
+                    new_node->split_.resize(number_of_leaves_in_tree);
+                }
+                for (auto child : children_to_split) {
+                    child->remove_parent();
+                    child->add_parent(new_node);
+                }
+                ECOEVOLITY_ASSERT(this->has_children());
+                this->add_child(new_node);
+                num_nodes_added++;
+            }
+            return num_nodes_added;
+        }
+
+        unsigned int resolve_clade(unsigned int number_of_leaves_in_tree = 0) {
+            std::vector< std::shared_ptr<DerivedNodeT> > internal_nodes = this->get_internal_nodes();
+            unsigned int num_nodes_added = 0;
+            for (unsigned int i = 0; i < internal_nodes.size(); ++i) {
+                num_nodes_added += internal_nodes.at(i)->resolve(number_of_leaves_in_tree);
+            }
+            return num_nodes_added;
+        }
+
+        unsigned int collapse_zero_length_internal_branches() {
+            std::vector< std::shared_ptr<DerivedNodeT> > internal_nodes = this->get_internal_nodes();
+            unsigned int num_collapsed = 0;
+            for (unsigned int i = 0; i < internal_nodes.size(); ++i) {
+                if (internal_nodes.at(i)->is_root()) {
+                    continue;
+                }
+                if (internal_nodes.at(i)->get_length() <= 0.0) {
+                    internal_nodes.at(i)->collapse();
+                    num_collapsed++;
+                }
+            }
+            return num_collapsed;
+        }
+
         std::shared_ptr<DerivedNodeT> split_children_from_polytomy(
                 RandomNumberGenerator & rng,
                 std::vector< std::shared_ptr<DerivedNodeT> >& children_to_split,
@@ -917,8 +968,11 @@ class BaseNode : public std::enable_shared_from_this<DerivedNodeT> {
                 const bool label_internal_nodes = false) const {
             std::ostringstream s;
             s.precision(precision);
+            std::string label;
             if (this->is_leaf()) {
-                s << this->get_label();
+                label = this->get_label();
+                std::replace(label.begin(), label.end(), ' ', '_');
+                s << label;
             }
             else {
                 unsigned int child_idx = 0;
@@ -933,7 +987,9 @@ class BaseNode : public std::enable_shared_from_this<DerivedNodeT> {
                 }
                 s << ")";
                 if (label_internal_nodes) {
-                    s << this->get_label();
+                    label = this->get_label();
+                    std::replace(label.begin(), label.end(), ' ', '_');
+                    s << label;
                 }
             }
             s << ":" << this->get_length();
