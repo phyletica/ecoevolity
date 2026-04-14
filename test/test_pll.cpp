@@ -11,9 +11,12 @@ TEST_CASE("Testing no partitioning JC model on ML tree", "[pll]") {
         RandomNumberGenerator rng;
         rng.set_seed(1);
 
+        std::cout << "Creating tree...\n";
         ecoevolity::SeqTree<Node> tree(settings, rng);
 
+        std::cout << "compute_log_likelihood...\n";
         double lnl = tree.compute_log_likelihood(1);
+        std::cout << "done\n";
         double expected_lnl = -278.838;
         double diff = std::fabs(lnl - expected_lnl);
         REQUIRE(diff == Approx(0.0).epsilon(0.0005));
@@ -44,6 +47,8 @@ TEST_CASE("Testing no partitioning JC model on ultrametric tree", "[pll]") {
         rng.set_seed(1);
 
         ecoevolity::SeqTree<Node> tree(settings, rng);
+        REQUIRE(tree.get_leaf_node_count() == 14);
+        REQUIRE(tree.get_internal_node_count() == 10);
 
         double lnl = tree.compute_log_likelihood(1);
         double expected_lnl = -340.493;
@@ -60,6 +65,31 @@ TEST_CASE("Testing no partitioning JC model on ultrametric tree with polytomy ro
         rng.set_seed(1);
 
         ecoevolity::SeqTree<Node> tree(settings, rng);
+        REQUIRE(tree.get_leaf_node_count() == 14);
+        REQUIRE(tree.get_internal_node_count() == 10);
+
+        double lnl = tree.compute_log_likelihood(1);
+        double expected_lnl = -340.493;
+        double diff = std::fabs(lnl - expected_lnl);
+        REQUIRE(diff == Approx(0.0).epsilon(0.0005));
+
+        unsigned int n_collapsed = tree.collapse_zero_length_internal_branches();
+        lnl = tree.compute_log_likelihood(1);
+        diff = std::fabs(lnl - expected_lnl);
+        REQUIRE(diff == Approx(0.0).epsilon(0.0005));
+    }
+}
+
+TEST_CASE("Testing no partitioning JC model on ultrametric tree with polytomy root and internal nodes", "[pll]") {
+    SECTION("Testing simple JC model on ultrametric tree with polytomy root and internals") {
+        std::string config_path = "data/rbcl-ultrametric-root-and-internal-polys-jc-config.yml";
+        NucTreeAnalysisSettings settings(config_path);
+        RandomNumberGenerator rng;
+        rng.set_seed(1);
+
+        ecoevolity::SeqTree<Node> tree(settings, rng);
+        REQUIRE(tree.get_leaf_node_count() == 14);
+        REQUIRE(tree.get_internal_node_count() == 10);
 
         double lnl = tree.compute_log_likelihood(1);
         double expected_lnl = -340.493;
