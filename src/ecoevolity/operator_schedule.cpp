@@ -107,14 +107,14 @@ OperatorSchedule::OperatorSchedule(const CollectionSettings& collection_settings
     }
 
     for (auto op : settings.get_time_prior_operator_settings_vector()) {
-        if (op->get_operator_name() == "TimePriorParameterScaler") {
+        if (string_util::startswith(op->get_operator_name(), "TimePriorParameterScaler")) {
             this->add_operator(std::make_shared<TimePriorParameterScaler>(
                     op->get_parameter_index(),
                     op->get_weight(),
                     op->get_scale()
                     ));
         }
-        else if (op->get_operator_name() == "TimePriorParameterMover") {
+        else if (string_util::startswith(op->get_operator_name(), "TimePriorParameterMover")) {
             this->add_operator(std::make_shared<TimePriorParameterMover>(
                     op->get_parameter_index(),
                     op->get_weight(),
@@ -286,14 +286,14 @@ OperatorSchedule::OperatorSchedule(
     }
 
     for (auto op : settings.get_time_prior_operator_settings_vector()) {
-        if (op->get_operator_name() == "TimePriorParameterScaler") {
+        if (string_util::startswith(op->get_operator_name(), "TimePriorParameterScaler")) {
             this->add_operator(std::make_shared<TimePriorParameterScaler>(
                     op->get_parameter_index(),
                     op->get_weight(),
                     op->get_scale()
                     ));
         }
-        else if (op->get_operator_name() == "TimePriorParameterMover") {
+        else if (string_util::startswith(op->get_operator_name(), "TimePriorParameterMover")) {
             this->add_operator(std::make_shared<TimePriorParameterMover>(
                     op->get_parameter_index(),
                     op->get_weight(),
@@ -457,14 +457,14 @@ OperatorSchedule::OperatorSchedule(
     }
 
     for (auto op : settings.get_time_prior_operator_settings_vector()) {
-        if (op->get_operator_name() == "TimePriorParameterScaler") {
+        if (string_util::startswith(op->get_operator_name(), "TimePriorParameterScaler")) {
             this->add_operator(std::make_shared<TimePriorParameterScaler>(
                     op->get_parameter_index(),
                     op->get_weight(),
                     op->get_scale()
                     ));
         }
-        else if (op->get_operator_name() == "TimePriorParameterMover") {
+        else if (string_util::startswith(op->get_operator_name(), "TimePriorParameterMover")) {
             this->add_operator(std::make_shared<TimePriorParameterMover>(
                     op->get_parameter_index(),
                     op->get_weight(),

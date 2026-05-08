@@ -10381,15 +10381,15 @@ TEST_CASE("Testing RelativeRootCollectionSettings with default time prior parame
         e += "            scale: 0.05\n";
         e += "        TimePriorParameterScaler:\n";
         e += "            parameter_name: mean\n";
-        e += "            weight: 3\n";
+        e += "            weight: 6\n";
         e += "            scale: 0.5\n";
         e += "        TimePriorParameterScaler:\n";
         e += "            parameter_name: offset\n";
-        e += "            weight: 3\n";
+        e += "            weight: 6\n";
         e += "            scale: 0.5\n";
         e += "        TimePriorParameterScaler:\n";
         e += "            parameter_name: standard_deviation\n";
-        e += "            weight: 3\n";
+        e += "            weight: 6\n";
         e += "            scale: 0.5\n";
 
         REQUIRE(settings.to_string() == e);
@@ -10673,11 +10673,11 @@ TEST_CASE("Testing RelativeRootCollectionSettings with overriding default time p
         e += "            scale: 0.05\n";
         e += "        TimePriorParameterScaler:\n";
         e += "            parameter_name: mean\n";
-        e += "            weight: 3\n";
+        e += "            weight: 6\n";
         e += "            scale: 0.5\n";
         e += "        TimePriorParameterScaler:\n";
         e += "            parameter_name: offset\n";
-        e += "            weight: 3\n";
+        e += "            weight: 6\n";
         e += "            scale: 0.5\n";
         e += "        TimePriorParameterScaler:\n";
         e += "            parameter_name: standard_deviation\n";

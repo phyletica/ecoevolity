@@ -1223,6 +1223,7 @@ class IndexedOperatorSettings : public OperatorSettings {
         IndexedOperatorSettings(const std::string & parameter_name, double weight) : OperatorSettings(weight) {
             this->parameter_name_ = parameter_name;
         }
+        IndexedOperatorSettings(double weight) : OperatorSettings(weight) { }
         virtual ~IndexedOperatorSettings() { }
         IndexedOperatorSettings& operator=(const IndexedOperatorSettings& other) {
             this->operator_name_ = other.operator_name_;
@@ -1464,6 +1465,10 @@ class IndexedScaleOperatorSettings : public IndexedOperatorSettings {
         IndexedScaleOperatorSettings(const std::string & parameter_name, double weight, double scale) : IndexedOperatorSettings(parameter_name, weight) {
             this->scale_ = scale;
         }
+        IndexedScaleOperatorSettings(double weight) : IndexedOperatorSettings(weight) { }
+        IndexedScaleOperatorSettings(double weight, double scale) : IndexedOperatorSettings(weight) {
+            this->scale_ = scale;
+        }
         virtual ~IndexedScaleOperatorSettings() { }
 
         IndexedScaleOperatorSettings& operator=(const IndexedScaleOperatorSettings& other) {
@@ -1613,6 +1618,10 @@ class IndexedWindowOperatorSettings : public IndexedOperatorSettings {
         IndexedWindowOperatorSettings(const std::string & parameter_name) : IndexedOperatorSettings(parameter_name) { }
         IndexedWindowOperatorSettings(const std::string & parameter_name, double weight) : IndexedOperatorSettings(parameter_name, weight) { }
         IndexedWindowOperatorSettings(const std::string & parameter_name, double weight, double window) : IndexedOperatorSettings(parameter_name, weight) {
+            this->window_ = window;
+        }
+        IndexedWindowOperatorSettings(double weight) : IndexedOperatorSettings(weight) { }
+        IndexedWindowOperatorSettings(double weight, double window) : IndexedOperatorSettings(weight) {
             this->window_ = window;
         }
         virtual ~IndexedWindowOperatorSettings() { }
@@ -1925,7 +1934,7 @@ class OperatorScheduleSettings {
                 }
                 else if (string_util::startswith(op->first.as<std::string>(), "TimePriorParameterScaler")) {
                     try {
-                        std::shared_ptr<IndexedScaleOperatorSettings> op_settings(new IndexedScaleOperatorSettings());
+                        std::shared_ptr<IndexedScaleOperatorSettings> op_settings(new IndexedScaleOperatorSettings(6.0, 0.5));
                         op_settings->update_from_config(op->second);
                         op_settings->set_operator_name(op->first.as<std::string>());
                         this->time_prior_operator_settings_[op_settings->get_parameter_name()] = op_settings;
@@ -1940,7 +1949,7 @@ class OperatorScheduleSettings {
                 }
                 else if (string_util::startswith(op->first.as<std::string>(), "TimePriorParameterMover")) {
                     try {
-                        std::shared_ptr<IndexedWindowOperatorSettings> op_settings(new IndexedWindowOperatorSettings());
+                        std::shared_ptr<IndexedWindowOperatorSettings> op_settings(new IndexedWindowOperatorSettings(6.0, 0.5));
                         op_settings->update_from_config(op->second);
                         op_settings->set_operator_name(op->first.as<std::string>());
                         this->time_prior_operator_settings_[op_settings->get_parameter_name()] = op_settings;
@@ -4066,7 +4075,7 @@ class BaseCollectionSettings {
                     // param_name
                     // to see if we need to create a window operator or other
                     // operator that allows neg values.
-                    std::shared_ptr<IndexedScaleOperatorSettings> op_settings(new IndexedScaleOperatorSettings(param_name, 3.0, 0.5));
+                    std::shared_ptr<IndexedScaleOperatorSettings> op_settings(new IndexedScaleOperatorSettings(param_name, 6.0, 0.5));
                     op_settings->set_parameter_index(param_index);
                     std::string op_name = "TimePriorParameterScaler";
                     std::string full_op_name = "TimePriorParameterScaler";
