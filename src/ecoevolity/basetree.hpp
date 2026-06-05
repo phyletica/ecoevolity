@@ -31,6 +31,7 @@
 class PopSizeScaler;
 class GlobalHeightSizeMixer;
 template<class TreeType> class GlobalNodeHeightDirichletOperator;
+template<class TreeType> class SubtreePruneRegraftRevJumpSampler;
 
 template<class NodeType>
 class BaseTree {
@@ -38,6 +39,8 @@ class BaseTree {
         friend class GlobalHeightSizeMixer;
         template<class TreeType>
         friend class GlobalNodeHeightDirichletOperator;
+        template<class TreeType>
+        friend class SubtreePruneRegraftRevJumpSampler;
 
     protected:
         std::shared_ptr<NodeType> root_;
@@ -1666,6 +1669,16 @@ class BaseTree {
                         "Node with label " + label + " not in tree");
             }
             return this->root_->get_node(label);
+        }
+
+        std::shared_ptr<NodeType> get_node(int index) const {
+            std::shared_ptr<NodeType> n = this->root_->get_node(index);
+            if (! n) {
+                std::ostringstream msg;
+                msg << "Node with index " << index << " not in tree";
+                throw EcoevolityError(msg.str());
+            }
+            return n;
         }
 
         virtual void set_root_node_height_prior(std::shared_ptr<ContinuousProbabilityDistribution> prior) {

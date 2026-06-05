@@ -37,6 +37,8 @@
 #include "split.hpp"
 #include "rng.hpp"
 
+template<class TreeType> class SubtreePruneRegraftRevJumpSampler;
+
 /**
  * Base class for a node of a phylogenetic tree.
  *
@@ -49,6 +51,8 @@
  */
 template<class DerivedNodeT>
 class BaseNode : public std::enable_shared_from_this<DerivedNodeT> {
+        template<class TreeType>
+        friend class SubtreePruneRegraftRevJumpSampler;
     protected:
         std::vector< std::shared_ptr<DerivedNodeT> > children_;
         std::weak_ptr<DerivedNodeT> parent_;
@@ -494,6 +498,29 @@ class BaseNode : public std::enable_shared_from_this<DerivedNodeT> {
             return node_ptr;
         }
 
+        void get_node(int index,
+                std::shared_ptr<DerivedNodeT>& node_ptr) {
+            if (node_ptr != nullptr) {
+                return;
+            }
+            if (this->is_index(index)) {
+                node_ptr = this->shared_from_this();
+                return;
+            }
+            for (auto child_iter: this->children_) {
+                if (child_iter->is_index(index)) {
+                    node_ptr = child_iter;
+                    return;
+                }
+                child_iter->get_node(index, node_ptr);
+            }
+        }
+        std::shared_ptr<DerivedNodeT> get_node(int index) {
+            std::shared_ptr<DerivedNodeT> node_ptr = nullptr;
+            this->get_node(index, node_ptr);
+            return node_ptr;
+        }
+
         void store_height() {
             this->height_->store();
         }
@@ -614,6 +641,9 @@ class BaseNode : public std::enable_shared_from_this<DerivedNodeT> {
         }
         bool is_label(const std::string& label) {
             return (this->label_ == label);
+        }
+        bool is_index(int i) {
+            return (this->index_ == i);
         }
 
         bool is_dirty() const {

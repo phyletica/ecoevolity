@@ -2833,6 +2833,460 @@ class SplitLumpNodesRevJumpSampler : public GeneralTreeOperatorInterface<TreeTyp
 };
 
 
+template<class TreeType>
+class SubtreePruneRegraftRevJumpSampler : public GeneralTreeOperatorInterface<TreeType, Op> {
+    public:
+        SubtreePruneRegraftRevJumpSampler() : GeneralTreeOperatorInterface<TreeType, Op>() { }
+        SubtreePruneRegraftRevJumpSampler(double weight) : GeneralTreeOperatorInterface<TreeType, Op>(weight) { }
+
+        std::string get_name() const {
+            return "SubtreePruneRegraftRevJumpSampler";
+        }
+
+        std::string target_parameter() const {
+            return "topology";
+        }
+
+        BaseGeneralTreeOperatorTemplate::OperatorTypeEnum get_type() const {
+            return BaseGeneralTreeOperatorTemplate::OperatorTypeEnum::topology_model_operator;
+        }
+        BaseGeneralTreeOperatorTemplate::OperatorScopeEnum get_scope() const {
+            return BaseGeneralTreeOperatorTemplate::OperatorScopeEnum::topology;
+        }
+
+        bool is_operable(TreeType * tree) const {
+            return true;
+        }
+
+        void operate_plus(RandomNumberGenerator& rng,
+                TreeType * tree,
+                std::vector< std::shared_ptr< GeneralTreeOperatorTemplate< TreeType > > > other_operators,
+                unsigned int nthreads = 1,
+                unsigned int number_of_moves = 1,
+                unsigned int other_op_number_of_moves = 1) {
+            for (unsigned int i = 0; i < number_of_moves; ++i) {
+                this->perform_move(rng, tree, nthreads);
+                for (auto other_op : other_operators) {
+                    other_op->operate(rng, tree, nthreads, other_op_number_of_moves);
+                }
+            }
+        }
+
+        /**
+         * @brief   Propose a new state.
+         *
+         * @return  Log of Hastings Ratio.
+         */
+        double propose(RandomNumberGenerator& rng,
+                TreeType * tree,
+                unsigned int nthreads = 1) {
+            if (! this->is_operable(tree)) {
+                this->ignore_proposal_attempt_ = true;
+                return -std::numeric_limits<double>::infinity();
+            }
+            tree->update_internal_node_indices();
+            const unsigned int num_nodes = tree->get_node_count();
+            ECOEVOLITY_ASSERT(num_nodes >= 3);
+            ECOEVOLITY_ASSERT(tree->get_root().get_index() == (num_nodes - 1));
+            int subtree_node_index = rng.uniform_int(0, num_nodes - 2);
+            double ln_prob_forward_move = -std::log( (double)(num_nodes - 1) );
+
+            typename TreeType::NodePtr subtree_node = tree->get_node(subtree_node_index);
+            double subtree_node_height = subtree_node->get_height();
+            typename TreeType::NodePtr parent_node = subtree_node->get_parent();
+            int parent_index = parent_node->get_index();
+            double parent_height = parent_node->get_height();
+            unsigned int subtree_height_index = tree->get_node_height_index(
+                    subtree_node->get_height_parameter());
+
+            parent_node->remove_child(subtree_node);
+            parent_node->make_dirty();
+
+            typename TreeType::NodePtr grandparent_node = nullptr;
+            typename TreeType::NodePtr sister_node = nullptr;
+            bool removed_parent_node = false;
+            bool removed_root = false;
+            if (parent_node->get_number_of_children() == 1) {
+                removed_parent_node = true;
+                if (parent_node->is_root()) {
+                    ECOEVOLITY_ASSERT(parent_node == tree->root_);
+                    typename TreeType::NodePtr new_root = parent_node->get_child(0);
+                    new_root->remove_parent();
+                    tree->root_ = new_root;
+                    // No need to make the new root dirty, because if we attach
+                    // the subtree above it, we don't need to recaclc the
+                    // likelihood
+                    removed_root = true;
+                }
+                else {
+                    // collapse makes grandparent node dirty
+                    grandparent_node = parent_node->get_parent();
+                    sister_node = parent_node->get_child(0);
+                    unsigned int num_children = grandparent_node->get_number_of_children();
+                    unsigned int num_added_children = parent_node->collapse();
+                    ECOEVOLITY_ASSERT(num_added_children == 1);
+                    ECOEVOLITY_ASSERT(
+                            grandparent_node->get_number_of_children() == (
+                                num_children + num_added_children)
+                    );
+                }
+            }
+
+            tree->update_node_heights();
+            tree->update_internal_node_indices();
+
+            bool removed_parent_height = false;
+            if (removed_parent_node) {
+                removed_parent_height = true;
+                for (unsigned int i = 0; i < tree->node_heights_.size(); ++i) {
+                    if (parent_node->get_height_parameter() == tree->node_heights_.at(i)) {
+                        removed_parent_height = false;
+                        break;
+                    }
+                }
+            }
+            if (removed_root) {
+                ECOEVOLITY_ASSERT(removed_parent_node);
+                ECOEVOLITY_ASSERT(removed_parent_height);
+            }
+
+            // Now we need map of node index to 1/2 weights
+            std::vector<unsigned int> node_weights(num_nodes, 0);
+            for (typename TreeType::NodePtr nd = tree->level_ordered_nodes_.rbegin();
+                    nd != tree->level_ordered_nodes_.rend();
+                    ++nd) {
+                if (nd->get_parent()->get_height() <= subtree_node_height) {
+                    continue;
+                }
+                if (nd->is_leaf()) {
+                    node_weights.at(nd->get_index()) = 1;
+                }
+                else if (nd == parent_node) {
+                    ECOEVOLITY_ASSERT(! removed_parent_node);
+                    node_weights.at(nd->get_index()) = 1;
+                }
+                else if (nd->get_height() <= subtree_node_height) {
+                    node_weights.at(nd->get_index()) = 1;
+                }
+                else {
+                    ECOEVOLITY_ASSERT(tree->get_node_height_index(nd->get_height_parameter()) != subtree_height_index);
+                    node_weights.at(nd->get_index()) = 2;
+                }
+            }
+            unsigned int num_attachment_targets = 0;
+            for (const double wt : node_weights) {
+                num_attachment_targets += wt;
+            }
+
+            std::vector<double> node_probs(node_weights.size(), 0.0);
+            for (unsigned int i = 0; i < node_weights.size(); ++i) {
+                node_probs.at(i) = (double)node_weights.at(i) / (double)num_attachment_targets;
+            }
+
+            unsigned int target_node_index = rng.weighted_index(node_probs);
+            ln_prob_forward_move -= std::log( (double)num_attachment_targets );
+
+            unsigned int target_node_weight = node_weights.at(target_node_index);
+            ECOEVOLITY_ASSERT(target_node_weight > 0);
+            typename TreeType::NodePtr target_node = tree->get_node(target_node_index);
+            unsigned int target_node_height_index = tree->get_node_height_index(
+                    target_node->get_height_parameter());
+            double target_node_height = target_node->get_height();
+            bool target_is_root = target_node->is_root();
+
+            bool attach_to_branch = true;
+            if (target_node_weight == 2) {
+                double u = rng.uniform_real();
+                if (u < 0.5) {
+                    attach_to_branch = false;
+                }
+                // ln_prob_forward_move already accounted for this 50/50 choice
+                // above with the 1/num_attachment_targets
+            }
+
+            ///////////////////////////////////////////////////////////
+            // Prob of forward move =
+            //   Prob of choosing subtree node: (1 / (num_nodes - 1) )
+            //   [ minus 1 for excluding root node ]
+            //                           X
+            //   Prob of choosing target (attachment) node or branch:
+            //   (1 / num possible attachment options ) = (1 / num_attachment_targets)
+            //   [ num_attachment_targets is the sum of 1's for nodes to which
+            //   the subtree can only attach to the node's rootward branch, and
+            //   2's for nodes to which the subtree can attach to the node or
+            //   the node's rootward branch. If we choose a "2-weighted node"
+            //   we subsequently 50/50 choose the node or branch, which ensures
+            //   we are sampling all possible attachment options with equal
+            //   prob ]
+            //                           X
+            //   Prob of choosing specific attachment option:
+            //     : If we picked a node in previous step, this
+            //       = 1
+            //     : If we picked a branch in previous step, this
+            //       = 1 / (num valid existing heights + 1)
+            //         [ +1 for choosing new height option ]
+            //                           X
+            //   Prob of picking height value
+            //   : If we chose new height in previous step along non-root branch
+            //     = 1 / (target's parent node height - max(subtree height, target node height))
+            //   : If we chose new height in previous step along the root branch
+            //     = Exponential prob density of new height
+            //   : Else
+            //     = 1
+            ///////////////////////////////////////////////////////////
+            //
+            ///////////////////////////////////////////////////////////
+            // Prob of reverse move =
+            //   Prob of choosing subtree node: (1 / (num_nodes after move - 1) )
+            //   [ minus 1 for excluding root node ]
+            //   [ the number of nodes after the forward move:
+            //       = num nodes before if:
+            //         - subtree node's parent had 2 children and we attached
+            //           subtree to a branch (i.e., we removed and added a node)
+            //         - subtree node's parent had > 2 children and we attached
+            //           subtree to a node (i.e., we didn't remove or add a node)
+            //       = num nodes before + 1 if:
+            //         - subtree node's parent had > 2 children and we attached
+            //           subtree to a branch (i.e., we didn't remove a node, but
+            //           added a node)
+            //       = num nodes before - 1 if:
+            //         - subtree node's parent had 2 children and we attached
+            //           subtree to a node (i.e., we removed a node and didn't
+            //           add a node)
+            //                           X
+            //   Prob of choosing target (attachment) node or branch:
+            //   (1 / num possible attachment options AFTER forward move )
+            //   [ the number of possible attachments after the forward move:
+            //       = num of possible attachments in forward move:
+            //         - if forward subtree node's parent had 2 children (was
+            //           removed) and attached subtree was attached to branch
+            //           "branch to branch"
+            //         - if forward subtree node's parent had > 2 children
+            //           and attached subtree was attached to node
+            //           "node to node"
+            //         - if forward move attaches subtree to a branch
+            //       = num of possible attachments in forward move - 1
+            //         - forward subtree node's parent had 2 children (removed)
+            //           and we attached subtree to a node
+            //           "rev node to branch"
+            //       = num of possible attachments in forward move + 1
+            //         - forward subtree node's parent had > 2 children and we
+            //           attached subtree to a branch ("rev branch to node")
+            //           "rev branch to node"
+            //                           X
+            //   Prob of choosing specific attachment point:
+            //     : If forward subtree node's parent had 2 children (removed)
+            //       : If forward subtree node's parent did NOT share it's height with other nodes
+            //         : If forward subtree node's parent was the root
+            //           = Exponential prob density of (forward subtree node's
+            //             parent height - root height after move); rate of
+            //             exponential is 1 / root height after move
+            //         : If forward subtree node's parent was NOT the root
+            //           = 1 / (number of heights between max(forward subtree height, forward subtree's sister's height) and subtree's grandparent height + 1)
+            //              X
+            //             1 / (forward subtree's grandparent height - max(forward subtree height, forward subtree's sister's height))
+            //           [ We have to create new height in reverse move to get
+            //             original tree back ]
+            //     : If forward subtree node's parent had 2 children and DID
+            //       share it's height with other nodes [can't be root ]
+            //       = 1 / (number of heights between max(forward subtree height, forward subtree's sister's height) and subtree's grandparent height + 1)
+            //       [ reverse move must attach subtree to existing height ]
+            //     : If forward subtree node's parent had > 2 children
+            //       = 1
+            //       [ reverse move must attach subtree to it's parent node
+            //         from the forward move; this would have been determined
+            //         in the previous step ]
+            ///////////////////////////////////////////////////////////
+
+            // The reverse move needs to avoid same tree by ignoring one
+            // otherwise valid attachment height, *IF* the forward move removes
+            // the parent node and attaches the subtree to the same original
+            // branch at a different existing height
+            bool removed_parent_and_attached_to_orig_branch = false;
+            bool rev_move_needs_to_avoid_same_tree = false;
+
+            if (attach_to_branch) {
+                double new_height;
+                if (target_is_root) {
+                    // Attach above the root at a height determined by a draw
+                    // from an exponential distribution
+                    double rate = 1.0 / target_node->get_height();
+                    ExponentialDistribution proposal_dist = ExponentialDistribution(rate);
+                    double added_height = proposal_dist.draw(rng);
+                    ln_prob_forward_move += proposal_dist.ln_pdf(added_height);
+                    new_height = target_node->get_height() + added_height;
+                    typename TreeType::NodePtr new_node = std::make_shared<typename TreeType::NodePtr>(
+                            new_height);
+                    new_node->add_child(subtree_node);
+                    new_node->add_child(tree->root_);
+                    tree->root_ = new_node;
+                    new_node->make_dirty();
+                }
+                else {
+                    // attach to new height or existing height between
+                    // max(subtree_node_height, target node height) and height
+                    // target node's parent; make sure subtree_node_height's height
+                    // is excluded and target node's parent height is excluded
+                    double min_height = std::max(subtree_node_height, target_node_height);
+                    double max_height = target_node->get_parent()->get_height();
+                    ECOEVOLITY_ASSERT(max_height > min_height);
+
+                    if (
+                            (removed_parent_node)
+                            && (grandparent_node)
+                            && (grandparent_node == target_node->get_parent())
+                    ) {
+                        // Foward move removed the parent node and is attaching
+                        // it along the original branch, so reverse move might
+                        // have to ignore a height to avoid proposing the same
+                        // tree (if the forward move attaches the subtree to an
+                        // exising height; we check for that below)
+                        removed_parent_and_attached_to_orig_branch = true;
+                    }
+
+                    std::vector<unsigned int> valid_height_indices;
+                    for (unsigned int i = 0; i < tree->node_heights_.size(); ++i) {
+                        if (
+                                (removed_parent_node)
+                                && (parent_node->get_height_parameter() == tree->node_heights_.at(i))
+                                && (grandparent_node)
+                                && (grandparent_node == target_node->get_parent())
+                        ) {
+                            // corner case where we would get the original tree
+                            // back if we attach the subtree node to this
+                            // existing height along this target branch (the
+                            // target branch was the only sister to the subtree
+                            // node and the height of their removed parent node
+                            // still exists)
+                            // skipping this height avoids chance of proposed
+                            // tree being identical to the original tree
+                            continue;
+                        }
+                        double ht = tree->node_heights_.at(i).get_value();
+                        if ((ht > min_height) && (ht < max_height)) {
+                            valid_height_indices.push_back(i);
+                        }
+                    }
+
+                    unsigned int num_attach_options = valid_height_indices.size() + 1;
+                    std::vector<double> attach_option_probs = (num_attach_options, 1.0/(double)num_attach_options);
+                    unsigned int option_index = rng.weighted_index(attach_option_probs);
+
+                    ln_prob_forward_move -= std::log( (double)num_attach_options );
+
+                    if (option_index < valid_height_indices.size()) {
+                        // Attaching along branch at an existing height
+                        unsigned int attach_height_index = valid_height_indices.at(option_index);
+                        ECOEVOLITY_ASSERT(
+                                subtree_node->get_height_parameter() != tree->heights_.at(attach_height_index)
+                        );
+                        ECOEVOLITY_ASSERT(
+                                target_node->get_parent()->get_height_parameter() != tree->heights_.at(attach_height_index)
+                        );
+                        typename TreeType::NodePtr new_node = std::make_shared<typename TreeType::NodePtr>(
+                                tree->heights_.at(attach_height_index));
+                        new_node->add_parent(target_node->get_parent());
+                        target_node->remove_parent();
+                        new_node->add_child(target_node);
+                        new_node->add_child(subtree_node);
+                        new_node->make_dirty();
+
+                        if (removed_parent_and_attached_to_orig_branch) {
+                            // reverse move needs to pick original branch for
+                            // attachment, and since the forward move attached
+                            // the subtree to a new node at a shared height,
+                            // the reverse move needs to ignore this shared
+                            // height to avoid proposing the same tree
+                            rev_move_needs_to_avoid_same_tree = true;
+                        }
+                    }
+                    else {
+                        // Attaching to new height
+                        ln_prob_forward_move -= std::log( max_height - min_height );
+                        double new_height = rng.uniform_real(min_height, max_height);
+                        typename TreeType::NodePtr new_node = std::make_shared<typename TreeType::NodePtr>(
+                                new_height);
+                        new_node->add_parent(target_node->get_parent());
+                        target_node->remove_parent();
+                        new_node->add_child(target_node);
+                        new_node->add_child(subtree_node);
+                        new_node->make_dirty();
+                    }
+                }
+            }
+            else {
+                // attach to chosen node
+                ECOEVOLITY_ASSERT(target_node->get_height_parameter() != subtree_node->get_height_parameter());
+                ECOEVOLITY_ASSERT(target_node->get_height() > subtree_node->get_height());
+                target_node->add_child(subtree_node);
+                target_node->make_dirty();
+            }
+
+            tree->update_node_heights();
+            tree->update_internal_node_indices();
+
+            double ln_prob_reverse_move = -std::log( (double)tree->get_node_count() );
+            unsigned int rev_num_attachment_targets = num_attachment_targets;
+            if (removed_parent_node && (! attach_to_branch)) {
+                ECOEVOLITY_ASSERT(rev_num_attachment_targets > 1);
+                --rev_num_attachment_targets;
+            }
+            else if ((! removed_parent_node) && attach_to_branch) {
+                ++rev_num_attachment_targets;
+            }
+            ln_prob_reverse_move -= std::log( (double)rev_num_attachment_targets );
+
+            if (removed_parent_node) {
+                if (removed_root) {
+                    ExponentialDistribution rev_proposal_dist = ExponentialDistribution(1.0 / tree->root_->get_height());
+                    double rev_added_root_height = parent_node->get_height() - tree->root_->get_height();
+                    ECOEVOLITY_ASSERT(rev_added_root_height > 0.0);
+                    ln_prob_reverse_move += rev_proposal_dist.ln_pdf(rev_added_root_height);
+                }
+                else {
+                    // We need to select reverse branch attachment option with probability
+                    // = 1 / (number of heights between max(forward subtree height, forward subtree's sister's height) and subtree's grandparent height + 1)
+                    // But, if rev_move_needs_to_avoid_same_tree we need to
+                    // subtract 1 from the number of valid heights, because
+                    // height of attachment point (after forward move)
+                    // would be excluded in the reverse move
+                    ECOEVOLITY_ASSERT(grandparent_node);
+                    ECOEVOLITY_ASSERT(sister_node);
+                    double rev_min_height = std::max(subtree_node->get_height(), sister_node->get_height());
+                    double rev_max_height = grandparent_node->get_height();
+                    unsigned int rev_num_attachment_options = 1; // 1 for new height option
+                    for (unsigned int i = 0; i < tree->node_heights_.size(); ++i) {
+                        double ht = tree->node_heights_.at(i).get_value();
+                        if ((ht > rev_min_height) && (ht < rev_max_height)) {
+                            ++rev_num_attachment_options;
+                        }
+                    }
+                    if (rev_move_needs_to_avoid_same_tree) {
+                        ECOEVOLITY_ASSERT(rev_num_attachment_options > 1);
+                        --rev_num_attachment_options;
+                    }
+                    ln_prob_reverse_move -= std::log( (double)rev_num_attachment_options );
+                    if (removed_parent_height) {
+                        // Rev move would have to pick a new height, the prob
+                        // of that new height would be
+                        // 1 / (forward subtree's grandparent height - max(forward subtree height, forward subtree's sister's height))
+                        ln_prob_reverse_move -= std::log( rev_max_height - rev_min_height );
+                    }
+                }
+            }
+            else {
+                // reverse move must attach subtree to the remaining parent
+                // node from the forward move. To do this, we would have picked
+                // that attachment target in the previous step, so there's no
+                // update to the prob of the reverse move here
+            }
+
+            double ln_hastings = ln_prob_reverse_move - ln_prob_forward_move;
+            return ln_hastings;
+        }
+};
+
+
 //////////////////////////////////////////////////////////////////////////////
 // BasePopulationTree operators 
 //////////////////////////////////////////////////////////////////////////////
