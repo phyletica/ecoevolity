@@ -81,4 +81,4 @@ echo "----------------------------------------------------------------------"
 echo ""
 
 env_path="${this_dir}/env-test-location.sh"
-echo "export ecoevolity_test_exe_path=\"${test_build_dir}/test/test_ecoevolity\"" >> "$env_path"
+echo "export ecoevolity_test_exe_path=\"${test_build_dir}/test/test_ecoevolity\"" > "$env_path"
