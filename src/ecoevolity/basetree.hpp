@@ -564,7 +564,8 @@ class BaseTree {
             }
         }
 
-        typedef std::shared_ptr<NodeType> NodePtr;
+        typedef NodeType NodeT;
+        typedef std::shared_ptr<NodeT> NodePtr;
 
         virtual double get_ln_prob_of_drawing_node_state(
                 std::shared_ptr<NodeType>) const {
