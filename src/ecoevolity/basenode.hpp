@@ -318,6 +318,8 @@ class BaseNode : public std::enable_shared_from_this<DerivedNodeT> {
 
         virtual void finish_initializing_inserted_internal_node(
                 RandomNumberGenerator & rng) { }
+        virtual void finish_initializing_inserted_root_node(
+                RandomNumberGenerator & rng) { }
 
         virtual double get_ln_prob_of_drawing_state() { return 0.0; }
 

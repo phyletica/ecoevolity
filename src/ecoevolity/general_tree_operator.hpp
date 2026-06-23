@@ -3145,7 +3145,7 @@ class SubtreePruneRegraftRevJumpSampler : public GeneralTreeOperatorInterface<Tr
                     new_node->add_child(tree->root_);
                     tree->root_ = new_node;
                     new_node->make_dirty();
-                    new_node->finish_initializing_inserted_internal_node(rng);
+                    new_node->finish_initializing_inserted_root_node(rng);
                 }
                 else {
                     // attach to new height or existing height between
