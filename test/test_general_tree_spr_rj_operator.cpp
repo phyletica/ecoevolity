@@ -1489,7 +1489,7 @@ TEST_CASE("Testing SubtreePruneRegraftRevJumpSampler with 7 leaves and estimated
         "[SubtreePruneRegraftRevJumpSampler]") {
 
     SECTION("Testing 7 leaves with estimated root") {
-        RandomNumberGenerator rng = RandomNumberGenerator(2347243665);
+        RandomNumberGenerator rng = RandomNumberGenerator(874668437);
 
         double root_ht = 0.5;
         std::shared_ptr<Node> root = std::make_shared<Node>(7, "root", root_ht);
