@@ -2,8 +2,10 @@
 #define ECOEVOLITY_UTILS_FOR_TESTING
 
 #include <iostream>
+#include <algorithm>
 
 #include "ecoevolity/path.hpp"
+#include "ecoevolity/string_util.hpp"
 
 inline void write_r_script(const std::vector<unsigned int> & counts,
         const std::string & path,
@@ -75,6 +77,35 @@ inline void write_r_script(
         ++num_topologies_by_ndivs[splitset_count.first.size()];
     }
     write_r_script(counts, path, num_topologies_by_ndivs);
+}
+
+inline int get_number_of_subsets_from_model_string(const std::string & model) {
+    std::vector<std::string> indices_str = string_util::split(model, ',');
+    std::vector<int> indices;
+    indices.reserve(indices_str.size());
+    for (const auto & index_str : indices_str) {
+        indices.push_back(std::stoi(index_str));
+    }
+    auto max_iter = std::max_element(indices.begin(), indices.end());
+    int max_index = *max_iter;
+    return max_index + 1;
+}
+
+inline void write_sampled_models_tsv(
+        const std::string & path,
+        const std::map<std::string, int> & model_counts,
+        const std::map<std::string, double> & expected_model_probs) {
+    std::ofstream os;
+    os.open(path);
+    os << "model\tnum_samples\texpected_prob" << std::endl;
+    for (const auto & pair : model_counts) {
+        os << pair.first
+           << "\t"
+           << pair.second
+           << "\t"
+           << expected_model_probs.at(pair.first)
+           << std::endl;
+    }
 }
 
 #endif
