@@ -20812,16 +20812,16 @@ TEST_CASE("Testing ReversibleJumpSampler with 4 pairs and split weight 1/3.0",
         for (const auto & pair : model_counts) {
             int num_subsets = get_number_of_subsets_from_model_string(pair.first);
             if (num_subsets == 1) {
-                expected_model_probs[pair.first] = 27.0 / 103.0;
+                expected_model_probs[pair.first] = 27.0 / 109.0;
             }
             else if( num_subsets == 2) {
-                expected_model_probs[pair.first] = 9.0 / 103.0;
+                expected_model_probs[pair.first] = 9.0 / 109.0;
             }
             else if( num_subsets == 3) {
-                expected_model_probs[pair.first] = 3.0 / 103.0;
+                expected_model_probs[pair.first] = 3.0 / 109.0;
             }
             else if( num_subsets == 4) {
-                expected_model_probs[pair.first] = 1.0 / 103.0;
+                expected_model_probs[pair.first] = 1.0 / 109.0;
             }
             else {
                 std::cerr << "ERROR: Unexpected number of subsets: " << num_subsets << std::endl;
