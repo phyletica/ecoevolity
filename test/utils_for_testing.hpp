@@ -97,6 +97,7 @@ inline void write_sampled_models_tsv(
         const std::map<std::string, double> & expected_model_probs) {
     std::ofstream os;
     os.open(path);
+    os.precision(12);
     os << "model\tnum_samples\texpected_prob" << std::endl;
     for (const auto & pair : model_counts) {
         os << pair.first
