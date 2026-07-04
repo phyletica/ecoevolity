@@ -793,7 +793,7 @@ class PopulationNode: public BaseNode<PopulationNode>{
         }
 
         virtual double get_ln_prob_of_drawing_state() {
-            ECOEVOLITY_ASSERT(this->has_parent() && this->has_children());
+            ECOEVOLITY_ASSERT(this->has_children());
             if (this->population_size_->is_fixed()) {
                 return 0.0;
             }

@@ -1627,7 +1627,7 @@ TEST_CASE("Testing SubtreePruneRegraftRevJumpSampler with BasePopulationTree, 5 
         "[SubtreePruneRegraftRevJumpSampler]") {
 
     SECTION("Testing 5 leaves with BasePopulationTree, full model, unconstrained sizes") {
-        RandomNumberGenerator rng = RandomNumberGenerator(8416426464);
+        RandomNumberGenerator rng = RandomNumberGenerator(214354584);
 
         double mu_rate_shape = 10.0;
         double mu_rate_scale = 0.05;
@@ -1793,7 +1793,7 @@ TEST_CASE("Testing SubtreePruneRegraftRevJumpSampler with BasePopulationTree, 5 
             }
         }
 
-        unsigned int niterations = 40000000;
+        unsigned int niterations = 50000000;
         unsigned int sample_freq = 100;
         unsigned int nsamples = niterations / sample_freq;
 

@@ -2891,6 +2891,9 @@ class SubtreePruneRegraftRevJumpSampler : public GeneralTreeOperatorInterface<Tr
             tree->update_internal_node_indices();
             tree->update_node_heights();
 
+            double ln_prob_of_drawing_new_node_state = 0.0;
+            double ln_prob_of_drawing_old_node_state = 0.0;
+
             const unsigned int num_nodes = tree->get_node_count();
             ECOEVOLITY_ASSERT(num_nodes >= 3);
             ECOEVOLITY_ASSERT(tree->get_root().get_index() == (int)(num_nodes - 1));
@@ -2913,6 +2916,7 @@ class SubtreePruneRegraftRevJumpSampler : public GeneralTreeOperatorInterface<Tr
             bool removed_root = false;
             if (parent_node->get_number_of_children() == 1) {
                 removed_parent_node = true;
+                ln_prob_of_drawing_old_node_state = tree->get_ln_prob_of_drawing_node_state(parent_node);
                 if (parent_node->is_root()) {
                     ECOEVOLITY_ASSERT(parent_node == tree->root_);
                     typename TreeType::NodePtr new_root = parent_node->get_child(0);
@@ -3043,6 +3047,12 @@ class SubtreePruneRegraftRevJumpSampler : public GeneralTreeOperatorInterface<Tr
             //       prob density of new height
             //   : Else (picked an existing height)
             //     = 1
+            //                           X
+            //   Prob of drawing new node state (e.g., pop size)
+            //   = 1 if we attach subtree node to an existing node (no added
+            //     branch parameters)
+            //   = Y if we attach subtree node to a branch
+            //     Y = tree->get_ln_prob_of_drawing_node_state(new_node)
             ///////////////////////////////////////////////////////////
             //
             ///////////////////////////////////////////////////////////
@@ -3106,6 +3116,12 @@ class SubtreePruneRegraftRevJumpSampler : public GeneralTreeOperatorInterface<Tr
             //       [ reverse move must attach subtree to it's parent node
             //         from the forward move; this would have been determined
             //         in the previous step ]
+            //                           X
+            //   Prob of drawing old node state (e.g., pop size)
+            //   = 1 if we did not remove the parent node (i.e., we don't need
+            //     to add any branch parameters in the reverse move)
+            //   = Z if we removed the parent node
+            //     Z = tree->get_ln_prob_of_drawing_node_state(removed_node)
             ///////////////////////////////////////////////////////////
 
             // The reverse move needs to avoid same tree by ignoring one
@@ -3146,6 +3162,7 @@ class SubtreePruneRegraftRevJumpSampler : public GeneralTreeOperatorInterface<Tr
                     tree->root_ = new_node;
                     new_node->make_dirty();
                     new_node->finish_initializing_inserted_root_node(rng);
+                    ln_prob_of_drawing_new_node_state = tree->get_ln_prob_of_drawing_node_state(new_node);
                 }
                 else {
                     // attach to new height or existing height between
@@ -3218,6 +3235,7 @@ class SubtreePruneRegraftRevJumpSampler : public GeneralTreeOperatorInterface<Tr
                         new_node->add_child(subtree_node);
                         new_node->make_dirty();
                         new_node->finish_initializing_inserted_internal_node(rng);
+                        ln_prob_of_drawing_new_node_state = tree->get_ln_prob_of_drawing_node_state(new_node);
 
                         if (removed_parent_and_attached_to_orig_branch) {
                             // reverse move needs to pick original branch for
@@ -3241,6 +3259,7 @@ class SubtreePruneRegraftRevJumpSampler : public GeneralTreeOperatorInterface<Tr
                         new_node->add_child(subtree_node);
                         new_node->make_dirty();
                         new_node->finish_initializing_inserted_internal_node(rng);
+                        ln_prob_of_drawing_new_node_state = tree->get_ln_prob_of_drawing_node_state(new_node);
                     }
                 }
             }
@@ -3338,6 +3357,11 @@ class SubtreePruneRegraftRevJumpSampler : public GeneralTreeOperatorInterface<Tr
                 // that attachment target in the previous step, so there's no
                 // update to the prob of the reverse move here
             }
+
+            // We need to account for branch-specific parameters (e.g.,
+            // population size)  added to/removed from model
+            ln_prob_forward_move += ln_prob_of_drawing_new_node_state;
+            ln_prob_reverse_move += ln_prob_of_drawing_old_node_state;
 
             // std::cout << "Prob forward: " << std::exp(ln_prob_forward_move) << "\n";
             // std::cout << "Prob reverse: " << std::exp(ln_prob_reverse_move) << "\n";
