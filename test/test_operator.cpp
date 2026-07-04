@@ -9,6 +9,8 @@
 #include "ecoevolity/stats_util.hpp"
 #include "ecoevolity/rng.hpp"
 
+#include "utils_for_testing.hpp"
+
 RandomNumberGenerator _TEST_OPERATOR_RNG = RandomNumberGenerator();
 
 
@@ -19967,10 +19969,188 @@ TEST_CASE("Testing ReversibleJumpSampler propose_jump_to_prior with 3 pairs and 
     }
 }
 
+TEST_CASE("Testing ReversibleJumpSampler with 4 pairs and split weight 1",
+        "[ReversibleJumpSampler]") {
+
+    SECTION("Testing 4 pairs and split weight 1") {
+        double split_weight = 1.0;
+        double height_shape = 5.0;
+        double height_scale = 0.1;
+        std::string tag = _TEST_OPERATOR_RNG.random_string(10);
+        std::string test_path = "data/tmp-config-rjsampler-test6-" + tag + "-t162.cfg";
+        std::string log_path = "data/tmp-config-rjsampler-test6-" + tag + "-t162-state-run-1.log";
+        std::ofstream os;
+        os.open(test_path);
+        os << "event_time_prior:\n";
+        os << "    gamma_distribution:\n";
+        os << "        shape: " << height_shape << "\n";
+        os << "        scale: " << height_scale << "\n";
+        os << "event_model_prior:\n";
+        os << "    uniform:\n";
+        os << "        parameters:\n";
+        os << "            split_weight:\n";
+        os << "                value: " << split_weight << "\n";
+        os << "                estimate: false\n";
+        os << "global_comparison_settings:\n";
+        os << "    genotypes_are_diploid: true\n";
+        os << "    markers_are_dominant: false\n";
+        os << "    population_name_delimiter: \" \"\n";
+        os << "    population_name_is_prefix: true\n";
+        os << "    constant_sites_removed: false\n";
+        os << "    equal_population_sizes: true\n";
+        os << "    parameters:\n";
+        os << "        freq_1:\n";
+        os << "            value: 0.5\n";
+        os << "            estimate: false\n";
+        os << "        mutation_rate:\n";
+        os << "            value: 1.0\n";
+        os << "            estimate: false\n";
+        os << "        population_size:\n";
+        os << "            value: 0.002\n";
+        os << "            estimate: false\n";
+        os << "comparisons:\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129.nex\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname1.nex\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname2.nex\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname3.nex\n";
+        os.close();
+        REQUIRE(path::exists(test_path));
+
+        CollectionSettings settings = CollectionSettings(test_path);
+
+        RandomNumberGenerator rng = RandomNumberGenerator(12345);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<ReversibleJumpSampler>(1.0, 1.0);
+        OperatorSchedule op_schedule = OperatorSchedule();
+        op_schedule.turn_on_auto_optimize();
+        op_schedule.set_auto_optimize_delay(100);
+        op_schedule.add_operator(op);
+        op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
+
+        ComparisonPopulationTreeCollection comparisons = ComparisonPopulationTreeCollection(settings, rng);
+        comparisons.ignore_data();
+
+        // Initialize prior probs
+        comparisons.compute_log_likelihood_and_prior(true);
+
+        unsigned int ntrees = comparisons.get_number_of_trees();
+        REQUIRE(ntrees == 4);
+        std::vector< SampleSummarizer<double> > height_summaries(ntrees);
+        SampleSummarizer<double> split_weight_summary;
+
+        std::map<std::string, int> model_counts;
+        std::map<int, int> nevent_counts;
+
+        comparisons.set_operator_schedule(op_schedule);
+        unsigned int niterations = 1000000;
+        unsigned int sample_freq = 10;
+        unsigned int nsamples = niterations / sample_freq;
+        std::vector<unsigned int> height_indices(ntrees, 0);
+        unsigned int nevents;
+        for (unsigned int i = 0; i < niterations; ++i) {
+            // OperatorInterface& o = op_schedule.draw_operator(rng);
+            // o.operate(rng, &comparisons, 1);
+            op->operate(rng, &comparisons, 1);
+            if ((i + 1) % sample_freq == 0) {
+                split_weight_summary.add_sample(comparisons.get_concentration());
+                nevents = comparisons.get_number_of_events();
+                height_indices = comparisons.get_standardized_height_indices();
+                std::ostringstream stream;
+                stream << height_indices.at(0);
+                for (unsigned int j = 1; j < height_indices.size(); ++j) {
+                    stream << "," << height_indices.at(j);
+                }
+                std::string model_str = stream.str();
+                if (model_counts.count(model_str) < 1) {
+                    model_counts[model_str] = 1;
+                }
+                else {
+                    ++model_counts[model_str];
+                }
+                if (nevent_counts.count(nevents) < 1) {
+                    nevent_counts[nevents] = 1;
+                }
+                else {
+                    ++nevent_counts[nevents];
+                }
+                for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
+                    std::shared_ptr<PopulationTree> tree = comparisons.get_tree(tree_idx);
+                    height_summaries.at(tree_idx).add_sample(tree->get_root_height());
+                }
+            }
+        }
+        op_schedule.write_operator_rates(std::cout);
+
+        REQUIRE(model_counts.at("0,0,0,0") == nevent_counts.at(1));
+        REQUIRE(model_counts.at("0,1,2,3") == nevent_counts.at(4));
+
+        unsigned int tally = 0;
+        for (auto const & kv: model_counts) {
+            tally += kv.second;
+        }
+        REQUIRE(tally == nsamples);
+        tally = 0;
+        for (auto const & kv: nevent_counts) {
+            tally += kv.second;
+        }
+        REQUIRE(tally == nsamples);
+
+        for (auto const & kv: model_counts) {
+            std::cout << kv.first << ": " << kv.second / (double)nsamples << "\n";
+        }
+        for (auto const & kv: nevent_counts) {
+            std::cout << kv.first << ": " << kv.second / (double)nsamples << "\n";
+        }
+
+        std::map<std::string, double> expected_model_probs;
+        for (const auto & pair : model_counts) {
+            expected_model_probs[pair.first] = 1.0 / 15.0;
+        }
+        write_sampled_models_tsv(
+                "../ReversibleJumpSamplerTest-4-comparisons-split-weight-1.tsv",
+                model_counts,
+                expected_model_probs);
+
+        REQUIRE(split_weight_summary.sample_size() == nsamples);
+        REQUIRE(split_weight_summary.mean() == Approx(1.0));
+        REQUIRE(split_weight_summary.variance() == Approx(0.0));
+
+        // Below are the expected results. 'k' is the number of categories,
+        // 'S(n,k)' is the number of possible partitions of n elements into k
+        // categories (Stirling number of second kind), 'w' is the relative split
+        // weight for any one of those possible partitions, 'total_w' is the
+        // overall weight of the k class (w * S(n,k)), and 'prob' is the
+        // probability of any one possible partition in the k class.
+        //
+        // k    S(n,k)  w       total_w     prob
+        // -------------------------------------
+        // 1    1       1       1           1/15
+        // 2    7       1       7           1/15
+        // 3    6       1       6           1/15
+        // 4    1       1       1           1/15
+        //                      15
+
+        REQUIRE((model_counts.at("0,0,0,0") / (double)nsamples) == Approx(1.0/15.0).epsilon(0.005));
+        REQUIRE((model_counts.at("0,0,0,1") / (double)nsamples) == Approx(1.0/15.0).epsilon(0.005));
+        REQUIRE((model_counts.at("0,1,2,3") / (double)nsamples) == Approx(1.0/15.0).epsilon(0.005));
+        
+        double size_sh;
+        double size_sc;
+        for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
+            REQUIRE(height_summaries.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(height_summaries.at(tree_idx).mean() == Approx(height_shape * height_scale).epsilon(0.005));
+            REQUIRE(height_summaries.at(tree_idx).variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.01));
+        }
+    }
+}
+
 TEST_CASE("Testing ReversibleJumpSampler with 4 pairs and split weight 3.0",
         "[ReversibleJumpSampler]") {
 
-    SECTION("Testing 4 pairs and split weight 3.0,") {
+    SECTION("Testing 4 pairs and split weight 3.0") {
         double split_weight = 3.0;
         double height_shape = 5.0;
         double height_scale = 0.1;
@@ -20044,7 +20224,7 @@ TEST_CASE("Testing ReversibleJumpSampler with 4 pairs and split weight 3.0",
 
         comparisons.set_operator_schedule(op_schedule);
         unsigned int niterations = 1000000;
-        unsigned int sample_freq = 2;
+        unsigned int sample_freq = 10;
         unsigned int nsamples = niterations / sample_freq;
         std::vector<unsigned int> height_indices(ntrees, 0);
         unsigned int nevents;
@@ -20057,8 +20237,9 @@ TEST_CASE("Testing ReversibleJumpSampler with 4 pairs and split weight 3.0",
                 nevents = comparisons.get_number_of_events();
                 height_indices = comparisons.get_standardized_height_indices();
                 std::ostringstream stream;
-                for (auto h_idx : height_indices) {
-                    stream << h_idx;
+                stream << height_indices.at(0);
+                for (unsigned int j = 1; j < height_indices.size(); ++j) {
+                    stream << "," << height_indices.at(j);
                 }
                 std::string model_str = stream.str();
                 if (model_counts.count(model_str) < 1) {
@@ -20081,8 +20262,8 @@ TEST_CASE("Testing ReversibleJumpSampler with 4 pairs and split weight 3.0",
         }
         op_schedule.write_operator_rates(std::cout);
 
-        REQUIRE(model_counts.at("0000") == nevent_counts.at(1));
-        REQUIRE(model_counts.at("0123") == nevent_counts.at(4));
+        REQUIRE(model_counts.at("0,0,0,0") == nevent_counts.at(1));
+        REQUIRE(model_counts.at("0,1,2,3") == nevent_counts.at(4));
 
         unsigned int tally = 0;
         for (auto const & kv: model_counts) {
@@ -20101,6 +20282,32 @@ TEST_CASE("Testing ReversibleJumpSampler with 4 pairs and split weight 3.0",
         for (auto const & kv: nevent_counts) {
             std::cout << kv.first << ": " << kv.second / (double)nsamples << "\n";
         }
+
+        std::map<std::string, double> expected_model_probs;
+        for (const auto & pair : model_counts) {
+            int num_subsets = get_number_of_subsets_from_model_string(pair.first);
+            if (num_subsets == 1) {
+                expected_model_probs[pair.first] = 1.0 / 103.0;
+            }
+            else if( num_subsets == 2) {
+                expected_model_probs[pair.first] = 3.0 / 103.0;
+            }
+            else if( num_subsets == 3) {
+                expected_model_probs[pair.first] = 9.0 / 103.0;
+            }
+            else if( num_subsets == 4) {
+                expected_model_probs[pair.first] = 27.0 / 103.0;
+            }
+            else {
+                std::cerr << "ERROR: Unexpected number of subsets: " << num_subsets << std::endl;
+                REQUIRE(0 == 1);
+            }
+        }
+        write_sampled_models_tsv(
+                "../ReversibleJumpSamplerTest-4-comparisons-split-weight-3.tsv",
+                model_counts,
+                expected_model_probs);
+
         REQUIRE(split_weight_summary.sample_size() == nsamples);
         REQUIRE(split_weight_summary.mean() == Approx(3.0));
         REQUIRE(split_weight_summary.variance() == Approx(0.0));
@@ -20120,8 +20327,8 @@ TEST_CASE("Testing ReversibleJumpSampler with 4 pairs and split weight 3.0",
         // 4    1       27      27          27/103
         //                      103
 
-        REQUIRE((model_counts.at("0123") / (double)nsamples) == Approx(27.0/103.0).epsilon(0.001));
-        REQUIRE((model_counts.at("0122") / (double)nsamples) == Approx(9.0/103.0).epsilon(0.001));
+        REQUIRE((model_counts.at("0,1,2,3") / (double)nsamples) == Approx(27.0/103.0).epsilon(0.005));
+        REQUIRE((model_counts.at("0,1,2,2") / (double)nsamples) == Approx(9.0/103.0).epsilon(0.005));
         
         double size_sh;
         double size_sc;
@@ -20136,7 +20343,7 @@ TEST_CASE("Testing ReversibleJumpSampler with 4 pairs and split weight 3.0",
 TEST_CASE("Testing ReversibleJumpSampler propose_jump_to_prior with 4 pairs and split weight 3.0",
         "[ReversibleJumpSampler]") {
 
-    SECTION("Testing 4 pairs and split weight 3.0,") {
+    SECTION("Testing 4 pairs and split weight 3.0") {
         double split_weight = 3.0;
         double height_shape = 5.0;
         double height_scale = 0.1;
@@ -20302,7 +20509,7 @@ TEST_CASE("Testing ReversibleJumpSampler propose_jump_to_prior with 4 pairs and 
 TEST_CASE("Testing ReversibleJumpSampler mixed jumps with 4 pairs and split weight 3.0",
         "[ReversibleJumpSampler]") {
 
-    SECTION("Testing 4 pairs and split weight 3.0,") {
+    SECTION("Testing 4 pairs and split weight 3.0") {
         double split_weight = 3.0;
         double height_shape = 5.0;
         double height_scale = 0.1;
@@ -20468,7 +20675,7 @@ TEST_CASE("Testing ReversibleJumpSampler mixed jumps with 4 pairs and split weig
 TEST_CASE("Testing ReversibleJumpSampler with 4 pairs and split weight 1/3.0",
         "[ReversibleJumpSampler]") {
 
-    SECTION("Testing 4 pairs and split weight 1/3.0,") {
+    SECTION("Testing 4 pairs and split weight 1/3.0") {
         double split_weight = 1.0/3.0;
         double height_shape = 5.0;
         double height_scale = 0.1;
@@ -20542,7 +20749,7 @@ TEST_CASE("Testing ReversibleJumpSampler with 4 pairs and split weight 1/3.0",
 
         comparisons.set_operator_schedule(op_schedule);
         unsigned int niterations = 1000000;
-        unsigned int sample_freq = 2;
+        unsigned int sample_freq = 10;
         unsigned int nsamples = niterations / sample_freq;
         std::vector<unsigned int> height_indices(ntrees, 0);
         unsigned int nevents;
@@ -20555,8 +20762,9 @@ TEST_CASE("Testing ReversibleJumpSampler with 4 pairs and split weight 1/3.0",
                 nevents = comparisons.get_number_of_events();
                 height_indices = comparisons.get_standardized_height_indices();
                 std::ostringstream stream;
-                for (auto h_idx : height_indices) {
-                    stream << h_idx;
+                stream << height_indices.at(0);
+                for (unsigned int j = 1; j < height_indices.size(); ++j) {
+                    stream << "," << height_indices.at(j);
                 }
                 std::string model_str = stream.str();
                 if (model_counts.count(model_str) < 1) {
@@ -20579,8 +20787,8 @@ TEST_CASE("Testing ReversibleJumpSampler with 4 pairs and split weight 1/3.0",
         }
         op_schedule.write_operator_rates(std::cout);
 
-        REQUIRE(model_counts.at("0000") == nevent_counts.at(1));
-        REQUIRE(model_counts.at("0123") == nevent_counts.at(4));
+        REQUIRE(model_counts.at("0,0,0,0") == nevent_counts.at(1));
+        REQUIRE(model_counts.at("0,1,2,3") == nevent_counts.at(4));
 
         unsigned int tally = 0;
         for (auto const & kv: model_counts) {
@@ -20599,6 +20807,32 @@ TEST_CASE("Testing ReversibleJumpSampler with 4 pairs and split weight 1/3.0",
         for (auto const & kv: nevent_counts) {
             std::cout << kv.first << ": " << kv.second / (double)nsamples << "\n";
         }
+
+        std::map<std::string, double> expected_model_probs;
+        for (const auto & pair : model_counts) {
+            int num_subsets = get_number_of_subsets_from_model_string(pair.first);
+            if (num_subsets == 1) {
+                expected_model_probs[pair.first] = 27.0 / 109.0;
+            }
+            else if( num_subsets == 2) {
+                expected_model_probs[pair.first] = 9.0 / 109.0;
+            }
+            else if( num_subsets == 3) {
+                expected_model_probs[pair.first] = 3.0 / 109.0;
+            }
+            else if( num_subsets == 4) {
+                expected_model_probs[pair.first] = 1.0 / 109.0;
+            }
+            else {
+                std::cerr << "ERROR: Unexpected number of subsets: " << num_subsets << std::endl;
+                REQUIRE(0 == 1);
+            }
+        }
+        write_sampled_models_tsv(
+                "../ReversibleJumpSamplerTest-4-comparisons-split-weight-1_3.tsv",
+                model_counts,
+                expected_model_probs);
+
         REQUIRE(split_weight_summary.sample_size() == nsamples);
         REQUIRE(split_weight_summary.mean() == Approx(1.0/3.0));
         REQUIRE(split_weight_summary.variance() == Approx(0.0));
@@ -20618,8 +20852,8 @@ TEST_CASE("Testing ReversibleJumpSampler with 4 pairs and split weight 1/3.0",
         // 4    1       1       1           1/109
         //                      109
 
-        REQUIRE((model_counts.at("0000") / (double)nsamples) == Approx(27.0/109.0).epsilon(0.001));
-        REQUIRE((model_counts.at("0001") / (double)nsamples) == Approx(9.0/109.0).epsilon(0.001));
+        REQUIRE((model_counts.at("0,0,0,0") / (double)nsamples) == Approx(27.0/109.0).epsilon(0.005));
+        REQUIRE((model_counts.at("0,0,0,1") / (double)nsamples) == Approx(9.0/109.0).epsilon(0.005));
         
         double size_sh;
         double size_sc;
@@ -20634,7 +20868,7 @@ TEST_CASE("Testing ReversibleJumpSampler with 4 pairs and split weight 1/3.0",
 TEST_CASE("Testing ReversibleJumpSampler propose_jump_to_prior with 4 pairs and split weight 1/3.0",
         "[ReversibleJumpSampler]") {
 
-    SECTION("Testing 4 pairs and split weight 1/3.0,") {
+    SECTION("Testing 4 pairs and split weight 1/3.0") {
         double split_weight = 1.0/3.0;
         double height_shape = 5.0;
         double height_scale = 0.1;
@@ -20800,7 +21034,7 @@ TEST_CASE("Testing ReversibleJumpSampler propose_jump_to_prior with 4 pairs and 
 TEST_CASE("Testing ReversibleJumpSampler mixed jumps with 4 pairs and split weight 1/3.0",
         "[ReversibleJumpSampler]") {
 
-    SECTION("Testing 4 pairs and split weight 1/3.0,") {
+    SECTION("Testing 4 pairs and split weight 1/3.0") {
         double split_weight = 1.0/3.0;
         double height_shape = 5.0;
         double height_scale = 0.1;
