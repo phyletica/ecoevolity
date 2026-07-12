@@ -176,6 +176,75 @@ TEST_CASE("Testing weighted_index", "[RandomNumberGenerator]") {
     }
 }
 
+TEST_CASE("Testing ln_weighted_index", "[RandomNumberGenerator]") {
+
+    SECTION("Testing ln_weighted_index with even weights double") {
+        RandomNumberGenerator rng(11111);
+        std::vector<double> weights = {std::log(0.25), std::log(0.25), std::log(0.25), std::log(0.25)};
+        std::vector<unsigned int> counts(4, 0);
+
+        unsigned int n = 500000;
+        for (unsigned int i = 0; i < n; ++i) {
+            unsigned int x = rng.ln_weighted_index(weights);
+            ++counts.at(x);
+        }
+
+        REQUIRE(counts.at(0) / (double)n == Approx(0.25).epsilon(0.001));
+        REQUIRE(counts.at(1) / (double)n == Approx(0.25).epsilon(0.001));
+        REQUIRE(counts.at(2) / (double)n == Approx(0.25).epsilon(0.001));
+        REQUIRE(counts.at(3) / (double)n == Approx(0.25).epsilon(0.001));
+    }
+
+    SECTION("Testing ln_weighted_index with even weights long double") {
+        RandomNumberGenerator rng(11111);
+        std::vector<long double> weights = {std::log(0.25), std::log(0.25), std::log(0.25), std::log(0.25)};
+        std::vector<unsigned int> counts(4, 0);
+
+        unsigned int n = 500000;
+        for (unsigned int i = 0; i < n; ++i) {
+            unsigned int x = rng.ln_weighted_index(weights);
+            ++counts.at(x);
+        }
+
+        REQUIRE(counts.at(0) / (double)n == Approx(0.25).epsilon(0.001));
+        REQUIRE(counts.at(1) / (double)n == Approx(0.25).epsilon(0.001));
+        REQUIRE(counts.at(2) / (double)n == Approx(0.25).epsilon(0.001));
+        REQUIRE(counts.at(3) / (double)n == Approx(0.25).epsilon(0.001));
+    }
+
+    SECTION("Testing ln_weighted_index with uneven weights double") {
+        RandomNumberGenerator rng(11111);
+        std::vector<double> weights = {std::log(0.2), std::log(0.5), std::log(0.3)};
+        std::vector<unsigned int> counts(3, 0);
+
+        unsigned int n = 500000;
+        for (unsigned int i = 0; i < n; ++i) {
+            unsigned int x = rng.ln_weighted_index(weights);
+            ++counts.at(x);
+        }
+
+        REQUIRE(counts.at(0) / (double)n == Approx(0.2).epsilon(0.001));
+        REQUIRE(counts.at(1) / (double)n == Approx(0.5).epsilon(0.001));
+        REQUIRE(counts.at(2) / (double)n == Approx(0.3).epsilon(0.001));
+    }
+
+    SECTION("Testing ln_weighted_index with uneven weights long double") {
+        RandomNumberGenerator rng(11111);
+        std::vector<long double> weights = {std::log(0.2), std::log(0.5), std::log(0.3)};
+        std::vector<unsigned int> counts(3, 0);
+
+        unsigned int n = 500000;
+        for (unsigned int i = 0; i < n; ++i) {
+            unsigned int x = rng.ln_weighted_index(weights);
+            ++counts.at(x);
+        }
+
+        REQUIRE(counts.at(0) / (double)n == Approx(0.2).epsilon(0.001));
+        REQUIRE(counts.at(1) / (double)n == Approx(0.5).epsilon(0.001));
+        REQUIRE(counts.at(2) / (double)n == Approx(0.3).epsilon(0.001));
+    }
+}
+
 TEST_CASE("Testing random_string", "[RandomNumberGenerator]") {
     SECTION("Testing expectation for first char in pool") {
         RandomNumberGenerator rng(11111);
