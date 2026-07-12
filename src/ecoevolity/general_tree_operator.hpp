@@ -2838,6 +2838,14 @@ class SplitLumpNodesRevJumpSampler : public GeneralTreeOperatorInterface<TreeTyp
 
 template<class TreeType>
 class SubtreePruneRegraftRevJumpSampler : public GeneralTreeOperatorInterface<TreeType, Op> {
+    protected:
+        // for a node with a distance of 5:
+        // ln_weight = 0.0 + (ln_distance_multiplier_ * 5)
+        // weight = 1.0 * (exp(ln_distance_multiplier_) ^ 5)
+        // like multiplying the weight by exp(ln_distance_multiplier_) each
+        // time we pass a node away from the subtree node
+        double ln_distance_multiplier_ = 0.0;
+
     public:
         SubtreePruneRegraftRevJumpSampler() : GeneralTreeOperatorInterface<TreeType, Op>() { }
         SubtreePruneRegraftRevJumpSampler(double weight) : GeneralTreeOperatorInterface<TreeType, Op>(weight) { }
@@ -2962,6 +2970,7 @@ class SubtreePruneRegraftRevJumpSampler : public GeneralTreeOperatorInterface<Tr
 
             // Now we need map of node index to 1/2 weights
             std::vector<unsigned int> node_weights(num_nodes, 0);
+            std::vector<unsigned int> branch_weights(num_nodes, 0);
             for (auto nd = tree->level_ordered_nodes_.rbegin();
                     nd != tree->level_ordered_nodes_.rend();
                     ++nd) {
@@ -2972,50 +2981,66 @@ class SubtreePruneRegraftRevJumpSampler : public GeneralTreeOperatorInterface<Tr
                     continue;
                 }
                 if ((*nd)->is_leaf()) {
-                    node_weights.at((*nd)->get_index()) = 1;
+                    branch_weights.at((*nd)->get_index()) = 1;
                 }
                 else if ((*nd) == parent_node) {
                     ECOEVOLITY_ASSERT(! removed_parent_node);
-                    node_weights.at((*nd)->get_index()) = 1;
+                    branch_weights.at((*nd)->get_index()) = 1;
                 }
                 else if ((*nd)->get_height() <= subtree_node_height) {
-                    node_weights.at((*nd)->get_index()) = 1;
+                    branch_weights.at((*nd)->get_index()) = 1;
                 }
                 else {
                     ECOEVOLITY_ASSERT((*nd)->get_height_parameter() != subtree_node->get_height_parameter());
                     ECOEVOLITY_ASSERT((*nd)->get_height() > subtree_node->get_height());
-                    node_weights.at((*nd)->get_index()) = 2;
+                    node_weights.at((*nd)->get_index()) = 1;
+                    branch_weights.at((*nd)->get_index()) = 1;
                 }
             }
-            unsigned int num_attachment_targets = 0;
-            for (const double wt : node_weights) {
-                num_attachment_targets += wt;
+            unsigned int total_node_weight = 0;
+            unsigned int total_branch_weight = 0;
+            for (const unsigned int wt : node_weights) {
+                total_node_weight += wt;
+            }
+            for (const unsigned int wt : branch_weights) {
+                total_branch_weight += wt;
+            }
+            unsigned int total_attachment_weight = total_node_weight + total_branch_weight;
+
+            double prob_branch = total_branch_weight / (double)total_attachment_weight;
+            double u = rng.uniform_real();
+            bool attach_to_branch = true;
+            if (u > prob_branch) {
+                attach_to_branch = false;
+                ln_prob_forward_move += std::log( 1.0 - prob_branch );
+            }
+            else {
+                ln_prob_forward_move += std::log( prob_branch );
             }
 
-            std::vector<double> node_probs(node_weights.size(), 0.0);
-            for (unsigned int i = 0; i < node_weights.size(); ++i) {
-                node_probs.at(i) = (double)node_weights.at(i) / (double)num_attachment_targets;
+            unsigned int target_node_index;
+            if (attach_to_branch) {
+                std::vector<double> node_probs(branch_weights.size(), 0.0);
+                for (unsigned int i = 0; i < branch_weights.size(); ++i) {
+                    node_probs.at(i) = (double)branch_weights.at(i) / (double)total_branch_weight;
+                }
+
+                target_node_index = rng.weighted_index(node_probs);
+                ln_prob_forward_move += std::log( node_probs.at(target_node_index) );
+            }
+            else {
+                std::vector<double> node_probs(node_weights.size(), 0.0);
+                for (unsigned int i = 0; i < node_weights.size(); ++i) {
+                    node_probs.at(i) = (double)node_weights.at(i) / (double)total_node_weight;
+                }
+
+                target_node_index = rng.weighted_index(node_probs);
+                ln_prob_forward_move += std::log( node_probs.at(target_node_index) );
             }
 
-            unsigned int target_node_index = rng.weighted_index(node_probs);
-            ln_prob_forward_move -= std::log( (double)num_attachment_targets );
-            // std::cout << "Prob forward pick target: " << 1.0/num_attachment_targets << std::endl;
-
-            unsigned int target_node_weight = node_weights.at(target_node_index);
-            ECOEVOLITY_ASSERT(target_node_weight > 0);
             typename TreeType::NodePtr target_node = tree->get_node(target_node_index);
             double target_node_height = target_node->get_height();
             bool target_is_root = target_node->is_root();
-
-            bool attach_to_branch = true;
-            if (target_node_weight == 2) {
-                double u = rng.uniform_real();
-                if (u < 0.5) {
-                    attach_to_branch = false;
-                }
-                // ln_prob_forward_move already accounted for this 50/50 choice
-                // above with the 1/num_attachment_targets
-            }
 
             ///////////////////////////////////////////////////////////
             // Prob of forward move =
@@ -3279,7 +3304,7 @@ class SubtreePruneRegraftRevJumpSampler : public GeneralTreeOperatorInterface<Tr
 
             double ln_prob_reverse_move = -std::log( (double)tree->get_node_count() - 1 );
             // std::cout << "Prob rev pick node: " << std::exp(ln_prob_reverse_move) << "\n";
-            unsigned int rev_num_attachment_targets = num_attachment_targets;
+            unsigned int rev_num_attachment_targets = total_attachment_weight;
             if (removed_parent_node && (! attach_to_branch)) {
                 ECOEVOLITY_ASSERT(rev_num_attachment_targets > 1);
                 --rev_num_attachment_targets;
