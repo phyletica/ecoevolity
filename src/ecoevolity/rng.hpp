@@ -25,6 +25,7 @@
 #include <unordered_map>
 
 #include "assert.hpp"
+#include "error.hpp"
 #include "math_util.hpp"
 
 class RandomNumberGenerator {
@@ -174,6 +175,58 @@ class RandomNumberGenerator {
             }
             ECOEVOLITY_ASSERT_APPROX_EQUAL(u, 0.0);
             return probabilities.size() - 1;
+        }
+
+        inline unsigned int ln_weighted_index(
+                const std::vector<double>& ln_weights) {
+            double best_score = -std::numeric_limits<double>::infinity();
+            unsigned int best_index = std::numeric_limits<unsigned int>::max();
+
+            for (unsigned int i = 0; i < ln_weights.size(); ++i) {
+                if (ln_weights.at(i) == -std::numeric_limits<double>::infinity()) {
+                    // don't draw for a zero weight
+                    continue;
+                }
+                double u = this->uniform_real();
+                double gumbel_noise = -std::log(-std::log(u));
+                double score = ln_weights.at(i) + gumbel_noise;
+                if (score > best_score) {
+                    best_score = score;
+                    best_index = i;
+                }
+            }
+            if (best_index == std::numeric_limits<unsigned int>::max()) {
+                throw EcoevolityError(
+                        "ln_weighted_index called with all 0 (-inf) weights"
+                        );
+            }
+            return best_index;
+        }
+
+        inline unsigned int ln_weighted_index(
+                const std::vector<long double>& ln_weights) {
+            long double best_score = -std::numeric_limits<long double>::infinity();
+            unsigned int best_index = std::numeric_limits<unsigned int>::max();
+
+            for (unsigned int i = 0; i < ln_weights.size(); ++i) {
+                if (ln_weights.at(i) == -std::numeric_limits<long double>::infinity()) {
+                    // don't draw for a zero weight
+                    continue;
+                }
+                long double u = this->uniform_real();
+                long double gumbel_noise = -std::log(-std::log(u));
+                long double score = ln_weights.at(i) + gumbel_noise;
+                if (score > best_score) {
+                    best_score = score;
+                    best_index = i;
+                }
+            }
+            if (best_index == std::numeric_limits<unsigned int>::max()) {
+                throw EcoevolityError(
+                        "ln_weighted_index called with all 0 (-inf) weights"
+                        );
+            }
+            return best_index;
         }
 
         inline std::vector<unsigned int> random_subset_indices(
