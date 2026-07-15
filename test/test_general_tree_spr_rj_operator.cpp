@@ -2702,7 +2702,7 @@ TEST_CASE("Testing SubtreePruneRegraftRevJumpSampler with 5 leaves, estimated ro
         "[SubtreePruneRegraftRevJumpSampler]") {
 
     SECTION("Testing 5 leaves with estimated root and ln_distance_multiplier 0.5") {
-        RandomNumberGenerator rng = RandomNumberGenerator(295137);
+        RandomNumberGenerator rng = RandomNumberGenerator(86485364);
 
         double root_ht = 0.5;
         std::shared_ptr<Node> root = std::make_shared<Node>(5, "root", root_ht);
@@ -2846,6 +2846,8 @@ TEST_CASE("Testing SubtreePruneRegraftRevJumpSampler with 5 leaves, estimated ro
             }
             std::cout << "  prop error: " << s_e.second << "\n";
         }
+
+        std::cout << "Unoptimized ln_distance_multiplier: " << op.get_coercable_parameter_value() << "\n";
 
         write_r_script(split_counts, 5, "../5-leaf-ln-dist-mult-0_5-general-tree-spr-rj-test.r");
 
@@ -3013,6 +3015,8 @@ TEST_CASE("Testing SubtreePruneRegraftRevJumpSampler with 5 leaves, estimated ro
             std::cout << "  prop error: " << s_e.second << "\n";
         }
 
+        std::cout << "Unoptimized ln_distance_multiplier: " << op.get_coercable_parameter_value() << "\n";
+
         write_r_script(split_counts, 5, "../5-leaf-ln-dist-mult--0_5-general-tree-spr-rj-test.r");
 
         REQUIRE(total_trees_sampled == nsamples);
@@ -3033,7 +3037,7 @@ TEST_CASE("Testing SubtreePruneRegraftRevJumpSampler with 5 leaves, estimated ro
 TEST_CASE("Testing SubtreePruneRegraftRevJumpSampler with 5 leaves, estimated root, and auto tuning",
         "[SubtreePruneRegraftRevJumpSampler]") {
 
-    SECTION("Testing 5 leaves with estimated root and auto tuning) {
+    SECTION("Testing 5 leaves with estimated root and auto tuning") {
         RandomNumberGenerator rng = RandomNumberGenerator(536214);
 
         double root_ht = 0.5;
@@ -3066,6 +3070,7 @@ TEST_CASE("Testing SubtreePruneRegraftRevJumpSampler with 5 leaves, estimated ro
         SubtreePruneRegraftRevJumpSampler< BaseTree<Node> > op;
         op.turn_on_auto_optimize();
         op.set_auto_optimize_delay(1000);
+        REQUIRE(op.auto_optimizing());
 
         // Initialize prior probs
         tree.compute_log_likelihood_and_prior(true);

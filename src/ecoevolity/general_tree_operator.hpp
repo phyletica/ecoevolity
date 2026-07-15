@@ -2892,6 +2892,19 @@ class SubtreePruneRegraftRevJumpSampler : public GeneralTreeOperatorInterface<Tr
             return 0.0;
         }
 
+        void optimize(double log_alpha) {
+            double delta = this->op_.calc_delta(log_alpha);
+            if (delta == 0.0) {
+                return;
+            }
+            // SubtreePruneRegraftRevJumpSampler's coercable parameter
+            // (ln_distance_multiplier_) is already on log scale, so we are not
+            // logging it before adding it to delta or exponentiating delta
+            // when setting the coercable parameter
+            delta += this->get_coercable_parameter_value();
+            this->set_coercable_parameter_value(delta);
+        }
+
         void operate_plus(RandomNumberGenerator& rng,
                 TreeType * tree,
                 std::vector< std::shared_ptr< GeneralTreeOperatorTemplate< TreeType > > > other_operators,
