@@ -420,6 +420,69 @@ TEST_CASE("Testing normalize_log_likelihoods of copy", "[math_util]") {
     }
 }
 
+TEST_CASE("Testing normalize_log_weights", "[math_util]") {
+
+    SECTION("Testing even weights") {
+        std::vector<double> ln_weights = {
+            std::log(10.0),
+            std::log(10.0),
+            std::log(10.0),
+            std::log(10.0),
+            std::log(10.0)
+        };
+        std::vector<double> expected_ln_weights = {
+            std::log(0.2),
+            std::log(0.2),
+            std::log(0.2),
+            std::log(0.2),
+            std::log(0.2)
+        };
+        std::vector<double> ret_ln_weights = get_normalized_log_probs(ln_weights);
+        for (unsigned int i = 0; i < ln_weights.size(); ++i) {
+            REQUIRE(ret_ln_weights.at(i) == Approx(expected_ln_weights.at(i)));
+            // make sure original didn't change
+            REQUIRE(ln_weights.at(i) == std::log(10.0));
+        }
+
+        // Now normalizing in place
+        normalize_log_weights(ln_weights);
+        for (unsigned int i = 0; i < ln_weights.size(); ++i) {
+            REQUIRE(ln_weights.at(i) == Approx(expected_ln_weights.at(i)));
+        }
+    }
+
+    SECTION("Testing uneven weights") {
+        std::vector<double> ln_weights = {
+            std::log(50.0),
+            std::log(30.0),
+            std::log(10.0),
+            std::log(5.0),
+            std::log(5.0)
+        };
+        std::vector<double> expected_ln_weights = {
+            std::log(0.5),
+            std::log(0.3),
+            std::log(0.1),
+            std::log(0.05),
+            std::log(0.05)
+        };
+        std::vector<double> ret_ln_weights = get_normalized_log_probs(ln_weights);
+        for (unsigned int i = 0; i < ln_weights.size(); ++i) {
+            REQUIRE(ret_ln_weights.at(i) == Approx(expected_ln_weights.at(i)));
+        }
+        // make sure original didn't change
+        REQUIRE(ln_weights.at(0) == std::log(50.0));
+        REQUIRE(ln_weights.at(2) == std::log(10.0));
+        REQUIRE(ln_weights.at(4) == std::log(5.0));
+
+        // Now normalizing in place
+        normalize_log_weights(ln_weights);
+        for (unsigned int i = 0; i < ln_weights.size(); ++i) {
+            REQUIRE(ln_weights.at(i) == Approx(expected_ln_weights.at(i)));
+        }
+    }
+}
+
 TEST_CASE("Testing get_dpp_expected_number_of_categories 0.218 7282", "[math_util]") {
     double e = get_dpp_expected_number_of_categories(0.218, 7282);
     REQUIRE(e == Approx(3.0).epsilon(0.001));
