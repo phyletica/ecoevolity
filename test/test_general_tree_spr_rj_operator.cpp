@@ -15,6 +15,750 @@
 #include "utils_for_testing.hpp"
 
 
+TEST_CASE("Testing SubtreePruneRegraftRevJumpSampler::get_branch_and_node_target_weights",
+        "[SubtreePruneRegraftRevJumpSampler]") {
+    SECTION("Testing get_branch_and_node_target_weights with 7 leaf tree") {
+        std::shared_ptr<Node> root = std::make_shared<Node>("root", 0.5);
+        std::shared_ptr<Node> n1 = std::make_shared<Node>("node1", 0.3);
+        std::shared_ptr<Node> n2 = std::make_shared<Node>("node2", 0.4);
+        std::shared_ptr<Node> internal1 = std::make_shared<Node>("internal1", 0.2);
+        std::shared_ptr<Node> internal2 = std::make_shared<Node>("internal2", 0.1);
+        std::shared_ptr<Node> leaf1 = std::make_shared<Node>(0, "leaf1", 0.0);
+        std::shared_ptr<Node> leaf2 = std::make_shared<Node>(1, "leaf2", 0.0);
+        std::shared_ptr<Node> leaf3 = std::make_shared<Node>(2, "leaf3", 0.0);
+        std::shared_ptr<Node> leaf4 = std::make_shared<Node>(3, "leaf4", 0.0);
+        std::shared_ptr<Node> leaf5 = std::make_shared<Node>(4, "leaf5", 0.0);
+        std::shared_ptr<Node> leaf6 = std::make_shared<Node>(5, "leaf6", 0.0);
+        std::shared_ptr<Node> leaf7 = std::make_shared<Node>(6, "leaf7", 0.0);
+        n2->add_child(leaf1);
+        n2->add_child(leaf2);
+        internal1->add_child(leaf3);
+        internal1->add_child(leaf4);
+        internal2->add_child(leaf5);
+        internal2->add_child(leaf6);
+        n1->add_child(internal1);
+        n1->add_child(internal2);
+        n1->add_child(leaf7);
+        root->add_child(n1);
+        root->add_child(n2);
+
+        BaseTree<Node> tree(root);
+        unsigned int num_nodes = tree.get_node_count();
+        REQUIRE(num_nodes == 12);
+
+        double neg_inf = -std::numeric_limits<double>::infinity();
+        std::vector<double> expected_weights(num_nodes * 2, neg_inf);
+
+        double ln_distance_mult;
+
+        SubtreePruneRegraftRevJumpSampler< BaseTree<Node> > op;
+        ln_distance_mult = 0.0;
+        op.set_coercable_parameter_value(ln_distance_mult);
+
+        std::vector<double> ln_weights;
+        ln_weights = op.get_branch_and_node_target_weights(&tree, leaf7);
+        REQUIRE(ln_weights.size() == expected_weights.size());
+        expected_weights.at(n1->get_index()) = 0.0 + (ln_distance_mult * 0);
+        expected_weights.at(internal1->get_index()) = 0.0 + (ln_distance_mult * 0);
+        expected_weights.at(internal2->get_index()) = 0.0 + (ln_distance_mult * 0);
+        expected_weights.at(leaf3->get_index()) = 0.0 + (ln_distance_mult * 1);
+        expected_weights.at(leaf4->get_index()) = 0.0 + (ln_distance_mult * 1);
+        expected_weights.at(leaf5->get_index()) = 0.0 + (ln_distance_mult * 1);
+        expected_weights.at(leaf6->get_index()) = 0.0 + (ln_distance_mult * 1);
+        expected_weights.at(root->get_index()) = 0.0 + (ln_distance_mult * 1);
+        expected_weights.at(n2->get_index()) = 0.0 + (ln_distance_mult * 1);
+        expected_weights.at(leaf1->get_index()) = 0.0 + (ln_distance_mult * 2);
+        expected_weights.at(leaf2->get_index()) = 0.0 + (ln_distance_mult * 2);
+
+        expected_weights.at(num_nodes + internal1->get_index()) = 0.0 + (ln_distance_mult * 1);
+        expected_weights.at(num_nodes + internal2->get_index()) = 0.0 + (ln_distance_mult * 1);
+        expected_weights.at(num_nodes + root->get_index()) = 0.0 + (ln_distance_mult * 1);
+        expected_weights.at(num_nodes + n2->get_index()) = 0.0 + (ln_distance_mult * 2);
+
+        unsigned int n_i;
+        for (unsigned int i = 0; i < ln_weights.size(); ++i) {
+            n_i = i;
+            std::cout << "\nweight index: " << i << "\n";
+            if (i < num_nodes) {
+                std::cout << "node index: " << tree.get_node(n_i)->get_index() << "\n";
+                std::cout << "node label: " << tree.get_node(n_i)->get_label() << "\n";
+                std::cout << "branch weight: " << ln_weights.at(i) << "\n";
+                std::cout << "expected weight: " << expected_weights.at(i) << "\n";
+            }
+            else {
+                n_i = i - num_nodes;
+                std::cout << "node index: " << tree.get_node(n_i)->get_index() << "\n";
+                std::cout << "node label: " << tree.get_node(n_i)->get_label() << "\n";
+                std::cout << "node weight: " << ln_weights.at(i) << "\n";
+                std::cout << "expected weight: " << expected_weights.at(i) << "\n";
+            }
+            REQUIRE(ln_weights.at(i) == expected_weights.at(i));
+        }
+
+        ln_distance_mult = 1.0;
+        op.set_coercable_parameter_value(ln_distance_mult);
+        ln_weights = op.get_branch_and_node_target_weights(&tree, leaf7);
+        REQUIRE(ln_weights.size() == expected_weights.size());
+
+        std::fill(expected_weights.begin(), expected_weights.end(), neg_inf); 
+        expected_weights.at(n1->get_index()) = 0.0 + (ln_distance_mult * 0);
+        expected_weights.at(internal1->get_index()) = 0.0 + (ln_distance_mult * 0);
+        expected_weights.at(internal2->get_index()) = 0.0 + (ln_distance_mult * 0);
+        expected_weights.at(leaf3->get_index()) = 0.0 + (ln_distance_mult * 1);
+        expected_weights.at(leaf4->get_index()) = 0.0 + (ln_distance_mult * 1);
+        expected_weights.at(leaf5->get_index()) = 0.0 + (ln_distance_mult * 1);
+        expected_weights.at(leaf6->get_index()) = 0.0 + (ln_distance_mult * 1);
+        expected_weights.at(root->get_index()) = 0.0 + (ln_distance_mult * 1);
+        expected_weights.at(n2->get_index()) = 0.0 + (ln_distance_mult * 1);
+        expected_weights.at(leaf1->get_index()) = 0.0 + (ln_distance_mult * 2);
+        expected_weights.at(leaf2->get_index()) = 0.0 + (ln_distance_mult * 2);
+
+        expected_weights.at(num_nodes + internal1->get_index()) = 0.0 + (ln_distance_mult * 1);
+        expected_weights.at(num_nodes + internal2->get_index()) = 0.0 + (ln_distance_mult * 1);
+        expected_weights.at(num_nodes + root->get_index()) = 0.0 + (ln_distance_mult * 1);
+        expected_weights.at(num_nodes + n2->get_index()) = 0.0 + (ln_distance_mult * 2);
+
+        for (unsigned int i = 0; i < ln_weights.size(); ++i) {
+            n_i = i;
+            std::cout << "\nweight index: " << i << "\n";
+            if (i < num_nodes) {
+                std::cout << "node index: " << tree.get_node(n_i)->get_index() << "\n";
+                std::cout << "node label: " << tree.get_node(n_i)->get_label() << "\n";
+                std::cout << "branch weight: " << ln_weights.at(i) << "\n";
+                std::cout << "expected weight: " << expected_weights.at(i) << "\n";
+            }
+            else {
+                n_i = i - num_nodes;
+                std::cout << "node index: " << tree.get_node(n_i)->get_index() << "\n";
+                std::cout << "node label: " << tree.get_node(n_i)->get_label() << "\n";
+                std::cout << "node weight: " << ln_weights.at(i) << "\n";
+                std::cout << "expected weight: " << expected_weights.at(i) << "\n";
+            }
+            REQUIRE(ln_weights.at(i) == expected_weights.at(i));
+        }
+
+        ln_distance_mult = -1.0;
+        op.set_coercable_parameter_value(ln_distance_mult);
+        ln_weights = op.get_branch_and_node_target_weights(&tree, leaf7);
+        REQUIRE(ln_weights.size() == expected_weights.size());
+
+        std::fill(expected_weights.begin(), expected_weights.end(), neg_inf); 
+        expected_weights.at(n1->get_index()) = 0.0 + (ln_distance_mult * 0);
+        expected_weights.at(internal1->get_index()) = 0.0 + (ln_distance_mult * 0);
+        expected_weights.at(internal2->get_index()) = 0.0 + (ln_distance_mult * 0);
+        expected_weights.at(leaf3->get_index()) = 0.0 + (ln_distance_mult * 1);
+        expected_weights.at(leaf4->get_index()) = 0.0 + (ln_distance_mult * 1);
+        expected_weights.at(leaf5->get_index()) = 0.0 + (ln_distance_mult * 1);
+        expected_weights.at(leaf6->get_index()) = 0.0 + (ln_distance_mult * 1);
+        expected_weights.at(root->get_index()) = 0.0 + (ln_distance_mult * 1);
+        expected_weights.at(n2->get_index()) = 0.0 + (ln_distance_mult * 1);
+        expected_weights.at(leaf1->get_index()) = 0.0 + (ln_distance_mult * 2);
+        expected_weights.at(leaf2->get_index()) = 0.0 + (ln_distance_mult * 2);
+
+        expected_weights.at(num_nodes + internal1->get_index()) = 0.0 + (ln_distance_mult * 1);
+        expected_weights.at(num_nodes + internal2->get_index()) = 0.0 + (ln_distance_mult * 1);
+        expected_weights.at(num_nodes + root->get_index()) = 0.0 + (ln_distance_mult * 1);
+        expected_weights.at(num_nodes + n2->get_index()) = 0.0 + (ln_distance_mult * 2);
+
+        for (unsigned int i = 0; i < ln_weights.size(); ++i) {
+            n_i = i;
+            std::cout << "\nweight index: " << i << "\n";
+            if (i < num_nodes) {
+                std::cout << "node index: " << tree.get_node(n_i)->get_index() << "\n";
+                std::cout << "node label: " << tree.get_node(n_i)->get_label() << "\n";
+                std::cout << "branch weight: " << ln_weights.at(i) << "\n";
+                std::cout << "expected weight: " << expected_weights.at(i) << "\n";
+            }
+            else {
+                n_i = i - num_nodes;
+                std::cout << "node index: " << tree.get_node(n_i)->get_index() << "\n";
+                std::cout << "node label: " << tree.get_node(n_i)->get_label() << "\n";
+                std::cout << "node weight: " << ln_weights.at(i) << "\n";
+                std::cout << "expected weight: " << expected_weights.at(i) << "\n";
+            }
+            REQUIRE(ln_weights.at(i) == expected_weights.at(i));
+        }
+
+
+        ln_distance_mult = 0.0;
+        op.set_coercable_parameter_value(ln_distance_mult);
+        ln_weights = op.get_branch_and_node_target_weights(&tree, n2);
+        REQUIRE(ln_weights.size() == expected_weights.size());
+
+        std::fill(expected_weights.begin(), expected_weights.end(), neg_inf); 
+        expected_weights.at(n1->get_index()) = 0.0 + (ln_distance_mult * 0);
+
+        for (unsigned int i = 0; i < ln_weights.size(); ++i) {
+            n_i = i;
+            std::cout << "\nweight index: " << i << "\n";
+            if (i < num_nodes) {
+                std::cout << "node index: " << tree.get_node(n_i)->get_index() << "\n";
+                std::cout << "node label: " << tree.get_node(n_i)->get_label() << "\n";
+                std::cout << "branch weight: " << ln_weights.at(i) << "\n";
+                std::cout << "expected weight: " << expected_weights.at(i) << "\n";
+            }
+            else {
+                n_i = i - num_nodes;
+                std::cout << "node index: " << tree.get_node(n_i)->get_index() << "\n";
+                std::cout << "node label: " << tree.get_node(n_i)->get_label() << "\n";
+                std::cout << "node weight: " << ln_weights.at(i) << "\n";
+                std::cout << "expected weight: " << expected_weights.at(i) << "\n";
+            }
+            REQUIRE(ln_weights.at(i) == expected_weights.at(i));
+        }
+
+        ln_distance_mult = 1.5;
+        op.set_coercable_parameter_value(ln_distance_mult);
+        ln_weights = op.get_branch_and_node_target_weights(&tree, n2);
+        REQUIRE(ln_weights.size() == expected_weights.size());
+
+        std::fill(expected_weights.begin(), expected_weights.end(), neg_inf); 
+        expected_weights.at(n1->get_index()) = 0.0 + (ln_distance_mult * 0);
+
+        for (unsigned int i = 0; i < ln_weights.size(); ++i) {
+            n_i = i;
+            std::cout << "\nweight index: " << i << "\n";
+            if (i < num_nodes) {
+                std::cout << "node index: " << tree.get_node(n_i)->get_index() << "\n";
+                std::cout << "node label: " << tree.get_node(n_i)->get_label() << "\n";
+                std::cout << "branch weight: " << ln_weights.at(i) << "\n";
+                std::cout << "expected weight: " << expected_weights.at(i) << "\n";
+            }
+            else {
+                n_i = i - num_nodes;
+                std::cout << "node index: " << tree.get_node(n_i)->get_index() << "\n";
+                std::cout << "node label: " << tree.get_node(n_i)->get_label() << "\n";
+                std::cout << "node weight: " << ln_weights.at(i) << "\n";
+                std::cout << "expected weight: " << expected_weights.at(i) << "\n";
+            }
+            REQUIRE(ln_weights.at(i) == expected_weights.at(i));
+        }
+
+        ln_distance_mult = -1.5;
+        op.set_coercable_parameter_value(ln_distance_mult);
+        ln_weights = op.get_branch_and_node_target_weights(&tree, n2);
+        REQUIRE(ln_weights.size() == expected_weights.size());
+
+        std::fill(expected_weights.begin(), expected_weights.end(), neg_inf); 
+        expected_weights.at(n1->get_index()) = 0.0 + (ln_distance_mult * 0);
+
+        for (unsigned int i = 0; i < ln_weights.size(); ++i) {
+            n_i = i;
+            std::cout << "\nweight index: " << i << "\n";
+            if (i < num_nodes) {
+                std::cout << "node index: " << tree.get_node(n_i)->get_index() << "\n";
+                std::cout << "node label: " << tree.get_node(n_i)->get_label() << "\n";
+                std::cout << "branch weight: " << ln_weights.at(i) << "\n";
+                std::cout << "expected weight: " << expected_weights.at(i) << "\n";
+            }
+            else {
+                n_i = i - num_nodes;
+                std::cout << "node index: " << tree.get_node(n_i)->get_index() << "\n";
+                std::cout << "node label: " << tree.get_node(n_i)->get_label() << "\n";
+                std::cout << "node weight: " << ln_weights.at(i) << "\n";
+                std::cout << "expected weight: " << expected_weights.at(i) << "\n";
+            }
+            REQUIRE(ln_weights.at(i) == expected_weights.at(i));
+        }
+
+
+        ln_distance_mult = 0.0;
+        op.set_coercable_parameter_value(ln_distance_mult);
+        ln_weights = op.get_branch_and_node_target_weights(&tree, n1);
+        REQUIRE(ln_weights.size() == expected_weights.size());
+
+        std::fill(expected_weights.begin(), expected_weights.end(), neg_inf); 
+        expected_weights.at(n2->get_index()) = 0.0 + (ln_distance_mult * 0);
+        expected_weights.at(leaf1->get_index()) = 0.0 + (ln_distance_mult * 0);
+        expected_weights.at(leaf2->get_index()) = 0.0 + (ln_distance_mult * 0);
+
+        expected_weights.at(num_nodes + n2->get_index()) = 0.0 + (ln_distance_mult * 0);
+
+        for (unsigned int i = 0; i < ln_weights.size(); ++i) {
+            n_i = i;
+            std::cout << "\nweight index: " << i << "\n";
+            if (i < num_nodes) {
+                std::cout << "node index: " << tree.get_node(n_i)->get_index() << "\n";
+                std::cout << "node label: " << tree.get_node(n_i)->get_label() << "\n";
+                std::cout << "branch weight: " << ln_weights.at(i) << "\n";
+                std::cout << "expected weight: " << expected_weights.at(i) << "\n";
+            }
+            else {
+                n_i = i - num_nodes;
+                std::cout << "node index: " << tree.get_node(n_i)->get_index() << "\n";
+                std::cout << "node label: " << tree.get_node(n_i)->get_label() << "\n";
+                std::cout << "node weight: " << ln_weights.at(i) << "\n";
+                std::cout << "expected weight: " << expected_weights.at(i) << "\n";
+            }
+            REQUIRE(ln_weights.at(i) == expected_weights.at(i));
+        }
+
+        ln_distance_mult = 0.5;
+        op.set_coercable_parameter_value(ln_distance_mult);
+        ln_weights = op.get_branch_and_node_target_weights(&tree, n1);
+        REQUIRE(ln_weights.size() == expected_weights.size());
+
+        std::fill(expected_weights.begin(), expected_weights.end(), neg_inf); 
+        expected_weights.at(n2->get_index()) = 0.0 + (ln_distance_mult * 0);
+        expected_weights.at(leaf1->get_index()) = 0.0 + (ln_distance_mult * 0);
+        expected_weights.at(leaf2->get_index()) = 0.0 + (ln_distance_mult * 0);
+
+        expected_weights.at(num_nodes + n2->get_index()) = 0.0 + (ln_distance_mult * 0);
+
+        for (unsigned int i = 0; i < ln_weights.size(); ++i) {
+            n_i = i;
+            std::cout << "\nweight index: " << i << "\n";
+            if (i < num_nodes) {
+                std::cout << "node index: " << tree.get_node(n_i)->get_index() << "\n";
+                std::cout << "node label: " << tree.get_node(n_i)->get_label() << "\n";
+                std::cout << "branch weight: " << ln_weights.at(i) << "\n";
+                std::cout << "expected weight: " << expected_weights.at(i) << "\n";
+            }
+            else {
+                n_i = i - num_nodes;
+                std::cout << "node index: " << tree.get_node(n_i)->get_index() << "\n";
+                std::cout << "node label: " << tree.get_node(n_i)->get_label() << "\n";
+                std::cout << "node weight: " << ln_weights.at(i) << "\n";
+                std::cout << "expected weight: " << expected_weights.at(i) << "\n";
+            }
+            REQUIRE(ln_weights.at(i) == expected_weights.at(i));
+        }
+
+        ln_distance_mult = -0.5;
+        op.set_coercable_parameter_value(ln_distance_mult);
+        ln_weights = op.get_branch_and_node_target_weights(&tree, n1);
+        REQUIRE(ln_weights.size() == expected_weights.size());
+
+        std::fill(expected_weights.begin(), expected_weights.end(), neg_inf); 
+        expected_weights.at(n2->get_index()) = 0.0 + (ln_distance_mult * 0);
+        expected_weights.at(leaf1->get_index()) = 0.0 + (ln_distance_mult * 0);
+        expected_weights.at(leaf2->get_index()) = 0.0 + (ln_distance_mult * 0);
+
+        expected_weights.at(num_nodes + n2->get_index()) = 0.0 + (ln_distance_mult * 0);
+
+        for (unsigned int i = 0; i < ln_weights.size(); ++i) {
+            n_i = i;
+            std::cout << "\nweight index: " << i << "\n";
+            if (i < num_nodes) {
+                std::cout << "node index: " << tree.get_node(n_i)->get_index() << "\n";
+                std::cout << "node label: " << tree.get_node(n_i)->get_label() << "\n";
+                std::cout << "branch weight: " << ln_weights.at(i) << "\n";
+                std::cout << "expected weight: " << expected_weights.at(i) << "\n";
+            }
+            else {
+                n_i = i - num_nodes;
+                std::cout << "node index: " << tree.get_node(n_i)->get_index() << "\n";
+                std::cout << "node label: " << tree.get_node(n_i)->get_label() << "\n";
+                std::cout << "node weight: " << ln_weights.at(i) << "\n";
+                std::cout << "expected weight: " << expected_weights.at(i) << "\n";
+            }
+            REQUIRE(ln_weights.at(i) == expected_weights.at(i));
+        }
+
+        ln_distance_mult = 0.0;
+        op.set_coercable_parameter_value(ln_distance_mult);
+        ln_weights = op.get_branch_and_node_target_weights(&tree, internal1);
+        REQUIRE(ln_weights.size() == expected_weights.size());
+
+        std::fill(expected_weights.begin(), expected_weights.end(), neg_inf); 
+        expected_weights.at(n2->get_index()) = 0.0 + (ln_distance_mult * 1);
+        expected_weights.at(root->get_index()) = 0.0 + (ln_distance_mult * 1);
+        expected_weights.at(leaf1->get_index()) = 0.0 + (ln_distance_mult * 2);
+        expected_weights.at(leaf2->get_index()) = 0.0 + (ln_distance_mult * 2);
+        expected_weights.at(n1->get_index()) = 0.0 + (ln_distance_mult * 0);
+        expected_weights.at(internal2->get_index()) = 0.0 + (ln_distance_mult * 0);
+        expected_weights.at(leaf7->get_index()) = 0.0 + (ln_distance_mult * 0);
+
+        expected_weights.at(num_nodes + root->get_index()) = 0.0 + (ln_distance_mult * 1);
+        expected_weights.at(num_nodes + n2->get_index()) = 0.0 + (ln_distance_mult * 2);
+
+        for (unsigned int i = 0; i < ln_weights.size(); ++i) {
+            n_i = i;
+            std::cout << "\nweight index: " << i << "\n";
+            if (i < num_nodes) {
+                std::cout << "node index: " << tree.get_node(n_i)->get_index() << "\n";
+                std::cout << "node label: " << tree.get_node(n_i)->get_label() << "\n";
+                std::cout << "branch weight: " << ln_weights.at(i) << "\n";
+                std::cout << "expected weight: " << expected_weights.at(i) << "\n";
+            }
+            else {
+                n_i = i - num_nodes;
+                std::cout << "node index: " << tree.get_node(n_i)->get_index() << "\n";
+                std::cout << "node label: " << tree.get_node(n_i)->get_label() << "\n";
+                std::cout << "node weight: " << ln_weights.at(i) << "\n";
+                std::cout << "expected weight: " << expected_weights.at(i) << "\n";
+            }
+            REQUIRE(ln_weights.at(i) == expected_weights.at(i));
+        }
+
+        ln_distance_mult = -0.1;
+        op.set_coercable_parameter_value(ln_distance_mult);
+        ln_weights = op.get_branch_and_node_target_weights(&tree, internal1);
+        REQUIRE(ln_weights.size() == expected_weights.size());
+
+        std::fill(expected_weights.begin(), expected_weights.end(), neg_inf); 
+        expected_weights.at(n2->get_index()) = 0.0 + (ln_distance_mult * 1);
+        expected_weights.at(root->get_index()) = 0.0 + (ln_distance_mult * 1);
+        expected_weights.at(leaf1->get_index()) = 0.0 + (ln_distance_mult * 2);
+        expected_weights.at(leaf2->get_index()) = 0.0 + (ln_distance_mult * 2);
+        expected_weights.at(n1->get_index()) = 0.0 + (ln_distance_mult * 0);
+        expected_weights.at(internal2->get_index()) = 0.0 + (ln_distance_mult * 0);
+        expected_weights.at(leaf7->get_index()) = 0.0 + (ln_distance_mult * 0);
+
+        expected_weights.at(num_nodes + root->get_index()) = 0.0 + (ln_distance_mult * 1);
+        expected_weights.at(num_nodes + n2->get_index()) = 0.0 + (ln_distance_mult * 2);
+
+        for (unsigned int i = 0; i < ln_weights.size(); ++i) {
+            n_i = i;
+            std::cout << "\nweight index: " << i << "\n";
+            if (i < num_nodes) {
+                std::cout << "node index: " << tree.get_node(n_i)->get_index() << "\n";
+                std::cout << "node label: " << tree.get_node(n_i)->get_label() << "\n";
+                std::cout << "branch weight: " << ln_weights.at(i) << "\n";
+                std::cout << "expected weight: " << expected_weights.at(i) << "\n";
+            }
+            else {
+                n_i = i - num_nodes;
+                std::cout << "node index: " << tree.get_node(n_i)->get_index() << "\n";
+                std::cout << "node label: " << tree.get_node(n_i)->get_label() << "\n";
+                std::cout << "node weight: " << ln_weights.at(i) << "\n";
+                std::cout << "expected weight: " << expected_weights.at(i) << "\n";
+            }
+            REQUIRE(ln_weights.at(i) == expected_weights.at(i));
+        }
+
+        ln_distance_mult = 0.1;
+        op.set_coercable_parameter_value(ln_distance_mult);
+        ln_weights = op.get_branch_and_node_target_weights(&tree, internal1);
+        REQUIRE(ln_weights.size() == expected_weights.size());
+
+        std::fill(expected_weights.begin(), expected_weights.end(), neg_inf); 
+        expected_weights.at(n2->get_index()) = 0.0 + (ln_distance_mult * 1);
+        expected_weights.at(root->get_index()) = 0.0 + (ln_distance_mult * 1);
+        expected_weights.at(leaf1->get_index()) = 0.0 + (ln_distance_mult * 2);
+        expected_weights.at(leaf2->get_index()) = 0.0 + (ln_distance_mult * 2);
+        expected_weights.at(n1->get_index()) = 0.0 + (ln_distance_mult * 0);
+        expected_weights.at(internal2->get_index()) = 0.0 + (ln_distance_mult * 0);
+        expected_weights.at(leaf7->get_index()) = 0.0 + (ln_distance_mult * 0);
+
+        expected_weights.at(num_nodes + root->get_index()) = 0.0 + (ln_distance_mult * 1);
+        expected_weights.at(num_nodes + n2->get_index()) = 0.0 + (ln_distance_mult * 2);
+
+        for (unsigned int i = 0; i < ln_weights.size(); ++i) {
+            n_i = i;
+            std::cout << "\nweight index: " << i << "\n";
+            if (i < num_nodes) {
+                std::cout << "node index: " << tree.get_node(n_i)->get_index() << "\n";
+                std::cout << "node label: " << tree.get_node(n_i)->get_label() << "\n";
+                std::cout << "branch weight: " << ln_weights.at(i) << "\n";
+                std::cout << "expected weight: " << expected_weights.at(i) << "\n";
+            }
+            else {
+                n_i = i - num_nodes;
+                std::cout << "node index: " << tree.get_node(n_i)->get_index() << "\n";
+                std::cout << "node label: " << tree.get_node(n_i)->get_label() << "\n";
+                std::cout << "node weight: " << ln_weights.at(i) << "\n";
+                std::cout << "expected weight: " << expected_weights.at(i) << "\n";
+            }
+            REQUIRE(ln_weights.at(i) == expected_weights.at(i));
+        }
+
+        std::vector<double> ln_dist_multipliers = {0.0, -1.2, 1.2};
+
+        for (const auto ln_distance_mult : ln_dist_multipliers) {
+            op.set_coercable_parameter_value(ln_distance_mult);
+            ln_weights = op.get_branch_and_node_target_weights(&tree, internal2);
+            REQUIRE(ln_weights.size() == expected_weights.size());
+
+            std::fill(expected_weights.begin(), expected_weights.end(), neg_inf); 
+            expected_weights.at(n2->get_index()) = 0.0 + (ln_distance_mult * 1);
+            expected_weights.at(root->get_index()) = 0.0 + (ln_distance_mult * 1);
+            expected_weights.at(leaf1->get_index()) = 0.0 + (ln_distance_mult * 2);
+            expected_weights.at(leaf2->get_index()) = 0.0 + (ln_distance_mult * 2);
+            expected_weights.at(n1->get_index()) = 0.0 + (ln_distance_mult * 0);
+            expected_weights.at(internal1->get_index()) = 0.0 + (ln_distance_mult * 0);
+            expected_weights.at(leaf7->get_index()) = 0.0 + (ln_distance_mult * 0);
+            expected_weights.at(leaf3->get_index()) = 0.0 + (ln_distance_mult * 1);
+            expected_weights.at(leaf4->get_index()) = 0.0 + (ln_distance_mult * 1);
+
+            expected_weights.at(num_nodes + root->get_index()) = 0.0 + (ln_distance_mult * 1);
+            expected_weights.at(num_nodes + n2->get_index()) = 0.0 + (ln_distance_mult * 2);
+            expected_weights.at(num_nodes + internal1->get_index()) = 0.0 + (ln_distance_mult * 1);
+
+            for (unsigned int i = 0; i < ln_weights.size(); ++i) {
+                n_i = i;
+                std::cout << "\nweight index: " << i << "\n";
+                if (i < num_nodes) {
+                    std::cout << "node index: " << tree.get_node(n_i)->get_index() << "\n";
+                    std::cout << "node label: " << tree.get_node(n_i)->get_label() << "\n";
+                    std::cout << "branch weight: " << ln_weights.at(i) << "\n";
+                    std::cout << "expected weight: " << expected_weights.at(i) << "\n";
+                }
+                else {
+                    n_i = i - num_nodes;
+                    std::cout << "node index: " << tree.get_node(n_i)->get_index() << "\n";
+                    std::cout << "node label: " << tree.get_node(n_i)->get_label() << "\n";
+                    std::cout << "node weight: " << ln_weights.at(i) << "\n";
+                    std::cout << "expected weight: " << expected_weights.at(i) << "\n";
+                }
+                REQUIRE(ln_weights.at(i) == expected_weights.at(i));
+            }
+        }
+
+        for (const auto ln_distance_mult : ln_dist_multipliers) {
+            op.set_coercable_parameter_value(ln_distance_mult);
+            ln_weights = op.get_branch_and_node_target_weights(&tree, leaf5);
+            REQUIRE(ln_weights.size() == expected_weights.size());
+
+            std::fill(expected_weights.begin(), expected_weights.end(), neg_inf); 
+            expected_weights.at(n2->get_index()) = 0.0 + (ln_distance_mult * 1);
+            expected_weights.at(root->get_index()) = 0.0 + (ln_distance_mult * 1);
+            expected_weights.at(leaf1->get_index()) = 0.0 + (ln_distance_mult * 2);
+            expected_weights.at(leaf2->get_index()) = 0.0 + (ln_distance_mult * 2);
+            expected_weights.at(n1->get_index()) = 0.0 + (ln_distance_mult * 0);
+            expected_weights.at(internal1->get_index()) = 0.0 + (ln_distance_mult * 0);
+            expected_weights.at(leaf6->get_index()) = 0.0 + (ln_distance_mult * 0);
+            expected_weights.at(leaf7->get_index()) = 0.0 + (ln_distance_mult * 0);
+            expected_weights.at(leaf3->get_index()) = 0.0 + (ln_distance_mult * 1);
+            expected_weights.at(leaf4->get_index()) = 0.0 + (ln_distance_mult * 1);
+
+            expected_weights.at(num_nodes + root->get_index()) = 0.0 + (ln_distance_mult * 1);
+            expected_weights.at(num_nodes + n2->get_index()) = 0.0 + (ln_distance_mult * 2);
+            expected_weights.at(num_nodes + n1->get_index()) = 0.0 + (ln_distance_mult * 0);
+            expected_weights.at(num_nodes + internal1->get_index()) = 0.0 + (ln_distance_mult * 1);
+
+            for (unsigned int i = 0; i < ln_weights.size(); ++i) {
+                n_i = i;
+                std::cout << "\nweight index: " << i << "\n";
+                if (i < num_nodes) {
+                    std::cout << "node index: " << tree.get_node(n_i)->get_index() << "\n";
+                    std::cout << "node label: " << tree.get_node(n_i)->get_label() << "\n";
+                    std::cout << "branch weight: " << ln_weights.at(i) << "\n";
+                    std::cout << "expected weight: " << expected_weights.at(i) << "\n";
+                }
+                else {
+                    n_i = i - num_nodes;
+                    std::cout << "node index: " << tree.get_node(n_i)->get_index() << "\n";
+                    std::cout << "node label: " << tree.get_node(n_i)->get_label() << "\n";
+                    std::cout << "node weight: " << ln_weights.at(i) << "\n";
+                    std::cout << "expected weight: " << expected_weights.at(i) << "\n";
+                }
+                REQUIRE(ln_weights.at(i) == expected_weights.at(i));
+            }
+        }
+
+        for (const auto ln_distance_mult : ln_dist_multipliers) {
+            op.set_coercable_parameter_value(ln_distance_mult);
+            ln_weights = op.get_branch_and_node_target_weights(&tree, leaf1);
+            REQUIRE(ln_weights.size() == expected_weights.size());
+
+            std::fill(expected_weights.begin(), expected_weights.end(), neg_inf); 
+            expected_weights.at(root->get_index()) = 0.0 + (ln_distance_mult * 0);
+            expected_weights.at(leaf2->get_index()) = 0.0 + (ln_distance_mult * 0);
+            expected_weights.at(n1->get_index()) = 0.0 + (ln_distance_mult * 0);
+            expected_weights.at(internal1->get_index()) = 0.0 + (ln_distance_mult * 1);
+            expected_weights.at(internal2->get_index()) = 0.0 + (ln_distance_mult * 1);
+            expected_weights.at(leaf7->get_index()) = 0.0 + (ln_distance_mult * 1);
+            expected_weights.at(leaf6->get_index()) = 0.0 + (ln_distance_mult * 2);
+            expected_weights.at(leaf5->get_index()) = 0.0 + (ln_distance_mult * 2);
+            expected_weights.at(leaf3->get_index()) = 0.0 + (ln_distance_mult * 2);
+            expected_weights.at(leaf4->get_index()) = 0.0 + (ln_distance_mult * 2);
+
+            expected_weights.at(num_nodes + root->get_index()) = 0.0 + (ln_distance_mult * 0);
+            expected_weights.at(num_nodes + n1->get_index()) = 0.0 + (ln_distance_mult * 1);
+            expected_weights.at(num_nodes + internal1->get_index()) = 0.0 + (ln_distance_mult * 2);
+            expected_weights.at(num_nodes + internal2->get_index()) = 0.0 + (ln_distance_mult * 2);
+
+            for (unsigned int i = 0; i < ln_weights.size(); ++i) {
+                n_i = i;
+                std::cout << "\nweight index: " << i << "\n";
+                if (i < num_nodes) {
+                    std::cout << "node index: " << tree.get_node(n_i)->get_index() << "\n";
+                    std::cout << "node label: " << tree.get_node(n_i)->get_label() << "\n";
+                    std::cout << "branch weight: " << ln_weights.at(i) << "\n";
+                    std::cout << "expected weight: " << expected_weights.at(i) << "\n";
+                }
+                else {
+                    n_i = i - num_nodes;
+                    std::cout << "node index: " << tree.get_node(n_i)->get_index() << "\n";
+                    std::cout << "node label: " << tree.get_node(n_i)->get_label() << "\n";
+                    std::cout << "node weight: " << ln_weights.at(i) << "\n";
+                    std::cout << "expected weight: " << expected_weights.at(i) << "\n";
+                }
+                REQUIRE(ln_weights.at(i) == expected_weights.at(i));
+            }
+        }
+    }
+
+    SECTION("Testing get_branch_and_node_target_weights with 8 leaf tree") {
+        std::shared_ptr<Node> root = std::make_shared<Node>("root", 0.5);
+        std::shared_ptr<Node> root_child = std::make_shared<Node>("root_child", 0.5);
+        std::shared_ptr<Node> n1 = std::make_shared<Node>("node1", 0.3);
+        std::shared_ptr<Node> n2 = std::make_shared<Node>("node2", 0.4);
+        std::shared_ptr<Node> internal1 = std::make_shared<Node>("internal1", 0.2);
+        std::shared_ptr<Node> internal2 = std::make_shared<Node>("internal2", 0.1);
+        std::shared_ptr<Node> leaf1 = std::make_shared<Node>(0, "leaf1", 0.0);
+        std::shared_ptr<Node> leaf2 = std::make_shared<Node>(1, "leaf2", 0.0);
+        std::shared_ptr<Node> leaf3 = std::make_shared<Node>(2, "leaf3", 0.0);
+        std::shared_ptr<Node> leaf4 = std::make_shared<Node>(3, "leaf4", 0.0);
+        std::shared_ptr<Node> leaf5 = std::make_shared<Node>(4, "leaf5", 0.0);
+        std::shared_ptr<Node> leaf6 = std::make_shared<Node>(5, "leaf6", 0.0);
+        std::shared_ptr<Node> leaf7 = std::make_shared<Node>(6, "leaf7", 0.0);
+        std::shared_ptr<Node> leaf8 = std::make_shared<Node>(7, "leaf8", 0.0);
+        n2->add_child(leaf1);
+        n2->add_child(leaf2);
+        internal1->add_child(leaf3);
+        internal1->add_child(leaf4);
+        internal2->add_child(leaf5);
+        internal2->add_child(leaf6);
+        n1->add_child(internal1);
+        n1->add_child(internal2);
+        n1->add_child(leaf7);
+        root_child->add_child(n1);
+        root_child->add_child(n2);
+        root->add_child(root_child);
+        root->add_child(leaf8);
+
+        BaseTree<Node> tree(root);
+        unsigned int num_nodes = tree.get_node_count();
+        REQUIRE(num_nodes == 14);
+
+        double neg_inf = -std::numeric_limits<double>::infinity();
+        std::vector<double> expected_weights(num_nodes * 2, neg_inf);
+        std::vector<double> ln_weights;
+
+        SubtreePruneRegraftRevJumpSampler< BaseTree<Node> > op;
+
+        std::vector<double> ln_dist_multipliers = {0.0, -2.1, 2.1};
+        unsigned int n_i;
+
+        for (const auto ln_distance_mult : ln_dist_multipliers) {
+            op.set_coercable_parameter_value(ln_distance_mult);
+            ln_weights = op.get_branch_and_node_target_weights(&tree, root_child);
+            REQUIRE(ln_weights.size() == expected_weights.size());
+
+            std::fill(expected_weights.begin(), expected_weights.end(), neg_inf); 
+
+            expected_weights.at(leaf8->get_index()) = 0.0 + (ln_distance_mult * 0);
+
+            for (unsigned int i = 0; i < ln_weights.size(); ++i) {
+                n_i = i;
+                std::cout << "\nweight index: " << i << "\n";
+                if (i < num_nodes) {
+                    std::cout << "node index: " << tree.get_node(n_i)->get_index() << "\n";
+                    std::cout << "node label: " << tree.get_node(n_i)->get_label() << "\n";
+                    std::cout << "branch weight: " << ln_weights.at(i) << "\n";
+                    std::cout << "expected weight: " << expected_weights.at(i) << "\n";
+                }
+                else {
+                    n_i = i - num_nodes;
+                    std::cout << "node index: " << tree.get_node(n_i)->get_index() << "\n";
+                    std::cout << "node label: " << tree.get_node(n_i)->get_label() << "\n";
+                    std::cout << "node weight: " << ln_weights.at(i) << "\n";
+                    std::cout << "expected weight: " << expected_weights.at(i) << "\n";
+                }
+                REQUIRE(ln_weights.at(i) == expected_weights.at(i));
+            }
+        }
+    }
+
+    SECTION("Testing get_branch_and_node_target_weights with 9 leaf tree") {
+        std::shared_ptr<Node> root = std::make_shared<Node>("root", 0.5);
+        std::shared_ptr<Node> n1 = std::make_shared<Node>("node1", 0.3);
+        std::shared_ptr<Node> n2 = std::make_shared<Node>("node2", 0.4);
+        std::shared_ptr<Node> internal1 = std::make_shared<Node>("internal1", 0.2);
+        std::shared_ptr<Node> internal2 = std::make_shared<Node>("internal2", 0.1);
+        std::shared_ptr<Node> internal3 = std::make_shared<Node>("internal3", 0.05);
+        std::shared_ptr<Node> internal4 = std::make_shared<Node>("internal4", 0.01);
+        std::shared_ptr<Node> leaf1 = std::make_shared<Node>(0, "leaf1", 0.0);
+        std::shared_ptr<Node> leaf2 = std::make_shared<Node>(1, "leaf2", 0.0);
+        std::shared_ptr<Node> leaf3 = std::make_shared<Node>(2, "leaf3", 0.0);
+        std::shared_ptr<Node> leaf4 = std::make_shared<Node>(3, "leaf4", 0.0);
+        std::shared_ptr<Node> leaf4b = std::make_shared<Node>(7, "leaf4b", 0.0);
+        std::shared_ptr<Node> leaf4c = std::make_shared<Node>(8, "leaf4c", 0.0);
+        std::shared_ptr<Node> leaf5 = std::make_shared<Node>(4, "leaf5", 0.0);
+        std::shared_ptr<Node> leaf6 = std::make_shared<Node>(5, "leaf6", 0.0);
+        std::shared_ptr<Node> leaf7 = std::make_shared<Node>(6, "leaf7", 0.0);
+        n2->add_child(leaf1);
+        n2->add_child(leaf2);
+        internal1->add_child(leaf3);
+        internal2->add_child(leaf5);
+        internal2->add_child(leaf6);
+        internal4->add_child(leaf4b);
+        internal4->add_child(leaf4c);
+        internal3->add_child(internal4);
+        internal3->add_child(leaf4);
+        internal1->add_child(internal3);
+        n1->add_child(internal1);
+        n1->add_child(internal2);
+        n1->add_child(leaf7);
+        root->add_child(n1);
+        root->add_child(n2);
+
+        BaseTree<Node> tree(root);
+        unsigned int num_nodes = tree.get_node_count();
+        REQUIRE(num_nodes == 16);
+
+        double neg_inf = -std::numeric_limits<double>::infinity();
+        std::vector<double> expected_weights(num_nodes * 2, neg_inf);
+        std::vector<double> ln_weights;
+
+        SubtreePruneRegraftRevJumpSampler< BaseTree<Node> > op;
+
+        std::vector<double> ln_dist_multipliers = {0.0, -2.1, 2.1};
+        unsigned int n_i;
+
+        for (const auto ln_distance_mult : ln_dist_multipliers) {
+            op.set_coercable_parameter_value(ln_distance_mult);
+            ln_weights = op.get_branch_and_node_target_weights(&tree, leaf4b);
+            REQUIRE(ln_weights.size() == expected_weights.size());
+
+            std::fill(expected_weights.begin(), expected_weights.end(), neg_inf); 
+
+            expected_weights.at(leaf4c->get_index()) = 0.0 + (ln_distance_mult * 0);
+            expected_weights.at(leaf4->get_index()) = 0.0 + (ln_distance_mult * 0);
+            expected_weights.at(internal3->get_index()) = 0.0 + (ln_distance_mult * 0);
+            expected_weights.at(leaf3->get_index()) = 0.0 + (ln_distance_mult * 1);
+            expected_weights.at(internal1->get_index()) = 0.0 + (ln_distance_mult * 1);
+            expected_weights.at(leaf7->get_index()) = 0.0 + (ln_distance_mult * 2);
+            expected_weights.at(internal2->get_index()) = 0.0 + (ln_distance_mult * 2);
+            expected_weights.at(n1->get_index()) = 0.0 + (ln_distance_mult * 2);
+            expected_weights.at(leaf5->get_index()) = 0.0 + (ln_distance_mult * 3);
+            expected_weights.at(leaf6->get_index()) = 0.0 + (ln_distance_mult * 3);
+            expected_weights.at(root->get_index()) = 0.0 + (ln_distance_mult * 3);
+            expected_weights.at(n2->get_index()) = 0.0 + (ln_distance_mult * 3);
+            expected_weights.at(leaf1->get_index()) = 0.0 + (ln_distance_mult * 4);
+            expected_weights.at(leaf2->get_index()) = 0.0 + (ln_distance_mult * 4);
+
+            expected_weights.at(num_nodes + internal3->get_index()) = 0.0 + (ln_distance_mult * 0);
+            expected_weights.at(num_nodes + internal1->get_index()) = 0.0 + (ln_distance_mult * 1);
+            expected_weights.at(num_nodes + n1->get_index()) = 0.0 + (ln_distance_mult * 2);
+            expected_weights.at(num_nodes + root->get_index()) = 0.0 + (ln_distance_mult * 3);
+            expected_weights.at(num_nodes + internal2->get_index()) = 0.0 + (ln_distance_mult * 3);
+            expected_weights.at(num_nodes + n2->get_index()) = 0.0 + (ln_distance_mult * 4);
+
+            for (unsigned int i = 0; i < ln_weights.size(); ++i) {
+                n_i = i;
+                std::cout << "\nweight index: " << i << "\n";
+                if (i < num_nodes) {
+                    std::cout << "node index: " << tree.get_node(n_i)->get_index() << "\n";
+                    std::cout << "node label: " << tree.get_node(n_i)->get_label() << "\n";
+                    std::cout << "branch weight: " << ln_weights.at(i) << "\n";
+                    std::cout << "expected weight: " << expected_weights.at(i) << "\n";
+                }
+                else {
+                    n_i = i - num_nodes;
+                    std::cout << "node index: " << tree.get_node(n_i)->get_index() << "\n";
+                    std::cout << "node label: " << tree.get_node(n_i)->get_label() << "\n";
+                    std::cout << "node weight: " << ln_weights.at(i) << "\n";
+                    std::cout << "expected weight: " << expected_weights.at(i) << "\n";
+                }
+                REQUIRE(ln_weights.at(i) == expected_weights.at(i));
+            }
+        }
+    }
+}
+
 TEST_CASE("Testing SubtreePruneRegraftRevJumpSampler with 3 leaves and free root",
         "[SubtreePruneRegraftRevJumpSampler]") {
 
@@ -755,8 +1499,8 @@ TEST_CASE("Testing SubtreePruneRegraftRevJumpSampler with 4 leaves, estimated ro
         unsigned int count_3_heights = 0;
         unsigned int count_2_heights = 0;
 
-        unsigned int niterations = 2000000;
-        unsigned int sample_freq = 10;
+        unsigned int niterations = 5000000;
+        unsigned int sample_freq = 20;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
             op.operate_plus(rng, &tree, other_ops, 1, 2, 2);
