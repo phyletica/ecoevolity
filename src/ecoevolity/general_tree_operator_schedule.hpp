@@ -56,6 +56,7 @@ class GeneralTreeOperatorSchedule {
                         number_of_leaves);
             }
             this->provide_split_lump_rj_move_with_helper_ops();
+            this->provide_spr_rj_move_with_helper_ops();
         }
         virtual ~GeneralTreeOperatorSchedule() { }
 
@@ -184,6 +185,18 @@ class GeneralTreeOperatorSchedule {
             return return_ops;
         }
 
+        bool get_spr_rj_operators(
+                std::vector< std::shared_ptr< GeneralTreeOperatorTemplate<TreeType> > > & rj_ops
+                ) const {
+            return this->get_operators("SubtreePruneRegraftRevJumpSampler", rj_ops);
+        }
+
+        std::vector< std::shared_ptr< GeneralTreeOperatorTemplate<TreeType> > > get_spr_rj_operators() const {
+            std::vector< std::shared_ptr< GeneralTreeOperatorTemplate<TreeType> > > return_ops;
+            this->get_spr_rj_operators(return_ops);
+            return return_ops;
+        }
+
         bool get_root_height_operators(
                 std::vector< std::shared_ptr< GeneralTreeOperatorTemplate<TreeType> > > & ops
                 ) const {
@@ -236,6 +249,19 @@ class GeneralTreeOperatorSchedule {
         void provide_split_lump_rj_move_with_helper_ops() {
             std::vector< std::shared_ptr< GeneralTreeOperatorTemplate<TreeType> > > rj_ops;
             this->get_split_lump_rj_operators(rj_ops);
+            if (rj_ops.empty()) {
+                return;
+            }
+            std::vector< std::shared_ptr< GeneralTreeOperatorTemplate<TreeType> > > ops;
+            this->get_preferred_node_height_operators(ops);
+            for (auto rj_op: rj_ops) {
+                rj_op->helper_ops = ops;
+            }
+        }
+
+        void provide_spr_rj_move_with_helper_ops() {
+            std::vector< std::shared_ptr< GeneralTreeOperatorTemplate<TreeType> > > rj_ops;
+            this->get_spr_rj_operators(rj_ops);
             if (rj_ops.empty()) {
                 return;
             }
@@ -434,6 +460,36 @@ class GeneralTreeOperatorSchedule {
                             number_of_leaves);
                     return;
                 }
+                else if (op_name == "SubtreePruneRegraftRevJumpSampler") {
+                    // Special default case of multiple operators for
+                    // SubtreePruneRegraftRevJumpSampler
+                    unsigned int n_rj_ops = 3;
+                    this->_add_tunable_op(
+                            op_name,
+                            -1.0,
+                            1.0,
+                            false,
+                            -1,
+                            n_rj_ops,
+                            number_of_leaves);
+                    this->_add_tunable_op(
+                            op_name,
+                            -1.0,
+                            1.0,
+                            true,
+                            -1,
+                            n_rj_ops,
+                            number_of_leaves);
+                    this->_add_tunable_op(
+                            op_name,
+                            -1.0,
+                            0.6,
+                            false,
+                            -1,
+                            n_rj_ops,
+                            number_of_leaves);
+                    return;
+                }
                 this->_add_tunable_op(
                         op_name,
                         -1.0,
@@ -476,6 +532,11 @@ class GeneralTreeOperatorSchedule {
             if (op_name == "SplitLumpNodesRevJumpSampler") {
                 op = std::make_shared<
                             SplitLumpNodesRevJumpSampler<TreeType>
+                                      >();
+            }
+            else if (op_name == "SubtreePruneRegraftRevJumpSampler") {
+                op = std::make_shared<
+                            SubtreePruneRegraftRevJumpSampler<TreeType>
                                       >();
             }
             else if (op_name == "TreeScaler") {
