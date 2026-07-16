@@ -246,6 +246,88 @@ class BaseNode : public std::enable_shared_from_this<DerivedNodeT> {
             return (this->parent_.lock()->is_ancestor(node));
         }
 
+        /**
+         * Calculate the number of branches (edges) separating this node
+         * from another node in the tree, and report whether the two
+         * nodes are on the same lineage (i.e., whether one of them is a
+         * direct ancestor of the other).
+         *
+         * Distance is a simple edge count: the distance from a node to
+         * itself is 0, and the distance to a node attached directly to
+         * it (its parent or one of its children) is 1.
+         *
+         * @param   other             Shared pointer to the other node.
+         *                            Must be a node within the same
+         *                            tree as this node.
+         * @param   on_same_lineage   Set by this method to true if this
+         *                            node is `other` or if either node
+         *                            is an ancestor of the other (so
+         *                            the path between them runs
+         *                            directly down/up one lineage); set
+         *                            to false if neither is an
+         *                            ancestor of the other, meaning the
+         *                            path between them must pass up
+         *                            through their nearest common
+         *                            ancestor. Note that this nearest
+         *                            common ancestor is not necessarily
+         *                            the root of the entire tree; it is
+         *                            simply the deepest node that is an
+         *                            ancestor of both this node and
+         *                            `other`.
+         * @return  The number of edges between this node and `other`.
+         */
+        unsigned int get_distance_to_node(
+                const std::shared_ptr<DerivedNodeT>& other,
+                bool& on_same_lineage) {
+            if (! other) {
+                throw EcoevolityNullPointerError(
+                        "BaseNode::get_distance_to_node(), empty node given");
+            }
+            std::shared_ptr<DerivedNodeT> self_ptr = this->shared_from_this();
+
+            // Walk up from this node to the root, recording this node
+            // and every ancestor of it, in order (self_ptr is at index
+            // 0, its parent at index 1, etc.).
+            std::vector< std::shared_ptr<DerivedNodeT> > this_lineage;
+            std::shared_ptr<DerivedNodeT> node_ptr = self_ptr;
+            this_lineage.push_back(node_ptr);
+            while (node_ptr->has_parent()) {
+                node_ptr = node_ptr->get_parent();
+                this_lineage.push_back(node_ptr);
+            }
+
+            // Walk up from the other node, one step at a time, checking
+            // at each step whether we have reached a node that is
+            // already in this node's lineage. The first match is the
+            // nearest common ancestor of the two nodes.
+            unsigned int other_depth = 0;
+            node_ptr = other;
+            while (true) {
+                for (unsigned int this_depth = 0;
+                        this_depth < this_lineage.size();
+                        ++this_depth) {
+                    if (this_lineage.at(this_depth) == node_ptr) {
+                        // If this_depth is 0, the common ancestor is
+                        // this node itself (i.e., this node is an
+                        // ancestor of, or is, `other`). If other_depth
+                        // is 0, the common ancestor is `other` itself.
+                        // The two nodes are on the same lineage if
+                        // either of those is true.
+                        on_same_lineage = ((this_depth == 0) || (other_depth == 0));
+                        return this_depth + other_depth;
+                    }
+                }
+                if (! node_ptr->has_parent()) {
+                    throw EcoevolityError(
+                            "BaseNode::get_distance_to_node(), the given "
+                            "node does not share a common ancestor with "
+                            "this node (it is not part of the same tree)");
+                }
+                node_ptr = node_ptr->get_parent();
+                ++other_depth;
+            }
+        }
+
         void add_parent(std::shared_ptr<DerivedNodeT> node) {
             if (!node) {
                 throw EcoevolityNullPointerError("BaseNode::add_parent(), empty node given");

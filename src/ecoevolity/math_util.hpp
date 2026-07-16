@@ -126,6 +126,56 @@ inline void normalize_log_likelihoods(std::vector<double>& v) {
     ECOEVOLITY_ASSERT_APPROX_EQUAL(t, 1.0);
 }
 
+inline std::vector<double> get_normalized_log_probs(const std::vector<double>& ln_weights) {
+    if (ln_weights.empty()) {
+        return {};
+    }
+
+    double mx = *std::max_element(ln_weights.begin(), ln_weights.end());
+
+    if (mx == -std::numeric_limits<double>::infinity()) {
+        throw EcoevolityError(
+                "get_normalized_log_probs called with all zero weights (-inf log weights)"
+                );
+    }
+
+    double sum = 0.0;
+    for (double ln_w : ln_weights) {
+        sum += std::exp(ln_w - mx);
+    }
+    double denom = mx + std::log(sum);
+
+    std::vector<double> ln_probs(ln_weights.size());
+    for (unsigned int i = 0; i < ln_weights.size(); ++i) {
+        ln_probs.at(i) = ln_weights.at(i) - denom;
+    }
+    return ln_probs;
+}
+
+inline void normalize_log_weights(std::vector<double>& ln_weights) {
+    if (ln_weights.empty()) {
+        return;
+    }
+
+    double mx = *std::max_element(ln_weights.begin(), ln_weights.end());
+
+    if (mx == -std::numeric_limits<double>::infinity()) {
+        throw EcoevolityError(
+                "normalize_log_weights called with all zero weights (-inf log weights)"
+                );
+    }
+
+    double sum = 0.0;
+    for (double ln_w : ln_weights) {
+        sum += std::exp(ln_w - mx);
+    }
+    double denom = mx + std::log(sum);
+
+    for (unsigned int i = 0; i < ln_weights.size(); ++i) {
+        ln_weights.at(i) = ln_weights.at(i) - denom;
+    }
+}
+
 /**
  * Calculate the expected number of categories under a Dirichlet process.
  *

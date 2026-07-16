@@ -4,6 +4,153 @@
 #include "ecoevolity/node.hpp"
 #include "ecoevolity/rng.hpp"
 
+TEST_CASE("Testing Node::get_distance_to_node", "[Node]") {
+    SECTION("Testing Node::get_distance_to_node") {
+        std::shared_ptr<Node> root = std::make_shared<Node>("root", 0.5);
+        std::shared_ptr<Node> n1 = std::make_shared<Node>("node1", 0.3);
+        std::shared_ptr<Node> n2 = std::make_shared<Node>("node2", 0.4);
+        std::shared_ptr<Node> internal1 = std::make_shared<Node>("internal1", 0.2);
+        std::shared_ptr<Node> internal2 = std::make_shared<Node>("internal2", 0.1);
+        std::shared_ptr<Node> leaf1 = std::make_shared<Node>("leaf1", 0.0);
+        std::shared_ptr<Node> leaf2 = std::make_shared<Node>("leaf2", 0.0);
+        std::shared_ptr<Node> leaf3 = std::make_shared<Node>("leaf3", 0.0);
+        std::shared_ptr<Node> leaf4 = std::make_shared<Node>("leaf4", 0.0);
+        std::shared_ptr<Node> leaf5 = std::make_shared<Node>("leaf5", 0.0);
+        std::shared_ptr<Node> leaf6 = std::make_shared<Node>("leaf6", 0.0);
+        std::shared_ptr<Node> leaf7 = std::make_shared<Node>("leaf7", 0.0);
+        n2->add_child(leaf1);
+        n2->add_child(leaf2);
+        internal1->add_child(leaf3);
+        internal1->add_child(leaf4);
+        internal2->add_child(leaf5);
+        internal2->add_child(leaf6);
+        n1->add_child(internal1);
+        n1->add_child(internal2);
+        n1->add_child(leaf7);
+        root->add_child(n1);
+        root->add_child(n2);
+
+        bool on_same_lineage;
+        unsigned int d;
+        d = leaf1->get_distance_to_node(leaf1, on_same_lineage);
+        REQUIRE(on_same_lineage);
+        REQUIRE(d == 0);
+
+        d = leaf1->get_distance_to_node(n2, on_same_lineage);
+        REQUIRE(on_same_lineage);
+        REQUIRE(d == 1);
+        d = n2->get_distance_to_node(leaf1, on_same_lineage);
+        REQUIRE(on_same_lineage);
+        REQUIRE(d == 1);
+
+        d = leaf1->get_distance_to_node(leaf2, on_same_lineage);
+        REQUIRE(! on_same_lineage);
+        REQUIRE(d == 2);
+        d = leaf2->get_distance_to_node(leaf1, on_same_lineage);
+        REQUIRE(! on_same_lineage);
+        REQUIRE(d == 2);
+
+        d = leaf1->get_distance_to_node(root, on_same_lineage);
+        REQUIRE(on_same_lineage);
+        REQUIRE(d == 2);
+        d = root->get_distance_to_node(leaf1, on_same_lineage);
+        REQUIRE(on_same_lineage);
+        REQUIRE(d == 2);
+
+        d = leaf1->get_distance_to_node(n1, on_same_lineage);
+        REQUIRE(! on_same_lineage);
+        REQUIRE(d == 3);
+        d = n1->get_distance_to_node(leaf1, on_same_lineage);
+        REQUIRE(! on_same_lineage);
+        REQUIRE(d == 3);
+
+        d = leaf1->get_distance_to_node(leaf7, on_same_lineage);
+        REQUIRE(! on_same_lineage);
+        REQUIRE(d == 4);
+        d = leaf7->get_distance_to_node(leaf1, on_same_lineage);
+        REQUIRE(! on_same_lineage);
+        REQUIRE(d == 4);
+
+        d = leaf1->get_distance_to_node(internal1, on_same_lineage);
+        REQUIRE(! on_same_lineage);
+        REQUIRE(d == 4);
+        d = internal1->get_distance_to_node(leaf1, on_same_lineage);
+        REQUIRE(! on_same_lineage);
+        REQUIRE(d == 4);
+
+        d = leaf1->get_distance_to_node(leaf6, on_same_lineage);
+        REQUIRE(! on_same_lineage);
+        REQUIRE(d == 5);
+        d = leaf6->get_distance_to_node(leaf1, on_same_lineage);
+        REQUIRE(! on_same_lineage);
+        REQUIRE(d == 5);
+
+        d = n2->get_distance_to_node(root, on_same_lineage);
+        REQUIRE(on_same_lineage);
+        REQUIRE(d == 1);
+        d = root->get_distance_to_node(n2, on_same_lineage);
+        REQUIRE(on_same_lineage);
+        REQUIRE(d == 1);
+
+        d = n2->get_distance_to_node(n2, on_same_lineage);
+        REQUIRE(on_same_lineage);
+        REQUIRE(d == 0);
+
+        d = root->get_distance_to_node(root, on_same_lineage);
+        REQUIRE(on_same_lineage);
+        REQUIRE(d == 0);
+
+        d = n2->get_distance_to_node(n1, on_same_lineage);
+        REQUIRE(! on_same_lineage);
+        REQUIRE(d == 2);
+        d = n1->get_distance_to_node(n2, on_same_lineage);
+        REQUIRE(! on_same_lineage);
+        REQUIRE(d == 2);
+
+        d = n2->get_distance_to_node(internal1, on_same_lineage);
+        REQUIRE(! on_same_lineage);
+        REQUIRE(d == 3);
+        d = internal1->get_distance_to_node(n2, on_same_lineage);
+        REQUIRE(! on_same_lineage);
+        REQUIRE(d == 3);
+
+        d = n2->get_distance_to_node(leaf3, on_same_lineage);
+        REQUIRE(! on_same_lineage);
+        REQUIRE(d == 4);
+        d = leaf3->get_distance_to_node(n2, on_same_lineage);
+        REQUIRE(! on_same_lineage);
+        REQUIRE(d == 4);
+
+        d = root->get_distance_to_node(leaf3, on_same_lineage);
+        REQUIRE(on_same_lineage);
+        REQUIRE(d == 3);
+        d = leaf3->get_distance_to_node(root, on_same_lineage);
+        REQUIRE(on_same_lineage);
+        REQUIRE(d == 3);
+
+        d = root->get_distance_to_node(internal2, on_same_lineage);
+        REQUIRE(on_same_lineage);
+        REQUIRE(d == 2);
+        d = internal2->get_distance_to_node(root, on_same_lineage);
+        REQUIRE(on_same_lineage);
+        REQUIRE(d == 2);
+
+        d = n1->get_distance_to_node(internal1, on_same_lineage);
+        REQUIRE(on_same_lineage);
+        REQUIRE(d == 1);
+        d = internal1->get_distance_to_node(n1, on_same_lineage);
+        REQUIRE(on_same_lineage);
+        REQUIRE(d == 1);
+
+        d = internal1->get_distance_to_node(internal2, on_same_lineage);
+        REQUIRE(! on_same_lineage);
+        REQUIRE(d == 2);
+        d = internal2->get_distance_to_node(internal1, on_same_lineage);
+        REQUIRE(! on_same_lineage);
+        REQUIRE(d == 2);
+    }
+}
+
 TEST_CASE("Testing constructors of Node", "[Node]") {
 
     SECTION("Testing bare constructor") {

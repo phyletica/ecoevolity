@@ -2838,9 +2838,28 @@ class SplitLumpNodesRevJumpSampler : public GeneralTreeOperatorInterface<TreeTyp
 
 template<class TreeType>
 class SubtreePruneRegraftRevJumpSampler : public GeneralTreeOperatorInterface<TreeType, Op> {
+    protected:
+        // for a node with a distance of 5:
+        // ln_weight = 0.0 + (ln_distance_multiplier_ * 5)
+        // weight = 1.0 * (exp(ln_distance_multiplier_) ^ 5)
+        // like multiplying the weight by exp(ln_distance_multiplier_) each
+        // time we pass a node away from the subtree node
+        double ln_distance_multiplier_ = 0.0;
+
     public:
         SubtreePruneRegraftRevJumpSampler() : GeneralTreeOperatorInterface<TreeType, Op>() { }
         SubtreePruneRegraftRevJumpSampler(double weight) : GeneralTreeOperatorInterface<TreeType, Op>(weight) { }
+        SubtreePruneRegraftRevJumpSampler(double weight,
+                const unsigned int auto_optimize_delay,
+                const bool auto_optimize = false) : GeneralTreeOperatorInterface<TreeType, Op>(weight) {
+            if (auto_optimize) {
+                this->turn_on_auto_optimize();
+            }
+            else {
+                this->turn_off_auto_optimize();
+            }
+            this->set_auto_optimize_delay(auto_optimize_delay);
+        }
 
         std::string get_name() const {
             return "SubtreePruneRegraftRevJumpSampler";
@@ -2861,6 +2880,34 @@ class SubtreePruneRegraftRevJumpSampler : public GeneralTreeOperatorInterface<Tr
             return true;
         }
 
+        double get_coercable_parameter_value() const {
+            return std::exp(this->ln_distance_multiplier_);
+        }
+
+        virtual void set_coercable_parameter_value(double value) {
+            this->ln_distance_multiplier_ = std::log(value);
+        }
+
+        double get_default_coercable_parameter_value() const {
+            return 0.0;
+        }
+
+        void optimize(double log_alpha) {
+            double delta = this->op_.calc_delta(log_alpha);
+            if (delta == 0.0) {
+                return;
+            }
+            // SubtreePruneRegraftRevJumpSampler's coercable parameter
+            // (ln_distance_multiplier_) is already on log scale, so we are not
+            // logging it before adding it to delta or exponentiating delta
+            // when setting the coercable parameter.
+            // We do convert from/to the linear (non-log) scale when we
+            // set_coercable_parameter_value/get_coercable_parameter_value, so
+            // we use the member variable directly here.
+            delta += this->ln_distance_multiplier_;
+            this->ln_distance_multiplier_ = delta;
+        }
+
         void operate_plus(RandomNumberGenerator& rng,
                 TreeType * tree,
                 std::vector< std::shared_ptr< GeneralTreeOperatorTemplate< TreeType > > > other_operators,
@@ -2873,6 +2920,138 @@ class SubtreePruneRegraftRevJumpSampler : public GeneralTreeOperatorInterface<Tr
                     other_op->operate(rng, tree, nthreads, other_op_number_of_moves);
                 }
             }
+        }
+
+        std::vector<double> get_branch_and_node_target_probs(
+                TreeType * tree,
+                typename TreeType::NodePtr subtree_node) const {
+            std::vector<double> ln_weights = this->get_branch_and_node_target_weights(tree, subtree_node);
+            normalize_log_weights(ln_weights);
+            return ln_weights;
+        }
+
+        std::vector<double> get_branch_and_node_target_weights(
+                TreeType * tree,
+                typename TreeType::NodePtr subtree_node) const {
+            double subtree_node_height = subtree_node->get_height();
+            typename TreeType::NodePtr parent_node = subtree_node->get_parent();
+            bool removing_parent_node = false;
+            typename TreeType::NodePtr ref_node = parent_node;
+            bool ref_is_grandparent = false;
+            bool ref_is_sibling = false;
+            if (parent_node->get_number_of_children() < 3) {
+                removing_parent_node = true;
+                // parent_node will be removed from tree in forward move, so we
+                // need a different reference node from which to calculate
+                // distances
+                if (parent_node->has_parent()) {
+                    // Use grandparent as reference if it exists
+                    ref_node = parent_node->get_parent();
+                    ref_is_grandparent = true;
+                }
+                else {
+                    // Otherwise use sibling node as reference
+                    for (unsigned int child_idx = 0;
+                            child_idx < parent_node->get_number_of_children();
+                            ++child_idx) {
+                        if (parent_node->get_child(child_idx) != subtree_node) {
+                            ref_node = parent_node->get_child(child_idx);
+                            break;
+                        }
+                    }
+                    ref_is_sibling = true;
+                }
+                ECOEVOLITY_ASSERT(ref_node);
+            }
+            unsigned int num_nodes = tree->pre_ordered_nodes_.size();
+            // num_nodes x 2 for all the nodes and their rootward branch
+            std::vector<double> ln_weights(num_nodes * 2 , -std::numeric_limits<double>::infinity());
+            unsigned int node_dist;
+            unsigned int branch_dist;
+            double ln_base_wt = 0.0;
+            double ln_node_wt;
+            double ln_branch_wt;
+            bool on_same_lineage;
+            for (auto nd = tree->level_ordered_nodes_.rbegin();
+                    nd != tree->level_ordered_nodes_.rend();
+                    ++nd) {
+                if ((*nd) == subtree_node) {
+                    // Part of pruned clade not to be considered as target
+                    continue;
+                }
+                else if ((*nd)->is_ancestor(subtree_node)) {
+                    // Part of pruned clade not to be considered as target
+                    continue;
+                }
+                else if (((*nd)->has_parent()) && (
+                            ((*nd)->get_parent()->get_height() < subtree_node_height)
+                            ||
+                            ((*nd)->get_parent()->get_height_parameter() == subtree_node->get_height_parameter())
+                            )
+                        ) {
+                    // subtree node is too old to attach to this node or its
+                    // rootward branch
+                    continue;
+                }
+                else if (((*nd) == parent_node) && (removing_parent_node)) {
+                    // This parent node won't exist after the subtree node is
+                    // pruned
+                    continue;
+                }
+                node_dist = ref_node->get_distance_to_node((*nd), on_same_lineage);
+                branch_dist = node_dist;
+                if (! on_same_lineage) {
+                    // Need to subract 1 because we ended by counting tipward,
+                    // so the rootward branch should have a distance that is
+                    // one less than its node
+                    ECOEVOLITY_ASSERT(branch_dist > 0);
+                    --branch_dist;
+                }
+                else if ((node_dist > 0) && ((*nd)->is_ancestor(ref_node))) {
+                    // Need to subract 1 because we are counting distance
+                    // tipward, so the rootward branch should have a distance
+                    // that is one less than its node
+                    ECOEVOLITY_ASSERT(branch_dist > 0);
+                    --branch_dist;
+                }
+                if (removing_parent_node && ref_is_grandparent && ((*nd)->is_ancestor(parent_node))) {
+                    // Need to subract 1 because distance includes the parent
+                    // node that will be removed and thus should be ignored
+                    // from the distance
+                    ECOEVOLITY_ASSERT(node_dist > 0);
+                    ECOEVOLITY_ASSERT(branch_dist > 0);
+                    --node_dist;
+                    --branch_dist;
+                }
+                ln_node_wt = ln_base_wt + (this->ln_distance_multiplier_ * node_dist);
+                ln_branch_wt = ln_base_wt + (this->ln_distance_multiplier_ * branch_dist);
+                if ((*nd)->is_leaf()) {
+                    // subtree node can attach along this node's rootward branch
+                    ln_weights.at((*nd)->get_index()) = ln_branch_wt;
+                }
+                else if ((*nd) == parent_node) {
+                    ECOEVOLITY_ASSERT(! removing_parent_node);
+                    // Not allowing re-attachment to same parent node, because
+                    // that will create the original tree.
+                    // But, the subtree node can attache along the parent's
+                    // rootward branch
+                    ln_weights.at((*nd)->get_index()) = ln_branch_wt;
+                }
+                else if ((*nd)->get_height() <= subtree_node_height) {
+                    // subtree node can attach along this node's rootward branch
+                    ln_weights.at((*nd)->get_index()) = ln_branch_wt;
+                }
+                else {
+                    // subtree node can attach to this node or its rootward
+                    // branch
+                    ECOEVOLITY_ASSERT((*nd)->get_height_parameter() != subtree_node->get_height_parameter());
+                    ECOEVOLITY_ASSERT((*nd)->get_height() >= subtree_node->get_height());
+                    unsigned int offset_node_idx = num_nodes + (*nd)->get_index();
+                    ln_weights.at((*nd)->get_index()) = ln_branch_wt;
+                    ln_weights.at(offset_node_idx) = ln_node_wt;
+                }
+            }
+            return ln_weights;
         }
 
         /**
@@ -2907,11 +3086,27 @@ class SubtreePruneRegraftRevJumpSampler : public GeneralTreeOperatorInterface<Tr
             int parent_index = parent_node->get_index();
             double parent_height = parent_node->get_height();
 
+            std::vector<double> ln_target_probs = this->get_branch_and_node_target_probs(tree, subtree_node);
+            unsigned int target_index = rng.ln_weighted_index(ln_target_probs);
+            ln_prob_forward_move += ln_target_probs.at(target_index);
+            unsigned int target_node_index = target_index;
+            bool attach_to_branch = true;
+            // The first num_nodes log weights are for branches, the second
+            // num_nodes log weights are for nodes
+            if (target_index >= num_nodes) {
+                attach_to_branch = false;
+                target_node_index = target_index - num_nodes;
+            }
+            typename TreeType::NodePtr target_node = tree->get_node(target_node_index);
+            double target_node_height = target_node->get_height();
+
             parent_node->remove_child(subtree_node);
             parent_node->make_dirty();
 
             typename TreeType::NodePtr grandparent_node = nullptr;
             typename TreeType::NodePtr sister_node = nullptr;
+            typename TreeType::NodePtr rev_target_node = parent_node;
+            bool rev_target_is_node = true;
             bool removed_parent_node = false;
             bool removed_root = false;
             if (parent_node->get_number_of_children() == 1) {
@@ -2937,6 +3132,8 @@ class SubtreePruneRegraftRevJumpSampler : public GeneralTreeOperatorInterface<Tr
                     unsigned int n_children_after = parent_node->collapse();
                     ECOEVOLITY_ASSERT(n_children_after == n_children_before);
                 }
+                rev_target_node = sister_node;
+                rev_target_is_node = false;
             }
 
             tree->update_node_heights();
@@ -2960,62 +3157,8 @@ class SubtreePruneRegraftRevJumpSampler : public GeneralTreeOperatorInterface<Tr
                 ECOEVOLITY_ASSERT(removed_parent_height);
             }
 
-            // Now we need map of node index to 1/2 weights
-            std::vector<unsigned int> node_weights(num_nodes, 0);
-            for (auto nd = tree->level_ordered_nodes_.rbegin();
-                    nd != tree->level_ordered_nodes_.rend();
-                    ++nd) {
-                if (
-                        ((*nd)->has_parent())
-                        && ((*nd)->get_parent()->get_height() <= subtree_node_height)
-                ) {
-                    continue;
-                }
-                if ((*nd)->is_leaf()) {
-                    node_weights.at((*nd)->get_index()) = 1;
-                }
-                else if ((*nd) == parent_node) {
-                    ECOEVOLITY_ASSERT(! removed_parent_node);
-                    node_weights.at((*nd)->get_index()) = 1;
-                }
-                else if ((*nd)->get_height() <= subtree_node_height) {
-                    node_weights.at((*nd)->get_index()) = 1;
-                }
-                else {
-                    ECOEVOLITY_ASSERT((*nd)->get_height_parameter() != subtree_node->get_height_parameter());
-                    ECOEVOLITY_ASSERT((*nd)->get_height() > subtree_node->get_height());
-                    node_weights.at((*nd)->get_index()) = 2;
-                }
-            }
-            unsigned int num_attachment_targets = 0;
-            for (const double wt : node_weights) {
-                num_attachment_targets += wt;
-            }
-
-            std::vector<double> node_probs(node_weights.size(), 0.0);
-            for (unsigned int i = 0; i < node_weights.size(); ++i) {
-                node_probs.at(i) = (double)node_weights.at(i) / (double)num_attachment_targets;
-            }
-
-            unsigned int target_node_index = rng.weighted_index(node_probs);
-            ln_prob_forward_move -= std::log( (double)num_attachment_targets );
-            // std::cout << "Prob forward pick target: " << 1.0/num_attachment_targets << std::endl;
-
-            unsigned int target_node_weight = node_weights.at(target_node_index);
-            ECOEVOLITY_ASSERT(target_node_weight > 0);
-            typename TreeType::NodePtr target_node = tree->get_node(target_node_index);
-            double target_node_height = target_node->get_height();
+            // Need to check this after pruning subtree node
             bool target_is_root = target_node->is_root();
-
-            bool attach_to_branch = true;
-            if (target_node_weight == 2) {
-                double u = rng.uniform_real();
-                if (u < 0.5) {
-                    attach_to_branch = false;
-                }
-                // ln_prob_forward_move already accounted for this 50/50 choice
-                // above with the 1/num_attachment_targets
-            }
 
             ///////////////////////////////////////////////////////////
             // Prob of forward move =
@@ -3170,6 +3313,7 @@ class SubtreePruneRegraftRevJumpSampler : public GeneralTreeOperatorInterface<Tr
                     // target node's parent; make sure subtree_node_height's height
                     // is excluded and target node's parent height is excluded
                     double min_height = std::max(subtree_node_height, target_node_height);
+                    bool target_node_exists = (target_node != nullptr);
                     double max_height = target_node->get_parent()->get_height();
                     ECOEVOLITY_ASSERT(max_height > min_height);
 
@@ -3279,16 +3423,14 @@ class SubtreePruneRegraftRevJumpSampler : public GeneralTreeOperatorInterface<Tr
 
             double ln_prob_reverse_move = -std::log( (double)tree->get_node_count() - 1 );
             // std::cout << "Prob rev pick node: " << std::exp(ln_prob_reverse_move) << "\n";
-            unsigned int rev_num_attachment_targets = num_attachment_targets;
-            if (removed_parent_node && (! attach_to_branch)) {
-                ECOEVOLITY_ASSERT(rev_num_attachment_targets > 1);
-                --rev_num_attachment_targets;
+
+            std::vector<double> ln_rev_target_probs = this->get_branch_and_node_target_probs(tree, subtree_node);
+            unsigned int rev_num_nodes = tree->get_node_count();
+            unsigned int rev_target_index = rev_target_node->get_index();
+            if (rev_target_is_node) {
+                rev_target_index += rev_num_nodes;
             }
-            else if ((! removed_parent_node) && attach_to_branch) {
-                ++rev_num_attachment_targets;
-            }
-            ln_prob_reverse_move -= std::log( (double)rev_num_attachment_targets );
-            // std::cout << "Prob rev pick target: " << 1.0/rev_num_attachment_targets << "\n";
+            ln_prob_reverse_move += ln_rev_target_probs.at(rev_target_index);
 
             if (removed_parent_node) {
                 if (removed_root) {

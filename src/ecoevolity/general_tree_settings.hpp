@@ -647,6 +647,7 @@ class GeneralTreeOperatorSettingsCollection {
             // default weight for the operator class and zero weights will
             // prevent operator from being created.
             {"SplitLumpNodesRevJumpSampler",        GeneralTreeTunableOperatorSettings()},
+            {"SubtreePruneRegraftRevJumpSampler",   GeneralTreeTunableOperatorSettings()},
             {"TreeScaler",                          GeneralTreeTunableOperatorSettings()},
             {"NodeHeightScaler",                    GeneralTreeTunableOperatorSettings()},
             {"NodeHeightMover",                     GeneralTreeTunableOperatorSettings()},
@@ -719,6 +720,9 @@ class GeneralTreeOperatorSettingsCollection {
                 }
                 else if (this->is_tunable_operator(name)) {
                     if (name == "SplitLumpNodesRevJumpSampler") {
+                        this->tunable_operators[name].update_from_config(p->second, false);
+                    }
+                    else if (name == "SubtreePruneRegraftRevJumpSampler") {
                         this->tunable_operators[name].update_from_config(p->second, false);
                     }
                     else {
@@ -1218,10 +1222,12 @@ class TreeModelSettings {
             if (this->get_tree_space() == EcoevolityOptions::TreeSpace::bifurcating) {
                 // Turn off RJ move that moves through generalized tree space
                 op_collection->tunable_operators.at("SplitLumpNodesRevJumpSampler").turn_off();
+                op_collection->tunable_operators.at("SubtreePruneRegraftRevJumpSampler").turn_off();
             }
             else if (this->get_tree_space() == EcoevolityOptions::TreeSpace::fixed_tree) {
                 // Turn off topology changing moves
                 op_collection->tunable_operators.at("SplitLumpNodesRevJumpSampler").turn_off();
+                op_collection->tunable_operators.at("SubtreePruneRegraftRevJumpSampler").turn_off();
                 op_collection->untunable_operators.at("NeighborHeightNodeSwap").turn_off();
                 op_collection->untunable_operators.at("NeighborHeightNodeSwapAll").turn_off();
                 op_collection->untunable_operators.at("NeighborHeightNodePermute").turn_off();
