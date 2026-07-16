@@ -53,7 +53,7 @@ TEST_CASE("Testing SubtreePruneRegraftRevJumpSampler::get_branch_and_node_target
 
         SubtreePruneRegraftRevJumpSampler< BaseTree<Node> > op;
         ln_distance_mult = 0.0;
-        op.set_coercable_parameter_value(ln_distance_mult);
+        op.set_coercable_parameter_value(std::exp(ln_distance_mult));
 
         std::vector<double> ln_weights;
         ln_weights = op.get_branch_and_node_target_weights(&tree, leaf7);
@@ -96,7 +96,7 @@ TEST_CASE("Testing SubtreePruneRegraftRevJumpSampler::get_branch_and_node_target
         }
 
         ln_distance_mult = 1.0;
-        op.set_coercable_parameter_value(ln_distance_mult);
+        op.set_coercable_parameter_value(std::exp(ln_distance_mult));
         ln_weights = op.get_branch_and_node_target_weights(&tree, leaf7);
         REQUIRE(ln_weights.size() == expected_weights.size());
 
@@ -138,7 +138,7 @@ TEST_CASE("Testing SubtreePruneRegraftRevJumpSampler::get_branch_and_node_target
         }
 
         ln_distance_mult = -1.0;
-        op.set_coercable_parameter_value(ln_distance_mult);
+        op.set_coercable_parameter_value(std::exp(ln_distance_mult));
         ln_weights = op.get_branch_and_node_target_weights(&tree, leaf7);
         REQUIRE(ln_weights.size() == expected_weights.size());
 
@@ -181,7 +181,7 @@ TEST_CASE("Testing SubtreePruneRegraftRevJumpSampler::get_branch_and_node_target
 
 
         ln_distance_mult = 0.0;
-        op.set_coercable_parameter_value(ln_distance_mult);
+        op.set_coercable_parameter_value(std::exp(ln_distance_mult));
         ln_weights = op.get_branch_and_node_target_weights(&tree, n2);
         REQUIRE(ln_weights.size() == expected_weights.size());
 
@@ -208,7 +208,7 @@ TEST_CASE("Testing SubtreePruneRegraftRevJumpSampler::get_branch_and_node_target
         }
 
         ln_distance_mult = 1.5;
-        op.set_coercable_parameter_value(ln_distance_mult);
+        op.set_coercable_parameter_value(std::exp(ln_distance_mult));
         ln_weights = op.get_branch_and_node_target_weights(&tree, n2);
         REQUIRE(ln_weights.size() == expected_weights.size());
 
@@ -235,7 +235,7 @@ TEST_CASE("Testing SubtreePruneRegraftRevJumpSampler::get_branch_and_node_target
         }
 
         ln_distance_mult = -1.5;
-        op.set_coercable_parameter_value(ln_distance_mult);
+        op.set_coercable_parameter_value(std::exp(ln_distance_mult));
         ln_weights = op.get_branch_and_node_target_weights(&tree, n2);
         REQUIRE(ln_weights.size() == expected_weights.size());
 
@@ -263,7 +263,7 @@ TEST_CASE("Testing SubtreePruneRegraftRevJumpSampler::get_branch_and_node_target
 
 
         ln_distance_mult = 0.0;
-        op.set_coercable_parameter_value(ln_distance_mult);
+        op.set_coercable_parameter_value(std::exp(ln_distance_mult));
         ln_weights = op.get_branch_and_node_target_weights(&tree, n1);
         REQUIRE(ln_weights.size() == expected_weights.size());
 
@@ -294,7 +294,7 @@ TEST_CASE("Testing SubtreePruneRegraftRevJumpSampler::get_branch_and_node_target
         }
 
         ln_distance_mult = 0.5;
-        op.set_coercable_parameter_value(ln_distance_mult);
+        op.set_coercable_parameter_value(std::exp(ln_distance_mult));
         ln_weights = op.get_branch_and_node_target_weights(&tree, n1);
         REQUIRE(ln_weights.size() == expected_weights.size());
 
@@ -325,7 +325,7 @@ TEST_CASE("Testing SubtreePruneRegraftRevJumpSampler::get_branch_and_node_target
         }
 
         ln_distance_mult = -0.5;
-        op.set_coercable_parameter_value(ln_distance_mult);
+        op.set_coercable_parameter_value(std::exp(ln_distance_mult));
         ln_weights = op.get_branch_and_node_target_weights(&tree, n1);
         REQUIRE(ln_weights.size() == expected_weights.size());
 
@@ -356,7 +356,7 @@ TEST_CASE("Testing SubtreePruneRegraftRevJumpSampler::get_branch_and_node_target
         }
 
         ln_distance_mult = 0.0;
-        op.set_coercable_parameter_value(ln_distance_mult);
+        op.set_coercable_parameter_value(std::exp(ln_distance_mult));
         ln_weights = op.get_branch_and_node_target_weights(&tree, internal1);
         REQUIRE(ln_weights.size() == expected_weights.size());
 
@@ -392,7 +392,7 @@ TEST_CASE("Testing SubtreePruneRegraftRevJumpSampler::get_branch_and_node_target
         }
 
         ln_distance_mult = -0.1;
-        op.set_coercable_parameter_value(ln_distance_mult);
+        op.set_coercable_parameter_value(std::exp(ln_distance_mult));
         ln_weights = op.get_branch_and_node_target_weights(&tree, internal1);
         REQUIRE(ln_weights.size() == expected_weights.size());
 
@@ -428,7 +428,7 @@ TEST_CASE("Testing SubtreePruneRegraftRevJumpSampler::get_branch_and_node_target
         }
 
         ln_distance_mult = 0.1;
-        op.set_coercable_parameter_value(ln_distance_mult);
+        op.set_coercable_parameter_value(std::exp(ln_distance_mult));
         ln_weights = op.get_branch_and_node_target_weights(&tree, internal1);
         REQUIRE(ln_weights.size() == expected_weights.size());
 
@@ -466,7 +466,7 @@ TEST_CASE("Testing SubtreePruneRegraftRevJumpSampler::get_branch_and_node_target
         std::vector<double> ln_dist_multipliers = {0.0, -1.2, 1.2};
 
         for (const auto ln_distance_mult : ln_dist_multipliers) {
-            op.set_coercable_parameter_value(ln_distance_mult);
+            op.set_coercable_parameter_value(std::exp(ln_distance_mult));
             ln_weights = op.get_branch_and_node_target_weights(&tree, internal2);
             REQUIRE(ln_weights.size() == expected_weights.size());
 
@@ -506,7 +506,7 @@ TEST_CASE("Testing SubtreePruneRegraftRevJumpSampler::get_branch_and_node_target
         }
 
         for (const auto ln_distance_mult : ln_dist_multipliers) {
-            op.set_coercable_parameter_value(ln_distance_mult);
+            op.set_coercable_parameter_value(std::exp(ln_distance_mult));
             ln_weights = op.get_branch_and_node_target_weights(&tree, leaf5);
             REQUIRE(ln_weights.size() == expected_weights.size());
 
@@ -548,7 +548,7 @@ TEST_CASE("Testing SubtreePruneRegraftRevJumpSampler::get_branch_and_node_target
         }
 
         for (const auto ln_distance_mult : ln_dist_multipliers) {
-            op.set_coercable_parameter_value(ln_distance_mult);
+            op.set_coercable_parameter_value(std::exp(ln_distance_mult));
             ln_weights = op.get_branch_and_node_target_weights(&tree, leaf1);
             REQUIRE(ln_weights.size() == expected_weights.size());
 
@@ -633,7 +633,7 @@ TEST_CASE("Testing SubtreePruneRegraftRevJumpSampler::get_branch_and_node_target
         unsigned int n_i;
 
         for (const auto ln_distance_mult : ln_dist_multipliers) {
-            op.set_coercable_parameter_value(ln_distance_mult);
+            op.set_coercable_parameter_value(std::exp(ln_distance_mult));
             ln_weights = op.get_branch_and_node_target_weights(&tree, root_child);
             REQUIRE(ln_weights.size() == expected_weights.size());
 
@@ -709,7 +709,7 @@ TEST_CASE("Testing SubtreePruneRegraftRevJumpSampler::get_branch_and_node_target
         unsigned int n_i;
 
         for (const auto ln_distance_mult : ln_dist_multipliers) {
-            op.set_coercable_parameter_value(ln_distance_mult);
+            op.set_coercable_parameter_value(std::exp(ln_distance_mult));
             ln_weights = op.get_branch_and_node_target_weights(&tree, leaf4b);
             REQUIRE(ln_weights.size() == expected_weights.size());
 
@@ -2733,8 +2733,8 @@ TEST_CASE("Testing SubtreePruneRegraftRevJumpSampler with 5 leaves, estimated ro
 
         double ln_distance_multiplier = 0.5;
         SubtreePruneRegraftRevJumpSampler< BaseTree<Node> > op;
-        op.set_coercable_parameter_value(ln_distance_multiplier);
-        REQUIRE(op.get_coercable_parameter_value() == ln_distance_multiplier);
+        op.set_coercable_parameter_value(std::exp(ln_distance_multiplier));
+        REQUIRE(std::log(op.get_coercable_parameter_value()) == ln_distance_multiplier);
 
         // Initialize prior probs
         tree.compute_log_likelihood_and_prior(true);
@@ -2847,7 +2847,7 @@ TEST_CASE("Testing SubtreePruneRegraftRevJumpSampler with 5 leaves, estimated ro
             std::cout << "  prop error: " << s_e.second << "\n";
         }
 
-        std::cout << "Unoptimized ln_distance_multiplier: " << op.get_coercable_parameter_value() << "\n";
+        std::cout << "Unoptimized distance_multiplier: " << op.get_coercable_parameter_value() << "\n";
 
         write_r_script(split_counts, 5, "../5-leaf-ln-dist-mult-0_5-general-tree-spr-rj-test.r");
 
@@ -2901,8 +2901,8 @@ TEST_CASE("Testing SubtreePruneRegraftRevJumpSampler with 5 leaves, estimated ro
 
         double ln_distance_multiplier = -0.5;
         SubtreePruneRegraftRevJumpSampler< BaseTree<Node> > op;
-        op.set_coercable_parameter_value(ln_distance_multiplier);
-        REQUIRE(op.get_coercable_parameter_value() == ln_distance_multiplier);
+        op.set_coercable_parameter_value(std::exp(ln_distance_multiplier));
+        REQUIRE(std::log(op.get_coercable_parameter_value()) == ln_distance_multiplier);
 
         // Initialize prior probs
         tree.compute_log_likelihood_and_prior(true);
@@ -3015,7 +3015,7 @@ TEST_CASE("Testing SubtreePruneRegraftRevJumpSampler with 5 leaves, estimated ro
             std::cout << "  prop error: " << s_e.second << "\n";
         }
 
-        std::cout << "Unoptimized ln_distance_multiplier: " << op.get_coercable_parameter_value() << "\n";
+        std::cout << "Unoptimized distance_multiplier: " << op.get_coercable_parameter_value() << "\n";
 
         write_r_script(split_counts, 5, "../5-leaf-ln-dist-mult--0_5-general-tree-spr-rj-test.r");
 
@@ -3183,7 +3183,7 @@ TEST_CASE("Testing SubtreePruneRegraftRevJumpSampler with 5 leaves, estimated ro
             std::cout << "  prop error: " << s_e.second << "\n";
         }
 
-        std::cout << "Optimized ln_distance_multiplier: " << op.get_coercable_parameter_value() << "\n";
+        std::cout << "Optimized distance_multiplier: " << op.get_coercable_parameter_value() << "\n";
 
         write_r_script(split_counts, 5, "../5-leaf-auto-tune-general-tree-spr-rj-test.r");
 

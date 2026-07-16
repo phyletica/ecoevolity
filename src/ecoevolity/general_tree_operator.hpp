@@ -2881,11 +2881,11 @@ class SubtreePruneRegraftRevJumpSampler : public GeneralTreeOperatorInterface<Tr
         }
 
         double get_coercable_parameter_value() const {
-            return this->ln_distance_multiplier_;
+            return std::exp(this->ln_distance_multiplier_);
         }
 
         virtual void set_coercable_parameter_value(double value) {
-            this->ln_distance_multiplier_ = value;
+            this->ln_distance_multiplier_ = std::log(value);
         }
 
         double get_default_coercable_parameter_value() const {
@@ -2900,9 +2900,12 @@ class SubtreePruneRegraftRevJumpSampler : public GeneralTreeOperatorInterface<Tr
             // SubtreePruneRegraftRevJumpSampler's coercable parameter
             // (ln_distance_multiplier_) is already on log scale, so we are not
             // logging it before adding it to delta or exponentiating delta
-            // when setting the coercable parameter
-            delta += this->get_coercable_parameter_value();
-            this->set_coercable_parameter_value(delta);
+            // when setting the coercable parameter.
+            // We do convert from/to the linear (non-log) scale when we
+            // set_coercable_parameter_value/get_coercable_parameter_value, so
+            // we use the member variable directly here.
+            delta += this->ln_distance_multiplier_;
+            this->ln_distance_multiplier_ = delta;
         }
 
         void operate_plus(RandomNumberGenerator& rng,
